@@ -65,6 +65,11 @@ Das Repository ist öffentlich, aber nur der Programmcode. Die Daten stecken in 
 ## Gut zu wissen
 
 - **Passwort ändern** (Optionen → Turnier-Passwort): Alle Daten ziehen mit um, Gäste müssen danach einmal das neue Passwort eingeben.
+- **Quiz-Themen:** Videospiele, Flaggen (mit Flaggenbild), Geschichte, Allgemeinwissen und Schätzfragen, je 20 Fragen pro Schwierigkeit. Bei Schätzfragen schiebt man einen Regler; richtig ist alles innerhalb der angezeigten Abweichung. Eigene Schätzfragen legst du im Quiz-Bereich unter „Schätzfragen“ an.
+- **Flaggenbilder** kommen von flagcdn.com, die Geräte brauchen also Internet (das brauchen sie für die Datenbank sowieso).
+- **Spieler gestalten:** Foto zuschneiden (ziehen und zoomen), Schriftart, Farbverlauf, Rahmen und ein kurzer Spruch. Das geht auch für Gäste, die ihren Spieler selbst anlegen.
+- **Hintergrundmusik:** Die Seite erzeugt selbst leichte Musik (Chill, Arcade, Weltraum). Jeder stellt sie über den ♪-Knopf unten rechts lauter, leiser oder stumm. Unter Optionen legst du fest, ob sie bei Gästen standardmäßig an ist.
+- **Eigene Bilder** (Optionen): fliegen durch den Wartebildschirm und auf Wunsch dezent über die ganze Seite.
 - **Laufschrift im Wartebildschirm** (Optionen): eigene Einträge mit Text und kleinem Bild, zum Beispiel Sponsoren-Logos. Mit „Vorschau ansehen“ siehst du sofort, wie es aussieht.
 - **Quiz-Musik** wird nur auf dem Gerät gespeichert, auf dem du sie auswählst. Nimm das Gerät, das an den Lautsprechern hängt.
 - **Kosten:** Der kostenlose Firebase-Tarif (Spark) reicht für so ein Turnier locker aus.

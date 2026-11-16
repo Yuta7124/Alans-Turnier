@@ -34,11 +34,11 @@ service cloud.firestore {
       allow list: if false;
       allow write: if isAdmin();
 
-      // Gäste dürfen eigene Spieler anlegen (Name, Farbe, kleines Foto).
+      // Gäste dürfen eigene Spieler anlegen (Name, Farbe, kleines Foto, Schrift, Farbverlauf, Rahmen, Spruch).
       match /players/{id} {
         allow read: if true;
         allow create: if isAdmin() || (
-          request.resource.data.keys().hasOnly(['name', 'color', 'avatar', 'createdAt', 'byGuest'])
+          request.resource.data.keys().hasOnly(['name', 'color', 'avatar', 'createdAt', 'byGuest', 'font', 'grad', 'frame', 'motto'])
           && request.resource.data.name is string
           && request.resource.data.name.size() > 0
           && request.resource.data.name.size() <= 40
@@ -48,15 +48,19 @@ service cloud.firestore {
           && request.resource.data.avatar.size() < 60000
           && request.resource.data.createdAt is number
           && request.resource.data.byGuest == true
+          && (!('font' in request.resource.data) || (request.resource.data.font is string && request.resource.data.font.size() <= 20))
+          && (!('grad' in request.resource.data) || (request.resource.data.grad is string && request.resource.data.grad.size() <= 20))
+          && (!('frame' in request.resource.data) || (request.resource.data.frame is string && request.resource.data.frame.size() <= 20))
+          && (!('motto' in request.resource.data) || (request.resource.data.motto is string && request.resource.data.motto.size() <= 40))
         );
         allow update, delete: if isAdmin();
       }
 
-      // Gäste dürfen im Quiz antworten und Felder wählen.
+      // Gäste dürfen im Quiz antworten (auch Schätzwerte) und Felder wählen.
       match /answers/{id} {
         allow read: if true;
         allow create, update: if isAdmin() || (
-          request.resource.data.keys().hasOnly(['qkey', 'pid', 'choice', 'ts'])
+          request.resource.data.keys().hasOnly(['qkey', 'pid', 'choice', 'value', 'ts'])
           && request.resource.data.qkey is string
           && request.resource.data.qkey.size() < 120
           && request.resource.data.pid is string
@@ -65,6 +69,7 @@ service cloud.firestore {
           && request.resource.data.choice >= 0
           && request.resource.data.choice <= 24
           && request.resource.data.ts is number
+          && (!('value' in request.resource.data) || request.resource.data.value is number)
         );
         allow delete: if isAdmin();
       }
