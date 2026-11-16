@@ -1,6 +1,6 @@
 # Alans Turnier
 
-**Live:** https://yuta7124.github.io/alans-turnier/
+**Live:** https://yuta7124.github.io/Alans-Turnier/
 
 Firebase ist bereits eingerichtet (Projekt `alans-turnier-dc34c`, Firestore in Frankfurt, Regeln aus `firestore.rules` veröffentlicht, Anmeldung mit E-Mail/Passwort aktiv). Die Zugangsdaten stehen in `config.js`.
 
