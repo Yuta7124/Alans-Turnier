@@ -1,0 +1,79 @@
+rules_version = '2';
+// Alans Turnier: Regeln für die Firestore-Datenbank.
+// Einfach komplett in Firebase einfügen (Firestore Database > Regeln) und veröffentlichen.
+// Du musst nichts ändern: Das erste Konto, das sich auf der Seite als Spielleiter anmeldet,
+// wird automatisch der Spielleiter. Alle anderen Konten bleiben Gäste.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function ownerPath() {
+      return /databases/$(database)/documents/admin/owner;
+    }
+    function isAdmin() {
+      return request.auth != null
+        && exists(ownerPath())
+        && get(ownerPath()).data.uid == request.auth.uid;
+    }
+
+    // Wer der Spielleiter ist. Kann nur einmal festgelegt werden.
+    match /admin/owner {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Spielleiter-Daten (Turnier-Passwort). Nur für den Spielleiter.
+    match /admin/config {
+      allow read, write: if isAdmin();
+    }
+
+    // Ein Turnier-Raum. Seine ID kennt nur, wer das Turnier-Passwort hat.
+    match /rooms/{room} {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isAdmin();
+
+      // Gäste dürfen eigene Spieler anlegen (Name, Farbe, kleines Foto).
+      match /players/{id} {
+        allow read: if true;
+        allow create: if isAdmin() || (
+          request.resource.data.keys().hasOnly(['name', 'color', 'avatar', 'createdAt', 'byGuest'])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 40
+          && request.resource.data.color is string
+          && request.resource.data.color.size() <= 9
+          && request.resource.data.avatar is string
+          && request.resource.data.avatar.size() < 60000
+          && request.resource.data.createdAt is number
+          && request.resource.data.byGuest == true
+        );
+        allow update, delete: if isAdmin();
+      }
+
+      // Gäste dürfen im Quiz antworten und Felder wählen.
+      match /answers/{id} {
+        allow read: if true;
+        allow create, update: if isAdmin() || (
+          request.resource.data.keys().hasOnly(['qkey', 'pid', 'choice', 'ts'])
+          && request.resource.data.qkey is string
+          && request.resource.data.qkey.size() < 120
+          && request.resource.data.pid is string
+          && request.resource.data.pid.size() < 60
+          && request.resource.data.choice is int
+          && request.resource.data.choice >= 0
+          && request.resource.data.choice <= 24
+          && request.resource.data.ts is number
+        );
+        allow delete: if isAdmin();
+      }
+
+      // Alles andere (Punkte, Einstellungen, Quiz, Rad, Ankündigungen): lesen alle, ändern nur der Spielleiter.
+      match /{coll}/{id} {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
+    }
+  }
+}
