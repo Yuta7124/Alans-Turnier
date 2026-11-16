@@ -74,6 +74,58 @@ service cloud.firestore {
         allow delete: if isAdmin();
       }
 
+      // Spieleliste: Gäste dürfen Spiele vorschlagen. Ändern und Löschen nur der Spielleiter.
+      match /games/{id} {
+        allow read: if true;
+        allow create: if isAdmin() || (
+          request.resource.data.keys().hasOnly(['name', 'status', 'plat', 'genre', 'mode', 'pmin', 'pmax', 'mins', 'note', 'img', 'byGuest', 'by', 'createdAt', 'order'])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 40
+          && request.resource.data.status == 'vorschlag'
+          && request.resource.data.byGuest == true
+          && (!('note' in request.resource.data) || (request.resource.data.note is string && request.resource.data.note.size() <= 300))
+          && (!('img' in request.resource.data) || (request.resource.data.img is string && request.resource.data.img.size() < 60000))
+          && (!('by' in request.resource.data) || (request.resource.data.by is string && request.resource.data.by.size() <= 40))
+        );
+        allow update, delete: if isAdmin();
+      }
+
+      // Hype für Spiele: jeder darf geben und zurücknehmen.
+      match /gvotes/{id} {
+        allow read: if true;
+        allow create: if request.resource.data.keys().hasOnly(['gid', 'voter', 'ts'])
+          && request.resource.data.gid is string && request.resource.data.gid.size() <= 40
+          && request.resource.data.voter is string && request.resource.data.voter.size() <= 40
+          && request.resource.data.ts is number;
+        allow update: if isAdmin();
+        allow delete: if true;
+      }
+
+      // Malen: Striche der Zeichnung. Der Zeichner darf auch rückgängig machen.
+      match /strokes/{id} {
+        allow read: if true;
+        allow create: if request.resource.data.keys().hasOnly(['g', 'n', 'sid', 'c', 'w', 'p', 'f', 'clear', 'ts', 'by'])
+          && request.resource.data.g is string && request.resource.data.g.size() <= 60
+          && request.resource.data.n is int
+          && (!('p' in request.resource.data) || (request.resource.data.p is list && request.resource.data.p.size() <= 420))
+          && (!('c' in request.resource.data) || (request.resource.data.c is string && request.resource.data.c.size() <= 9));
+        allow update: if isAdmin();
+        allow delete: if true;
+      }
+
+      // Malen: Tipps, Wortwahl und Daumen hoch.
+      match /dacts/{id} {
+        allow read: if true;
+        allow create: if request.resource.data.keys().hasOnly(['g', 'pid', 'k', 'v', 'ts'])
+          && request.resource.data.g is string && request.resource.data.g.size() <= 60
+          && request.resource.data.pid is string && request.resource.data.pid.size() <= 40
+          && request.resource.data.k in ['guess', 'choose', 'like']
+          && request.resource.data.v is string && request.resource.data.v.size() <= 60
+          && request.resource.data.ts is number;
+        allow update, delete: if isAdmin();
+      }
+
       // Alles andere (Punkte, Einstellungen, Quiz, Rad, Ankündigungen): lesen alle, ändern nur der Spielleiter.
       match /{coll}/{id} {
         allow read: if true;
