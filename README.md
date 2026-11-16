@@ -57,12 +57,15 @@ Das Repository ist öffentlich, aber nur der Programmcode. Die Daten stecken in 
 
 - Sie öffnen den Link, geben einmal das Turnier-Passwort ein (ihr Gerät merkt es sich) und landen im Wartebildschirm, bis du die Lobby öffnest.
 - Sie können **eigene Spieler mit Foto** anlegen. Die erscheinen sofort bei allen.
-- Im Quiz tippen sie oben bei „Wer bist du?“ auf ihren Namen. Wer dran ist, **wählt das Feld und die Antwort selbst**, das zählt sofort. Alle anderen raten mit, ihre Tipps siehst du nach der Auflösung.
-- Wichtig: Die Antworten der Gäste wertet dein Spielleiter-Gerät aus. Lass die Seite dort während des Quiz offen.
+- Im Quiz tippen sie unten bei „Wer bist du?“ auf ihren Namen. Nur wer dran ist, **wählt das Feld und die Antwort selbst**, das zählt sofort. Alle anderen schauen zu.
+- Links steht, wer gerade dran ist und wer danach kommt, rechts die Punkteführung, die sich live neu sortiert.
+- 5 Sekunden nach jeder Antwort geht es automatisch zurück zum Spielbrett und der nächste Spieler ist dran. Mit **Anhalten** stoppst du das, mit **Sofort weiter** geht es direkt weiter.
+- Wichtig: Die Antworten der Gäste und das automatische Weiter laufen über dein Spielleiter-Gerät. Lass die Seite dort während des Quiz offen.
 
 ## Gut zu wissen
 
 - **Passwort ändern** (Optionen → Turnier-Passwort): Alle Daten ziehen mit um, Gäste müssen danach einmal das neue Passwort eingeben.
+- **Laufschrift im Wartebildschirm** (Optionen): eigene Einträge mit Text und kleinem Bild, zum Beispiel Sponsoren-Logos. Mit „Vorschau ansehen“ siehst du sofort, wie es aussieht.
 - **Quiz-Musik** wird nur auf dem Gerät gespeichert, auf dem du sie auswählst. Nimm das Gerät, das an den Lautsprechern hängt.
 - **Kosten:** Der kostenlose Firebase-Tarif (Spark) reicht für so ein Turnier locker aus.
 - **Abmelden** als Spielleiter: ganz unten auf der Seite.
