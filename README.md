@@ -66,6 +66,8 @@ Das Repository ist öffentlich, aber nur der Programmcode. Die Daten stecken in 
 
 - **Passwort ändern** (Optionen → Turnier-Passwort): Alle Daten ziehen mit um, Gäste müssen danach einmal das neue Passwort eingeben.
 - **Quiz-Themen:** Videospiele, Flaggen (mit Flaggenbild), Geschichte, Allgemeinwissen und Schätzfragen, je 20 Fragen pro Schwierigkeit. Bei Schätzfragen schiebt man einen Regler; richtig ist alles innerhalb der angezeigten Abweichung. Eigene Schätzfragen legst du im Quiz-Bereich unter „Schätzfragen“ an.
+- **Neun Themen:** Vor jedem Quiz wählst du 3 bis 6 Themen fürs Spielbrett (Videospiele, Flaggen, Geschichte, Allgemeinwissen, Schätzfragen, Videospiel-Soundtracks, Filme, Serien, Animes).
+- **Videospiel-Soundtracks:** Hier legst du die Clips selbst an (Quiz → Eigene Fragen → Videospiel-Soundtracks): Audiodatei wählen, Startpunkt einstellen, 10 Sekunden werden automatisch herausgeschnitten, dazu drei Spiele als Antworten. Auf dem Spielleiter-Gerät startet der Clip automatisch, Gäste können ihn zusätzlich auf dem Handy anhören. Für jede Schwierigkeit mindestens ein Clip, sonst bleibt das Feld leer.
 - **Flaggenbilder** kommen von flagcdn.com, die Geräte brauchen also Internet (das brauchen sie für die Datenbank sowieso).
 - **Spieler gestalten:** Foto zuschneiden (ziehen und zoomen), Schriftart, Farbverlauf, Rahmen und ein kurzer Spruch. Das geht auch für Gäste, die ihren Spieler selbst anlegen.
 - **Hintergrundmusik:** Die Seite erzeugt selbst leichte Musik (Chill, Arcade, Weltraum). Jeder stellt sie über den ♪-Knopf unten rechts lauter, leiser oder stumm. Unter Optionen legst du fest, ob sie bei Gästen standardmäßig an ist.

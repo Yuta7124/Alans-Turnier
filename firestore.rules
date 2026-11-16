@@ -67,7 +67,7 @@ service cloud.firestore {
           && request.resource.data.pid.size() < 60
           && request.resource.data.choice is int
           && request.resource.data.choice >= 0
-          && request.resource.data.choice <= 24
+          && request.resource.data.choice <= 59
           && request.resource.data.ts is number
           && (!('value' in request.resource.data) || request.resource.data.value is number)
         );

@@ -433,7 +433,7 @@ details[open] summary{margin-bottom:6px}
 .bhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .bprompt{margin:0;font-family:var(--display);font-weight:700;font-size:24px;text-transform:uppercase}
 .bprompt b{color:var(--coin)}
-.board5{display:grid;grid-template-columns:118px repeat(5,minmax(0,1fr));gap:10px}
+.board5{display:grid;grid-template-columns:118px repeat(var(--cols,5),minmax(0,1fr));gap:10px}
 .bcat{font-family:var(--display);font-weight:700;font-size:17px;text-transform:uppercase;line-height:1.05;text-align:center;padding:10px 6px;background:var(--xp);color:#120c26;display:flex;align-items:center;justify-content:center;min-height:68px;overflow-wrap:break-word;min-width:0;box-shadow:0 0 0 3px var(--shadow),inset 0 -5px 0 rgba(0,0,0,.2)}
 .bcat .short{display:none}
 .blvl{display:flex;flex-direction:column;justify-content:center;gap:4px;font-weight:700;font-size:13px;color:var(--muted);line-height:1.1}
@@ -450,7 +450,7 @@ button.bcell[disabled]{cursor:default}
 .bcell.used .av{opacity:.9}
 .legend{margin:0;font-size:13px;color:var(--muted)}
 @media (max-width:640px){
-  .board5{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+  .board5{grid-template-columns:repeat(var(--cols,5),minmax(0,1fr));gap:6px}
   .blvl,.bcorner{display:none}
   .bcat{font-size:11px;min-height:44px;padding:6px 1px;letter-spacing:0}
   .bcat .long{display:none}
@@ -637,7 +637,7 @@ button.bcell[disabled]{cursor:default}
 .qsec .qtext{font-size:clamp(26px,2.3vw,46px)}
 .qsec .ans{font-size:clamp(19px,1.35vw,26px);min-height:84px;padding:16px 20px}
 .qsec .ans .k{width:46px;height:46px;font-size:16px}
-.qsec .board5{grid-template-columns:clamp(104px,8vw,140px) repeat(5,minmax(0,1fr));gap:12px}
+.qsec .board5{grid-template-columns:clamp(104px,8vw,140px) repeat(var(--cols,5),minmax(0,1fr));gap:12px}
 .qsec .bcell{min-height:clamp(84px,10vh,124px)}
 .qsec .bcell b{font-size:clamp(26px,2vw,40px)}
 .qsec .bcat{font-size:clamp(15px,1.1vw,22px);min-height:78px}
@@ -664,7 +664,7 @@ button.bcell[disabled]{cursor:default}
   .qsec .qcard{padding:20px;min-height:0}
 }
 @media (max-width:640px){
-  .qsec .board5{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+  .qsec .board5{grid-template-columns:repeat(var(--cols,5),minmax(0,1fr));gap:6px}
   .qsec .bcell{min-height:60px}
   .qsec .bcell b{font-size:18px}
   .qsec .bcat{font-size:10px;min-height:44px;padding:6px 1px}
@@ -675,6 +675,20 @@ button.bcell[disabled]{cursor:default}
 .pgrid{align-items:start}
 @media (min-width:760px){.pgrid > form.pcard.add{grid-column:span 2}}
 @media (max-width:640px){.bgm-btn{width:44px;height:44px;font-size:20px}.bgm-btn i:nth-of-type(1){left:11px}.bgm-btn i:nth-of-type(2){left:20px}.bgm-btn i:nth-of-type(3){left:29px}#bgm-root{right:10px;bottom:10px}}
+/* Soundtrack-Clips und Themenwahl */
+@media (max-width:640px){.board5[style*="--cols:6"] .bcat{font-size:8.5px}.board5[style*="--cols:6"] .bcell b{font-size:15px}}
+.topic-chips .chip small{opacity:.7;font-weight:600;margin-left:4px}
+.clip{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px;background:#0b0817;box-shadow:0 0 0 3px var(--shadow),0 0 0 5px var(--edge)}
+.clip-eq{display:flex;align-items:flex-end;gap:4px;height:34px}
+.clip-eq i{width:7px;height:6px;background:var(--xp)}
+.clip.playing .clip-eq i{animation:eq2 .7s steps(4) infinite alternate}
+.clip.playing .clip-eq i:nth-child(2n){animation-delay:.2s}.clip.playing .clip-eq i:nth-child(3n){animation-delay:.4s}
+@keyframes eq2{from{height:6px}to{height:32px}}
+.clip-bar{flex:1 1 160px;height:12px;background:var(--panel-2);box-shadow:0 0 0 2px var(--shadow);overflow:hidden}
+.clip-bar i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,var(--xp) 0 10px,#2aa8c0 10px 12px);transition:width .2s linear}
+.clip-start{display:flex;flex-direction:column;gap:6px;font-weight:600}
+.clip-start input{accent-color:var(--coin)}
+@media (prefers-reduced-motion:reduce){.clip.playing .clip-eq i{animation:none;height:20px}}
 /* Spielernamen: Schrift und Farbverlauf */
 .pn.f-pixel{font-family:"Press Start 2P",monospace;font-size:.6em;line-height:1.6;font-weight:400}
 .pn.f-bungee{font-family:"Bungee",sans-serif;font-size:.84em;font-weight:400}
@@ -805,9 +819,9 @@ const SHELL = `<div id="fly-site" aria-hidden="true"></div>
 <div id="bgm-root"></div>`;
 
 /* ---------- Quiz: 5 Themen x 5 Stufen, je 4 Fragen. Richtige Antwort steht zuerst und wird beim Start gemischt. ---------- */
-const CATS = ['Videospiele', 'Flaggen', 'Geschichte', 'Allgemeinwissen', 'Schätzfragen'];
+const CATS = ['Videospiele', 'Flaggen', 'Geschichte', 'Allgemeinwissen', 'Schätzfragen', 'Videospiel-Soundtracks', 'Filme', 'Serien', 'Animes'];
 const LEVELS = ['Sehr leicht', 'Leicht', 'Mittel', 'Schwer', 'Sehr schwer'];
-const CATS_SHORT = ['Games', 'Flaggen', 'Historie', 'Wissen', 'Schätzen'];
+const CATS_SHORT = ['Games', 'Flaggen', 'Historie', 'Wissen', 'Schätzen', 'Sound', 'Filme', 'Serien', 'Anime'];
 const PTS = [1, 2, 3, 4, 5];
 const LCOL = ['#3fd49c', '#a8d65a', '#f5b83d', '#ff9f5a', '#ff6b6b'];
 const GAMES_V2 = [
@@ -1391,7 +1405,335 @@ const ESTIMATES = [
   ]
 ];
 
-const BANK = [[0, 1, 2, 3, 4].map(l => GAMES_V2.flatMap(c => c[l])), FLAGS, HISTORY, GENERAL, ESTIMATES];
+const FILMS = [
+  [
+    ['Wie heißt der Zauberschüler mit der blitzförmigen Narbe?', ['Harry Potter', 'Ron Weasley', 'Frodo Beutlin', 'Percy Jackson']],
+    ['Welches Schiff sinkt in James Camerons Film von 1997?', ['Titanic', 'Lusitania', 'Poseidon', 'Black Pearl']],
+    ['Wie heißt der grüne Oger aus dem gleichnamigen Animationsfilm?', ['Shrek', 'Grinch', 'Hulk', 'Yoda']],
+    ['Wie heißt der junge Löwe in „Der König der Löwen“?', ['Simba', 'Mufasa', 'Scar', 'Nala']],
+    ['Welcher Superheld trägt einen Anzug mit Spinnennetz-Muster?', ['Spider-Man', 'Batman', 'Superman', 'Iron Man']],
+    ['In welcher Filmreihe kämpfen Jedi gegen die dunkle Seite der Macht?', ['Star Wars', 'Star Trek', 'Avatar', 'Dune']],
+    ['Wie heißt der kleine Clownfisch, den sein Vater in einem Pixar-Film sucht?', ['Nemo', 'Dory', 'Marlin', 'Gill']],
+    ['Welche Eiskönigin singt „Lass jetzt los“?', ['Elsa', 'Anna', 'Arielle', 'Rapunzel']],
+    ['Wie heißt der Cowboy in „Toy Story“?', ['Woody', 'Buzz Lightyear', 'Jessie', 'Rex']],
+    ['Wie heißen die kleinen gelben Helfer aus „Ich – Einfach unverbesserlich“?', ['Minions', 'Schlümpfe', 'Gremlins', 'Oompa Loompas']],
+    ['Welcher Superheld heißt im echten Leben Bruce Wayne?', ['Batman', 'Superman', 'Iron Man', 'Daredevil']],
+    ['Wie heißt der Schneemann in „Die Eiskönigin“?', ['Olaf', 'Sven', 'Kristoff', 'Hans']],
+    ['In welcher Stadt spielt „Ratatouille“?', ['Paris', 'Rom', 'London', 'Lyon']],
+    ['Wie heißt der Zauberer, der Frodo in „Der Herr der Ringe“ begleitet?', ['Gandalf', 'Dumbledore', 'Saruman', 'Merlin']],
+    ['Welches Tier ist Dumbo?', ['Ein Elefant', 'Ein Hund', 'Eine Maus', 'Ein Esel']],
+    ['Welcher Superheld kämpft mit dem Hammer Mjölnir?', ['Thor', 'Loki', 'Hulk', 'Captain America']],
+    ['Wie heißt Steven Spielbergs Hai-Thriller von 1975 auf Deutsch?', ['Der weiße Hai', 'Deep Blue Sea', 'Meg', 'Open Water']],
+    ['In welchem Film sind Dinosaurier in einem Freizeitpark los?', ['Jurassic Park', 'King Kong', 'Godzilla', 'Ice Age']],
+    ['Wie heißt die Zauberschule in Harry Potter?', ['Hogwarts', 'Durmstrang', 'Beauxbatons', 'Ilvermorny']],
+    ['Wie heißt der rote Rennwagen in „Cars“?', ['Lightning McQueen', 'Hook', 'Doc Hudson', 'Sally']]
+  ], [
+    ['Wer spielt Jack in „Titanic“?', ['Leonardo DiCaprio', 'Brad Pitt', 'Johnny Depp', 'Matt Damon']],
+    ['Wie heißt Harry Potters Eule?', ['Hedwig', 'Krätze', 'Krummbein', 'Fawkes']],
+    ['Wer spielt Iron Man im Marvel-Universum?', ['Robert Downey Jr.', 'Chris Evans', 'Chris Hemsworth', 'Mark Ruffalo']],
+    ['Wie heißt der Piratenkapitän, den Johnny Depp spielt?', ['Jack Sparrow', 'Hector Barbossa', 'Davy Jones', 'Will Turner']],
+    ['Was ist die Aufgabe der Gefährten in „Der Herr der Ringe“?', ['Den Einen Ring zu zerstören', 'Einen Drachen zu töten', 'Einen Schatz zu finden', 'Eine Prinzessin zu retten']],
+    ['Wie heißt der Bösewicht in „Der König der Löwen“?', ['Scar', 'Shir Khan', 'Dschafar', 'Hades']],
+    ['Auf welchem Planeten spielt „Avatar“?', ['Pandora', 'Arrakis', 'Tatooine', 'Krypton']],
+    ['Wie heißt Darth Vaders Sohn?', ['Luke Skywalker', 'Han Solo', 'Kylo Ren', 'Obi-Wan Kenobi']],
+    ['Wie heißt der Außerirdische aus Spielbergs Film von 1982?', ['E.T.', 'Alf', 'Stitch', 'Paul']],
+    ['Aus welchem Film stammt der Satz „I’ll be back“?', ['Terminator', 'Predator', 'RoboCop', 'Total Recall']],
+    ['Welcher Pixar-Film spielt in Mexiko am Tag der Toten?', ['Coco', 'Encanto', 'Vaiana', 'Luca']],
+    ['Wer ist Harry Potters Erzfeind?', ['Lord Voldemort', 'Draco Malfoy', 'Severus Snape', 'Sirius Black']],
+    ['Welche Pille schluckt Neo in „Matrix“?', ['Die rote', 'Die blaue', 'Die grüne', 'Die gelbe']],
+    ['Wer bringt in „Der Herr der Ringe“ den Ring zum Schicksalsberg?', ['Frodo Beutlin', 'Bilbo Beutlin', 'Aragorn', 'Legolas']],
+    ['In welchem Musical-Film tanzen Ryan Gosling und Emma Stone durch Los Angeles?', ['La La Land', 'Barbie', 'Drive', 'Mamma Mia!']],
+    ['Welche Puppe spielt Margot Robbie im Film von 2023?', ['Barbie', 'Bratz', 'Polly Pocket', 'Sindy']],
+    ['Welcher Superheld ist König von Wakanda?', ['Black Panther', 'Falcon', 'War Machine', 'Blade']],
+    ['In welchem Film reist Marty McFly mit einem DeLorean durch die Zeit?', ['Zurück in die Zukunft', 'Terminator', 'Looper', 'Interstellar']],
+    ['Wer sammelt in „Avengers: Infinity War“ alle Infinity-Steine?', ['Thanos', 'Ultron', 'Loki', 'Red Skull']],
+    ['In welcher Stadt landet Kevin im zweiten „Kevin – Allein“-Film?', ['New York', 'Chicago', 'Paris', 'Miami']]
+  ], [
+    ['Wer führte Regie bei „Jurassic Park“?', ['Steven Spielberg', 'James Cameron', 'George Lucas', 'Ridley Scott']],
+    ['Wie viele Filme hat die Harry-Potter-Hauptreihe?', ['8', '7', '9', '10']],
+    ['Welcher Film gewann 2020 als erster nicht-englischsprachiger Film den Oscar als bester Film?', ['Parasite', 'Roma', 'Das Leben ist schön', 'Die fabelhafte Welt der Amélie']],
+    ['Wer spielt den Joker in „The Dark Knight“ (2008)?', ['Heath Ledger', 'Joaquin Phoenix', 'Jack Nicholson', 'Jared Leto']],
+    ['Wer spielt Forrest Gump?', ['Tom Hanks', 'Tom Cruise', 'Kevin Costner', 'Robin Williams']],
+    ['In welchem Jahr kam der erste „Star Wars“-Film ins Kino?', ['1977', '1972', '1980', '1983']],
+    ['Wie heißt das Hotel in „Shining“?', ['Overlook Hotel', 'Bates Motel', 'Grand Budapest Hotel', 'Hotel California']],
+    ['Wie heißt der Gangster-Boss im Film „Stirb langsam“ (1988)?', ['Hans Gruber', 'Simon Gruber', 'Max Zorin', 'Viktor Drago']],
+    ['Welcher Regisseur drehte „Inception“ und „Oppenheimer“?', ['Christopher Nolan', 'Denis Villeneuve', 'David Fincher', 'Steven Spielberg']],
+    ['Welche Figur spielt Keanu Reeves in „Matrix“?', ['Neo', 'Morpheus', 'Trinity', 'Agent Smith']],
+    ['Welches Studio hat „Toy Story“ gemacht?', ['Pixar', 'DreamWorks', 'Illumination', 'Blue Sky']],
+    ['Wer spielt James Bond in „Casino Royale“ (2006)?', ['Daniel Craig', 'Pierce Brosnan', 'Sean Connery', 'Roger Moore']],
+    ['In welcher Stadt spielt „Der Pate“ hauptsächlich?', ['New York', 'Chicago', 'Los Angeles', 'Las Vegas']],
+    ['Welcher Film gewann 2024 den Oscar als bester Film?', ['Oppenheimer', 'Barbie', 'Killers of the Flower Moon', 'Poor Things']],
+    ['Wie heißt der General, der in „Gladiator“ zum Sklaven wird?', ['Maximus', 'Commodus', 'Spartacus', 'Marcus Aurelius']],
+    ['Wie heißt der Hai in „Findet Nemo“, der keine Fische mehr fressen will?', ['Bruce', 'Hammer', 'Rocco', 'Sharky']],
+    ['Wie viele Infinity-Steine gibt es im Marvel-Universum?', ['6', '5', '7', '9']],
+    ['Wie heißt der Erfinder der Zeitmaschine in „Zurück in die Zukunft“?', ['Doc Brown', 'Marty McFly', 'Biff Tannen', 'George McFly']],
+    ['In welchem Film sagt ein Junge „Ich sehe tote Menschen“?', ['The Sixth Sense', 'The Others', 'Ghost', 'Poltergeist']],
+    ['In welchem Film fliegt eine Crew durch ein Wurmloch, um eine neue Heimat für die Menschheit zu finden?', ['Interstellar', 'Gravity', 'Der Marsianer', 'Ad Astra']]
+  ], [
+    ['Welcher Film gewann den allerersten Oscar als bester Film?', ['Flügel (Wings)', 'Metropolis', 'Sunrise', 'Der Jazzsänger']],
+    ['Wer komponierte die Musik zu „Star Wars“?', ['John Williams', 'Hans Zimmer', 'Howard Shore', 'Danny Elfman']],
+    ['Wer komponierte die Musik zu „Inception“?', ['Hans Zimmer', 'John Williams', 'Ennio Morricone', 'Ludwig Göransson']],
+    ['Wie heißt der Bordcomputer in „2001: Odyssee im Weltraum“?', ['HAL 9000', 'Skynet', 'MU-TH-UR', 'J.A.R.V.I.S.']],
+    ['Welcher Film gewann wie „Titanic“ und „Ben Hur“ elf Oscars?', ['Der Herr der Ringe: Die Rückkehr des Königs', 'Avatar', 'Schindlers Liste', 'La La Land']],
+    ['Wie heißt der kannibalische Psychiater in „Das Schweigen der Lämmer“?', ['Hannibal Lecter', 'Norman Bates', 'Freddy Krueger', 'John Doe']],
+    ['Welcher deutsche Regisseur drehte „Independence Day“?', ['Roland Emmerich', 'Wolfgang Petersen', 'Tom Tykwer', 'Florian Henckel von Donnersmarck']],
+    ['Welcher deutsche Film gewann 2023 den Oscar als bester internationaler Film?', ['Im Westen nichts Neues', 'Das Leben der Anderen', 'Lola rennt', 'Toni Erdmann']],
+    ['In welchem Jahr kam „Jurassic Park“ ins Kino?', ['1993', '1990', '1996', '1999']],
+    ['Auf welchem Wüstenplaneten wächst Luke Skywalker auf?', ['Tatooine', 'Naboo', 'Hoth', 'Dagobah']],
+    ['Wer spielte als Erster James Bond in der offiziellen Filmreihe?', ['Sean Connery', 'Roger Moore', 'George Lazenby', 'David Niven']],
+    ['Welcher war der erste komplett am Computer animierte Kinofilm?', ['Toy Story', 'Shrek', 'Das große Krabbeln', 'Antz']],
+    ['In welcher Stadt sorgt Batman für Ordnung?', ['Gotham City', 'Metropolis', 'Star City', 'Central City']],
+    ['Wer spielt Hermine Granger in den Harry-Potter-Filmen?', ['Emma Watson', 'Emma Stone', 'Bonnie Wright', 'Evanna Lynch']],
+    ['Wie heißt der Androide an Bord der Nostromo in „Alien“ (1979)?', ['Ash', 'Bishop', 'David', 'Data']],
+    ['Wer führte Regie bei „Pulp Fiction“?', ['Quentin Tarantino', 'Martin Scorsese', 'Guy Ritchie', 'Robert Rodriguez']],
+    ['Welcher Film gewann 2025 den Oscar als bester Film?', ['Anora', 'The Brutalist', 'Konklave', 'Emilia Pérez']],
+    ['Wie heißen die beiden Einbrecher in „Kevin – Allein zu Haus“?', ['Harry und Marv', 'Bonnie und Clyde', 'Bill und Ted', 'Jay und Bob']],
+    ['In welcher fiktiven Stadt spielt „Zurück in die Zukunft“?', ['Hill Valley', 'Hawkins', 'Springfield', 'Twin Peaks']],
+    ['Welcher Schauspieler gewann drei Oscars als bester Hauptdarsteller?', ['Daniel Day-Lewis', 'Jack Nicholson', 'Tom Hanks', 'Leonardo DiCaprio']]
+  ], [
+    ['Was ist „Rosebud“ in „Citizen Kane“?', ['Ein Schlitten', 'Ein Pferd', 'Eine Zeitung', 'Ein Schiff']],
+    ['Welcher Film gewann 1998 elf Oscars?', ['Titanic', 'Der englische Patient', 'Good Will Hunting', 'Shakespeare in Love']],
+    ['In welchem Jahr wurden die Oscars zum ersten Mal verliehen?', ['1929', '1925', '1933', '1939']],
+    ['Wer drehte den Stummfilm „Metropolis“ (1927)?', ['Fritz Lang', 'Friedrich Wilhelm Murnau', 'Ernst Lubitsch', 'Georg Wilhelm Pabst']],
+    ['Wer entwarf Micky Maus zusammen mit Walt Disney?', ['Ub Iwerks', 'Roy Disney', 'Carl Barks', 'Chuck Jones']],
+    ['Welche Firma stellt in „Blade Runner“ die Replikanten her?', ['Tyrell Corporation', 'Weyland-Yutani', 'Cyberdyne Systems', 'Umbrella Corporation']],
+    ['Welcher Film ist (Stand 2026) der weltweit erfolgreichste Film aller Zeiten?', ['Avatar', 'Avengers: Endgame', 'Titanic', 'Star Wars: Das Erwachen der Macht']],
+    ['Wer sprach Darth Vader im englischen Original?', ['James Earl Jones', 'David Prowse', 'Christopher Lee', 'Morgan Freeman']],
+    ['Welcher war 1937 Disneys erster abendfüllender Zeichentrickfilm?', ['Schneewittchen und die sieben Zwerge', 'Pinocchio', 'Fantasia', 'Bambi']],
+    ['Welche Schauspielerin gewann vier Oscars als beste Hauptdarstellerin?', ['Katharine Hepburn', 'Meryl Streep', 'Ingrid Bergman', 'Frances McDormand']],
+    ['Wie lautet Indiana Jones’ eigentlicher Vorname?', ['Henry', 'Harrison', 'Howard', 'Harold']],
+    ['Wie heißt Dorothys Hund in „Der Zauberer von Oz“?', ['Toto', 'Rex', 'Buster', 'Fido']],
+    ['Welcher Kurosawa-Film war die Vorlage für „Die glorreichen Sieben“?', ['Die sieben Samurai', 'Rashomon', 'Ran', 'Yojimbo']],
+    ['Wer spielte Norman Bates in Hitchcocks „Psycho“?', ['Anthony Perkins', 'Anthony Hopkins', 'James Stewart', 'Cary Grant']],
+    ['Welche Figur spielte Andy Serkis in „Der Herr der Ringe“?', ['Gollum', 'Aragorn', 'Saruman', 'Gimli']],
+    ['Welcher Film von 1927 gilt als erster abendfüllender Tonfilm?', ['Der Jazzsänger', 'Metropolis', 'Flügel', 'Lichter der Großstadt']],
+    ['Wer ist „Der Mann mit dem goldenen Colt“ im gleichnamigen Bond-Film?', ['Francisco Scaramanga', 'Auric Goldfinger', 'Ernst Stavro Blofeld', 'Hugo Drax']],
+    ['Welcher Film gewann 2002 den ersten Oscar als bester Animationsfilm?', ['Shrek', 'Die Monster AG', 'Ice Age', 'Chihiros Reise ins Zauberland']],
+    ['Wie viele Filme umfasst die „Infinity Saga“ des Marvel Cinematic Universe?', ['23', '18', '21', '26']],
+    ['Wer komponierte die Musik zu „Spiel mir das Lied vom Tod“?', ['Ennio Morricone', 'John Barry', 'Nino Rota', 'Hans Zimmer']]
+  ]
+];
+
+const SERIES = [
+  [
+    ['Wie heißt die gelbe Familie mit Homer, Marge, Bart, Lisa und Maggie?', ['Die Simpsons', 'Die Griffins', 'Die Belchers', 'Die Smiths']],
+    ['Wie heißt der Schwamm, der in einer Ananas unter dem Meer wohnt?', ['SpongeBob', 'Patrick', 'Thaddäus', 'Mr. Krabs']],
+    ['Wie heißt SpongeBobs bester Freund, ein rosa Seestern?', ['Patrick', 'Sandy', 'Gary', 'Plankton']],
+    ['In welcher Netflix-Serie verschwindet der Junge Will in Hawkins?', ['Stranger Things', 'Dark', 'The Umbrella Academy', 'Wednesday']],
+    ['Welche Serie spielt auf dem Kontinent Westeros?', ['Game of Thrones', 'The Witcher', 'Vikings', 'Die Ringe der Macht']],
+    ['Wie heißt die Addams-Tochter mit eigener Netflix-Serie?', ['Wednesday', 'Morticia', 'Pugsley', 'Enid']],
+    ['In welcher Serie treffen sich sechs Freunde im Café Central Perk?', ['Friends', 'How I Met Your Mother', 'The Big Bang Theory', 'Seinfeld']],
+    ['Welche koreanische Netflix-Serie dreht sich um tödliche Kinderspiele?', ['Squid Game', 'Alice in Borderland', 'Kingdom', 'All of Us Are Dead']],
+    ['In welcher Serie wird ein Chemielehrer zum Drogenkoch?', ['Breaking Bad', 'Ozark', 'Narcos', 'Weeds']],
+    ['Welches Bier trinkt Homer Simpson am liebsten?', ['Duff', 'Buzz', 'Fudd', 'Krusty']],
+    ['Welche Masken tragen die Räuber in „Haus des Geldes“?', ['Dalí-Masken', 'Guy-Fawkes-Masken', 'Clownsmasken', 'Hockeymasken']],
+    ['Wie heißt der Hund, der mit Shaggy Geister jagt?', ['Scooby-Doo', 'Snoopy', 'Pluto', 'Goofy']],
+    ['In welcher Serie lebt Familie Griffin in Quahog?', ['Family Guy', 'Die Simpsons', 'American Dad', 'South Park']],
+    ['Welcher Streamingdienst produziert „Stranger Things“?', ['Netflix', 'Disney+', 'Amazon Prime Video', 'Apple TV+']],
+    ['Wie nennen Fans das kleine grüne Wesen aus „The Mandalorian“?', ['Baby Yoda', 'Mini-Ewok', 'Klein-Wookiee', 'Baby Jabba']],
+    ['In welcher Serie leben die Physiker Sheldon und Leonard zusammen?', ['The Big Bang Theory', 'Silicon Valley', 'Young Sheldon', 'The IT Crowd']],
+    ['In welcher Serie kämpft der Polizist Rick Grimes gegen Zombies?', ['The Walking Dead', 'The Last of Us', 'Black Summer', 'Z Nation']],
+    ['Nach wem sind die Teenage Mutant Ninja Turtles benannt?', ['Nach Renaissance-Künstlern', 'Nach Komponisten', 'Nach Philosophen', 'Nach Fußballspielern']],
+    ['In welcher Serie fliegt die Crew der Enterprise durchs All?', ['Star Trek', 'Star Wars', 'Battlestar Galactica', 'The Expanse']],
+    ['Wie heißt die bekannteste deutsche Krimireihe am Sonntagabend?', ['Tatort', 'Polizeiruf 110', 'SOKO', 'Der Alte']]
+  ], [
+    ['Wie heißt der Barkeeper in „Die Simpsons“?', ['Moe', 'Barney', 'Lenny', 'Carl']],
+    ['Wie heißt Sheldons Freundin in „The Big Bang Theory“?', ['Amy Farrah Fowler', 'Penny', 'Bernadette', 'Leslie']],
+    ['Wie heißt die düstere Parallelwelt in „Stranger Things“ auf Deutsch?', ['Die andere Seite', 'Das Schattenreich', 'Die Unterwelt', 'Das Nimmerland']],
+    ['Wie heißt das Mädchen mit Superkräften in „Stranger Things“ auf Deutsch?', ['Elfi', 'Max', 'Nancy', 'Robin']],
+    ['Wie heißt der Chemielehrer in „Breaking Bad“ mit Nachnamen? Walter …', ['White', 'Black', 'Brown', 'Green']],
+    ['Welche Serie spielt im Krankenhaus Seattle Grace?', ['Grey’s Anatomy', 'Dr. House', 'Scrubs', 'Emergency Room']],
+    ['Wie heißt der zynische Arzt mit Gehstock?', ['Dr. House', 'Dr. Cox', 'Dr. Shepherd', 'Dr. Ross']],
+    ['Wie heißt Teds bester Freund und Anzugträger in „How I Met Your Mother“?', ['Barney Stinson', 'Marshall Eriksen', 'Joey Tribbiani', 'Chandler Bing']],
+    ['In welcher deutschen Netflix-Serie geht es um Zeitreisen in Winden?', ['Dark', 'Biohackers', 'Barbaren', 'How to Sell Drugs Online (Fast)']],
+    ['Wie heißt der Stammsitz der Familie Stark in „Game of Thrones“?', ['Winterfell', 'Casterlystein', 'Königsmund', 'Schnellwasser']],
+    ['Wer wird in „Game of Thrones“ „Mutter der Drachen“ genannt?', ['Daenerys Targaryen', 'Cersei Lannister', 'Sansa Stark', 'Arya Stark']],
+    ['Welcher Friends-Charakter fragt gern „How you doin’?“', ['Joey', 'Chandler', 'Ross', 'Phoebe']],
+    ['In welcher Stadt spielt „Friends“?', ['New York', 'Los Angeles', 'Chicago', 'Boston']],
+    ['Welcher Anwalt aus „Breaking Bad“ bekam eine eigene Serie?', ['Saul Goodman', 'Mike Ehrmantraut', 'Gus Fring', 'Hank Schrader']],
+    ['In welcher Netflix-Serie spielt Henry Cavill einen Monsterjäger?', ['The Witcher', 'Supernatural', 'Shadow and Bone', 'Vikings']],
+    ['Welche Haarfarbe hat Marge Simpson?', ['Blau', 'Grün', 'Lila', 'Rot']],
+    ['Wie heißt Rick aus „Rick and Morty“ mit Nachnamen?', ['Sanchez', 'Smith', 'Grimes', 'Morales']],
+    ['Wie heißt Spieler 456 in „Squid Game“?', ['Seong Gi-hun', 'Cho Sang-woo', 'Oh Il-nam', 'Kang Sae-byeok']],
+    ['Wie wird der Kopf der Bande in „Haus des Geldes“ genannt?', ['Der Professor', 'Der Doktor', 'Der Boss', 'Der Architekt']],
+    ['Auf welchem Streamingdienst läuft „The Mandalorian“?', ['Disney+', 'Netflix', 'Amazon Prime Video', 'Apple TV+']]
+  ], [
+    ['In welcher Stadt spielt „Breaking Bad“?', ['Albuquerque', 'Phoenix', 'Las Vegas', 'El Paso']],
+    ['Welchen Decknamen benutzt Walter White?', ['Heisenberg', 'Schrödinger', 'Einstein', 'Oppenheimer']],
+    ['Wie heißt die Papierfirma in der US-Serie „The Office“?', ['Dunder Mifflin', 'Wernham Hogg', 'Sabre', 'Staples']],
+    ['Wie viele Staffeln hat „Game of Thrones“?', ['8', '6', '7', '10']],
+    ['Wie heißt die Stammkneipe in „How I Met Your Mother“?', ['MacLaren’s', 'Central Perk', 'Paddy’s Pub', 'Moe’s']],
+    ['Wer spielt Elfi (Eleven) in „Stranger Things“?', ['Millie Bobby Brown', 'Sadie Sink', 'Natalia Dyer', 'Maya Hawke']],
+    ['In welchem Jahr startete „Die Simpsons“ als eigene Serie?', ['1989', '1985', '1993', '1999']],
+    ['Wie geht Sheldons Spiel weiter? Schere, Stein, Papier, Echse, …', ['Spock', 'Kirk', 'Yoda', 'Gandalf']],
+    ['Welche Serie spielt im Frauengefängnis Litchfield?', ['Orange Is the New Black', 'Prison Break', 'Wentworth', 'Oz']],
+    ['Wie heißt der Kontinent östlich von Westeros?', ['Essos', 'Sothoryos', 'Ulthos', 'Valyria']],
+    ['Wer spielt Walter White?', ['Bryan Cranston', 'Aaron Paul', 'Bob Odenkirk', 'Giancarlo Esposito']],
+    ['Wie heißt das Monster aus der ersten Staffel von „Stranger Things“?', ['Demogorgon', 'Vecna', 'Gedankenschinder', 'Demohund']],
+    ['In welcher Serie wird die Waise Beth Harmon zum Schach-Genie?', ['Das Damengambit', 'Queen Charlotte', 'The Crown', 'Bridgerton']],
+    ['Welche Netflix-Serie erzählt das Leben von Queen Elizabeth II.?', ['The Crown', 'Victoria', 'Die Tudors', 'Bridgerton']],
+    ['Wie heißt die Kneipe in „Die Simpsons“?', ['Moe’s Taverne', 'Duff Gardens', 'Krusty Burger', 'Kwik-E-Mart']],
+    ['Welche Serie erzählt die Geschichte von Pablo Escobar?', ['Narcos', 'Ozark', 'Breaking Bad', 'El Chapo']],
+    ['Wie heißt der kleinwüchsige, schlagfertige Lannister in „Game of Thrones“?', ['Tyrion', 'Jaime', 'Tywin', 'Joffrey']],
+    ['Wie heißt der Forensiker, der heimlich Serienmörder ist, in der gleichnamigen Serie?', ['Dexter Morgan', 'Dexter Grant', 'Dexter King', 'Dexter Moore']],
+    ['In welcher Serie wäscht Familie Byrde Geld für ein Drogenkartell?', ['Ozark', 'Breaking Bad', 'Fargo', 'Bloodline']],
+    ['Unter welchem Spitznamen kennt man John Dorian aus „Scrubs“?', ['J.D.', 'Turk', 'Dr. Cox', 'Dr. Kelso']]
+  ], [
+    ['Wie lautet der Wahlspruch des Hauses Stark?', ['Der Winter naht', 'Hört mich brüllen', 'Feuer und Blut', 'Wir säen nicht']],
+    ['In welchem US-Bundesstaat liegt Hawkins aus „Stranger Things“?', ['Indiana', 'Ohio', 'Illinois', 'Iowa']],
+    ['Wie heißt die Fast-Food-Kette von Gus Fring in „Breaking Bad“?', ['Los Pollos Hermanos', 'El Pollo Loco', 'Taco Loco', 'Los Hermanos Burger']],
+    ['Wie viele Staffeln hat „Breaking Bad“?', ['5', '4', '6', '7']],
+    ['In welchem Jahr lief die letzte Folge von „Friends“?', ['2004', '2001', '2006', '2008']],
+    ['Wie heißt der Anführer der Gang in „Peaky Blinders“?', ['Thomas Shelby', 'Arthur Shelby', 'Alfie Solomons', 'John Shelby']],
+    ['In welcher Stadt spielt „Peaky Blinders“?', ['Birmingham', 'Manchester', 'Liverpool', 'London']],
+    ['Wie heißt Ross’ Kapuzineraffe in „Friends“?', ['Marcel', 'Max', 'Mister Bubbles', 'Bobo']],
+    ['Wer hat „Die Simpsons“ erfunden?', ['Matt Groening', 'Seth MacFarlane', 'Trey Parker', 'Mike Judge']],
+    ['In welcher Serie wurde der Feiertag „Festivus“ erfunden?', ['Seinfeld', 'Friends', 'The Office', 'Community']],
+    ['Wie heißt die Hauptfigur in „Dark“?', ['Jonas Kahnwald', 'Ulrich Nielsen', 'Mikkel Nielsen', 'Bartosz Tiedemann']],
+    ['Wie heißt der Eunuch und Meister der Flüsterer in „Game of Thrones“?', ['Varys', 'Kleinfinger', 'Pycelle', 'Qyburn']],
+    ['Wie heißt die geheimnisvolle Firma in „Severance“?', ['Lumon Industries', 'Hooli', 'Initech', 'Massive Dynamic']],
+    ['Wer spielt Michael Scott in „The Office“?', ['Steve Carell', 'Rainn Wilson', 'John Krasinski', 'Ricky Gervais']],
+    ['Wie heißt Saul Goodman mit richtigem Namen?', ['Jimmy McGill', 'Chuck McGill', 'Howard Hamlin', 'Kim Wexler']],
+    ['Wie heißt das Raumschiff in „Firefly“?', ['Serenity', 'Galactica', 'Rocinante', 'Nostromo']],
+    ['In welcher Serie gibt es das Diner „Luke’s“?', ['Gilmore Girls', 'Twin Peaks', 'Riverdale', 'Friends']],
+    ['Wer schuf „Twin Peaks“ zusammen mit Mark Frost?', ['David Lynch', 'David Fincher', 'Ridley Scott', 'Martin Scorsese']],
+    ['Wie heißt die „Game of Thrones“-Vorgeschichte über die Targaryens?', ['House of the Dragon', 'Die Ringe der Macht', 'The Last Kingdom', 'Blood of Zeus']],
+    ['Wie lautet Leonards Nachname in „The Big Bang Theory“?', ['Hofstadter', 'Wolowitz', 'Koothrappali', 'Cooper']]
+  ], [
+    ['Wie heißt die allererste Simpsons-Folge im Original?', ['Simpsons Roasting on an Open Fire', 'Bart the Genius', 'Homer’s Odyssey', 'Moaning Lisa']],
+    ['Wie viele Folgen hat „Breaking Bad“ insgesamt?', ['62', '50', '74', '88']],
+    ['In welchem Jahr spielt die erste Staffel von „Stranger Things“?', ['1983', '1985', '1980', '1987']],
+    ['In welchem Jahr spielt die Gegenwart der ersten Staffel von „Dark“?', ['2019', '2020', '2017', '2012']],
+    ['Bei wem lässt sich Arya Stark in Braavos ausbilden?', ['Bei den Gesichtslosen Männern', 'Bei den Unbefleckten', 'Bei der Goldenen Kompanie', 'Bei der Nachtwache']],
+    ['Wie heißt Jon Snows weißer Schattenwolf auf Deutsch?', ['Geist', 'Nymeria', 'Sommer', 'Grauwind']],
+    ['Wie heißt Thaddäus aus SpongeBob mit Nachnamen?', ['Tentakel', 'Krake', 'Muschel', 'Plankton']],
+    ['Wer hat „Breaking Bad“ erfunden?', ['Vince Gilligan', 'David Chase', 'Peter Gould', 'Vince Vaughn']],
+    ['Welche Hausnummer haben die Simpsons in der Evergreen Terrace?', ['742', '221', '1313', '1600']],
+    ['In welcher Serie gehört der Gang die Bar „Paddy’s Pub“?', ['It’s Always Sunny in Philadelphia', 'Shameless', 'Cheers', 'The Office']],
+    ['Welche Serie gewann die meisten Emmys aller Dramaserien?', ['Game of Thrones', 'Breaking Bad', 'The West Wing', 'Mad Men']],
+    ['In welcher Stadt steht die Bar aus „Cheers“?', ['Boston', 'Chicago', 'New York', 'Seattle']],
+    ['Wie heißt „Der Professor“ aus „Haus des Geldes“ mit bürgerlichem Namen?', ['Sergio Marquina', 'Andrés de Fonollosa', 'Martín Berrote', 'Aníbal Cortés']],
+    ['Welche Serie spielt im Krankenhaus Sacred Heart?', ['Scrubs', 'Grey’s Anatomy', 'Dr. House', 'Emergency Room']],
+    ['Wie heißt die Kleinstadt in „Gilmore Girls“?', ['Stars Hollow', 'Sunnydale', 'Riverdale', 'Mystic Falls']],
+    ['Wer spricht Homer Simpson im englischen Original?', ['Dan Castellaneta', 'Hank Azaria', 'Harry Shearer', 'Nancy Cartwright']],
+    ['Wie heißt das Krankenhaus in „Dr. House“?', ['Princeton-Plainsboro', 'Seattle Grace', 'Sacred Heart', 'County General']],
+    ['Wie heißt Dexters Schwester?', ['Debra', 'Rita', 'Maria', 'Lumen']],
+    ['Welcher Flug stürzt in „Lost“ auf die Insel?', ['Oceanic 815', 'Oceanic 316', 'Ajira 316', 'Pan Am 103']],
+    ['Welchen Buchstaben trägt die Enterprise von Captain Picard in „Das nächste Jahrhundert“?', ['D', 'A', 'E', 'B']]
+  ]
+];
+
+const ANIME = [
+  [
+    ['Wie heißt der Ninja, in dem der Neunschwänzige Fuchs versiegelt ist?', ['Naruto Uzumaki', 'Sasuke Uchiha', 'Kakashi Hatake', 'Rock Lee']],
+    ['Wie heißt der Gummi-Pirat mit dem Strohhut in „One Piece“?', ['Monkey D. Ruffy', 'Lorenor Zorro', 'Sanji', 'Portgas D. Ace']],
+    ['Welches Pokémon will bei Ash nicht in den Pokéball?', ['Pikachu', 'Glumanda', 'Schiggy', 'Evoli']],
+    ['Wie heißt der Saiyajin-Held aus „Dragon Ball“?', ['Son Goku', 'Vegeta', 'Piccolo', 'Krillin']],
+    ['Was muss man in „Dragon Ball“ sammeln, damit ein Wunsch erfüllt wird?', ['Die Dragon Balls', 'Die Infinity-Steine', 'Magische Kristalle', 'Pokébälle']],
+    ['In welchem Anime leben Menschen hinter riesigen Mauern und kämpfen gegen Titanen?', ['Attack on Titan', 'Demon Slayer', 'Tokyo Ghoul', 'Claymore']],
+    ['Wie heißt der Junge, der in „Demon Slayer“ seine Schwester Nezuko beschützt?', ['Tanjiro Kamado', 'Zenitsu Agatsuma', 'Inosuke Hashibira', 'Giyu Tomioka']],
+    ['Wie heißt der Pokémon-Trainer mit Pikachu?', ['Ash', 'Gary', 'Rocko', 'Misty']],
+    ['Welches Studio machte „Chihiros Reise ins Zauberland“?', ['Studio Ghibli', 'Toei Animation', 'Madhouse', 'Pixar']],
+    ['Wie heißt das Notizbuch, mit dem Light Yagami Menschen tötet?', ['Death Note', 'Kill Book', 'Shinigami-Liste', 'Black Note']],
+    ['Wie heißt das große, flauschige Waldwesen aus einem Ghibli-Film?', ['Totoro', 'Kodama', 'Ponyo', 'Jiji']],
+    ['Wie heißt das Team-Rocket-Duo mit Mauzi?', ['Jessie und James', 'Butch und Cassidy', 'Max und Moritz', 'Bonnie und Clyde']],
+    ['Wie heißt der Fußball-Anime, der in Deutschland als „Die tollen Fußballstars“ lief?', ['Captain Tsubasa', 'Blue Lock', 'Inazuma Eleven', 'Haikyu!!']],
+    ['Wie heißt Gokus stolzer Rivale, der Prinz der Saiyajins?', ['Vegeta', 'Freezer', 'Cell', 'Broly']],
+    ['Aus welchem Land kommen Animes?', ['Japan', 'China', 'Südkorea', 'USA']],
+    ['Wie nennt man japanische Comics?', ['Manga', 'Manhwa', 'Anime', 'Kanji']],
+    ['In welchem Anime besiegt Saitama jeden Gegner mit einem einzigen Schlag?', ['One Punch Man', 'My Hero Academia', 'Mob Psycho 100', 'Jujutsu Kaisen']],
+    ['Wie heißt der Held in „My Hero Academia“, genannt Deku?', ['Izuku Midoriya', 'Katsuki Bakugo', 'Shoto Todoroki', 'All Might']],
+    ['Welche Haarfarbe hat Goku als Super-Saiyajin?', ['Blond', 'Rot', 'Blau', 'Weiß']],
+    ['Was isst Naruto am liebsten?', ['Ramen', 'Sushi', 'Onigiri', 'Dango']]
+  ], [
+    ['Wie heißt Narutos Heimatdorf?', ['Konoha', 'Suna', 'Kiri', 'Iwa']],
+    ['Wie heißt der Schwertkämpfer in Ruffys Crew?', ['Lorenor Zorro', 'Sanji', 'Lysop', 'Brook']],
+    ['Wie heißt der legendäre Schatz in „One Piece“?', ['One Piece', 'Der Heilige Gral', 'Das Gold von Atlantis', 'Das Rote Band']],
+    ['Wie heißt Sasukes älterer Bruder?', ['Itachi', 'Madara', 'Obito', 'Shisui']],
+    ['Wie heißt die Hauptfigur in „Attack on Titan“?', ['Eren Jäger', 'Levi Ackermann', 'Armin Arlert', 'Reiner Braun']],
+    ['Wie heißt der Todesgott, der Light in „Death Note“ begleitet?', ['Ryuk', 'Rem', 'L', 'Misa']],
+    ['Wie heißt der Meisterdetektiv, der Light in „Death Note“ jagt?', ['L', 'Ryuk', 'Mello', 'Near']],
+    ['In welchem Anime hat fast jeder Mensch eine Superkraft namens „Spezialität“ (Quirk)?', ['My Hero Academia', 'Naruto', 'Bleach', 'Black Clover']],
+    ['Wie heißt Gokus erster Sohn?', ['Son Gohan', 'Son Goten', 'Trunks', 'Pan']],
+    ['In welchem Anime benutzen Kämpfer die Lebensenergie „Nen“?', ['Hunter × Hunter', 'Jujutsu Kaisen', 'Bleach', 'Fullmetal Alchemist']],
+    ['Wie heißt der König der Flüche in „Jujutsu Kaisen“?', ['Ryomen Sukuna', 'Mahito', 'Jogo', 'Satoru Gojo']],
+    ['Wie heißt der stärkste Jujuzist und Lehrer mit Augenbinde in „Jujutsu Kaisen“?', ['Satoru Gojo', 'Yuji Itadori', 'Megumi Fushiguro', 'Kento Nanami']],
+    ['Welcher Ghibli-Film handelt von einer jungen Hexe mit Lieferdienst?', ['Kikis kleiner Lieferservice', 'Das wandelnde Schloss', 'Ponyo', 'Arrietty']],
+    ['Wem gehört „Das wandelnde Schloss“?', ['Howl', 'Calcifer', 'Sophie', 'Markl']],
+    ['In welchem Anime suchen zwei Brüder den Stein der Weisen?', ['Fullmetal Alchemist', 'Hunter × Hunter', 'Soul Eater', 'Bleach']],
+    ['Wie heißen die Elric-Brüder aus „Fullmetal Alchemist“?', ['Edward und Alphonse', 'Roy und Maes', 'Ichigo und Kon', 'Light und Ryuk']],
+    ['In welchem Anime wird Ichigo Kurosaki zum Ersatz-Shinigami?', ['Bleach', 'Naruto', 'Soul Eater', 'Noragami']],
+    ['Welcher Sport steht im Mittelpunkt von „Haikyu!!“?', ['Volleyball', 'Basketball', 'Tennis', 'Baseball']],
+    ['Welche Farbe hat Narutos Anzug?', ['Orange', 'Blau', 'Grün', 'Rot']],
+    ['Wie heißt Bunnys schwarze Katze in „Sailor Moon“?', ['Luna', 'Artemis', 'Diana', 'Mimi']]
+  ], [
+    ['Wer hat „One Piece“ erfunden?', ['Eiichiro Oda', 'Masashi Kishimoto', 'Akira Toriyama', 'Tite Kubo']],
+    ['Wer hat „Dragon Ball“ erfunden?', ['Akira Toriyama', 'Eiichiro Oda', 'Hayao Miyazaki', 'Rumiko Takahashi']],
+    ['Wer führte Regie bei „Prinzessin Mononoke“?', ['Hayao Miyazaki', 'Isao Takahata', 'Makoto Shinkai', 'Mamoru Hosoda']],
+    ['In welchem Film von Makoto Shinkai tauschen zwei Jugendliche die Körper?', ['Your Name.', 'Weathering with You', 'Suzume', 'A Silent Voice']],
+    ['Wer gilt in „Attack on Titan“ als stärkster Soldat der Menschheit?', ['Levi Ackermann', 'Erwin Smith', 'Hange Zoë', 'Mikasa Ackermann']],
+    ['Wie heißt das Auge des Uchiha-Clans?', ['Sharingan', 'Byakugan', 'Rinnegan', 'Tenseigan']],
+    ['Wie heißt der Koch der Strohhutbande?', ['Sanji', 'Zorro', 'Lysop', 'Chopper']],
+    ['Wie heißt das Rentier in der Strohhutbande?', ['Tony Tony Chopper', 'Brook', 'Franky', 'Jinbei']],
+    ['Auf welchem Planeten kämpft Goku gegen Freezer?', ['Namek', 'Erde', 'Vegeta', 'Yardrat']],
+    ['In welchem Anime sterben Dämonen nur durch Sonnenlicht oder Nichirin-Schwerter?', ['Demon Slayer', 'Tokyo Ghoul', 'Hellsing', 'Bleach']],
+    ['Wie heißt die Hauptfigur in „Sword Art Online“?', ['Kirito', 'Asuna', 'Klein', 'Eugeo']],
+    ['In welchem Anime jagt Denji als Teufelsjäger Teufel?', ['Chainsaw Man', 'Devilman Crybaby', 'Fire Force', 'Jujutsu Kaisen']],
+    ['Welcher Ghibli-Film handelt von einem kleinen Fischmädchen?', ['Ponyo', 'Arrietty', 'Erinnerungen an Marnie', 'Nausicaä']],
+    ['In welchem Anime ist Spike Spiegel Kopfgeldjäger im Weltraum?', ['Cowboy Bebop', 'Trigun', 'Outlaw Star', 'Space Dandy']],
+    ['In welchem Anime steuert Shinji Ikari einen Riesenroboter?', ['Neon Genesis Evangelion', 'Gundam Wing', 'Code Geass', 'Gurren Lagann']],
+    ['Wie heißt Narutos Lehrer mit Maske?', ['Kakashi Hatake', 'Jiraiya', 'Iruka Umino', 'Might Guy']],
+    ['Welcher legendäre Sannin schreibt Romane und trainiert Naruto?', ['Jiraiya', 'Orochimaru', 'Tsunade', 'Kakashi']],
+    ['In welchem Anime bilden ein Spion, eine Attentäterin und ein Telepathen-Mädchen eine Familie?', ['Spy × Family', 'Kaguya-sama', 'Assassination Classroom', 'Lycoris Recoil']],
+    ['Wie heißt der Hund der Familie in „Spy × Family“?', ['Bond', 'Max', 'Rex', 'Shiro']],
+    ['Wie viele Dragon Balls muss man sammeln?', ['7', '5', '6', '9']]
+  ], [
+    ['In welchem Jahr lief der erste Pokémon-Anime in Japan an?', ['1997', '1995', '1999', '2000']],
+    ['Welcher Anime gewann 2003 den Oscar als bester Animationsfilm?', ['Chihiros Reise ins Zauberland', 'Prinzessin Mononoke', 'Akira', 'Das wandelnde Schloss']],
+    ['Wie wird der Hauptgegner in „Fullmetal Alchemist: Brotherhood“ genannt?', ['Vater', 'Envy', 'Pride', 'Scar']],
+    ['Wie heißt die Stadt in „Akira“?', ['Neo-Tokio', 'Neo-Osaka', 'Tokyo-3', 'Metro City']],
+    ['Wie heißt die Organisation, die in „Evangelion“ die Evas einsetzt?', ['NERV', 'GEHIRN', 'WILLE', 'SHIELD']],
+    ['Wie heißt Narutos Vater?', ['Minato Namikaze', 'Jiraiya', 'Hiruzen Sarutobi', 'Obito Uchiha']],
+    ['Wie heißt der Gott der Zerstörung in „Dragon Ball Super“?', ['Beerus', 'Whis', 'Zeno', 'Champa']],
+    ['Welcher Anime spielt im Jahr 2071?', ['Cowboy Bebop', 'Akira', 'Ghost in the Shell', 'Psycho-Pass']],
+    ['Wer gilt in „One Piece“ als bester Schwertkämpfer der Welt?', ['Dracule Mihawk', 'Lorenor Zorro', 'Shanks', 'Kuzan']],
+    ['Welcher Anime basiert auf dem Manga von Kentaro Miura?', ['Berserk', 'Vinland Saga', 'Claymore', 'Hellsing']],
+    ['Wie heißt die Hauptfigur in „Vinland Saga“?', ['Thorfinn', 'Askeladd', 'Knut', 'Thorkell']],
+    ['Welches Studio animierte die finale Staffel von „Attack on Titan“?', ['MAPPA', 'Wit Studio', 'Ufotable', 'Bones']],
+    ['Welches Studio animiert „Demon Slayer“?', ['Ufotable', 'MAPPA', 'Toei Animation', 'Madhouse']],
+    ['Wer hat „Naruto“ erfunden?', ['Masashi Kishimoto', 'Eiichiro Oda', 'Tite Kubo', 'Hiro Mashima']],
+    ['In welchem Anime kann Lelouch Menschen mit der „Geass“ Befehle geben?', ['Code Geass', 'Death Note', 'Steins;Gate', 'Guilty Crown']],
+    ['In welchem Anime schickt eine umgebaute Mikrowelle Nachrichten in die Vergangenheit?', ['Steins;Gate', 'Erased', 'Re:Zero', 'Tokyo Revengers']],
+    ['Wie heißt Ruffys Großvater, ein Marine-Vizeadmiral?', ['Monkey D. Garp', 'Monkey D. Dragon', 'Gol D. Roger', 'Edward Newgate']],
+    ['Wer war der Piratenkönig in „One Piece“?', ['Gol D. Roger', 'Edward Newgate', 'Shanks', 'Kaido']],
+    ['Welches Fahrzeug in „Mein Nachbar Totoro“ ist eine Katze?', ['Der Katzenbus', 'Das Katzenschiff', 'Der Katzenzug', 'Das Katzentaxi']],
+    ['In welchem Jahr lief „Sailor Moon“ in Japan erstmals im Fernsehen?', ['1992', '1989', '1995', '1998']]
+  ], [
+    ['Welcher Anime von Osamu Tezuka lief ab 1963 und machte TV-Animes in Japan populär?', ['Astro Boy', 'Kimba, der weiße Löwe', 'Speed Racer', 'Heidi']],
+    ['Wer führte Regie bei „Ghost in the Shell“ (1995)?', ['Mamoru Oshii', 'Katsuhiro Otomo', 'Satoshi Kon', 'Hideaki Anno']],
+    ['Wer schuf „Neon Genesis Evangelion“?', ['Hideaki Anno', 'Mamoru Oshii', 'Yoshiyuki Tomino', 'Shinichirō Watanabe']],
+    ['Wer führte Regie bei „Cowboy Bebop“?', ['Shinichirō Watanabe', 'Hideaki Anno', 'Satoshi Kon', 'Makoto Shinkai']],
+    ['Welcher Regisseur drehte „Perfect Blue“ und „Paprika“?', ['Satoshi Kon', 'Mamoru Hosoda', 'Makoto Shinkai', 'Isao Takahata']],
+    ['Welcher Ghibli-Film erzählt von zwei Geschwistern im Zweiten Weltkrieg?', ['Die letzten Glühwürmchen', 'Wie der Wind sich hebt', 'Porco Rosso', 'Erinnerungen an Marnie']],
+    ['Welcher war 1986 der erste Film nach der Gründung von Studio Ghibli?', ['Das Schloss im Himmel', 'Nausicaä aus dem Tal der Winde', 'Mein Nachbar Totoro', 'Porco Rosso']],
+    ['Welcher Ghibli-Film gewann 2024 den Oscar als bester Animationsfilm?', ['Der Junge und der Reiher', 'Wie der Wind sich hebt', 'Ponyo', 'Suzume']],
+    ['Wie heißt der Anführer der Motorradgang in „Akira“?', ['Shotaro Kaneda', 'Tetsuo Shima', 'Kei', 'Takashi']],
+    ['Wie lautet L’s vollständiger Name in „Death Note“?', ['L Lawliet', 'L Lightfield', 'Nate River', 'Mihael Keehl']],
+    ['Wie heißt Zorros Kampfstil mit drei Schwertern?', ['Santoryu', 'Ittoryu', 'Nitoryu', 'Kyutoryu']],
+    ['Welche Nummer trägt Shinjis Evangelion-Einheit?', ['01', '00', '02', '13']],
+    ['Wie heißt Gons Vater in „Hunter × Hunter“?', ['Ging Freecss', 'Silva Zoldyck', 'Isaac Netero', 'Kite']],
+    ['Aus welcher Attentäterfamilie stammt Killua?', ['Zoldyck', 'Kurta', 'Freecss', 'Uchiha']],
+    ['Wie viele Folgen hat „Dragon Ball Z“?', ['291', '153', '220', '365']],
+    ['Wie heißt der Shinigami, der Misa Amane beschützt?', ['Rem', 'Ryuk', 'Sidoh', 'Gelus']],
+    ['Wer hat den Manga „Attack on Titan“ gezeichnet?', ['Hajime Isayama', 'Kohei Horikoshi', 'Gege Akutami', 'Tatsuki Fujimoto']],
+    ['Wer hat „Chainsaw Man“ erfunden?', ['Tatsuki Fujimoto', 'Gege Akutami', 'Hajime Isayama', 'Yusei Matsui']],
+    ['Wer hat „Jujutsu Kaisen“ erfunden?', ['Gege Akutami', 'Koyoharu Gotouge', 'Tatsuki Fujimoto', 'Kohei Horikoshi']],
+    ['Wer hat „Demon Slayer“ erfunden?', ['Koyoharu Gotouge', 'Gege Akutami', 'Yoshihiro Togashi', 'Tite Kubo']]
+  ]
+];
+
+const BANK = [[0, 1, 2, 3, 4].map(l => GAMES_V2.flatMap(c => c[l])), FLAGS, HISTORY, GENERAL, ESTIMATES, [[], [], [], [], []], FILMS, SERIES, ANIME];
+const MIN_CATS = 3, MAX_CATS = 6;
 
 const TIPS = [
   'Tipp: Im Quiz bringen schwere Fragen bis zu 5 Punkte.',
@@ -1537,7 +1879,7 @@ const D = {
   set:null,
   qq:{q:'', a:['', '', '', ''], c:0, cat:0, lvl:2, unit:'', min:'', max:'', ans:'', tol:''},
   est:null,
-  qc:{seconds:60, order:'fixed', players:null},
+  qc:{seconds:60, order:'fixed', players:null, cats:[0, 1, 2, 3, 4]},
   pd:{sel:[], amount:'1', reason:''},
   ep:null,
   wnew:'',
@@ -1644,19 +1986,21 @@ function normPoint(id, x) {
 }
 function normQuestion(id, x) {
   x = x || {};
-  const base = {id, q: str(x.q, 300), cat: Math.round(num(x.cat, 0, 4, 0)), lvl: Math.round(num(x.lvl, 0, 4, 2)), createdAt: Number(x.createdAt) || 0};
+  const base = {id, q: str(x.q, 300), cat: Math.round(num(x.cat, 0, CATS.length - 1, 0)), lvl: Math.round(num(x.lvl, 0, 4, 2)), createdAt: Number(x.createdAt) || 0};
   if (x.type === 'est') {
     const min = Number(x.min), max = Number(x.max), ans = Number(x.ans), tol = Number(x.tol);
     const ok = [min, max, ans, tol].every(isFinite) && min < max && ans >= min && ans <= max && tol > 0;
     return {...base, type:'est', unit: str(x.unit, 16), min: ok ? min : 0, max: ok ? max : 100, ans: ok ? ans : 50, tol: ok ? tol : 5, a: []};
   }
-  const a = (Array.isArray(x.a) ? x.a : []).map(s => str(s, 120)).filter(Boolean).slice(0, 4);
-  return {...base, a, c: Math.round(num(x.c, 0, Math.max(0, a.length - 1), 0))};
+  const a = (Array.isArray(x.a) ? x.a : []).map(s => str(s, 120)).filter(Boolean).slice(0, x.type === 'audio' ? 3 : 4);
+  const c = Math.round(num(x.c, 0, Math.max(0, a.length - 1), 0));
+  if (x.type === 'audio') return {...base, type:'audio', clip: str(x.clip, 40), a, c};
+  return {...base, a, c};
 }
 function quizOk(q) {
   if (!q) return false;
   if (q.status === 'none') return true;
-  return q.v === 2 && Array.isArray(q.board) && q.board.length === 25 && Array.isArray(q.players) && !!q.cfg && (q.cell == null || !!q.board[q.cell]);
+  return q.v === 2 && Array.isArray(q.board) && q.board.length === quizCats(q).length * 5 && Array.isArray(q.players) && !!q.cfg && (q.cell == null || !!q.board[q.cell]);
 }
 
 /* ---------- Persistence ---------- */
@@ -1731,7 +2075,7 @@ const ops = {
   async clearPoints() { const all = S.points; S.points = []; render(); for (const e of all) await write('points/' + e.id, null); },
   saveSettings(s) { S.settings = s; render(); return write('meta/settings', s); },
   addQuestion(q) { S.questions.push(q); render(); return write('questions/' + q.id, body(q)); },
-  deleteQuestion(id) { S.questions = S.questions.filter(q => q.id !== id); render(); return write('questions/' + id, null); },
+  deleteQuestion(id) { const old = S.questions.find(q => q.id === id); S.questions = S.questions.filter(q => q.id !== id); render(); if (old && old.clip) write('clips/' + old.clip, null); return write('questions/' + id, null); },
   saveQuiz(q) { q.rev = ((S.quiz && S.quiz.rev) || 0) + 1; S.quiz = q; render(); return write('meta/quiz', q); },
   saveSeen(ids) { S.seen = ids; return write('meta/seen', {ids}); },
   saveGate(g) { S.gate = g; render(); return write('meta/gate', g); },
@@ -1820,6 +2164,7 @@ function allQuestions() {
   })));
   S.questions.forEach(x => {
     if (x.type === 'est') { if (x.q) out.push(est('c' + x.id, x.cat, x.lvl, x)); }
+    else if (x.type === 'audio') { if (x.clip && x.a.length === 3) out.push({id:'c' + x.id, cat:x.cat, lvl:x.lvl, type:'audio', clip:x.clip, q:x.q, a:x.a.slice(), c:x.c}); }
     else if (x.q && x.a.length >= 2) out.push({id:'c' + x.id, cat:x.cat, lvl:x.lvl, q:x.q, a:x.a.slice(), c:x.c});
   });
   return out;
@@ -2458,20 +2803,22 @@ function quizSetup() {
       const qs = all.filter(x => x.cat === ci && x.lvl === li);
       return `<div class="qlvl" style="--lc:${LCOL[li]}"><span class="bstars">${stars(li + 1, LCOL[li], 8)}</span>${ln} · ${PTS[li]} ${ptsWord(PTS[li])}</div><ol class="qlist">${qs.map(x => `<li>${x.flag ? `<img class="cat-flag" loading="lazy" src="${flagSrc(x.flag, 40)}" alt="">` : ''}${esc(x.q)} <span class="ans-ok">${x.type === 'est' ? `${fmtEstU(x, x.ans)} (±${fmtEst(x, x.tol)})` : esc(x.a[x.c])}</span>${seen.has(x.id) ? ' <span class="muted">(gespielt)</span>' : ''}</li>`).join('')}</ol>`;
     }).join('')}`).join('');
-  const own = S.questions.length ? `<ol class="qlist">${S.questions.map(q => `<li><div class="qrow"><span>${esc(q.q)}<br><span class="ans-ok">${q.type === 'est' ? `${esc(String(q.ans).replace('.', ','))} ${esc(q.unit)} (±${esc(String(q.tol).replace('.', ','))})` : esc(q.a[q.c] || '')}</span> <span class="muted">· ${esc(CATS[q.cat])} · ${esc(LEVELS[q.lvl])}</span></span><button class="x" type="button" data-act="qq-del" data-id="${esc(q.id)}" aria-label="Frage löschen">×</button></div></li>`).join('')}</ol>` : `<p class="m-text">Noch keine eigenen Fragen.</p>`;
+  const own = S.questions.length ? `<ol class="qlist">${S.questions.map(q => `<li><div class="qrow"><span>${esc(q.q)}<br><span class="ans-ok">${q.type === 'est' ? `${esc(String(q.ans).replace('.', ','))} ${esc(q.unit)} (±${esc(String(q.tol).replace('.', ','))})` : (q.type === 'audio' ? '♪ ' : '') + esc(q.a[q.c] || '')}</span> <span class="muted">· ${esc(CATS[q.cat])} · ${esc(LEVELS[q.lvl])}</span></span><button class="x" type="button" data-act="qq-del" data-id="${esc(q.id)}" aria-label="Frage löschen">×</button></div></li>`).join('')}</ol>` : `<p class="m-text">Noch keine eigenen Fragen.</p>`;
   return `<section class="section">
-    <div class="sec-head"><h2 class="h">Quiz vorbereiten</h2><span class="muted">5 Themen × 5 Schwierigkeitsstufen = 25 Felder. Wer dran ist, wählt ein Feld.</span></div>
+    <div class="sec-head"><h2 class="h">Quiz vorbereiten</h2><span class="muted">Wähl ${MIN_CATS} bis ${MAX_CATS} Themen, jedes mit 5 Schwierigkeitsstufen. Wer dran ist, wählt ein Feld.</span></div>
     <div class="setup">
       <div class="card">
         <div class="field"><span class="lbl">Punkte je nach Schwierigkeit</span>${ladderHTML()}</div>
-        <div class="field"><span class="lbl">Themen</span><ul class="themes">${CATS.map((n, i) => `<li>${esc(n)}<span>${all.filter(x => x.cat === i).length} Fragen</span></li>`).join('')}</ul></div>
+        <div class="field"><span class="lbl">Themen auf dem Spielbrett (${MIN_CATS} bis ${MAX_CATS})</span>
+          <div class="chips topic-chips">${CATS.map((n, i) => { const k = all.filter(x => x.cat === i).length; return `<button class="chip" type="button" data-act="qc-cat" data-i="${i}" aria-pressed="${selCats().includes(i)}">${esc(n)} <small>${i === SOUND_CAT ? (k === 1 ? '1 Clip' : k + ' Clips') : k + ' Fragen'}</small></button>`; }).join('')}</div>
+          ${selCats().includes(SOUND_CAT) && LEVELS.some((_, l) => !all.some(x => x.cat === SOUND_CAT && x.lvl === l)) ? `<p class="warn">Soundtracks: Für ${LEVELS.filter((_, l) => !all.some(x => x.cat === SOUND_CAT && x.lvl === l)).join(', ')} gibt es noch keinen Clip. Diese Felder bleiben leer. Clips legst du rechts unter „Eigene Fragen“ an.</p>` : ''}</div>
         <div class="field"><span class="lbl">Zeit pro Frage</span>
           <div class="chips">${[30, 45, 60, 90].map(n => `<button class="chip" type="button" data-act="qc" data-k="seconds" data-v="${n}" aria-pressed="${c.seconds === n}">${n === 60 ? '1 Minute' : n + ' Sek.'}</button>`).join('')}</div></div>
         <div class="field"><span class="lbl">Wer ist dran?</span>
           <div class="chips"><button class="chip" type="button" data-act="qc" data-k="order" data-v="fixed" aria-pressed="${c.order === 'fixed'}">Feste Reihenfolge</button><button class="chip" type="button" data-act="qc" data-k="order" data-v="random" aria-pressed="${c.order === 'random'}">Zufällig, jeder gleich oft</button></div></div>
         <div class="field"><span class="lbl">Mitspieler (${selValid.length})</span>
           ${S.players.length ? `<div class="chips">${S.players.map(p => `<button class="chip pchip" type="button" data-act="qc-player" data-pid="${esc(p.id)}" aria-pressed="${sel.includes(p.id)}">${avatar(p, 28)}${esc(p.name)}</button>`).join('')}</div>` : `<p class="m-text">Lege zuerst unter <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button> deine Mitspieler an.</p>`}</div>
-        <button class="btn btn-gold btn-lg" type="button" data-act="q-start" ${canStart ? '' : 'disabled'}>Quiz starten · 25 Felder</button>
+        <button class="btn btn-gold btn-lg" type="button" data-act="q-start" ${canStart ? '' : 'disabled'}>Quiz starten · ${selCats().length * 5} Felder</button>
       </div>
       <div class="card">
         <h3>Fragenkatalog</h3>
@@ -2482,8 +2829,8 @@ function quizSetup() {
         <form class="qform" data-form="add-question">
           <div class="field"><span class="lbl">Thema</span><div class="chips">${CATS.map((n, i) => `<button class="chip" type="button" data-act="qq-cat" data-i="${i}" aria-pressed="${D.qq.cat === i}">${esc(n)}</button>`).join('')}</div></div>
           <div class="field"><span class="lbl">Schwierigkeit</span><div class="chips">${LEVELS.map((n, i) => `<button class="chip" type="button" data-act="qq-lvl" data-i="${i}" aria-pressed="${D.qq.lvl === i}" style="--lc:${LCOL[i]}"><span class="bstars">${stars(i + 1, LCOL[i], 8)}</span>${n} · ${PTS[i]}</button>`).join('')}</div></div>
-          <div class="field"><label for="qq-q">Neue Frage</label><textarea class="input" id="qq-q" data-draft="qq.q" rows="2" maxlength="300" placeholder="z. B. Wer hat letztes Jahr bei uns Mario Kart gewonnen?">${esc(D.qq.q)}</textarea></div>
-          ${D.qq.cat === 4 ? `<span class="lbl">Schätzfrage: Skala, richtige Zahl und erlaubte Abweichung</span>
+          <div class="field"><label for="qq-q">Neue Frage</label><textarea class="input" id="qq-q" data-draft="qq.q" rows="2" maxlength="300" placeholder="${D.qq.cat === SOUND_CAT ? 'Zu welchem Spiel gehört dieser Soundtrack? (leer lassen für Standard)' : 'z. B. Wer hat letztes Jahr bei uns Mario Kart gewonnen?'}">${esc(D.qq.q)}</textarea></div>
+          ${D.qq.cat === SOUND_CAT ? audioFormHTML() + [0, 1, 2].map(i => `<div class="aline"><button type="button" class="ok-dot" data-act="qq-correct" data-i="${i}" aria-pressed="${D.qq.c === i}" aria-label="Antwort ${LETTERS[i]} ist richtig">${LETTERS[i]}</button><input class="input" id="qq-a${i}" data-draft="qq.a.${i}" value="${esc(D.qq.a[i])}" maxlength="120" placeholder="Spiel ${LETTERS[i]}" autocomplete="off"></div>`).join('') : D.qq.cat === 4 ? `<span class="lbl">Schätzfrage: Skala, richtige Zahl und erlaubte Abweichung</span>
           <div class="est-fields">
             <div class="field"><label for="qq-min">Skala von</label><input class="input" id="qq-min" inputmode="decimal" data-draft="qq.min" value="${esc(D.qq.min)}" placeholder="z. B. 0"></div>
             <div class="field"><label for="qq-max">Skala bis</label><input class="input" id="qq-max" inputmode="decimal" data-draft="qq.max" value="${esc(D.qq.max)}" placeholder="z. B. 200"></div>
@@ -2545,23 +2892,25 @@ function ensurePickLoop() {
   requestAnimationFrame(step);
 }
 
+function quizCats(q) { return Array.isArray(q && q.cats) && q.cats.length ? q.cats : [0, 1, 2, 3, 4]; }
 function boardHTML(q, canPick, act = 'quiz-cell') {
-  let h = `<div class="bcorner"></div>` + CATS.map((c, i) => `<div class="bcat"><span class="long">${esc(c)}</span><span class="short" aria-hidden="true">${esc(CATS_SHORT[i])}</span></div>`).join('');
+  const cats = quizCats(q), N = cats.length;
+  let h = `<div class="bcorner"></div>` + cats.map(i => `<div class="bcat"><span class="long">${esc(CATS[i])}</span><span class="short" aria-hidden="true">${esc(CATS_SHORT[i])}</span></div>`).join('');
   for (let l = 0; l < 5; l++) {
     h += `<div class="blvl" style="--lc:${LCOL[l]}"><span class="bstars">${stars(l + 1, LCOL[l], 9)}</span><span>${LEVELS[l]}</span></div>`;
-    for (let c = 0; c < 5; c++) {
-      const i = l * 5 + c, cell = q.board[i];
+    for (let c = 0; c < N; c++) {
+      const i = l * N + c, cell = q.board[i];
       if (cell.used) {
         const p = ghost(cell.by);
         h += `<div class="bcell used ${cell.ok ? 'is-ok' : 'is-bad'}" style="--lc:${LCOL[l]}" title="${esc(p.name)}">${avatar(p, 26)}<span>${cell.ok ? '+' + PTS[l] : '✗'}</span></div>`;
       } else if (!hasQ(cell)) {
         h += `<div class="bcell used" style="--lc:${LCOL[l]}"><span>–</span></div>`;
       } else {
-        h += `<button class="bcell" type="button" style="--lc:${LCOL[l]}" data-act="${act}" data-i="${i}" ${canPick ? '' : 'disabled'} aria-label="${esc(CATS[c])}, ${LEVELS[l]}, ${PTS[l]} ${ptsWord(PTS[l])}"><b>${PTS[l]}</b><span class="bstars">${stars(l + 1, LCOL[l], 7)}</span></button>`;
+        h += `<button class="bcell" type="button" style="--lc:${LCOL[l]}" data-act="${act}" data-i="${i}" ${canPick ? '' : 'disabled'} aria-label="${esc(CATS[cats[c]])}, ${LEVELS[l]}, ${PTS[l]} ${ptsWord(PTS[l])}"><b>${PTS[l]}</b><span class="bstars">${stars(l + 1, LCOL[l], 7)}</span></button>`;
       }
     }
   }
-  return `<div class="board5">${h}</div>`;
+  return `<div class="board5" style="--cols:${N}">${h}</div>`;
 }
 function nextUp(q) {
   const alive = q.players.filter(id => playerById(id));
@@ -2682,13 +3031,14 @@ function quizRunning(q) {
         <div class="tags"><span class="cat">${esc(CATS[cell.cat])}</span><span class="lvltag" style="--lc:${LCOL[cell.lvl]}"><span class="bstars">${stars(cell.lvl + 1, LCOL[cell.lvl], 9)}</span>${LEVELS[cell.lvl]} · ${PTS[cell.lvl]} ${ptsWord(PTS[cell.lvl])}</span></div>
         <h2 class="qtext ${q.phase === 'paused' ? 'blur' : ''}">${esc(cur.q)}</h2>
         ${cur.flag ? flagHTML(cur.flag) : ''}
+        ${cur.type === 'audio' ? clipHTML(q, cur, adm) : ''}
         ${q.phase === 'paused' ? `<p class="muted" style="margin:0">Pause. Die Zeit steht.</p>` : ''}
       </div>
       ${note}
       ${answers}
       ${verdict}
       <div class="qactions">${actions}</div>
-      ${adm ? `<p class="kbd">Tastatur: ${cur.type === 'est' ? '<kbd>Enter</kbd> Schätzung einloggen / weiter' : '<kbd>1</kbd>–<kbd>4</kbd> Antwort · <kbd>Enter</kbd> weiter'} · <kbd>P</kbd> Pause</p>` : ''}
+      ${adm ? `<p class="kbd">Tastatur: ${cur.type === 'est' ? '<kbd>Enter</kbd> Schätzung einloggen / weiter' : `<kbd>1</kbd>–<kbd>${cur.a.length}</kbd> Antwort · <kbd>Enter</kbd> weiter`} · <kbd>P</kbd> Pause</p>` : ''}
     </div>`;
   }
   const whoami = adm ? '' : `<div class="whoami"><span class="lbl">Wer bist du?</span><div class="chips">${q.players.map(id => { const p = ghost(id); return `<button class="chip pchip" type="button" data-act="set-me" data-pid="${esc(id)}" aria-pressed="${me === id}">${avatar(p, 24)}${esc(p.name)}</button>`; }).join('')}</div></div>`;
@@ -2745,6 +3095,7 @@ function mixAnswers(x) {
   const order = shuffle(x.a.map((_, i) => i));
   const o = {id:x.id, q:x.q, a:order.map(i => x.a[i]), c:order.indexOf(x.c)};
   if (x.flag) o.flag = x.flag;
+  if (x.type === 'audio') { o.type = 'audio'; o.clip = x.clip; }
   return o;
 }
 function quizStart(base) {
@@ -2756,7 +3107,8 @@ function quizStart(base) {
   const seen = new Set(S.seen);
   const usedIds = [];
   const board = [];
-  for (let l = 0; l < 5; l++) for (let c = 0; c < 5; c++) {
+  const cats = base ? quizCats(base) : selCats();
+  for (let l = 0; l < 5; l++) for (const c of cats) {
     const pool = all.filter(x => x.cat === c && x.lvl === l);
     const order = [...shuffle(pool.filter(x => !seen.has(x.id))), ...shuffle(pool.filter(x => seen.has(x.id)))];
     board.push({cat:c, lvl:l, q: order[0] ? mixAnswers(order[0]) : null, spare: order.slice(1, 3).map(mixAnswers), used:false, by:null, ok:null});
@@ -2765,7 +3117,7 @@ function quizStart(base) {
   const q = {
     v:2, id:uid(), status:'running', round: base ? (base.round || 1) + 1 : 1,
     cfg, players: cfg.order === 'random' ? shuffle(ordered) : ordered,
-    board, cell:null, step:0, cycle:[], turn:null, phase:'ready',
+    board, cats, cell:null, step:0, cycle:[], turn:null, phase:'ready',
     startedAt:0, remainingMs:0, leftMs:0, chosen:null,
     results: Object.fromEntries(ordered.map(id => [id, {right:0, asked:0, pts:0}])),
     transferred:false, created:Date.now()
@@ -2914,8 +3266,138 @@ function quizAnswerEst(v) {
   ops.saveQuiz(q);
 }
 
+/* ---------- Soundtrack-Clips: eigene Audiodatei, 10 Sekunden ---------- */
+const CLIP_SECS = 10, CLIP_RATE = 16000, SOUND_CAT = 5;
+const clipCache = {};
+const clipPlayer = {el:null, key:'', autoKey:''};
+const aud = {buf:null, name:'', dur:0, busy:false};
+function clipBusy() { return !!(clipPlayer.el && !clipPlayer.el.paused); }
+function ensureClip(id) {
+  if (!id || id in clipCache || !db) return;
+  clipCache[id] = undefined;
+  db.doc('clips/' + id).get().then(d => {
+    const v = d.exists && d.data() && typeof d.data().data === 'string' ? d.data().data : '';
+    clipCache[id] = /^data:audio\/(wav|mpeg|mp4|ogg|webm);base64,/.test(v) ? v : '';
+    render();
+  }, () => { delete clipCache[id]; });
+}
+function clipStop() {
+  if (clipPlayer.el) { try { clipPlayer.el.pause(); } catch (e) {} }
+  clipPlayer.el = null; clipPlayer.key = '';
+}
+function clipPlay(id) {
+  const src = clipCache[id]; if (!src) return;
+  clipStop();
+  const el = new Audio(src);
+  clipPlayer.el = el; clipPlayer.key = id;
+  el.addEventListener('ended', () => { if (clipPlayer.el === el) { clipPlayer.el = null; clipPlayer.key = ''; } render(); });
+  const p = el.play(); if (p && p.catch) p.catch(() => { if (clipPlayer.el === el) clipStop(); render(); });
+  bgmSync(); syncMusic(); render();
+}
+function clipHTML(q, cur, adm) {
+  ensureClip(cur.clip);
+  const st = clipCache[cur.clip];
+  const playing = clipBusy() && clipPlayer.key === cur.clip;
+  const label = st === undefined ? 'Soundtrack lädt …' : !st ? 'Clip fehlt' : playing ? '■ Stopp' : adm ? '▶ Soundtrack abspielen' : '▶ Auf diesem Gerät anhören';
+  return `<div class="clip ${playing ? 'playing' : ''}">
+    <div class="clip-eq" aria-hidden="true">${'<i></i>'.repeat(7)}</div>
+    <button class="btn ${adm ? 'btn-gold btn-lg' : ''}" type="button" data-act="clip-play" data-id="${esc(cur.clip)}" ${st ? '' : 'disabled'}>${label}</button>
+    <span class="clip-bar" aria-hidden="true"><i id="clip-prog" style="width:${playing ? clipPct() : 0}%"></i></span>
+  </div>`;
+}
+function clipPct() { const el = clipPlayer.el; return el && el.duration ? Math.min(100, el.currentTime / el.duration * 100) : 0; }
+function clipTick() {
+  const q = S.quiz;
+  const cur = q && q.status === 'running' && q.cell != null && q.board[q.cell] ? q.board[q.cell].q : null;
+  if (clipBusy() && clipPlayer.key !== 'preview' && (!cur || cur.clip !== clipPlayer.key || q.phase === 'ready' || q.phase === 'paused')) { clipStop(); render(); return; }
+  if (S.admin && cur && cur.type === 'audio' && q.phase === 'asking') {
+    const k = guessKey(q);
+    if (clipPlayer.autoKey !== k && clipCache[cur.clip]) { clipPlayer.autoKey = k; clipPlay(cur.clip); }
+  }
+  const bar = document.getElementById('clip-prog'); if (bar && clipBusy()) bar.style.width = clipPct() + '%';
+}
+async function decodeAudioFile(file) {
+  const data = await file.arrayBuffer();
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const ctx = new AC();
+  try { return await new Promise((res, rej) => { const p = ctx.decodeAudioData(data, res, rej); if (p && p.then) p.then(res, rej); }); }
+  finally { try { ctx.close(); } catch (e) {} }
+}
+async function clipWav(buf, start) {
+  const len = CLIP_SECS * CLIP_RATE;
+  const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  const off = new OAC(1, len, CLIP_RATE);
+  const src = off.createBufferSource(); src.buffer = buf;
+  const g = off.createGain();
+  g.gain.setValueAtTime(0, 0); g.gain.linearRampToValueAtTime(1, .3);
+  g.gain.setValueAtTime(1, CLIP_SECS - .6); g.gain.linearRampToValueAtTime(0, CLIP_SECS);
+  src.connect(g); g.connect(off.destination);
+  src.start(0, Math.max(0, start), CLIP_SECS);
+  const out = await off.startRendering();
+  const pcm = out.getChannelData(0);
+  let peak = 0; for (let i = 0; i < pcm.length; i++) { const a = Math.abs(pcm[i]); if (a > peak) peak = a; }
+  const gain = peak > .001 ? Math.min(4, .92 / peak) : 1;
+  const ab = new ArrayBuffer(44 + len * 2), v = new DataView(ab);
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + len * 2, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true);
+  v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, CLIP_RATE, true); v.setUint32(28, CLIP_RATE * 2, true);
+  v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, len * 2, true);
+  for (let i = 0; i < len; i++) { const s = Math.max(-1, Math.min(1, (pcm[i] || 0) * gain)); v.setInt16(44 + i * 2, s < 0 ? s * 32768 : s * 32767, true); }
+  const u8 = new Uint8Array(ab); let bin = '';
+  for (let i = 0; i < u8.length; i += 0x8000) bin += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
+  return 'data:audio/wav;base64,' + btoa(bin);
+}
+const fmtSec = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+function audioFormHTML() {
+  const max = Math.max(0, Math.floor(aud.dur - CLIP_SECS));
+  const st = Math.min(max, Math.max(0, Number(D.qq.start) || 0));
+  return `<span class="lbl">Soundtrack (eine Audiodatei, z. B. MP3)</span>
+    <div class="music-row">
+      <label class="btn" for="qq-audio">${aud.buf ? 'Andere Datei wählen' : 'Audiodatei wählen'}</label>
+      <input class="vh" type="file" id="qq-audio" accept="audio/*,.mp3,.m4a,.wav,.ogg">
+      ${aud.busy ? '<span class="muted">Wird geladen …</span>' : aud.buf ? `<span class="music-name">♪ ${esc(aud.name)} <small>${fmtSec(aud.dur)}</small></span>` : '<span class="muted">Noch keine Datei gewählt.</span>'}
+    </div>
+    ${aud.buf ? `<label class="clip-start" for="qq-start">Ausschnitt ab <b id="qq-start-v">${fmtSec(st)}</b> (${CLIP_SECS} Sekunden)
+      <input type="range" id="qq-start" data-draft="qq.start" min="0" max="${max}" step="1" value="${st}"></label>
+      <div><button class="btn btn-sm" type="button" data-act="qq-audio-preview">▶ Ausschnitt probehören</button></div>` : ''}
+    <span class="lbl">Drei Antworten. Tippe auf den Buchstaben des richtigen Spiels.</span>`;
+}
+async function loadAudioForm(file) {
+  aud.busy = true; aud.buf = null; render();
+  try {
+    const buf = await decodeAudioFile(file);
+    if (buf.duration < 3) throw new Error('short');
+    Object.assign(aud, {buf, name:file.name, dur:buf.duration});
+    D.qq.start = String(Math.max(0, Math.min(Math.floor(buf.duration - CLIP_SECS), 30)));
+  } catch (e) { toast('Die Datei ließ sich nicht abspielen. Versuch eine MP3.'); }
+  aud.busy = false; render();
+}
+async function saveAudioQuestion() {
+  const raw = D.qq.a.slice(0, 3).map(a => str(a, 120));
+  if (!aud.buf) { toast('Wähl zuerst eine Audiodatei.'); return; }
+  if (raw.some(a => !a)) { toast('Füll alle drei Antworten aus.'); return; }
+  if (new Set(raw.map(a => a.toLowerCase())).size < 3) { toast('Die drei Antworten müssen verschieden sein.'); return; }
+  const c = Math.min(2, D.qq.c);
+  toast('Clip wird erstellt …');
+  try {
+    const data = await clipWav(aud.buf, Number(D.qq.start) || 0);
+    const clip = uid();
+    await write('clips/' + clip, {data, ts:Date.now()});
+    clipCache[clip] = data;
+    const q = {id:uid(), q:str(D.qq.q, 300) || 'Zu welchem Spiel gehört dieser Soundtrack?', type:'audio', clip, a:raw, c, cat:SOUND_CAT, lvl:D.qq.lvl, createdAt:Date.now()};
+    ops.addQuestion(q);
+    D.qq = {...D.qq, q:'', a:['', '', '', ''], c:0, start:'0'};
+    Object.assign(aud, {buf:null, name:'', dur:0});
+    render();
+    toast(`Soundtrack-Frage gespeichert: ${LEVELS[q.lvl]}.`);
+  } catch (e) { toast('Speichern hat nicht geklappt. Versuch es nochmal.'); }
+}
+
+function selCats() { const c = (D.qc.cats || []).filter(i => i >= 0 && i < CATS.length); return c.length >= MIN_CATS ? c.slice(0, MAX_CATS) : [0, 1, 2, 3, 4]; }
+
 /* Timer tick */
 function tick() {
+  clipTick();
   bgmSync();
   if (S.tab === 'news') updateCountdowns();
   renderGate();
@@ -3228,7 +3710,7 @@ const actions = {
     D.qc.players = sel; render();
   },
   'qq-correct': b => { D.qq.c = Number(b.dataset.i); render(); },
-  'qq-cat': b => { D.qq.cat = Number(b.dataset.i); render(); },
+  'qq-cat': b => { D.qq.cat = Number(b.dataset.i); if (D.qq.cat === SOUND_CAT) D.qq.c = Math.min(2, D.qq.c); render(); },
   'qq-lvl': b => { D.qq.lvl = Number(b.dataset.i); render(); },
   'qq-del': b => { const q = S.questions.find(x => x.id === b.dataset.id); if (!q) return;
     confirmBox('Frage löschen?', q.q, [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Löschen', cls:'btn-gold', fn:() => ops.deleteQuestion(q.id)}]); },
@@ -3240,6 +3722,14 @@ const actions = {
         for (const h of w.history) if (!have.has(h.label.toLowerCase()) && w.items.length < 40) { w.items.push({id:uid(), label:h.label}); have.add(h.label.toLowerCase()); }
         w.history = []; w.spin = null; ops.saveWheel(w); }}]),
   'q-start': () => quizStart(null),
+  'qc-cat': b => {
+    const i = Number(b.dataset.i), cur = selCats();
+    if (cur.includes(i)) { if (cur.length <= MIN_CATS) { toast(`Mindestens ${MIN_CATS} Themen.`); return; } D.qc.cats = cur.filter(x => x !== i); }
+    else { if (cur.length >= MAX_CATS) { toast(`Höchstens ${MAX_CATS} Themen. Nimm erst eins raus.`); return; } D.qc.cats = [...cur, i].sort((a, b) => a - b); }
+    render();
+  },
+  'clip-play': b => { const id = b.dataset.id; if (clipBusy() && clipPlayer.key === id) { clipStop(); render(); } else clipPlay(id); },
+  'qq-audio-preview': async () => { if (!aud.buf) return; try { const data = await clipWav(aud.buf, Number(D.qq.start) || 0); const el = new Audio(data); clipStop(); clipPlayer.el = el; clipPlayer.key = 'preview'; el.play(); bgmSync(); } catch (e) { toast('Probehören hat nicht geklappt.'); } },
   'quiz-cell': b => quizPick(Number(b.dataset.i)),
   'quiz-random': () => quizRandom(),
   'quiz-answer': b => quizAnswer(Number(b.dataset.i)),
@@ -3267,6 +3757,7 @@ document.addEventListener('input', e => {
   if (t.id === 'music-vol') { music.vol = Number(t.value); lsSet('turnier-music-vol', String(music.vol)); if (music.el) music.el.volume = music.vol; return; }
   if (t.dataset && t.dataset.bgmVol) { bgm.vol = Number(t.value); lsSet('turnier-bgm-vol', String(bgm.vol)); document.querySelectorAll('[data-bgm-vol]').forEach(x => { if (x !== t) x.value = t.value; }); bgm.unlocked = true; bgmSync(); return; }
   if (t.dataset && t.dataset.cropZoom) { const d = D[t.dataset.cropZoom]; if (d && d.crop) { d.crop.z = Number(t.value); cropUpdate(t.dataset.cropZoom); } return; }
+  if (t.id === 'qq-start') { D.qq.start = t.value; const o = $('#qq-start-v'); if (o) o.textContent = fmtSec(Number(t.value)); return; }
   if (t.id === 'est-in') {
     const q = S.quiz; if (!q || q.cell == null || !q.board[q.cell] || !q.board[q.cell].q) return;
     const cur = q.board[q.cell].q; D.est = {k:guessKey(q), v:Number(t.value)};
@@ -3283,6 +3774,7 @@ document.addEventListener('change', async e => {
   if (t.id === 'music-file') { const f = t.files && t.files[0]; t.value = ''; if (f) saveMusicFile(f); return; }
   if (t.id === 'music-auto') { music.auto = t.checked; lsSet('turnier-music-auto', music.auto ? '1' : '0'); syncMusic(); return; }
   if (t.id === 'w-remove') { const w = clone(S.wheel); w.removeDrawn = t.checked; ops.saveWheel(w); return; }
+  if (t.id === 'qq-audio') { const f = t.files && t.files[0]; t.value = ''; if (f) loadAudioForm(f); return; }
   if (t.id === 'pic-file') { const fs2 = t.files ? Array.from(t.files) : []; t.value = ''; if (fs2.length) addPics(fs2); return; }
   if (t.id === 'deco-bgm' || t.id === 'deco-lobby' || t.id === 'deco-site') { const d = {...(S.deco || DEFAULT_DECO)}; d[{'deco-bgm':'bgm', 'deco-lobby':'flyLobby', 'deco-site':'flySite'}[t.id]] = t.checked; ops.saveDeco(d); return; }
   if (t.matches && t.matches('input[type=file][data-tk-img]')) {
@@ -3385,6 +3877,8 @@ document.addEventListener('submit', e => {
     D.wnew = '';
     ops.saveWheel(w);
     setTimeout(() => { const n = $('#w-new'); if (n) n.focus(); }, 30);
+  } else if (f === 'add-question' && D.qq.cat === SOUND_CAT) {
+    saveAudioQuestion();
   } else if (f === 'add-question' && D.qq.cat === 4) {
     const qtext = str(D.qq.q, 300);
     if (!qtext) { toast('Schreib zuerst die Frage.'); return; }
@@ -3570,6 +4064,7 @@ async function removeMusic() {
 function musicShouldPlay() {
   if (!music.ready || !S.admin) return false;
   if (music.preview) return true;
+  if (clipBusy()) return false;
   return music.on && music.auto && !!S.quiz && S.quiz.status === 'running';
 }
 function syncMusic() {
@@ -3767,7 +4262,7 @@ async function createTournament(pw) {
   connectRoom(r);
   toast('Turnier angelegt. Schick deinen Freunden Link und Passwort.');
 }
-const ROOM_COLLS = ['players', 'points', 'questions', 'answers', 'pics'];
+const ROOM_COLLS = ['players', 'points', 'questions', 'answers', 'pics', 'clips'];
 const ROOM_DOCS = ['settings', 'quiz', 'seen', 'gate', 'wheel', 'news', 'ticker', 'deco'];
 async function changePassword(pw) {
   pw = str(pw, 64);
@@ -3787,11 +4282,14 @@ async function changePassword(pw) {
       if (d.exists) ops2.push({path:'rooms/' + nr + '/meta/' + m, data:d.data(), del:'rooms/' + old + '/meta/' + m});
     }
     await fs.doc('rooms/' + nr).set({created:Date.now()});
-    for (let i = 0; i < ops2.length; i += 200) {
-      const b = fs.batch();
-      ops2.slice(i, i + 200).forEach(o => b.set(fs.doc(o.path), o.data));
-      await b.commit();
+    const chunks = []; let cur = [], size = 0;
+    for (const o of ops2) {
+      const n = JSON.stringify(o.data).length;
+      if (cur.length && (cur.length >= 200 || size + n > 3000000)) { chunks.push(cur); cur = []; size = 0; }
+      cur.push(o); size += n;
     }
+    if (cur.length) chunks.push(cur);
+    for (const ch of chunks) { const b = fs.batch(); ch.forEach(o => b.set(fs.doc(o.path), o.data)); await b.commit(); }
     await fs.doc('admin/config').set({room:nr, password:pw});
     await fs.doc('rooms/' + old).set({moved:true});
     for (let i = 0; i < ops2.length; i += 200) {
@@ -3958,7 +4456,7 @@ const bgm = {
 function bgmOn() { return bgm.pref === '' ? !(S.deco && S.deco.bgm === false) : bgm.pref === '1'; }
 function bgmWanted() {
   if (!bgmOn() || bgm.vol <= 0 || document.hidden) return false;
-  if (S.mode === 'setup') return false;
+  if (S.mode === 'setup' || clipBusy()) return false;
   if (typeof music !== 'undefined' && music.el && !music.el.paused) return false;
   return true;
 }
