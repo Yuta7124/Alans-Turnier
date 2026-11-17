@@ -263,6 +263,60 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .lang-pick{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0 4px}
 .lang-btn{min-width:150px;font-size:20px;padding:14px 18px 12px}
 .lang-btn .flag{height:36px}
+.gsec .g-top{display:flex;align-items:center;gap:14px 22px;flex-wrap:wrap;margin-bottom:12px}
+.g-hole{display:flex;align-items:baseline;gap:6px 14px;flex-wrap:wrap}
+.g-hole b{font-family:var(--display);font-size:clamp(22px,2.6vw,34px);text-transform:uppercase;color:#fff}
+.g-par{font-family:var(--pixel);font-size:11px;color:var(--coin)}
+.g-me{display:flex;align-items:baseline;gap:8px;margin-left:auto}
+.g-me small{color:var(--muted);font-size:13px}
+.g-me b{font-family:var(--pixel);font-size:22px;color:var(--xp)}
+.g-viewpick{margin:0}
+.g-done{margin:0 0 12px;padding:10px 14px;background:rgba(79,240,143,.12);box-shadow:0 0 0 2px #4ff08f;color:#c9ffe0;font-weight:700}
+.g-done.spec{background:rgba(57,214,242,.1);box-shadow:0 0 0 2px var(--xp);color:var(--ink)}
+.g-done small{color:var(--muted);font-weight:500;margin-left:6px}
+.g-main{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:16px;align-items:start}
+.golf-stage{position:relative;min-height:220px;box-shadow:0 0 0 3px var(--edge),0 8px 0 3px var(--shadow);background:#0b0620}
+.gcanvas{display:block;width:100%;touch-action:none;user-select:none;-webkit-user-select:none}
+.gcanvas.can{cursor:crosshair}
+.g-side{padding:14px;display:flex;flex-direction:column;gap:10px}
+.g-board{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.g-board li{display:grid;grid-template-columns:30px 1fr auto auto;align-items:center;gap:8px;padding:6px 8px;background:var(--bg-2)}
+.g-board li.me{box-shadow:0 0 0 2px var(--coin)}
+.g-board li.away{opacity:.5}
+.g-pn{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.g-now{font-family:var(--pixel);font-size:10px;color:var(--xp)}
+.g-tot{font-family:var(--pixel);font-size:12px;text-align:right}
+.g-tot small{display:block;font-family:Inter,system-ui,sans-serif;font-size:11px;color:var(--muted)}
+.g-host{display:flex;flex-direction:column;gap:8px}
+.g-host .okline{margin:0}
+.g-help{color:var(--muted);font-size:14px;margin:12px 0 0}
+.g-setup,.g-end{display:flex;flex-direction:column;gap:14px;padding:24px}
+.g-title{margin:0;font-family:var(--display);font-size:clamp(30px,4vw,48px);text-transform:uppercase}
+.g-sets{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.g-set{display:flex;flex-direction:column;gap:4px;align-items:flex-start;padding:12px 14px;border:0;cursor:pointer;background:var(--bg-2);color:var(--ink);text-align:left;box-shadow:0 0 0 2px var(--edge)}
+.g-set b{font-family:var(--display);text-transform:uppercase;font-size:17px}
+.g-set small{color:var(--muted)}
+.g-set[aria-pressed="true"]{box-shadow:0 0 0 3px #4ff08f;background:rgba(79,240,143,.1)}
+.g-holes{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px}
+.g-holes li{display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--bg-2);opacity:.4}
+.g-holes li.on{opacity:1}
+.g-num{display:inline-grid;place-items:center;min-width:26px;height:26px;font-family:var(--pixel);font-size:10px;background:#2f9a4f;color:#fff}
+.g-hn{flex:1;font-weight:600}
+.g-holes small{color:var(--coin);font-size:12px}
+.g-rank{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.g-rank li{display:flex;align-items:center;gap:12px;padding:8px 12px;background:var(--bg-2);font-size:20px}
+.g-rank li b{font-size:18px;flex:1}
+.g-rank .g-tot{font-size:16px}
+.g-pts{font-family:var(--pixel);font-size:12px;color:var(--coin)}
+.g-tablewrap{overflow-x:auto}
+.g-table{border-collapse:collapse;font-size:14px;min-width:100%}
+.g-table th,.g-table td{padding:6px 8px;text-align:center;border-bottom:1px solid var(--edge);white-space:nowrap}
+.g-table td:first-child,.g-table th:first-child{text-align:left;font-weight:700}
+.g-parrow td{color:var(--coin);font-size:12px}
+.g-table td.under{color:#4ff08f;font-weight:700}
+.g-table td.over{color:#ff8a9a}
+.g-table td.ace{color:#000;background:var(--coin);font-weight:700}
+@media (max-width:900px){.g-main{grid-template-columns:1fr}.g-me{margin-left:0}}
 .pc-wins{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;color:var(--muted);font-size:14px;font-weight:600}
 .pcard.has-wins .pc-wins{color:var(--coin)}
 .pc-wins b{font-family:var(--pixel);font-weight:400;font-size:14px}
@@ -1310,7 +1364,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=1"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=3"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -2341,11 +2395,11 @@ function groupPick(g) {
   return GROUPS[g].some(x => x[0] === last) ? last : GROUPS[g][0][0];
 }
 /* Ansichten: "Spiele" ist der Ober-Tab für Quiz und Malen */
-const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'einstellungen'];
+const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'einstellungen'];
 const HUB = ['quiz', 'malen'];
 const viewOk = t => VIEWS.includes(t);
 function viewFor(t) {
-  if (t === 'raum' || t === 'quiz' || t === 'malen') return S.room ? roomView() : 'spiele';
+  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf') return S.room ? roomView() : 'spiele';
   return GROUPS[t] ? groupPick(t) : viewOk(t) ? t : 'start';
 }
 
@@ -2911,15 +2965,16 @@ function render() {
   else if (S.mode === 'lock') html = lockHTML();
   else if (blocked()) html = `<div style="min-height:70vh"></div>`;
   else if (S.tab === 'spiele-pick') html = `<div class="loading">${COIN(48, 'spin')}</div>`;
-  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, einstellungen:viewSettings}[S.tab] || viewStart)();
+  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, einstellungen:viewSettings}[S.tab] || viewStart)();
   const oldStand = m.querySelector('.stand');
   const oldKey = oldStand ? oldStand.dataset.key : null;
   const before = standCapture(oldStand);
-  m.classList.toggle('wide', /class="section (qsec|dsec)"/.test(html));
+  m.classList.toggle('wide', /class="section (qsec|dsec|gsec)"/.test(html));
   renderSubnav();
   if (S.tab === 'malen' && !blocked() && S.mode === 'db' && S.loaded && dPartsOk(m)) dPatchParts();
   else { patch(m, html); dPrev = dParts ? {...dParts} : {}; }
   dcMount();
+  golfMount();
   renderFlySite();
   const newStand = m.querySelector('.stand');
   if (oldStand && newStand && newStand.dataset.key === oldKey) newStand.replaceWith(oldStand);
@@ -2938,7 +2993,7 @@ function render() {
 function tabsHidden() { return S.mode === 'loading' || S.mode === 'setup' || S.mode === 'lock' || S.mode === 'firstrun' || (S.mode === 'db' && !S.loaded) || blocked(); }
 function inGame() {
   if (tabsHidden() || S.mode !== 'db') return false;
-  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running');
+  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running');
 }
 const isTouch = () => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } };
 const canFull = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
@@ -3096,6 +3151,7 @@ function viewStart() {
       <div class="stiles">
         ${tile('spiele', '🧠', 'Quiz', 'Spielbrett mit Fragen aus 8 Themen. Such dir einen Raum und spielt los, wann ihr wollt.', gameInfo('quiz'), '#39d6f2')}
         ${tile('spiele', '🎨', 'Malen', 'Einer malt, alle anderen raten im Chat. Wie skribbl.io, jederzeit in einem Raum.', gameInfo('malen'), '#39d6f2')}
+        ${tile('spiele', '⛳', 'Golf', 'Minigolf mit der Maus oder dem Finger: 20 Bahnen von leicht bis schwer, in 2D oder 3D.', gameInfo('golf'), '#39d6f2')}
       </div>
     </div>
     <div class="start-group start-news">
@@ -4039,7 +4095,570 @@ function quizAnswerEst(v) {
   ops.saveQuiz(q);
 }
 
-/* ---------- Räume: Quiz und Malen jederzeit, ohne Spielleiter ---------- */
+/* ---------- Minigolf: Bahnen und Ballphysik (ohne Bildschirm, damit man sie auch prüfen kann) ---------- */
+const GOLF_MAX = 10, GOLF_PLACE_PTS = [3, 2, 1];
+const G_R = 9, G_CUP = 14, G_WALL = 18, G_WH = 24, G_SINK_V = 560, G_VMAX = 1150, G_DT = 1 / 400;
+const gR = (x, y, w, h) => [[x, y], [x + w, y], [x + w, y + h], [x, y + h]];
+/* Jede Bahn: f Spielfeld (Umriss), tee Abschlag, cup Loch, par.
+   bl Blöcke [x,y,b,h], bu Bumper [x,y,r], sa Sand, wa Wasser [x,y,b,h], sl Hang [x,y,b,h,ax,ay],
+   sp Windmühle [x,y,Länge,Drehung pro s,Start], mv Schiebeblock [x,y,b,h,dx,dy,Dauer s,Versatz]. */
+const GOLF_HOLES = [
+  {n:'Aufwärmen', par:2, f:gR(80, 200, 840, 200), tee:[170, 300], cup:[830, 300]},
+  {n:'Um die Ecke', par:3, f:[[80, 330], [640, 330], [640, 80], [900, 80], [900, 520], [80, 520]], tee:[170, 425], cup:[770, 170]},
+  {n:'Der Block', par:3, f:gR(80, 150, 840, 300), tee:[170, 300], cup:[830, 300], bl:[[440, 150, 120, 175]]},
+  {n:'Bumper-Allee', par:3, f:gR(80, 120, 840, 360), tee:[160, 300], cup:[850, 300], bu:[[350, 220, 28], [350, 380, 28], [520, 300, 32], [690, 200, 28], [690, 400, 28]]},
+  {n:'Sandkasten', par:3, f:gR(80, 140, 840, 320), tee:[160, 300], cup:[860, 300], sa:[[450, 140, 170, 200], [680, 270, 130, 190]]},
+  {n:'Hügel', par:3, f:gR(80, 100, 840, 400), tee:[160, 400], cup:[850, 200], sl:[[340, 100, 320, 400, 0, 330]]},
+  {n:'Windmühle', par:3, f:gR(80, 140, 840, 320), tee:[160, 300], cup:[840, 300], sp:[[500, 300, 230, 1.4, 0]], bl:[[480, 140, 40, 40], [480, 420, 40, 40]]},
+  {n:'Flipper', par:3, f:gR(80, 80, 840, 440), tee:[150, 300], cup:[880, 300], bu:[[300, 180, 26], [300, 420, 26], [420, 300, 26], [540, 180, 26], [540, 420, 26], [660, 300, 26], [780, 180, 26], [780, 420, 26]]},
+  {n:'Fließband', par:4, f:gR(80, 100, 840, 400), tee:[160, 300], cup:[860, 300], bl:[[250, 230, 500, 140]], sl:[[250, 100, 500, 130, 300, 0], [250, 370, 500, 130, -300, 0]], mv:[[790, 160, 30, 70, 0, 200, 2.6, 0]]},
+  {n:'Doppelmühle', par:4, f:gR(80, 120, 840, 360), tee:[160, 300], cup:[850, 300], sp:[[360, 300, 230, 1.5, 0], [640, 300, 230, -1.8, 0.8]], sa:[[760, 120, 110, 90], [760, 390, 110, 90]]},
+  {n:'Wüste', par:4, f:gR(60, 80, 880, 440), tee:[130, 300], cup:[880, 300], sa:[[200, 80, 600, 160], [200, 360, 600, 160]], wa:[[430, 262, 90, 76]]},
+  {n:'S-Kurve', par:4, f:gR(80, 80, 840, 440), tee:[180, 170], cup:[820, 430], bl:[[330, 80, 60, 300], [610, 220, 60, 300]]},
+  {n:'Uhrwerk', par:4, f:gR(60, 80, 880, 440), tee:[130, 300], cup:[890, 300], sp:[[300, 300, 260, 1.2, 0], [560, 300, 260, -1.2, 0.5], [790, 300, 170, 2.0, 0]], bu:[[430, 140, 22], [430, 460, 22]]},
+  {n:'Erster Teich', par:4, f:gR(80, 120, 840, 360), tee:[170, 300], cup:[830, 300], wa:[[400, 120, 200, 140], [400, 340, 200, 140]]},
+  {n:'Schiebetür', par:4, f:gR(80, 180, 840, 240), tee:[170, 300], cup:[830, 300], bl:[[480, 180, 40, 60], [480, 360, 40, 60]], mv:[[470, 240, 60, 45, 0, 75, 2.4, 0]]},
+  {n:'Pendelblöcke', par:4, f:gR(80, 160, 840, 280), tee:[150, 300], cup:[850, 300], mv:[[300, 160, 50, 90, 0, 190, 2.0, 0], [480, 160, 50, 90, 0, 190, 1.6, 0.33], [660, 160, 50, 90, 0, 190, 1.3, 0.66]]},
+  {n:'Vulkan', par:5, f:gR(60, 60, 880, 480), tee:[140, 300], cup:[700, 300], sl:[[600, 200, 200, 100, 0, -200], [600, 300, 200, 100, 0, 200], [540, 220, 60, 160, -220, 0]], wa:[[560, 110, 60, 60], [780, 110, 60, 60], [560, 430, 60, 60], [780, 430, 60, 60]]},
+  {n:'Labyrinth', par:5, f:gR(60, 60, 880, 480), tee:[130, 120], cup:[880, 470], bl:[[220, 60, 30, 360], [420, 180, 30, 360], [620, 60, 30, 360], [780, 180, 30, 360]]},
+  {n:'Insel', par:5, f:gR(60, 60, 880, 480), tee:[150, 300], cup:[830, 300], wa:[[560, 60, 140, 205], [560, 335, 140, 205], [700, 60, 240, 90], [700, 450, 240, 90]], bu:[[470, 300, 24]]},
+  {n:'Finale', par:6, f:gR(40, 60, 920, 480), tee:[130, 150], cup:[880, 480], bl:[[300, 60, 30, 300], [600, 240, 30, 300]], sp:[[450, 440, 190, 1.6, 0]], mv:[[580, 60, 70, 55, 0, 125, 2.2, 0]], wa:[[680, 60, 110, 85]], bu:[[820, 260, 24], [820, 390, 24]]}
+];
+const gIn = (x, y, r) => x >= r[0] && x <= r[0] + r[2] && y >= r[1] && y <= r[1] + r[3];
+function gInPoly(x, y, P) {
+  let c = false;
+  for (let i = 0, j = P.length - 1; i < P.length; j = i++) {
+    const [xi, yi] = P[i], [xj, yj] = P[j];
+    if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c;
+  }
+  return c;
+}
+const gCache = {};
+function gHole(i) {
+  if (gCache[i]) return gCache[i];
+  const h = GOLF_HOLES[i];
+  const f = h.f.slice();
+  let area = 0;
+  f.forEach((p, k) => { const q = f[(k + 1) % f.length]; area += p[0] * q[1] - q[0] * p[1]; });
+  if (area < 0) f.reverse();
+  const segs = [];
+  f.forEach((p, k) => { const q = f[(k + 1) % f.length]; segs.push([p[0], p[1], q[0], q[1]]); });
+  (h.bl || []).forEach(r => gR(...r).forEach((p, k, a) => { const q = a[(k + 1) % 4]; segs.push([p[0], p[1], q[0], q[1]]); }));
+  const xs = f.map(p => p[0]), ys = f.map(p => p[1]);
+  return (gCache[i] = {...h, i, f, segs, box:[Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)]});
+}
+function gSpinAt(s, t) { const a = s[4] + s[3] * t, hl = s[2] / 2, c = Math.cos(a) * hl, d = Math.sin(a) * hl; return [s[0] - c, s[1] - d, s[0] + c, s[1] + d]; }
+function gSlideAt(m, t) {
+  const ph = 2 * Math.PI * (t / m[6] + m[7]), k = (1 - Math.cos(ph)) / 2, dk = Math.PI / m[6] * Math.sin(ph);
+  return {x:m[0] + m[4] * k, y:m[1] + m[5] * k, vx:m[4] * dk, vy:m[5] * dk};
+}
+/* Ball gegen eine Strecke (rad = halbe Dicke). mv: Geschwindigkeit der Strecke {vx,vy} oder Drehung {cx,cy,w}. */
+function gHitSeg(b, ax, ay, bx, by, rad, e, mv) {
+  const dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy || 1;
+  let u = ((b.x - ax) * dx + (b.y - ay) * dy) / l2; u = u < 0 ? 0 : u > 1 ? 1 : u;
+  const qx = ax + dx * u, qy = ay + dy * u, min = G_R + rad;
+  let nx = b.x - qx, ny = b.y - qy, d = Math.hypot(nx, ny);
+  if (d >= min) return false;
+  if (d < 1e-6) { nx = -dy; ny = dx; d = Math.hypot(nx, ny) || 1; }
+  nx /= d; ny /= d;
+  b.x = qx + nx * min; b.y = qy + ny * min;
+  let svx = 0, svy = 0;
+  if (mv && mv.w) { svx = -mv.w * (qy - mv.cy); svy = mv.w * (qx - mv.cx); } else if (mv) { svx = mv.vx; svy = mv.vy; }
+  const rvx = b.vx - svx, rvy = b.vy - svy, vn = rvx * nx + rvy * ny;
+  if (vn < 0) { b.vx = rvx - (1 + e) * vn * nx + svx; b.vy = rvy - (1 + e) * vn * ny + svy; b.hit = Math.max(b.hit || 0, -vn); }
+  return true;
+}
+function gHitCircle(b, cx, cy, r, e, kick) {
+  let nx = b.x - cx, ny = b.y - cy, d = Math.hypot(nx, ny);
+  const min = G_R + r;
+  if (d >= min) return false;
+  if (d < 1e-6) { nx = 1; ny = 0; d = 1; }
+  nx /= d; ny /= d;
+  b.x = cx + nx * min; b.y = cy + ny * min;
+  const vn = b.vx * nx + b.vy * ny;
+  if (vn < 0) { b.vx -= (1 + e) * vn * nx - nx * kick; b.vy -= (1 + e) * vn * ny - ny * kick; b.hit = Math.max(b.hit || 0, -vn + kick); if (kick) b.bump = true; }
+  return true;
+}
+function gValid(H, x, y) {
+  if (!gInPoly(x, y, H.f)) return false;
+  return !(H.bl || []).some(r => x > r[0] + 1 && x < r[0] + r[2] - 1 && y > r[1] + 1 && y < r[1] + r[3] - 1);
+}
+/* Ein kleiner Zeitschritt. Gibt 'sink', 'water' oder '' zurück. b: {x,y,vx,vy,still} */
+function gStep(b, H, t, dt) {
+  let fr = 90, k = 0.9;
+  if ((H.sa || []).some(r => gIn(b.x, b.y, r))) { fr = 430; k = 3; }
+  for (const s of H.sl || []) if (gIn(b.x, b.y, s)) { b.vx += s[4] * dt; b.vy += s[5] * dt; }
+  let sp = Math.hypot(b.vx, b.vy);
+  if (sp > 0) { const ns = Math.max(0, sp - (fr + sp * k) * dt); b.vx *= ns / sp; b.vy *= ns / sp; }
+  const px = b.x, py = b.y;
+  b.x += b.vx * dt; b.y += b.vy * dt;
+  for (let it = 0; it < 2; it++) {
+    for (const s of H.segs) gHitSeg(b, s[0], s[1], s[2], s[3], 0, 0.72, null);
+    for (const c of H.bu || []) gHitCircle(b, c[0], c[1], c[2], 0.9, 140);
+    for (const s of H.sp || []) {
+      const [ax, ay, bx, by] = gSpinAt(s, t);
+      gHitSeg(b, ax, ay, bx, by, 6, 0.6, {cx:s[0], cy:s[1], w:s[3]});
+      gHitCircle(b, s[0], s[1], 11, 0.6, 0);
+    }
+    for (const m of H.mv || []) {
+      const p = gSlideAt(m, t);
+      gR(p.x, p.y, m[2], m[3]).forEach((q, k2, a) => { const r = a[(k2 + 1) % 4]; gHitSeg(b, q[0], q[1], r[0], r[1], 0, 0.6, p); });
+    }
+  }
+  if (!gValid(H, b.x, b.y)) { b.x = px; b.y = py; b.vx *= -0.3; b.vy *= -0.3; }
+  sp = Math.hypot(b.vx, b.vy);
+  if (sp > 1700) { b.vx *= 1700 / sp; b.vy *= 1700 / sp; sp = 1700; }
+  const dc = Math.hypot(b.x - H.cup[0], b.y - H.cup[1]);
+  if ((dc < G_CUP - 2 && sp < G_SINK_V) || (dc < G_CUP + 3 && sp < 130)) return 'sink';
+  if ((H.wa || []).some(r => gIn(b.x, b.y, r))) return 'water';
+  if (sp < 7) { b.still = (b.still || 0) + dt; if (b.still > 0.15) { b.vx = 0; b.vy = 0; } } else b.still = 0;
+  return '';
+}
+const gShotSpeed = p => 60 + Math.pow(Math.max(0, Math.min(1, p)), 1.1) * (G_VMAX - 60);
+/* Einen Schlag komplett durchrechnen (für die Prüfung der Bahnen) */
+function gSimShot(H, x, y, vx, vy, t0, maxT = 14) {
+  const b = {x, y, vx, vy, still:0};
+  let t = t0, r = '';
+  while (t - t0 < maxT) {
+    r = gStep(b, H, t, G_DT); t += G_DT;
+    if (r) break;
+    if (b.vx === 0 && b.vy === 0) break;
+  }
+  return {x:b.x, y:b.y, r, t};
+}
+
+/* ---------- Minigolf: Darstellung, Zielen, Raum-Spiel ----------
+   Alle spielen gleichzeitig auf ihrem eigenen Gerät. Die Ballphysik läuft lokal, in den Raum geschrieben werden nur
+   die Schläge pro Bahn (sc) und wo der Ball gerade liegt (pos). Der Host schaltet zur nächsten Bahn, wenn alle fertig sind. */
+const GOLF_SETS = [['all', 'Alle 20 Bahnen', 'Von leicht bis schwer'], ['easy', 'Leicht', 'Bahn 1–7'], ['mid', 'Mittel', 'Bahn 8–14'], ['hard', 'Schwer', 'Bahn 15–20'], ['quick', 'Schnelle Runde', '6 zufällige Bahnen']];
+function golfHoles(set) {
+  const all = GOLF_HOLES.map((_, i) => i);
+  return set === 'easy' ? all.slice(0, 7) : set === 'mid' ? all.slice(7, 14) : set === 'hard' ? all.slice(14) : set === 'quick' ? shuffle(all).slice(0, 6).sort((a, b) => a - b) : all;
+}
+function gNorm(x) {
+  if (!x || typeof x !== 'object' || !['running', 'finished'].includes(x.status)) return null;
+  const holes = Array.isArray(x.holes) ? x.holes.map(Number).filter(i => Number.isInteger(i) && i >= 0 && i < GOLF_HOLES.length) : [];
+  if (!holes.length) return null;
+  const obj = v => v && typeof v === 'object' && !Array.isArray(v) ? v : {};
+  return {id:str(x.id, 40), status:x.status, set:str(x.set, 10), holes, hi:Math.max(0, Math.min(holes.length - 1, Math.round(Number(x.hi) || 0))),
+    players:Array.isArray(x.players) ? x.players.filter(p => typeof p === 'string').slice(0, ROOM_MAX) : [], sc:obj(x.sc), pos:obj(x.pos),
+    holeAt:Number(x.holeAt) || 0, transferred:x.transferred === true, end:Math.round(Number(x.end) || 0)};
+}
+const gKey = G => G.id + ':' + G.hi;
+function gScore(G, pid, j) { const v = G.sc[pid] && G.sc[pid][j]; return v == null ? null : Math.max(1, Math.min(GOLF_MAX, Math.round(Number(v)) || GOLF_MAX)); }
+const gPar = G => j => GOLF_HOLES[G.holes[j]].par;
+function gActive(G) { const L = lobby(); return G.players.filter(pid => playerById(pid) && L && L.members[pid]); }
+function gPlaying() { const G = S.golf, me = myPid(), L = lobby(); return !!(G && G.status === 'running' && me && G.players.includes(me) && L && L.members[me] && !S.spectate); }
+function gTerm(n, par) {
+  if (n === 1) return 'Hole-in-One!';
+  const d = n - par;
+  return d <= -3 ? 'Albatros!' : d === -2 ? 'Eagle!' : d === -1 ? 'Birdie!' : d === 0 ? 'Par' : d === 1 ? 'Bogey' : d === 2 ? 'Doppel-Bogey' : `+${d}`;
+}
+function gTotals(G, pid, upto) {
+  let tot = 0, par = 0;
+  for (let j = 0; j < upto; j++) { tot += gScore(G, pid, j) ?? GOLF_MAX; par += gPar(G)(j); }
+  return {tot, par};
+}
+function gRank(G) {
+  const end = G.status === 'finished' ? G.end : G.hi;
+  const rows = G.players.map(pid => ({id:pid, ...gTotals(G, pid, end)})).sort((a, b) => a.tot - b.tot);
+  rows.forEach((r, i) => { r.rank = i && rows[i - 1].tot === r.tot ? rows[i - 1].rank : i + 1; });
+  return rows;
+}
+
+/* Lokaler Zustand dieses Geräts */
+const gl = {key:'', ball:null, last:null, strokes:0, done:0, shot:false, t0:0, acc:0, prev:0, aim:null, msg:'', msgAt:0, sinkAt:0, introAt:0,
+  cv:null, ctx:null, raf:0, w:0, h:0, V:null, vk:'', view:'', advAt:0, advKey:'', hitAt:0, posAt:0};
+function golfOnSnap() {
+  const G = S.golf, me = myPid();
+  if (!G || G.status !== 'running') { gl.key = ''; gl.advAt = 0; return; }
+  const k = gKey(G); if (k === gl.key) return;
+  gl.key = k;
+  const H = gHole(G.holes[G.hi]), sc = gScore(G, me, G.hi), pos = G.pos[me];
+  const p = pos && pos[3] === G.hi && gValid(H, pos[0], pos[1]) ? pos : null;
+  gl.ball = p ? {x:p[0], y:p[1], vx:0, vy:0} : {x:H.tee[0], y:H.tee[1], vx:0, vy:0};
+  gl.strokes = sc != null ? sc : p ? Number(p[2]) || 0 : 0;
+  gl.done = sc != null ? sc : 0;
+  gl.last = {x:gl.ball.x, y:gl.ball.y}; gl.shot = false; gl.aim = null; gl.msg = ''; gl.sinkAt = 0; gl.acc = 0;
+  gl.t0 = performance.now() - Math.max(0, Date.now() - (G.holeAt || Date.now()));
+  gl.introAt = performance.now(); gl.advAt = 0;
+}
+function gWrite(patch) { if (!S.room || S.mode !== 'db' || !db) return; roomRef().update(patch).catch(e => onWriteError(e)); }
+function gCanShoot() { return gPlaying() && !gl.done && gl.ball && Math.hypot(gl.ball.vx, gl.ball.vy) === 0 && !gl.sinkAt; }
+function golfShoot(dx, dy, p) {
+  if (!gCanShoot()) return;
+  const v = gShotSpeed(p), len = Math.hypot(dx, dy) || 1;
+  gl.last = {x:gl.ball.x, y:gl.ball.y};
+  gl.ball.vx = dx / len * v; gl.ball.vy = dy / len * v; gl.ball.still = 0;
+  gl.strokes++; gl.shot = true;
+  ensureAudio(); tone(260 + p * 380, .06, 'triangle', .09);
+  render();
+}
+function gFinishHole(n) {
+  const G = S.golf, me = myPid(); if (!G) return;
+  gl.done = n;
+  G.sc[me] = {...(G.sc[me] || {}), [G.hi]:n};
+  gWrite({['golf.sc.' + me + '.' + G.hi]:n, ['golf.pos.' + me]:FV().delete()});
+  render();
+}
+function gPhysics(now) {
+  const G = S.golf, b = gl.ball;
+  if (!G || !b || gl.done || !gPlaying()) return;
+  const H = gHole(G.holes[G.hi]);
+  let dt = Math.min(0.05, Math.max(0, (now - (gl.prev || now)) / 1000));
+  gl.acc += dt;
+  let t = (now - gl.t0) / 1000 - gl.acc;
+  while (gl.acc >= G_DT) {
+    gl.acc -= G_DT; t += G_DT;
+    const wasMoving = b.vx !== 0 || b.vy !== 0;
+    b.hit = 0; b.bump = false;
+    const r = gStep(b, H, t, G_DT);
+    if (b.hit > 120 && now - gl.hitAt > 60) { gl.hitAt = now; tone(b.bump ? 620 : 170, .04, b.bump ? 'sine' : 'square', b.bump ? .08 : .04); }
+    if (r === 'sink') { b.vx = 0; b.vy = 0; b.x = H.cup[0]; b.y = H.cup[1]; gl.sinkAt = now; sfx('right'); gFinishHole(Math.max(1, gl.strokes)); return; }
+    if (r === 'water') {
+      gl.strokes++; b.x = gl.last.x; b.y = gl.last.y; b.vx = 0; b.vy = 0;
+      gl.msg = 'Platsch! +1 Strafschlag'; gl.msgAt = now; tone(140, .32, 'sine', .09);
+      if (gl.strokes >= GOLF_MAX) { gFinishHole(GOLF_MAX); return; }
+      gWrite({['golf.pos.' + myPid()]:[Math.round(b.x), Math.round(b.y), gl.strokes, G.hi]}); render(); continue;
+    }
+    if (wasMoving && b.vx === 0 && b.vy === 0 && gl.shot) {
+      gl.shot = false;
+      if (gl.strokes >= GOLF_MAX) { gl.msg = 'Maximum erreicht'; gl.msgAt = now; gFinishHole(GOLF_MAX); return; }
+      gWrite({['golf.pos.' + myPid()]:[Math.round(b.x), Math.round(b.y), gl.strokes, G.hi]});
+      render();
+    }
+  }
+}
+
+/* Kamera: 2D (schräg von oben) oder 3D (Perspektive). P projiziert, U rechnet Bildschirm -> Boden zurück. */
+function gView(H, w, h, mode) {
+  const [x0, y0, x1, y1] = H.box, m = G_WALL + 8;
+  const bx0 = x0 - m, by0 = y0 - m, bx1 = x1 + m, by1 = y1 + m;
+  if (mode !== '3d') {
+    const OB = 0.55, top = 46;
+    const k = Math.min(w / (bx1 - bx0), h / (by1 - by0 + top));
+    const ox = (w - k * (bx1 - bx0)) / 2 - k * bx0, oy = (h - k * (by1 - by0 + top)) / 2 - k * (by0 - top);
+    return {P:(x, y, z) => [ox + k * x, oy + k * (y - z * OB)], S:() => k, D:(x, y) => -y, U:(sx, sy) => [(sx - ox) / k, (sy - oy) / k]};
+  }
+  const cx = (bx0 + bx1) / 2, cy = (by0 + by1) / 2, a = 0.92, dist = Math.max(bx1 - bx0, by1 - by0) * 1.05;
+  const sa = Math.sin(a), ca = Math.cos(a);
+  const C = [cx, cy + sa * dist, ca * dist], f = [0, -sa, -ca], r = [1, 0, 0], u = [0, -ca, sa];
+  const cam = (x, y, z) => { const d = [x - C[0], y - C[1], z - C[2]]; const zc = d[0] * f[0] + d[1] * f[1] + d[2] * f[2]; return [(d[0] * r[0] + d[1] * r[1] + d[2] * r[2]) / zc, -(d[0] * u[0] + d[1] * u[1] + d[2] * u[2]) / zc, zc]; };
+  let mx0 = 1e9, my0 = 1e9, mx1 = -1e9, my1 = -1e9;
+  for (const x of [bx0, bx1]) for (const y of [by0, by1]) for (const z of [0, 70]) { const q = cam(x, y, z); mx0 = Math.min(mx0, q[0]); mx1 = Math.max(mx1, q[0]); my0 = Math.min(my0, q[1]); my1 = Math.max(my1, q[1]); }
+  const k = Math.min(w / (mx1 - mx0), h / (my1 - my0)) * 0.98;
+  const ox = (w - k * (mx1 - mx0)) / 2 - k * mx0, oy = (h - k * (my1 - my0)) / 2 - k * my0;
+  return {
+    P:(x, y, z) => { const q = cam(x, y, z); return [ox + k * q[0], oy + k * q[1]]; },
+    S:(x, y, z) => k / cam(x, y, z)[2],
+    D:(x, y, z) => cam(x, y, z)[2],
+    U:(sx, sy) => {
+      const xn = (sx - ox) / k, yn = (sy - oy) / k;
+      const d = [r[0] * xn - u[0] * yn + f[0], r[1] * xn - u[1] * yn + f[1], r[2] * xn - u[2] * yn + f[2]];
+      if (d[2] > -1e-4) return null;
+      const t = -C[2] / d[2];
+      return [C[0] + d[0] * t, C[1] + d[1] * t];
+    }
+  };
+}
+function gShade(hex, f) { const n = parseInt(hex.slice(1), 16); return `rgb(${[n >> 16, (n >> 8) & 255, n & 255].map(v => Math.max(0, Math.min(255, Math.round(v * f))))})`; }
+function gPath(c, V, pts, z) { c.beginPath(); pts.forEach((p, i) => { const s = V.P(p[0], p[1], z); if (i) c.lineTo(s[0], s[1]); else c.moveTo(s[0], s[1]); }); c.closePath(); }
+const gCirc = (x, y, r, n = 18) => Array.from({length:n}, (_, i) => [x + Math.cos(i / n * Math.PI * 2) * r, y + Math.sin(i / n * Math.PI * 2) * r]);
+/* Körper mit Grundfläche pts (im Uhrzeigersinn) und Höhe h */
+function gPrism(c, V, pts, h, col, edge) {
+  const n = pts.length, faces = [];
+  for (let i = 0; i < n; i++) {
+    const a = pts[i], b = pts[(i + 1) % n], len = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+    const nx = (b[1] - a[1]) / len, ny = -(b[0] - a[0]) / len;
+    faces.push({a, b, d:V.D((a[0] + b[0]) / 2 + nx, (a[1] + b[1]) / 2 + ny, h / 2), l:0.5 + 0.4 * Math.max(0, nx * -0.45 + ny * 0.9)});
+  }
+  faces.sort((p, q) => q.d - p.d);
+  for (const fc of faces) {
+    const q = [V.P(fc.a[0], fc.a[1], 0), V.P(fc.b[0], fc.b[1], 0), V.P(fc.b[0], fc.b[1], h), V.P(fc.a[0], fc.a[1], h)];
+    c.beginPath(); c.moveTo(q[0][0], q[0][1]); for (let i = 1; i < 4; i++) c.lineTo(q[i][0], q[i][1]); c.closePath();
+    c.fillStyle = gShade(col, fc.l); c.fill();
+  }
+  gPath(c, V, pts, h); c.fillStyle = gShade(col, 1.15); c.fill();
+  if (edge) { c.strokeStyle = edge; c.lineWidth = 1.5; c.stroke(); }
+}
+function gBall(c, V, x, y, color, alpha, label, now) {
+  const s = V.P(x, y, G_R), rr = Math.max(2, G_R * V.S(x, y, G_R));
+  c.save(); c.globalAlpha = alpha;
+  gPath(c, V, gCirc(x + 3, y + 3, G_R), 0); c.fillStyle = 'rgba(0,0,0,.35)'; c.fill();
+  const g = c.createRadialGradient(s[0] - rr * 0.35, s[1] - rr * 0.4, rr * 0.1, s[0], s[1], rr);
+  g.addColorStop(0, '#ffffff'); g.addColorStop(0.55, color); g.addColorStop(1, gShade(color.length === 7 ? color : '#dddddd', 0.55));
+  c.beginPath(); c.arc(s[0], s[1], rr, 0, Math.PI * 2); c.fillStyle = g; c.fill();
+  if (label) { c.font = `600 ${Math.max(10, Math.round(rr * 1.2))}px Inter, system-ui, sans-serif`; c.textAlign = 'center'; c.fillStyle = '#fff'; c.strokeStyle = 'rgba(0,0,0,.6)'; c.lineWidth = 3; c.strokeText(label, s[0], s[1] - rr - 6); c.fillText(label, s[0], s[1] - rr - 6); }
+  c.restore();
+}
+const G_STARS = Array.from({length:60}, (_, i) => [(i * 9301 + 49297) % 233280 / 233280, (i * 4513 + 1931) % 12347 / 12347, 0.4 + (i % 5) / 6]);
+function gDraw(now) {
+  const G = S.golf, c = gl.ctx; if (!G || !c) return;
+  const H = gHole(G.holes[G.hi]), w = gl.w, h = gl.h, t = (now - gl.t0) / 1000;
+  const vk = H.i + ':' + w + ':' + h + ':' + gl.view;
+  if (gl.vk !== vk) { gl.vk = vk; gl.V = gView(H, w, h, gl.view); }
+  const V = gl.V;
+  const bg = c.createLinearGradient(0, 0, 0, h); bg.addColorStop(0, '#1b0f3d'); bg.addColorStop(1, '#0b0620');
+  c.fillStyle = bg; c.fillRect(0, 0, w, h);
+  for (const [sx, sy, a] of G_STARS) { c.fillStyle = `rgba(255,255,255,${(a * (0.6 + 0.4 * Math.sin(now / 900 + sx * 20))).toFixed(2)})`; c.fillRect(sx * w, sy * h * 0.9, 2, 2); }
+  // Boden
+  gPath(c, V, H.f, 0); c.fillStyle = '#2f9a4f'; c.fill();
+  c.save(); gPath(c, V, H.f, 0); c.clip();
+  for (let x = H.box[0]; x < H.box[2]; x += 80) { gPath(c, V, gR(x, H.box[1], 40, H.box[3] - H.box[1]), 0); c.fillStyle = '#36a95a'; c.fill(); }
+  for (const r of H.sa || []) {
+    gPath(c, V, gR(...r), 0); c.fillStyle = '#e2c47c'; c.fill();
+    c.fillStyle = 'rgba(150,110,40,.35)';
+    for (let i = 0; i < r[2] * r[3] / 500; i++) { const px = r[0] + (i * 37.7 % r[2]), py = r[1] + (i * 61.3 % r[3]); const s = V.P(px, py, 0); c.fillRect(s[0], s[1], 2, 2); }
+  }
+  for (const r of H.wa || []) {
+    gPath(c, V, gR(...r), 0); c.fillStyle = '#1f6fd0'; c.fill();
+    c.strokeStyle = 'rgba(160,220,255,.45)'; c.lineWidth = 1.5;
+    for (let yy = r[1] + 10; yy < r[1] + r[3]; yy += 16) { c.beginPath(); for (let xx = r[0] + 4; xx <= r[0] + r[2] - 4; xx += 8) { const s = V.P(xx, yy + Math.sin(xx / 14 + now / 400) * 3, 0); if (xx === r[0] + 4) c.moveTo(s[0], s[1]); else c.lineTo(s[0], s[1]); } c.stroke(); }
+  }
+  for (const s of H.sl || []) {
+    gPath(c, V, gR(s[0], s[1], s[2], s[3]), 0); c.fillStyle = 'rgba(255,207,63,.10)'; c.fill();
+    const L = Math.hypot(s[4], s[5]) || 1, ux = s[4] / L, uy = s[5] / L, ph = (now / 1000 * 40) % 60;
+    c.strokeStyle = 'rgba(255,230,140,.55)'; c.lineWidth = 2;
+    for (let gx = s[0] + 30; gx < s[0] + s[2]; gx += 60) for (let gy = s[1] + 30; gy < s[1] + s[3]; gy += 60) {
+      const cx = gx + ux * (ph - 30), cy = gy + uy * (ph - 30);
+      const tip = V.P(cx + ux * 10, cy + uy * 10, 0), l1 = V.P(cx - ux * 6 - uy * 9, cy - uy * 6 + ux * 9, 0), l2 = V.P(cx - ux * 6 + uy * 9, cy - uy * 6 - ux * 9, 0);
+      c.beginPath(); c.moveTo(l1[0], l1[1]); c.lineTo(tip[0], tip[1]); c.lineTo(l2[0], l2[1]); c.stroke();
+    }
+  }
+  c.restore();
+  // Loch
+  gPath(c, V, gCirc(H.cup[0], H.cup[1], G_CUP + 3, 24), 0); c.fillStyle = '#f2f2f2'; c.fill();
+  gPath(c, V, gCirc(H.cup[0], H.cup[1], G_CUP, 24), 0); c.fillStyle = '#0a1a10'; c.fill();
+  // Körper nach Tiefe sortiert
+  const items = [];
+  const f = H.f, n = f.length, nrm = [];
+  for (let i = 0; i < n; i++) { const a = f[i], b = f[(i + 1) % n], l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1; nrm.push([(b[1] - a[1]) / l, -(b[0] - a[0]) / l]); }
+  const O = f.map((v, i) => { const n1 = nrm[(i + n - 1) % n], n2 = nrm[i], d = 1 + n1[0] * n2[0] + n1[1] * n2[1] || 1; return [v[0] + G_WALL * (n1[0] + n2[0]) / d, v[1] + G_WALL * (n1[1] + n2[1]) / d]; });
+  for (let i = 0; i < n; i++) { const q = [f[i], O[i], O[(i + 1) % n], f[(i + 1) % n]]; items.push({d:V.D((f[i][0] + f[(i + 1) % n][0] + O[i][0] + O[(i + 1) % n][0]) / 4, (f[i][1] + f[(i + 1) % n][1] + O[i][1] + O[(i + 1) % n][1]) / 4, 0), fn:() => gPrism(c, V, q, G_WH, '#4b3480', '#ffcf3f')}); }
+  for (const r of H.bl || []) items.push({d:V.D(r[0] + r[2] / 2, r[1] + r[3] / 2, 0), fn:() => gPrism(c, V, gR(...r), G_WH, '#4b3480', '#ffcf3f')});
+  for (const b of H.bu || []) items.push({d:V.D(b[0], b[1], 0), fn:() => { gPrism(c, V, gCirc(b[0], b[1], b[2]), 20, '#ff4f9a', null); gPath(c, V, gCirc(b[0], b[1], b[2] * 0.55), 20); c.fillStyle = '#ffd1ea'; c.fill(); }});
+  for (const s of H.sp || []) {
+    const [ax, ay, bx, by] = gSpinAt(s, t), l = Math.hypot(bx - ax, by - ay) || 1, px = -(by - ay) / l * 6, py = (bx - ax) / l * 6;
+    let bar = [[ax + px, ay + py], [bx + px, by + py], [bx - px, by - py], [ax - px, ay - py]];
+    let ar = 0; bar.forEach((p, k) => { const q = bar[(k + 1) % 4]; ar += p[0] * q[1] - q[0] * p[1]; }); if (ar < 0) bar = bar.reverse();
+    items.push({d:V.D(s[0], s[1], 0) + 0.01, fn:() => { gPrism(c, V, bar, 16, '#ff9f3f', '#ffe0b0'); gPrism(c, V, gCirc(s[0], s[1], 11, 12), 26, '#ffcf3f', null); }});
+  }
+  for (const m of H.mv || []) { const p = gSlideAt(m, t); items.push({d:V.D(p.x + m[2] / 2, p.y + m[3] / 2, 0), fn:() => gPrism(c, V, gR(p.x, p.y, m[2], m[3]), 26, '#2fbfe0', '#c8f6ff')}); }
+  // Fahne
+  items.push({d:V.D(H.cup[0], H.cup[1], 0) - 0.01, fn:() => {
+    const b0 = V.P(H.cup[0], H.cup[1], 0), b1 = V.P(H.cup[0], H.cup[1], 70);
+    c.strokeStyle = '#f5f5f5'; c.lineWidth = Math.max(1.5, 2.5 * V.S(H.cup[0], H.cup[1], 35)); c.beginPath(); c.moveTo(b0[0], b0[1]); c.lineTo(b1[0], b1[1]); c.stroke();
+    const wv = Math.sin(now / 250) * 4, f1 = V.P(H.cup[0], H.cup[1], 70), f2 = V.P(H.cup[0] + 34, H.cup[1] + wv, 62), f3 = V.P(H.cup[0], H.cup[1], 52);
+    c.beginPath(); c.moveTo(f1[0], f1[1]); c.lineTo(f2[0], f2[1]); c.lineTo(f3[0], f3[1]); c.closePath(); c.fillStyle = '#ff4f6d'; c.fill();
+  }});
+  // Bälle der anderen (wo sie gerade liegen)
+  const me = myPid();
+  for (const pid of G.players) {
+    if (pid === me || gScore(G, pid, G.hi) != null) continue;
+    const p = G.pos[pid], pl = playerById(pid); if (!pl) continue;
+    const at = p && p[3] === G.hi ? p : [H.tee[0], H.tee[1]];
+    items.push({d:V.D(at[0], at[1], 0) - 0.02, fn:() => gBall(c, V, at[0], at[1], pl.color, 0.6, pl.name, now)});
+  }
+  const b = gl.ball;
+  if (b && gPlaying() && (!gl.done || (gl.sinkAt && now - gl.sinkAt < 500))) {
+    const sinkF = gl.sinkAt ? Math.max(0, 1 - (now - gl.sinkAt) / 500) : 1;
+    items.push({d:V.D(b.x, b.y, 0) - 0.03, fn:() => { if (sinkF < 1) { c.save(); c.globalAlpha = sinkF; } gBall(c, V, b.x, b.y, '#ffffff', 1, '', now); if (sinkF < 1) c.restore(); }});
+  }
+  items.sort((p, q) => q.d - p.d).forEach(it => it.fn());
+  // Zielhilfe
+  if (gl.aim && gl.aim.p > 0.02 && b) {
+    const L = Math.hypot(gl.aim.dx, gl.aim.dy) || 1, ux = gl.aim.dx / L, uy = gl.aim.dy / L, len = 40 + gl.aim.p * 220;
+    c.fillStyle = `hsl(${Math.round(120 - gl.aim.p * 120)},90%,58%)`;
+    for (let d = 16; d < len; d += 13) { const s = V.P(b.x + ux * d, b.y + uy * d, 1); c.beginPath(); c.arc(s[0], s[1], Math.max(1.5, 2.6 * V.S(b.x, b.y, 1) * (1 - d / len * 0.5)), 0, Math.PI * 2); c.fill(); }
+    const s = V.P(b.x, b.y, G_R * 2.4);
+    c.font = '700 13px "Press Start 2P", monospace'; c.textAlign = 'center'; c.strokeStyle = 'rgba(0,0,0,.7)'; c.lineWidth = 4;
+    const txt = Math.round(gl.aim.p * 100) + '%'; c.strokeText(txt, s[0], s[1] - 8); c.fillText(txt, s[0], s[1] - 8);
+  }
+  // Einblendungen
+  const banner = (txt, sub, a, col) => {
+    c.save(); c.globalAlpha = a; c.textAlign = 'center';
+    c.fillStyle = 'rgba(11,6,32,.72)'; c.fillRect(0, h / 2 - 46, w, sub ? 92 : 70);
+    c.font = `700 ${Math.min(34, Math.round(w / 20))}px "Bungee", "Press Start 2P", sans-serif`; c.fillStyle = col; c.fillText(txt, w / 2, h / 2 + (sub ? -4 : 10));
+    if (sub) { c.font = '600 16px Inter, system-ui, sans-serif'; c.fillStyle = '#fff'; c.fillText(sub, w / 2, h / 2 + 28); }
+    c.restore();
+  };
+  const ia = (now - gl.introAt) / 1000;
+  if (ia < 2.2 && !gl.done) banner(`${tx('Bahn')} ${G.hi + 1} · ${tx(H.n)}`, `Par ${H.par}`, Math.min(1, (2.2 - ia) * 2), '#ffcf3f');
+  else if (gl.sinkAt && now - gl.sinkAt < 2600) banner(tx(gTerm(gl.done, H.par)), tx(gl.done === 1 ? 'Eingelocht mit 1 Schlag' : `Eingelocht mit ${gl.done} Schlägen`), Math.min(1, (2600 - (now - gl.sinkAt)) / 500), '#4ff08f');
+  else if (gl.msg && now - gl.msgAt < 1700) banner(tx(gl.msg), '', Math.min(1, (1700 - (now - gl.msgAt)) / 400), '#39d6f2');
+}
+function gFrame(now) {
+  gl.raf = 0;
+  const cv = gl.cv, stage = document.getElementById('golf-stage');
+  if (!cv || !stage || cv.parentNode !== stage || S.tab !== 'golf' || !S.golf || S.golf.status !== 'running') return;
+  const w = Math.max(200, stage.clientWidth), h = Math.max(220, Math.round(Math.min(w * 0.6, window.innerHeight - (document.body.classList.contains('ingame') ? 120 : 210)))), dpr = Math.min(2, window.devicePixelRatio || 1);
+  if (gl.w !== w || gl.h !== h || cv.width !== Math.round(w * dpr)) { gl.w = w; gl.h = h; cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px'; gl.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); gl.vk = ''; }
+  gPhysics(now); gl.prev = now;
+  gDraw(now);
+  gl.raf = requestAnimationFrame(gFrame);
+}
+function gPt(e) { const r = gl.cv.getBoundingClientRect(); return [(e.clientX - r.left) * gl.w / r.width, (e.clientY - r.top) * gl.h / r.height]; }
+function golfEnsure() {
+  if (gl.cv) return gl.cv;
+  const cv = document.createElement('canvas');
+  cv.className = 'gcanvas'; cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', tx('Minigolf-Bahn'));
+  gl.cv = cv; gl.ctx = cv.getContext('2d');
+  cv.addEventListener('pointerdown', e => {
+    if (!gCanShoot() || !gl.V) return;
+    const [sx, sy] = gPt(e);
+    gl.aim = {sx, sy, dx:0, dy:0, p:0, id:e.pointerId};
+    try { cv.setPointerCapture(e.pointerId); } catch (er) {}
+    e.preventDefault();
+  });
+  cv.addEventListener('pointermove', e => {
+    const a = gl.aim; if (!a || a.id !== e.pointerId || !gl.V) return;
+    const [sx, sy] = gPt(e), w0 = gl.V.U(a.sx, a.sy), w1 = gl.V.U(sx, sy);
+    if (!w0 || !w1) return;
+    a.dx = w0[0] - w1[0]; a.dy = w0[1] - w1[1];
+    a.p = Math.min(1, Math.hypot(sx - a.sx, sy - a.sy) / (Math.min(gl.w, gl.h) * 0.42));
+  });
+  const up = e => { const a = gl.aim; if (!a || a.id !== e.pointerId) return; gl.aim = null; if (e.type === 'pointerup' && a.p > 0.03 && Math.hypot(a.dx, a.dy) > 0.5) golfShoot(a.dx, a.dy, a.p); };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  return cv;
+}
+function golfMount() {
+  const stage = document.getElementById('golf-stage'); if (!stage) return;
+  const cv = golfEnsure();
+  if (cv.parentNode !== stage) stage.appendChild(cv);
+  cv.classList.toggle('can', gCanShoot());
+  if (!gl.raf) gl.raf = requestAnimationFrame(gFrame);
+}
+
+/* Host: nächste Bahn, wenn alle fertig sind */
+function golfAdvance() {
+  const G = S.golf; if (!G || G.status !== 'running' || !ctl()) return;
+  if (G.hi + 1 >= G.holes.length) { roomWrite({'golf.status':'finished', 'golf.end':G.holes.length}); return; }
+  roomWrite({'golf.hi':G.hi + 1, 'golf.holeAt':Date.now(), 'golf.pos':{}});
+}
+function golfHostTick() {
+  const G = S.golf;
+  if (!G || G.status !== 'running' || !ctl()) { gl.advAt = 0; return; }
+  const act = gActive(G);
+  const all = act.length > 0 && act.every(pid => gScore(G, pid, G.hi) != null);
+  if (!all) { if (gl.advAt) { gl.advAt = 0; render(); } return; }
+  if (!gl.advAt || gl.advKey !== gKey(G)) { gl.advAt = Date.now() + 3500; gl.advKey = gKey(G); render(); return; }
+  if (Date.now() >= gl.advAt) { gl.advAt = 0; golfAdvance(); }
+}
+function golfSkip() {
+  const G = S.golf; if (!G || !ctl()) return;
+  const patch = {};
+  for (const pid of G.players) if (gScore(G, pid, G.hi) == null) patch['golf.sc.' + pid + '.' + G.hi] = GOLF_MAX;
+  roomWrite(patch).then(() => golfAdvance());
+}
+function golfStart(set) {
+  if (!ctl()) return;
+  const L = lobby(), players = roomMembers(L);
+  if (!players.length) { toast('Im Raum ist gerade niemand.'); return; }
+  D.golfSet = set;
+  const G = {id:uid(), status:'running', set, holes:golfHoles(set), hi:0, players, sc:{}, pos:{}, holeAt:Date.now(), transferred:false, end:0};
+  S.lobbies[S.room] = {...L, golf:G}; S.golf = gNorm(G);
+  roomWrite({golf:G}); golfOnSnap(); render();
+}
+function golfTransfer() {
+  const G = S.golf; if (!S.admin || !G || G.status !== 'finished' || G.transferred) return;
+  const ts = Date.now();
+  const entries = gRank(G).filter(r => r.rank <= 3 && playerById(r.id)).map((r, i) => ({id:uid(), playerId:r.id, delta:GOLF_PLACE_PTS[r.rank - 1], reason:`Golf · ${r.rank}. Platz (${r.tot} Schläge)`, ts:ts + i}));
+  roomWrite({'golf.transferred':true});
+  ops.addPoints(entries);
+  toast('Golf-Punkte sind in der Highscore-Liste.');
+}
+
+/* Ansichten */
+function viewGolf() {
+  if (!gl.view) gl.view = lsGet('darkime-golf-view', '2d') === '3d' ? '3d' : '2d';
+  const G = S.golf;
+  if (!G) return golfSetupHTML();
+  return G.status === 'finished' ? golfEndHTML(G) : golfPlayHTML(G);
+}
+function gViewChips() {
+  return `<div class="chips g-viewpick"><button class="chip" type="button" data-act="golf-view" data-v="2d" aria-pressed="${gl.view === '2d'}">2D</button><button class="chip" type="button" data-act="golf-view" data-v="3d" aria-pressed="${gl.view === '3d'}">3D</button></div>`;
+}
+function golfSetupHTML() {
+  const L = lobby(), hostP = L && L.host && playerById(L.host.pid);
+  if (!ctl()) return `<section class="section"><div class="card waiting">${COIN(56, 'spin')}<span class="eyebrow">${esc(L ? L.name : '')} · ⛳ Golf</span><h2>Gleich geht's los</h2>
+    <p class="muted">${hostP ? `<b>${esc(hostP.name)}</b> ist Host und stellt das Spiel gerade ein.` : 'Gerade ist niemand Host.'}</p>
+    ${hostStale(L) && L.members[myPid()] ? `<button class="btn btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}</div></section>`;
+  const set = D.golfSet || 'all', pick = golfHoles(set === 'quick' ? 'all' : set), n = set === 'quick' ? 6 : pick.length;
+  return `<section class="section gsec"><div class="card g-setup">
+    <span class="eyebrow">Du bist Host</span><h2 class="g-title">⛳ Minigolf</h2>
+    <p class="muted">Alle spielen gleichzeitig auf dem eigenen Gerät. Zielen: vom Ball weg ziehen und loslassen. Wer eingelocht hat, wartet auf die anderen. Wenigste Schläge gewinnen.</p>
+    <span class="lbl">Bahnen</span>
+    <div class="g-sets">${GOLF_SETS.map(s => `<button class="g-set" type="button" data-act="golf-set" data-v="${s[0]}" aria-pressed="${set === s[0]}"><b>${s[1]}</b><small>${s[2]}</small></button>`).join('')}</div>
+    <ol class="g-holes">${GOLF_HOLES.map((hh, i) => `<li class="${set === 'quick' || pick.includes(i) ? 'on' : ''}"><span class="g-num">${i + 1}</span><span class="g-hn">${esc(hh.n)}</span><small>Par ${hh.par}</small></li>`).join('')}</ol>
+    <span class="lbl">Ansicht auf diesem Gerät</span>${gViewChips()}
+    <button class="btn btn-gold btn-big" type="button" data-act="golf-start">Golf starten · ${n} Bahnen</button>
+    <p class="muted">Mitspieler im Raum: ${roomMembers(L).length}</p>
+  </div></section>`;
+}
+function golfPlayHTML(G) {
+  const H = gHole(G.holes[G.hi]), me = myPid(), playing = gPlaying(), host = ctl();
+  const act = gActive(G), allDone = act.length > 0 && act.every(pid => gScore(G, pid, G.hi) != null);
+  const rows = G.players.filter(pid => playerById(pid)).map(pid => {
+    const sc = gScore(G, pid, G.hi), pos = G.pos[pid], live = pid === me ? gl.strokes : pos && pos[3] === G.hi ? pos[2] : 0;
+    const t = gTotals(G, pid, G.hi), tot = t.tot + (sc ?? 0), par = t.par + (sc != null ? H.par : 0);
+    return {pid, sc, live, tot, diff:tot - par, away:!act.includes(pid)};
+  }).sort((a, b) => a.tot - b.tot);
+  const fmtDiff = d => d === 0 ? '±0' : d > 0 ? '+' + d : String(d);
+  const side = rows.map(r => { const p = ghost(r.pid);
+    return `<li class="${r.pid === me ? 'me' : ''} ${r.away ? 'away' : ''}">${avatar(p, 30)}<span class="g-pn">${esc(p.name)}</span>
+      <span class="g-now">${r.sc != null ? `✓ ${r.sc}` : r.away ? '–' : `⛳ ${r.live}`}</span><span class="g-tot">${r.tot}<small>${fmtDiff(r.diff)}</small></span></li>`; }).join('');
+  const mine = playing ? (gl.done ? `<div class="g-done">✓ ${gl.done === 1 ? 'Eingelocht mit 1 Schlag' : `Eingelocht mit ${gl.done} Schlägen`} · ${esc(gTerm(gl.done, H.par))}${allDone ? '' : ' <small>Warte auf die anderen …</small>'}</div>` : '') : `<div class="g-done spec">Du schaust zu.</div>`;
+  return `<section class="section gsec">
+    <div class="g-top">
+      <div class="g-hole"><span class="eyebrow">Bahn ${G.hi + 1} von ${G.holes.length}</span><b>${esc(H.n)}</b><span class="g-par">Par ${H.par}</span></div>
+      ${playing ? `<div class="g-me"><small>Schläge</small><b>${gl.strokes}</b></div>` : ''}
+      ${gViewChips()}
+    </div>
+    ${mine}
+    <div class="g-main">
+      <div class="golf-stage" id="golf-stage"></div>
+      <aside class="card g-side"><span class="lbl">Punktetafel</span><ol class="g-board">${side}</ol>
+        ${host ? `<div class="g-host">${allDone ? `<p class="okline">${G.hi + 1 >= G.holes.length ? 'Gleich kommt das Ergebnis …' : 'Gleich kommt die nächste Bahn …'}</p><button class="btn btn-sm btn-gold" type="button" data-act="golf-next">${G.hi + 1 >= G.holes.length ? 'Ergebnis zeigen' : 'Nächste Bahn'}</button>`
+          : `<button class="btn btn-sm" type="button" data-act="golf-skip">Weiter, ohne zu warten</button>`}<button class="btn btn-sm btn-ghost" type="button" data-act="golf-end">Beenden</button></div>` : ''}
+      </aside>
+    </div>
+    <p class="g-help">${isTouch() ? 'Mit dem Finger' : 'Mit der Maus'} auf das Feld drücken, nach hinten ziehen und loslassen. Je weiter du ziehst, desto fester der Schlag. Wasser kostet einen Strafschlag, höchstens ${GOLF_MAX} Schläge pro Bahn.</p>
+  </section>`;
+}
+function golfEndHTML(G) {
+  const rows = gRank(G), host = ctl(), end = G.end;
+  const fmtDiff = d => d === 0 ? '±0' : d > 0 ? '+' + d : String(d);
+  const list = rows.map(r => { const p = ghost(r.id);
+    return `<li class="g-r${r.rank}">${r.rank <= 3 ? ['🥇', '🥈', '🥉'][r.rank - 1] : `<span class="g-num">${r.rank}</span>`}${avatar(p, 40)}<b>${esc(p.name)}</b><span class="g-tot">${r.tot} <small>${r.tot === 1 ? 'Schlag' : 'Schläge'} · ${fmtDiff(r.tot - r.par)}</small></span>${r.rank <= 3 ? `<span class="g-pts">+${GOLF_PLACE_PTS[r.rank - 1]}</span>` : ''}</li>`; }).join('');
+  const holes = G.holes.slice(0, end);
+  const table = holes.length ? `<div class="g-tablewrap"><table class="g-table"><thead><tr><th>Bahn</th>${holes.map((_, j) => `<th>${j + 1}</th>`).join('')}<th>Σ</th></tr>
+    <tr class="g-parrow"><td>Par</td>${holes.map(i => `<td>${GOLF_HOLES[i].par}</td>`).join('')}<td>${holes.reduce((s, i) => s + GOLF_HOLES[i].par, 0)}</td></tr></thead>
+    <tbody>${rows.map(r => `<tr><td>${esc(ghost(r.id).name)}</td>${holes.map((i, j) => { const v = gScore(G, r.id, j) ?? GOLF_MAX, d = v - GOLF_HOLES[i].par; return `<td class="${v === 1 ? 'ace' : d < 0 ? 'under' : d > 0 ? 'over' : ''}">${v}</td>`; }).join('')}<td><b>${r.tot}</b></td></tr>`).join('')}</tbody></table></div>` : '';
+  return `<section class="section gsec"><div class="card g-end">
+    <span class="eyebrow">⛳ Minigolf · ${end} ${end === 1 ? 'Bahn' : 'Bahnen'}</span><h2>Ergebnis</h2>
+    <ol class="g-rank">${list}</ol>
+    ${table}
+    ${S.admin ? (G.transferred ? '<p class="okline">Golf-Punkte sind in der Highscore-Liste.</p>' : rows.length && end ? `<button class="btn btn-gold" type="button" data-act="golf-transfer">In Highscore übernehmen</button>` : '') : G.transferred ? '' : '<p class="muted">In die Highscore-Liste übernehmen kann nur der Spielleiter.</p>'}
+    ${host ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="golf-again">Nochmal spielen</button><button class="btn" type="button" data-act="golf-setup">Andere Bahnen</button></div>` : '<p class="muted">Der Host startet gleich die nächste Runde.</p>'}
+  </div></section>`;
+}
+const golfActions = {
+  'golf-set': b => { D.golfSet = b.dataset.v; render(); },
+  'golf-view': b => { gl.view = b.dataset.v === '3d' ? '3d' : '2d'; lsSet('darkime-golf-view', gl.view); gl.vk = ''; render(); },
+  'golf-start': () => golfStart(D.golfSet || 'all'),
+  'golf-next': () => { gl.advAt = 0; golfAdvance(); },
+  'golf-skip': () => confirmBox('Ohne Wartende weiter?', `Wer diese Bahn noch nicht fertig hat, bekommt ${GOLF_MAX} Schläge.`, [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Weiter', cls:'btn-gold', fn:golfSkip}]),
+  'golf-end': () => confirmBox('Golf beenden?', 'Gewertet werden alle Bahnen, die schon fertig gespielt sind.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => {
+    const G = S.golf; if (!G || !ctl()) return;
+    const act = gActive(G), done = act.length > 0 && act.every(pid => gScore(G, pid, G.hi) != null);
+    roomWrite({'golf.status':'finished', 'golf.end':G.hi + (done ? 1 : 0)});
+  }}]),
+  'golf-again': () => golfStart(S.golf ? S.golf.set || 'all' : 'all'),
+  'golf-setup': () => { if (!ctl()) return; S.golf = null; S.lobbies[S.room] = {...lobby(), golf:null}; roomWrite({golf:null}); render(); },
+  'golf-transfer': () => golfTransfer()
+};
+
+/* ---------- Räume: Quiz, Malen und Golf jederzeit, ohne Spielleiter ---------- */
 const ROOMS = ['r1', 'r2', 'r3'];
 const ROOM_MAX = 8;
 const ROOM_NAMES = {r1:'Raum 1', r2:'Raum 2', r3:'Raum 3'};
@@ -4050,8 +4669,8 @@ function normLobby(id, x) {
   const m = x.members && typeof x.members === 'object' && !Array.isArray(x.members) ? x.members : {};
   for (const [pid, v] of Object.entries(m)) if (pid && pid.length <= 40 && v && typeof v === 'object') members[pid] = {at:Number(v.at) || 0, dev:str(v.dev, 60)};
   const host = x.host && typeof x.host === 'object' && x.host.dev ? {pid:str(x.host.pid, 40), dev:str(x.host.dev, 60)} : null;
-  return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, kind:['quiz', 'malen'].includes(x.kind) ? x.kind : '',
-    quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null};
+  return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, kind:['quiz', 'malen', 'golf'].includes(x.kind) ? x.kind : '',
+    quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null};
 }
 function lobby(id = S.room) { return id ? (S.lobbies[id] || normLobby(id, null)) : null; }
 function myPid() { const me = lsGet('turnier-me', ''); return me && playerById(me) ? me : ''; }
@@ -4061,19 +4680,19 @@ function ctl() { const L = S.room && S.lobbies[S.room]; return !!(L && L.host &&
 function hostStale(L) { return !L || !L.host || Date.now() - (L.hostSeen || 0) > HOST_STALE_MS; }
 function roomState(L) {
   if (!L) return 'free';
-  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : null;
+  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : null;
   if (g && g.status === 'running') return 'running';
   if (g && g.status === 'finished') return 'finished';
   return roomMembers(L).length ? 'waiting' : 'free';
 }
-function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : 'raum'; }
-const roomTabs = ['raum', 'quiz', 'malen'];
+function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : 'raum'; }
+const roomTabs = ['raum', 'quiz', 'malen', 'golf'];
 const FV = () => window.firebase && firebase.firestore && firebase.firestore.FieldValue;
 function roomRef(r = S.room) { return db.collection('lobbies').doc(r); }
 function roomSet(r, spectate = false) {
   if (S.room === r && S.spectate === spectate) return;
   S.room = r; S.spectate = !!(r && spectate);
-  S.quiz = null; S.draw = null; dLastTurnKey = ''; D.dnew = false;
+  S.quiz = null; S.draw = null; S.golf = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false;
   roomApply();
 }
 function roomApply() {
@@ -4082,6 +4701,8 @@ function roomApply() {
   if (!q || !quizOk(q)) S.quiz = null;
   else if (!S.quiz || S.quiz.id !== q.id || (q.rev || 0) >= (S.quiz.rev || 0)) S.quiz = q;
   drawOnSnap(L && L.draw ? L.draw : null);
+  S.golf = L && L.golf ? gNorm(L.golf) : null;
+  golfOnSnap();
   handleAnswers();
   if (S.room && roomTabs.includes(S.tab)) { const v = roomView(); if (S.tab !== v) { S.tab = v; try { history.replaceState(null, '', '#' + v); } catch (e) {} } }
   if (!S.room && roomTabs.includes(S.tab)) S.tab = 'spiele';
@@ -4127,7 +4748,7 @@ async function roomJoin(r) {
   const old = myRoom();
   if (old && old !== r) await roomLeave(old, true);
   const patch = {members:{[me]:{at:Date.now(), dev:devId}}};
-  if (!roomMembers(L).length) { patch.kind = ''; patch.quiz = null; patch.draw = null; }
+  if (!roomMembers(L).length) { patch.kind = ''; patch.quiz = null; patch.draw = null; patch.golf = null; }
   if (hostStale(L) && (!L.host || !roomMembers(L).length || Date.now() - (L.hostSeen || 0) > HOST_AUTO_MS)) { patch.host = {pid:me, dev:devId}; patch.hostSeen = Date.now(); }
   try {
     await roomRef(r).set(patch, {merge:true});
@@ -4146,7 +4767,7 @@ async function roomLeave(r = S.room, silent = false) {
     patch.host = next ? {pid:next, dev:L.members[next].dev} : null;
     patch.hostSeen = next ? Date.now() : 0;
   }
-  if (!rest.length) { patch.kind = ''; patch.quiz = null; patch.draw = null; patch.host = null; }
+  if (!rest.length) { patch.kind = ''; patch.quiz = null; patch.draw = null; patch.golf = null; patch.host = null; }
   try { await roomRef(r).update(patch); } catch (e) {}
   if (r === S.room) roomSet('');
   if (!silent) { setTab('spiele'); toast(`Du hast ${L.name} verlassen.`); }
@@ -4164,7 +4785,7 @@ function roomTake() {
 function roomKind(k) { if (!ctl()) return; D.dnew = false; S.lobbies[S.room] = {...lobby(), kind:k}; roomWrite({kind:k}); S.tab = roomView(); render(); }
 function roomReset(r) {
   confirmBox(`${ROOM_NAMES[r]} zurücksetzen?`, 'Alle fliegen aus dem Raum und ein laufendes Spiel wird abgebrochen.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Zurücksetzen', cls:'btn-gold', fn:() => {
-    db.collection('lobbies').doc(r).set({members:{}, host:null, hostSeen:0, kind:'', quiz:null, draw:null}).then(() => toast(`${ROOM_NAMES[r]} ist wieder frei.`)).catch(e => onWriteError(e));
+    db.collection('lobbies').doc(r).set({members:{}, host:null, hostSeen:0, kind:'', quiz:null, draw:null, golf:null}).then(() => toast(`${ROOM_NAMES[r]} ist wieder frei.`)).catch(e => onWriteError(e));
   }}]);
 }
 function roomLiveList() { return ROOMS.map(r => S.lobbies[r]).filter(L => L && roomState(L) === 'running'); }
@@ -4172,7 +4793,7 @@ const ROOM_STATE = {free:['Frei', '#4ff08f'], waiting:['Wartet', '#ffcf3f'], run
 function roomCardHTML(r) {
   const L = lobby(r), mem = roomMembers(L), n = mem.length, me = myPid(), mine = !!(me && L.members[me]);
   const st = roomState(L), sl = ROOM_STATE[st];
-  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
+  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
   const hostP = L.host && playerById(L.host.pid);
   const slots = Array.from({length:ROOM_MAX}, (_, i) => mem[i] ? `<span class="rc-slot" title="${esc(ghost(mem[i]).name)}">${avatar(ghost(mem[i]), 34)}</span>` : '<span class="rc-slot empty"></span>').join('');
   let btns = '';
@@ -4193,10 +4814,10 @@ function roomCardHTML(r) {
 function viewRooms() {
   const me = myPid();
   return `<section class="section">
-    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz und Malen könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
+    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen und Golf könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
     ${me ? '' : `<div class="card rooms-hint"><p class="m-text">Damit du mitspielen kannst, muss dein Gerät zu einem Spieler gehören. Tipp im Tab <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button> bei deinem Namen auf „Das bin ich“ oder leg dir einen Spieler an.</p></div>`}
     <div class="rooms">${ROOMS.map(roomCardHTML).join('')}</div>
-    <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz oder Malen, stellt alles ein und startet.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
+    <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz, Malen oder Golf, stellt alles ein und startet.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
   </section>`;
 }
 function viewRoom() {
@@ -4207,6 +4828,7 @@ function viewRoom() {
       <div class="rc-pick">
         <button class="pick-big" type="button" data-act="room-kind" data-v="quiz" style="--tc:#39d6f2"><span aria-hidden="true">🧠</span><b>Quiz</b><small>Spielbrett mit Fragen aus 8 Themen. Wer dran ist, wählt Feld und Antwort.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="malen" style="--tc:#ff7fc3"><span aria-hidden="true">🎨</span><b>Malen</b><small>Einer malt, alle anderen raten. Wie skribbl.io.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="golf" style="--tc:#4ff08f"><span aria-hidden="true">⛳</span><b>Golf</b><small>Minigolf mit 20 Bahnen, in 2D oder 3D. Alle spielen gleichzeitig.</small></button>
       </div>
       <p class="muted">Danach stellst du das Spiel ein und startest es für alle im Raum.</p>
     </div></section>`;
@@ -4218,7 +4840,7 @@ function roomBarHTML() {
   const L = lobby(); if (!L) return '';
   const mem = roomMembers(L), me = myPid(), member = !!(me && L.members[me]), host = ctl();
   const st = roomState(L);
-  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : 'Spiel wird gewählt';
+  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : 'Spiel wird gewählt';
   const chips = mem.map(pid => { const p = ghost(pid), isHost = L.host && L.host.pid === pid;
     return `<span class="rb-mem ${pid === me ? 'me' : ''}">${avatar(p, 26)}<span>${esc(p.name)}</span>${isHost ? '<i title="Host" aria-label="Host">👑</i>' : ''}${(host || S.admin) && pid !== me ? `<button class="x" type="button" data-act="room-kick" data-pid="${esc(pid)}" aria-label="${esc(p.name)} aus dem Raum werfen" title="Rauswerfen">×</button>` : ''}</span>`; }).join('');
   return `<div class="roombar">
@@ -5247,6 +5869,7 @@ function tick() {
   renderGate();
   renderGatebar();
   roomBeat();
+  golfHostTick();
   if (ctl() && S.quiz && S.quiz.status === 'running' && S.answers && S.answers.length) handleAnswers();
   const q = S.quiz;
   if (!q || q.status !== 'running' || !q.cfg || q.phase === 'ready') return;
@@ -5609,7 +6232,7 @@ const actions = {
   'quiz-again': () => { const base = clone(S.quiz); withPending(() => quizStart(base)); },
   'quiz-new': () => withPending(() => quizDiscard())
 };
-Object.assign(actions, gamesActions, drawActions, roomActions);
+Object.assign(actions, gamesActions, drawActions, roomActions, golfActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
   if (e.target.classList && e.target.classList.contains('scrim')) { closeModal(); return; }
@@ -6571,7 +7194,7 @@ function boot() {
   if (!S.deco) S.deco = normDeco(null);
   renderBgm();
   const h = (location.hash || '').slice(1);
-  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen'].includes(h) ? 'spiele-pick' : viewFor(h);
+  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf'].includes(h) ? 'spiele-pick' : viewFor(h);
   const fc = CFG && CFG.firebase;
   if (!fc || !fc.apiKey || /HIER_EINTRAGEN/.test(fc.apiKey) || /DEIN-PROJEKT/.test(fc.projectId || '') || !window.firebase) {
     S.mode = 'setup'; S.loaded = true;
