@@ -1,5 +1,5 @@
 rules_version = '2';
-// Alans Turnier: Regeln für die Firestore-Datenbank.
+// Darkime: Regeln für die Firestore-Datenbank.
 // Einfach komplett in Firebase einfügen (Firestore Database > Regeln) und veröffentlichen.
 // Du musst nichts ändern: Das erste Konto, das sich auf der Seite als Spielleiter anmeldet,
 // wird automatisch der Spielleiter. Alle anderen Konten bleiben Gäste.
@@ -123,7 +123,26 @@ service cloud.firestore {
           && request.resource.data.k in ['guess', 'choose', 'like']
           && request.resource.data.v is string && request.resource.data.v.size() <= 60
           && request.resource.data.ts is number;
-        allow update, delete: if isAdmin();
+        allow update: if isAdmin();
+        allow delete: if true;
+      }
+
+      // Spiele-Räume (Quiz und Malen): jeder darf beitreten und als Host das Spiel steuern. Höchstens 8 Spieler pro Raum.
+      match /lobbies/{id} {
+        allow read: if true;
+        allow create, update: if id in ['r1', 'r2', 'r3']
+          && request.resource.data.keys().hasOnly(['name', 'members', 'host', 'hostSeen', 'kind', 'quiz', 'draw', 'v'])
+          && (!('members' in request.resource.data) || (request.resource.data.members is map && request.resource.data.members.size() <= 8));
+        allow delete: if isAdmin();
+      }
+
+      // Malen: Galerie-Bilder, die der Host speichert und beim nächsten Spiel wieder löscht.
+      match /dgal/{id} {
+        allow read: if true;
+        allow create: if request.resource.data.keys().hasOnly(['gid', 'room', 'turn', 'word', 'd', 'drawer', 'img', 'ts'])
+          && request.resource.data.img is string && request.resource.data.img.size() < 120000;
+        allow update: if isAdmin();
+        allow delete: if true;
       }
 
       // Alles andere (Punkte, Einstellungen, Quiz, Rad, Ankündigungen): lesen alle, ändern nur der Spielleiter.
