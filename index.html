@@ -742,6 +742,48 @@ button.bcell[disabled]{cursor:default}
 }
 @media (max-width:420px){.gtile b{font-size:20px}.gtile b.gfav{font-size:17px}.gnums{grid-template-columns:1fr 1fr}.gnums .field:last-child{grid-column:span 2}}
 
+/* Spiele-Auswahl (Quiz / Malen) */
+.subnav{margin-top:26px}
+.subnav[hidden]{display:none}
+.hub{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:640px}
+.hub-btn{display:flex;align-items:center;gap:14px;border:0;background:var(--panel);color:var(--ink);padding:10px 16px;text-align:left;margin:4px;
+  box-shadow:0 -3px 0 var(--edge),0 3px 0 var(--edge),-3px 0 0 var(--edge),3px 0 0 var(--edge),0 7px 0 3px var(--shadow)}
+.hub-btn:hover{background:var(--panel-2)}
+.hub-btn[aria-pressed="true"]{background:var(--panel-2);box-shadow:0 -3px 0 var(--coin),0 3px 0 var(--coin),-3px 0 0 var(--coin),3px 0 0 var(--coin),0 7px 0 3px var(--shadow)}
+.hub-ico{font-size:30px;line-height:1}
+.hub-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.hub-txt b{font-family:var(--display);font-size:24px;text-transform:uppercase;line-height:1}
+.hub-btn[aria-pressed="true"] .hub-txt b{color:var(--coin)}
+.hub-txt small{color:var(--muted);font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hub-txt small.hub-live{color:var(--hp);animation:blink 1.2s steps(1) infinite}
+@media (max-width:680px){.subnav{margin-top:16px}.hub{gap:8px}.hub-btn{padding:8px 10px;gap:10px}.hub-ico{font-size:24px}.hub-txt b{font-size:20px}.hub-txt small{font-size:12px}}
+@media (prefers-reduced-motion:reduce){.hub-txt small.hub-live{animation:none}}
+
+/* Malen: Schwierigkeit */
+.dchoice{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:150px;padding:12px 18px;border:0;background:#141026;color:var(--ink);
+  box-shadow:0 0 0 4px var(--lc),0 0 0 7px var(--shadow),0 8px 0 4px rgba(0,0,0,.45);margin:6px}
+.dchoice:hover{background:#1f1840;transform:translateY(-2px)}
+.dchoice small{font-family:var(--pixel);font-size:9px;text-transform:uppercase;color:var(--lc);letter-spacing:.04em}
+.dchoice b{font-family:var(--display);font-size:clamp(22px,2vw,30px);text-transform:uppercase;line-height:1.05}
+.dchoices{gap:16px}
+.dlv{display:inline-block;font-family:var(--pixel);font-size:9px;text-transform:uppercase;color:var(--lc);padding:5px 7px;box-shadow:0 0 0 2px var(--lc);line-height:1.2;white-space:nowrap}
+.dover-box.rv{box-shadow:0 0 0 3px var(--shadow),0 0 0 6px var(--lc,var(--coin))}
+.dover-box.rv .dreveal{color:var(--lc,var(--coin))}
+.dgal figure{box-shadow:0 0 0 3px var(--lc,var(--shadow))}
+.dlvchip{box-shadow:inset 0 0 0 2px var(--lc)}
+.dlvchip[aria-pressed="true"]{background:var(--lc);color:#120d22}
+.dlvchip small{color:inherit;opacity:.7;margin-left:2px}
+.dsteps{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px}
+.dstepper{display:flex;align-items:center;gap:10px}
+.dstepper b{font-family:var(--pixel);font-size:20px;color:var(--coin);min-width:3.4em;text-align:center}
+.dstepper b small{font-size:10px;color:var(--muted)}
+.dstep{width:46px;height:46px;border:0;background:var(--panel-2);color:var(--ink);font-family:var(--display);font-size:26px;line-height:1;box-shadow:0 0 0 3px var(--shadow)}
+.dstep:hover{background:var(--edge)}
+.dstep[disabled]{opacity:.35;cursor:default}
+.dwgroup summary{color:var(--lc);font-weight:700}
+.dwown{display:flex;flex-direction:column;gap:4px}
+@media (max-width:420px){.dsteps{grid-template-columns:1fr}.dchoice{min-width:0;width:100%}}
+
 /* Malen */
 .dstage{display:grid;grid-template-columns:minmax(200px,250px) minmax(0,1fr) minmax(250px,320px);gap:22px;align-items:start}
 .dtop{margin-bottom:16px}
@@ -978,6 +1020,7 @@ const SHELL = `<div id="fly-site" aria-hidden="true"></div>
   </div>
   <div id="gatebar"></div>
 </header>
+<nav class="wrap subnav" id="subnav" aria-label="Spiele" hidden></nav>
 <main class="wrap" id="main"><div class="loading"><p>Lade Turnier …</p></div></main>
 <footer class="wrap foot" id="foot"></footer>
 <div id="modal-root"></div>
@@ -1932,8 +1975,20 @@ const DEFAULT_SETTINGS = {title:'Alans Turnier', date:'', prize:100, places:3, m
 const LS_KEY = 'spieleturnier-v1';
 const SHARE_URL = location.href.split('#')[0].split('?')[0];
 const RING = 2 * Math.PI * 44;
-const TABS = [['rangliste', 'Highscore'], ['spieler', 'Spieler'], ['rad', 'Zufallsrad'], ['spiele', 'Spieleliste'], ['quiz', 'Quiz'], ['malen', 'Malen'], ['news', 'Ankündigungen'], ['einstellungen', 'Optionen']];
-const TAB_SHORT = {rad:'Rad', spiele:'Spiele', news:'News', einstellungen:'Optionen'};
+const TABS = [['rangliste', 'Highscore'], ['spieler', 'Spieler'], ['rad', 'Zufallsrad'], ['liste', 'Spieleliste'], ['spiele', 'Spiele'], ['news', 'Ankündigungen'], ['einstellungen', 'Optionen']];
+const TAB_SHORT = {rad:'Rad', liste:'Liste', news:'News'};
+/* Ansichten: "Spiele" ist der Ober-Tab für Quiz und Malen */
+const VIEWS = ['rangliste', 'spieler', 'rad', 'liste', 'quiz', 'malen', 'news', 'einstellungen'];
+const HUB = ['quiz', 'malen'];
+const viewOk = t => VIEWS.includes(t);
+function hubPick() {
+  const q = S.quiz && S.quiz.status === 'running', d = S.draw && S.draw.status === 'running';
+  if (q && !d) return 'quiz';
+  if (d && !q) return 'malen';
+  let last = 'quiz'; try { last = localStorage.getItem('turnier-sub') || 'quiz'; } catch (e) {}
+  return HUB.includes(last) ? last : 'quiz';
+}
+function viewFor(t) { return t === 'spiele' ? hubPick() : viewOk(t) ? t : 'rangliste'; }
 
 /* ---------- State ---------- */
 /* ---------- Spieler-Stil: Schrift, Farbverlauf, Rahmen, Spruch, Foto zuschneiden ---------- */
@@ -2040,7 +2095,7 @@ const S = {
   gate:{open:false, openAt:0}, preview:false, pub:'idle', secret:null, locked:false, lockMsg:'', news:null, ticker:null, pics:[], deco:null,
   wheel:{items:[], history:[], spin:null, rot:0, removeDrawn:true},
   tab:'rangliste', modal:null,
-  games:[], gvotes:[], draw:null, dwords:{list:[], only:false}, dgal:[]
+  games:[], gvotes:[], draw:null, dwords:{e:[], m:[], h:[], only:false}, dgal:[]
 };
 const D = {
   np:blankPlayer(''),
@@ -2056,7 +2111,7 @@ const D = {
   news:{kind:'text', title:'', text:'', date:'', time:'20:00'},
   tk:{text:'', img:''}, tke:{}, tkTag:null,
   gm:null, gf:{q:'', st:'alle', sort:'ablauf'},
-  dset:{players:null, rounds:2, secs:80, shuffle:false}, dnew:false, dwText:null
+  dset:{players:null, rounds:2, secs:80, shuffle:false, hints:true, levels:['e', 'm', 'h']}, dnew:false, dwt:{e:null, m:null, h:null}
 };
 let db = null;
 
@@ -2311,6 +2366,8 @@ function subscribe() {
   U(db.doc('meta/gate').onSnapshot(d => { const g = d.exists ? d.data() : null; S.gate = {open: !!(g && g.open), openAt: Number(g && g.openAt) || 0}; got('gate', d); }, fail));
   U(db.doc('meta/quiz').onSnapshot(d => {
     const q = d.exists ? migrateQuiz(clone(d.data())) : null;
+    const wasRun = !!(S.quiz && S.quiz.status === 'running');
+    if (q && q.status === 'running' && !wasRun && S.loaded) hubAuto('quiz');
     if (!q) S.quiz = null;
     else if (!S.quiz || (q.rev || 0) >= (S.quiz.rev || 0)) S.quiz = quizOk(q) ? q : null;
     got('quiz', d);
@@ -2496,11 +2553,13 @@ function render() {
   else if (S.mode === 'firstrun') html = firstRunHTML();
   else if (S.mode === 'lock') html = lockHTML();
   else if (blocked()) html = `<div style="min-height:70vh"></div>`;
-  else html = ({rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, spiele:viewGames, quiz:viewQuiz, malen:viewDraw, news:viewNews, einstellungen:viewSettings}[S.tab] || viewBoard)();
+  else if (S.tab === 'spiele-pick') html = `<div class="loading">${COIN(48, 'spin')}</div>`;
+  else html = ({rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, quiz:viewQuiz, malen:viewDraw, news:viewNews, einstellungen:viewSettings}[S.tab] || viewBoard)();
   const oldStand = m.querySelector('.stand');
   const oldKey = oldStand ? oldStand.dataset.key : null;
   const before = standCapture(oldStand);
   m.classList.toggle('wide', /class="section (qsec|dsec)"/.test(html));
+  renderSubnav();
   if (S.tab === 'malen' && !blocked() && S.mode === 'db' && S.loaded && dPartsOk(m)) dPatchParts();
   else { patch(m, html); dPrev = dParts ? {...dParts} : {}; }
   dcMount();
@@ -2517,6 +2576,24 @@ function render() {
   if (S.tab === 'quiz') ensurePickLoop();
   syncMusic();
 }
+function tabsHidden() { return S.mode === 'loading' || S.mode === 'setup' || S.mode === 'lock' || S.mode === 'firstrun' || (S.mode === 'db' && !S.loaded) || blocked(); }
+function renderSubnav() {
+  const el = $('#subnav'); if (!el) return;
+  const hide = tabsHidden();
+  let h = '';
+  if (!hide && HUB.includes(S.tab)) {
+    const st = k => {
+      const g = k === 'quiz' ? S.quiz : S.draw;
+      if (g && g.status === 'running') return '<small class="hub-live">■ Läuft gerade</small>';
+      if (g && g.status === 'finished') return '<small>Ergebnis ansehen</small>';
+      return `<small>${k === 'quiz' ? 'Fragen-Spielbrett' : 'Zeichnen und raten'}</small>`;
+    };
+    h = `<div class="hub" role="group" aria-label="Spiel wählen">${[['quiz', '🧠', 'Quiz'], ['malen', '🎨', 'Malen']].map(([k, i, l]) => `<button class="hub-btn" type="button" data-act="tab" data-tab="${k}" aria-pressed="${S.tab === k}"><span class="hub-ico" aria-hidden="true">${i}</span><span class="hub-txt"><b>${l}</b>${st(k)}</span></button>`).join('')}</div>`;
+  }
+  el.classList.toggle('wide', HUB.includes(S.tab) && $('#main').classList.contains('wide'));
+  el.hidden = !h;
+  if (el.innerHTML !== h) el.innerHTML = h;
+}
 function renderFoot() {
   const el = $('#foot'); if (!el) return;
   const h = S.mode !== 'db' ? '' : S.admin
@@ -2525,6 +2602,7 @@ function renderFoot() {
   if (el.innerHTML !== h) el.innerHTML = h;
 }
 function renderHeader() {
+  if (S.tab === 'spiele-pick' && (S.mode !== 'db' || S.loaded)) S.tab = hubPick();
   if (S.tab === 'einstellungen' && !S.admin && S.mode !== 'loading') S.tab = 'rangliste';
   $('#brand-title').textContent = S.settings.title;
   const parts = [];
@@ -2532,10 +2610,11 @@ function renderHeader() {
   parts.push(`${S.players.length} Spieler`);
   $('#brand-sub').textContent = parts.join(' · ');
   document.title = S.settings.title;
-  const hideTabs = S.mode === 'loading' || S.mode === 'setup' || S.mode === 'lock' || S.mode === 'firstrun' || (S.mode === 'db' && !S.loaded) || blocked();
+  const hideTabs = tabsHidden();
   const tabs = hideTabs ? [] : TABS.filter(t => t[0] !== 'einstellungen' || S.admin);
-  const live = S.quiz && S.quiz.status === 'running';
-  $('#tabs').innerHTML = tabs.map(([k, l]) => `<button class="tab" type="button" data-act="tab" data-tab="${k}" aria-selected="${S.tab === k}">${TAB_SHORT[k] ? `<span class="t-long">${l}</span><span class="t-short">${TAB_SHORT[k]}</span>` : l}${k === 'quiz' && live ? ' <span aria-hidden="true" style="color:var(--hp)">■</span><span class="vh">(läuft)</span>' : ''}</button>`).join('');
+  const live = (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running');
+  const tabsHTML = tabs.map(([k, l]) => `<button class="tab" type="button" data-act="tab" data-tab="${k}" aria-selected="${S.tab === k || (k === 'spiele' && HUB.includes(S.tab))}">${TAB_SHORT[k] ? `<span class="t-long">${l}</span><span class="t-short">${TAB_SHORT[k]}</span>` : l}${k === 'spiele' && live ? ' <span aria-hidden="true" style="color:var(--hp)">■</span><span class="vh">(läuft)</span>' : ''}</button>`).join('');
+  if ($('#tabs').innerHTML !== tabsHTML) $('#tabs').innerHTML = tabsHTML;
   const pill = $('#pill');
   let txt = 'Lädt …', cls = '';
   if (S.mode === 'db') { txt = S.slow ? 'Verbindung langsam' : (S.admin ? 'Gespeichert' : 'Live'); cls = S.slow ? 'is-warn' : 'is-ok'; }
@@ -3686,20 +3765,28 @@ function toggleHype(gid) {
 }
 
 /* ---------- Malen: einer zeichnet, alle anderen raten (wie skribbl.io) ---------- */
-const DRAW_WORDS = ['Haus', 'Baum', 'Sonne', 'Mond', 'Stern', 'Wolke', 'Regenbogen', 'Blitz', 'Schneemann', 'Regenschirm',
-  'Katze', 'Hund', 'Maus', 'Hase', 'Pferd', 'Kuh', 'Schwein', 'Ente', 'Frosch', 'Fisch',
-  'Hai', 'Wal', 'Krake', 'Schildkröte', 'Schnecke', 'Biene', 'Spinne', 'Schmetterling', 'Schlange', 'Pinguin',
-  'Eule', 'Elefant', 'Giraffe', 'Löwe', 'Affe', 'Krokodil', 'Dinosaurier', 'Drache', 'Einhorn', 'Geist',
-  'Roboter', 'Alien', 'Pirat', 'Ritter', 'Zauberer', 'Auto', 'Fahrrad', 'Bus', 'Zug', 'Flugzeug',
-  'Hubschrauber', 'Rakete', 'Schiff', 'U-Boot', 'Traktor', 'Skateboard', 'Apfel', 'Banane', 'Erdbeere', 'Kirsche',
-  'Zitrone', 'Ananas', 'Karotte', 'Pilz', 'Pizza', 'Burger', 'Pommes', 'Hotdog', 'Eis', 'Kuchen',
-  'Donut', 'Popcorn', 'Ei', 'Brezel', 'Tasse', 'Flasche', 'Gabel', 'Pfanne', 'Brille', 'Hut',
-  'Krone', 'Schuh', 'Socke', 'Mütze', 'T-Shirt', 'Rucksack', 'Uhr', 'Handy', 'Computer', 'Fernseher',
-  'Controller', 'Kopfhörer', 'Kamera', 'Glühbirne', 'Kerze', 'Schlüssel', 'Tür', 'Leiter', 'Bett', 'Stuhl',
-  'Sofa', 'Badewanne', 'Toilette', 'Zahnbürste', 'Schere', 'Bleistift', 'Buch', 'Brief', 'Geschenk', 'Ballon',
-  'Gitarre', 'Trommel', 'Mikrofon', 'Fußball', 'Pokal', 'Würfel', 'Schwert', 'Bombe', 'Diamant', 'Schatztruhe',
-  'Anker', 'Leuchtturm', 'Brücke', 'Berg', 'Vulkan', 'Insel', 'Palme', 'Kaktus', 'Blume', 'Zelt',
-  'Lagerfeuer', 'Burg', 'Weihnachtsbaum', 'Herz', 'Auge', 'Zahn', 'Tornado', 'Schneeflocke', 'Kompass', 'Sandburg'];
+const DRAW_WORDS = {
+  e:['Haus', 'Baum', 'Sonne', 'Mond', 'Stern', 'Wolke', 'Blitz', 'Herz', 'Auge', 'Zahn', 'Hand', 'Katze', 'Hund', 'Maus', 'Hase',
+    'Kuh', 'Schwein', 'Ente', 'Frosch', 'Fisch', 'Schnecke', 'Biene', 'Schlange', 'Apfel', 'Banane', 'Kirsche', 'Erdbeere', 'Karotte', 'Pilz', 'Pizza',
+    'Eis', 'Ei', 'Kuchen', 'Tasse', 'Flasche', 'Brille', 'Hut', 'Krone', 'Schuh', 'Socke', 'Uhr', 'Schlüssel', 'Tür', 'Leiter', 'Bett',
+    'Stuhl', 'Tisch', 'Buch', 'Ballon', 'Ball', 'Blume', 'Berg', 'Kerze', 'Geschenk', 'Würfel', 'Auto', 'Bus', 'Schiff', 'Geist', 'Regenbogen'],
+  m:['Pferd', 'Löwe', 'Affe', 'Eule', 'Hai', 'Wal', 'Pinguin', 'Schildkröte', 'Krokodil', 'Giraffe', 'Elefant', 'Spinne', 'Schmetterling', 'Krake', 'Drache',
+    'Einhorn', 'Dinosaurier', 'Roboter', 'Pirat', 'Ritter', 'Zauberer', 'Alien', 'Fahrrad', 'Zug', 'Flugzeug', 'Hubschrauber', 'Rakete', 'U-Boot', 'Traktor', 'Skateboard',
+    'Gitarre', 'Trommel', 'Mikrofon', 'Kopfhörer', 'Controller', 'Kamera', 'Glühbirne', 'Zahnbürste', 'Badewanne', 'Toilette', 'Regenschirm', 'Schneemann', 'Weihnachtsbaum', 'Schatztruhe', 'Kompass',
+    'Anker', 'Brücke', 'Burg', 'Zelt', 'Kaktus', 'Palme', 'Insel', 'Vulkan', 'Tornado', 'Brezel', 'Popcorn', 'Hotdog', 'Burger', 'Pommes', 'Donut',
+    'Ananas', 'Pokal', 'Diamant', 'Rucksack', 'Fernseher', 'Handy', 'Schere', 'Bleistift', 'Fußball'],
+  h:['Spaghetti Bolognese', 'Achterbahn', 'Riesenrad', 'Eiffelturm', 'Freiheitsstatue', 'Pyramide', 'Leuchtturm', 'Wasserfall', 'Sternschnuppe', 'Sonnenfinsternis',
+    'Mondlandung', 'Astronaut', 'Taucher', 'Feuerwehrmann', 'Zahnarzt', 'Polizeiauto', 'Krankenwagen', 'Fallschirm', 'Heißluftballon', 'Schneeballschlacht',
+    'Sandburg', 'Lagerfeuer', 'Gartenzwerg', 'Vogelscheuche', 'Bienenstock', 'Spinnennetz', 'Seifenblase', 'Kuckucksuhr', 'Wäscheleine', 'Hängematte',
+    'Trampolin', 'Staubsauger', 'Rasenmäher', 'Zuckerwatte', 'Wackelpudding', 'Fischstäbchen', 'Rührei', 'Weihnachtsmann', 'Osterhase', 'Kartenhaus',
+    'Zauberstab', 'Schatzkarte', 'Ritterrüstung', 'Geburtstagstorte', 'Schneeflocke']
+};
+/* Schwierigkeit: Kürzel, Name, Rahmenfarbe, Punkte-Faktor */
+const DLEVELS = [['e', 'Leicht', '#4ff08f', 1, 'leichte'], ['m', 'Mittel', '#ffb020', 1.5, 'mittlere'], ['h', 'Schwer', '#ff4f6d', 2, 'schwere']];
+const dLv = k => DLEVELS.find(l => l[0] === k) || DLEVELS[1];
+const dMult = k => dLv(k)[3];
+const dWordCount = () => DLEVELS.reduce((t, l) => t + DRAW_WORDS[l[0]].length, 0);
+function dLvBadge(k, withMult) { const l = dLv(k); return `<span class="dlv" style="--lc:${l[2]}">${l[1]}${withMult ? ` · ×${String(l[3]).replace('.', ',')}` : ''}</span>`; }
 const DW = 1000, DH = 750;
 const DCOLORS = [['#000000', 'Schwarz'], ['#ffffff', 'Weiß'], ['#8a8a8a', 'Grau'], ['#d2d2d2', 'Hellgrau'], ['#e8202a', 'Rot'], ['#ff7b00', 'Orange'], ['#ffd400', 'Gelb'], ['#2fbf3a', 'Grün'],
   ['#0b6e2a', 'Dunkelgrün'], ['#22b5f2', 'Hellblau'], ['#1f3fd1', 'Blau'], ['#8e2bd1', 'Lila'], ['#ff7fc3', 'Rosa'], ['#a35a2a', 'Braun'], ['#4a240a', 'Dunkelbraun'], ['#ffd2a8', 'Hautfarbe']];
@@ -3712,18 +3799,24 @@ function normDraw(x) {
   const scores = {}; for (const id of players) scores[id] = Math.round(Number(obj(x.scores)[id]) || 0);
   const guessed = {}; for (const [k, v] of Object.entries(obj(x.guessed))) if (players.includes(k)) guessed[k] = {pts:Math.round(Number(v && v.pts) || 0), t:Number(v && v.t) || 0};
   const likes = {}; for (const k of Object.keys(obj(x.likes))) if (players.includes(k)) likes[k] = 1;
-  return {v:1, id:str(x.id, 40), status:x.status, players, rounds:Math.round(num(x.rounds, 1, 5, 2)), secs:Math.round(num(x.secs, 30, 240, 80)),
+  const lvOk = k => DLEVELS.some(l => l[0] === k);
+  const levels = (Array.isArray(x.levels) ? x.levels : []).filter(lvOk);
+  const choices = (Array.isArray(x.choices) ? x.choices : []).map(w => str(w, 40)).filter(Boolean).slice(0, 3);
+  const cdiff = choices.map((_, i) => lvOk((x.cdiff || [])[i]) ? x.cdiff[i] : 'm');
+  return {v:1, id:str(x.id, 40), status:x.status, players, rounds:Math.round(num(x.rounds, 1, 10, 2)), secs:Math.round(num(x.secs, 30, 240, 80)),
+    levels:levels.length ? [...new Set(levels)] : ['e', 'm', 'h'], hints:x.hints !== false,
     turn:Math.max(0, Math.round(Number(x.turn) || 0)), phase:['choose', 'draw', 'reveal', 'done'].includes(x.phase) ? x.phase : 'choose',
-    drawer:str(x.drawer, 40), choices:(Array.isArray(x.choices) ? x.choices : []).map(w => str(w, 40)).filter(Boolean).slice(0, 3),
-    word:str(x.word, 40), phaseAt:Number(x.phaseAt) || 0, guessed, likes, scores,
+    drawer:str(x.drawer, 40), choices, cdiff, word:str(x.word, 40), wd:lvOk(x.wd) ? x.wd : 'm', phaseAt:Number(x.phaseAt) || 0, guessed, likes, scores,
     used:(Array.isArray(x.used) ? x.used : []).map(w => str(w, 40)).filter(Boolean).slice(-400), transferred:x.transferred === true, rev:Number(x.rev) || 0, created:Number(x.created) || 0};
 }
 function normDwords(x) {
-  const list = (Array.isArray(x && x.list) ? x.list : []).map(w => str(w, 30)).filter(Boolean).slice(0, 300);
-  return {list, only:!!(x && x.only)};
+  const clean = v => (Array.isArray(v) ? v : []).map(w => str(w, 30)).filter(Boolean).slice(0, 200);
+  const o = {e:clean(x && x.e), m:clean(x && x.m), h:clean(x && x.h), only:!!(x && x.only)};
+  if (x && Array.isArray(x.list) && !x.m) o.m = clean(x.list);
+  return o;
 }
-function normGal(id, x) { x = x || {}; return {id, gid:str(x.gid, 40), turn:Number(x.turn) || 0, word:str(x.word, 40), drawer:str(x.drawer, 40), img:typeof x.img === 'string' && /^data:image\/(jpeg|webp|png);base64,/.test(x.img) && x.img.length < 120000 ? x.img : ''}; }
-
+const dOwnAll = () => { const w = S.dwords || {}; return [...(w.e || []), ...(w.m || []), ...(w.h || [])]; };
+function normGal(id, x) { x = x || {}; return {id, gid:str(x.gid, 40), turn:Number(x.turn) || 0, word:str(x.word, 40), d:DLEVELS.some(l => l[0] === x.d) ? x.d : '', drawer:str(x.drawer, 40), img:typeof x.img === 'string' && /^data:image\/(jpeg|webp|png);base64,/.test(x.img) && x.img.length < 120000 ? x.img : ''}; }
 /* Wörter vergleichen: Groß/klein, Umlaute (ä = ae = a), Leerzeichen und Bindestriche egal */
 function dForms(s) {
   const base = String(s || '').toLowerCase().replace(/ß/g, 'ss');
@@ -3751,7 +3844,7 @@ function hashStr(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h
 function dHintIdx(st) {
   const chars = [...st.word];
   const letters = chars.map((ch, i) => /[\p{L}\p{N}]/u.test(ch) ? i : -1).filter(i => i >= 0);
-  if (letters.length < 4 || st.phase !== 'draw') return [];
+  if (!st.hints || letters.length < 4 || st.phase !== 'draw') return [];
   const f = (Date.now() - st.phaseAt) / (st.secs * 1000);
   let n = f >= .75 ? 2 : f >= .5 ? 1 : 0;
   if (letters.length >= 8 && f >= .88) n++;
@@ -3956,10 +4049,16 @@ function drawSync() {
     if (gk) dc.unsubG = db.collection('dgal').where('gid', '==', gk).onSnapshot(sn => { S.dgal = sn.docs.map(d => normGal(d.id, d.data())).filter(x => x.img).sort((a, b) => a.turn - b.turn); if (S.tab === 'malen') render(); }, () => {});
   }
 }
+function hubAuto(k) {
+  if (S.admin || !HUB.includes(S.tab) || S.tab === k) return;
+  S.tab = k;
+  try { localStorage.setItem('turnier-sub', k); if (location.hash !== '#' + k) history.replaceState(null, '', '#' + k); } catch (e) {}
+}
 function drawOnSnap(x) {
   const st = normDraw(x);
   if (S.draw && (st.rev || 0) < (S.draw.rev || 0)) return;
   const prev = S.draw;
+  if (st.status === 'running' && !(prev && prev.status === 'running') && S.loaded) hubAuto('malen');
   S.draw = st;
   const key = dKey(st);
   if (key && key !== dLastTurnKey) { dLastTurnKey = key; dLastGuessed = 0; if (S.tab === 'malen' && dMe() === st.drawer) { ensureAudio(); sfx('chosen'); } }
@@ -3977,26 +4076,49 @@ function sendDact(k, v, id = uid()) {
 }
 
 /* Spielleiter-Gerät: steuert den Ablauf */
+function dDrawerPts(st) { return Math.round(D_DRAWER_PTS * dMult(st.wd) / 5) * 5; }
 function dGuessers(st) { return st.players.filter(id => id !== st.drawer && playerById(id)); }
 function dPickWords(st) {
-  const own = (S.dwords || {}).list || [];
-  const pool = (S.dwords && S.dwords.only && own.length >= 3) ? own : [...DRAW_WORDS, ...own];
-  const seen = new Set(), uniq = pool.filter(w => { const k = w.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; });
+  const levels = DLEVELS.map(l => l[0]).filter(k => (st.levels || ['e', 'm', 'h']).includes(k));
+  const own = S.dwords || {}, onlyOwn = !!own.only && dOwnAll().length >= 3;
   const used = new Set((st.used || []).map(w => w.toLowerCase()));
-  let fresh = uniq.filter(w => !used.has(w.toLowerCase()));
-  if (fresh.length < 3) fresh = uniq;
-  return shuffle(fresh).slice(0, 3);
+  const poolOf = k => { const seen = new Set(); return [...(onlyOwn ? [] : DRAW_WORDS[k]), ...(own[k] || [])].filter(w => { const q = w.toLowerCase(); if (seen.has(q)) return false; seen.add(q); return true; }); };
+  /* drei Plätze: bei allen drei Stufen je eins, sonst gemischt aus den gewählten */
+  let slots = levels.length >= 3 ? ['e', 'm', 'h'] : levels.length === 2 ? [levels[0], levels[1], levels[Math.floor(Math.random() * 2)]] : [levels[0], levels[0], levels[0]];
+  slots.sort((a, b) => DLEVELS.findIndex(l => l[0] === a) - DLEVELS.findIndex(l => l[0] === b));
+  const taken = new Set(), choices = [], cdiff = [];
+  for (const k of slots) {
+    const order = [k, ...levels.filter(x => x !== k), ...DLEVELS.map(l => l[0]).filter(x => x !== k && !levels.includes(x))];
+    let pick = null, lv = k;
+    for (const fresh of [true, false]) {
+      for (const q of order) {
+        const cand = shuffle(poolOf(q).filter(w => !taken.has(w.toLowerCase()) && (!fresh || !used.has(w.toLowerCase()))));
+        if (cand.length) { pick = cand[0]; lv = q; break; }
+      }
+      if (pick) break;
+    }
+    if (!pick) continue;
+    taken.add(pick.toLowerCase()); choices.push(pick); cdiff.push(lv);
+  }
+  return {choices, cdiff};
 }
 function dSetTurn(st, t) {
   st.turn = t; st.drawer = st.players[t % st.players.length]; st.phase = 'choose'; st.phaseAt = Date.now();
-  st.choices = dPickWords(st); st.word = ''; st.guessed = {}; st.likes = {};
+  const p = dPickWords(st); st.choices = p.choices; st.cdiff = p.cdiff; st.word = ''; st.wd = 'm'; st.guessed = {}; st.likes = {};
   return st;
+}
+function dApplyChoice(st, i) {
+  const w = st.choices[i]; if (!w) return false;
+  st.word = w; st.wd = st.cdiff[i] || 'm'; st.phase = 'draw'; st.phaseAt = Date.now(); st.used = [...(st.used || []), w].slice(-400);
+  return true;
 }
 function drawStart(cfg) {
   const sel = (cfg.players || S.players.map(p => p.id)).filter(id => playerById(id));
   const players = S.players.map(p => p.id).filter(id => sel.includes(id));
   if (players.length < 2) { toast('Zum Malen braucht ihr mindestens 2 Spieler.'); return; }
-  const st = {v:1, id:uid(), status:'running', players:cfg.shuffle ? shuffle(players) : players, rounds:cfg.rounds, secs:cfg.secs, used:(S.draw && S.draw.used) || [],
+  const levels = DLEVELS.map(l => l[0]).filter(k => (cfg.levels || []).includes(k));
+  const st = {v:1, id:uid(), status:'running', players:cfg.shuffle ? shuffle(players) : players, rounds:Math.round(num(cfg.rounds, 1, 10, 2)), secs:Math.round(num(cfg.secs, 30, 240, 80)),
+    levels:levels.length ? levels : ['e', 'm', 'h'], hints:cfg.hints !== false, used:(S.draw && S.draw.used) || [],
     scores:Object.fromEntries(players.map(id => [id, 0])), transferred:false, created:Date.now()};
   dSetTurn(st, 0);
   D.dnew = false;
@@ -4006,9 +4128,7 @@ function drawStart(cfg) {
 }
 function drawChoose(i) {
   const st = clone(S.draw); if (!st || st.status !== 'running' || st.phase !== 'choose') return;
-  const w = st.choices[i]; if (!w) return;
-  st.word = w; st.phase = 'draw'; st.phaseAt = Date.now(); st.used = [...(st.used || []), w].slice(-400);
-  ops.saveDraw(st);
+  if (dApplyChoice(st, i)) ops.saveDraw(st);
 }
 function drawReveal() {
   const st = clone(S.draw); if (!st || st.status !== 'running' || st.phase === 'reveal') return;
@@ -4034,7 +4154,7 @@ function dSaveThumb(st) {
     c.getContext('2d').drawImage(dc.cv, 0, 0, 320, 240);
     let img = c.toDataURL('image/webp', .7);
     if (!/^data:image\/webp/.test(img)) img = c.toDataURL('image/jpeg', .72);
-    write('dgal/' + st.id + '_' + st.turn, {gid:st.id, turn:st.turn, word:st.word, drawer:st.drawer, img, ts:Date.now()}).catch(() => {});
+    write('dgal/' + st.id + '_' + st.turn, {gid:st.id, turn:st.turn, word:st.word, d:st.wd, drawer:st.drawer, img, ts:Date.now()}).catch(() => {});
   } catch (e) {}
 }
 async function dDeleteWhere(coll, field, val) {
@@ -4063,16 +4183,15 @@ function drawHandleActs() {
     dDone.add(a.id);
     if (!st.players.includes(a.pid)) continue;
     if (a.k === 'choose') {
-      const w = st.choices[Number(a.v)];
-      if (st.phase === 'choose' && a.pid === st.drawer && w) { st.word = w; st.phase = 'draw'; st.phaseAt = Date.now(); st.used = [...(st.used || []), w].slice(-400); changed = true; }
+      if (st.phase === 'choose' && a.pid === st.drawer && dApplyChoice(st, Number(a.v))) changed = true;
     } else if (a.k === 'guess') {
       if (st.phase === 'draw' && a.pid !== st.drawer && !st.guessed[a.pid] && dMatch(a.v, st.word)) {
         const left = Math.max(0, 1 - (Date.now() - st.phaseAt) / (st.secs * 1000));
         const first = !Object.keys(st.guessed).length;
-        const pts = 20 + 5 * Math.round(16 * left) + (first ? 20 : 0);
+        const pts = Math.round((20 + 5 * Math.round(16 * left) + (first ? 20 : 0)) * dMult(st.wd) / 5) * 5;
         st.guessed[a.pid] = {pts, t:Date.now()};
         st.scores[a.pid] = (st.scores[a.pid] || 0) + pts;
-        st.scores[st.drawer] = (st.scores[st.drawer] || 0) + D_DRAWER_PTS;
+        st.scores[st.drawer] = (st.scores[st.drawer] || 0) + dDrawerPts(st);
         changed = true;
         if (dGuessers(st).every(id => st.guessed[id])) reveal = true;
       }
@@ -4141,10 +4260,10 @@ function drawTopHTML(st) {
 function drawWordHTML(st) {
   const me = dMe(), drawer = ghost(st.drawer);
   if (st.phase === 'choose') return `<span class="dw-lbl">${me === st.drawer ? 'Du bist dran' : `${esc(drawer.name)} ist dran`}</span><b class="dw-word">Wort wird gewählt …</b>`;
-  if (st.phase === 'reveal') return `<span class="dw-lbl">Das Wort war</span><b class="dw-word">${st.word ? esc(st.word) : '–'}</b>`;
-  if (me === st.drawer) return `<span class="dw-lbl">Du malst</span><b class="dw-word">${esc(st.word)}</b>`;
-  if (st.guessed[me]) return `<span class="dw-lbl">Du hast es</span><b class="dw-word ok">${esc(st.word)}</b>`;
-  return `<span class="dw-lbl">${esc(drawer.name)} malt</span>${dPatternHTML(st)}`;
+  if (st.phase === 'reveal') return `<span class="dw-lbl">Das Wort war</span><b class="dw-word">${st.word ? esc(st.word) : '–'}</b>${st.word ? dLvBadge(st.wd) : ''}`;
+  if (me === st.drawer) return `<span class="dw-lbl">Du malst</span><b class="dw-word">${esc(st.word)}</b>${dLvBadge(st.wd, true)}`;
+  if (st.guessed[me]) return `<span class="dw-lbl">Du hast es</span><b class="dw-word ok">${esc(st.word)}</b>${dLvBadge(st.wd)}`;
+  return `<span class="dw-lbl">${esc(drawer.name)} malt</span>${dPatternHTML(st)}${dLvBadge(st.wd, true)}`;
 }
 function drawOverHTML(st) {
   const me = dMe(), drawer = ghost(st.drawer), key = dKey(st);
@@ -4153,7 +4272,7 @@ function drawOverHTML(st) {
     if (me === st.drawer) {
       if (dc.chose[key]) return `<div class="dover-box"><h3>Gleich geht's los …</h3></div>`;
       return `<div class="dover-box"><span class="eyebrow">Du bist dran!</span><h3>Wähl ein Wort zum Malen</h3>
-        <div class="dchoices">${st.choices.map((w, i) => `<button class="btn btn-gold btn-lg" type="button" data-act="draw-choose" data-i="${i}">${esc(w)}</button>`).join('')}</div>
+        <div class="dchoices">${st.choices.map((w, i) => { const l = dLv(st.cdiff[i]); return `<button class="dchoice" type="button" style="--lc:${l[2]}" data-act="draw-choose" data-i="${i}"><small>${l[1]} · ×${String(l[3]).replace('.', ',')} Punkte</small><b>${esc(w)}</b></button>`; }).join('')}</div>
         <p class="muted">Sonst wird in <b id="dchoose-left">${Math.ceil(left / 1000)}</b> Sekunden eins gezogen.</p></div>`;
     }
     return `<div class="dover-box">${avatar(drawer, 72)}<h3>${nameHTML(drawer)} wählt ein Wort …</h3></div>`;
@@ -4161,8 +4280,8 @@ function drawOverHTML(st) {
   if (st.phase === 'reveal') {
     const gains = Object.entries(st.guessed).map(([id, g]) => ({p:ghost(id), pts:g.pts})).sort((a, b) => b.pts - a.pts);
     const likes = Object.keys(st.likes).length;
-    const dpts = gains.length * D_DRAWER_PTS + likes * D_LIKE_PTS;
-    return `<div class="dover-box rv"><span class="eyebrow">${st.word ? 'Das Wort war' : 'Übersprungen'}</span><h3 class="dreveal">${st.word ? esc(st.word) : '–'}</h3>
+    const dpts = gains.length * dDrawerPts(st) + likes * D_LIKE_PTS;
+    return `<div class="dover-box rv" style="--lc:${st.word ? dLv(st.wd)[2] : 'var(--coin)'}"><span class="eyebrow">${st.word ? 'Das Wort war' : 'Übersprungen'}</span><h3 class="dreveal">${st.word ? esc(st.word) : '–'}</h3>${st.word ? dLvBadge(st.wd, true) : ''}
       ${st.word ? (gains.length ? `<ul class="dgains">${gains.map(x => `<li>${avatar(x.p, 26)}<span class="dg-n">${esc(x.p.name)}</span><b>+${x.pts}</b></li>`).join('')}<li class="drawer">${avatar(drawer, 26)}<span class="dg-n">${esc(drawer.name)} (malt)${likes ? ` · ${likes}× 👍` : ''}</span><b>+${dpts}</b></li></ul>` : `<p class="muted">Keiner hat es erraten.${likes ? ` ${esc(drawer.name)} bekommt +${dpts} für ${likes}× 👍.` : ''}</p>`) : ''}</div>`;
   }
   return '';
@@ -4232,7 +4351,7 @@ function dPatchParts() {
 function drawGalleryHTML(st) {
   const gal = (S.dgal || []).filter(x => x.gid === st.id);
   if (!gal.length) return '';
-  return `<div class="card dgal-card"><h3>Galerie</h3><div class="dgal">${gal.map(x => { const p = ghost(x.drawer); return `<figure><img src="${x.img}" alt="Zeichnung: ${esc(x.word)}" loading="lazy"><figcaption><b>${esc(x.word)}</b><span>${avatar(p, 20)} ${esc(p.name)}</span></figcaption></figure>`; }).join('')}</div></div>`;
+  return `<div class="card dgal-card"><h3>Galerie</h3><div class="dgal">${gal.map(x => { const p = ghost(x.drawer); return `<figure style="--lc:${x.d ? dLv(x.d)[2] : 'var(--shadow)'}"><img src="${x.img}" alt="Zeichnung: ${esc(x.word)}" loading="lazy"><figcaption><b>${esc(x.word)}</b><span>${avatar(p, 20)} ${esc(p.name)}</span></figcaption></figure>`; }).join('')}</div></div>`;
 }
 function drawFinished(st) {
   dParts = null;
@@ -4251,37 +4370,51 @@ function drawFinished(st) {
     </div>
   </section>`;
 }
+function dsetLoad() {
+  if (D.dsetLoaded) return; D.dsetLoaded = true;
+  try { const v = JSON.parse(localStorage.getItem('turnier-dset') || 'null'); if (v && typeof v === 'object') D.dset = {...D.dset, rounds:Math.round(num(v.rounds, 1, 10, 2)), secs:Math.round(num(v.secs, 30, 240, 80)), shuffle:!!v.shuffle, hints:v.hints !== false, levels:Array.isArray(v.levels) && v.levels.length ? v.levels.filter(k => DLEVELS.some(l => l[0] === k)) : ['e', 'm', 'h']}; } catch (e) {}
+}
+function dsetSave() { try { const c = D.dset; localStorage.setItem('turnier-dset', JSON.stringify({rounds:c.rounds, secs:c.secs, shuffle:c.shuffle, hints:c.hints, levels:c.levels})); } catch (e) {} }
 function drawSetup() {
   dParts = null;
+  dsetLoad();
   const adm = S.admin, c = D.dset;
-  const own = (S.dwords || {}).list || [];
-  const howto = `<ol class="dhow"><li>Wer dran ist, sucht sich eins von <b>3 Wörtern</b> aus und malt es.</li><li>Alle anderen raten im Chat. Je <b>schneller</b>, desto mehr Punkte. Der Erste bekommt +20 extra.</li><li>Der Zeichner bekommt <b>+${D_DRAWER_PTS}</b> für jeden, der es errät, und <b>+${D_LIKE_PTS}</b> für jedes 👍.</li><li>Ab der Hälfte der Zeit werden Buchstaben verraten.</li></ol>`;
+  const howto = `<ol class="dhow"><li>Wer dran ist, sucht sich eins von <b>3 Wörtern</b> aus: ${dLvBadge('e')} ${dLvBadge('m')} ${dLvBadge('h')}</li><li>Alle anderen raten im Chat. Je <b>schneller</b>, desto mehr Punkte. Der Erste bekommt extra.</li><li>Schwere Wörter zählen mehr: Mittel <b>×1,5</b>, Schwer <b>×2</b>, für Rater und Zeichner.</li><li>Der Zeichner bekommt Punkte für jeden, der es errät, und <b>+${D_LIKE_PTS}</b> für jedes 👍.</li></ol>`;
   if (!adm) return `<section class="section"><div class="sec-head"><h2 class="h">Malen</h2><span class="muted">Zeichnen und raten wie bei skribbl.io</span></div>
     <div class="setup"><div class="card"><h3>Gleich geht's los</h3><p class="m-text">Der Spielleiter startet hier gleich eine Runde. Halt diese Seite offen.</p>${howto}</div>
     <div class="card"><h3>Wer bist du?</h3><p class="m-text">Damit du mitraten oder malen kannst.</p><div class="chips">${S.players.map(p => `<button class="chip pchip" type="button" data-act="set-me" data-pid="${esc(p.id)}" aria-pressed="${dMe() === p.id}">${avatar(p, 24)}${esc(p.name)}</button>`).join('')}</div></div></div></section>`;
   const sel = c.players || S.players.map(p => p.id);
   const selValid = sel.filter(id => playerById(id));
-  const pool = (S.dwords.only && own.length >= 3) ? own.length : DRAW_WORDS.length + own.length;
+  const own = S.dwords || {}, ownN = dOwnAll().length;
+  const step = (k, d, lbl, dis) => `<button class="dstep" type="button" data-act="dset-step" data-k="${k}" data-d="${d}" aria-label="${lbl}" ${dis ? 'disabled' : ''}>${d > 0 ? '+' : '−'}</button>`;
+  const total = selValid.length * c.rounds;
+  const mins = Math.ceil(total * (c.secs + 20) / 60);
   return `<section class="section">
     <div class="sec-head"><h2 class="h">Malen vorbereiten</h2><span class="muted">Zeichnen und raten wie bei skribbl.io. Läuft live auf allen Handys.</span></div>
     <div class="setup">
       <div class="card">
         <div class="field"><span class="lbl">Mitspieler (${selValid.length})</span>
           ${S.players.length ? `<div class="chips">${S.players.map(p => `<button class="chip pchip" type="button" data-act="dset-player" data-pid="${esc(p.id)}" aria-pressed="${sel.includes(p.id)}">${avatar(p, 28)}${esc(p.name)}</button>`).join('')}</div>` : `<p class="m-text">Lege zuerst unter <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button> deine Mitspieler an.</p>`}</div>
-        <div class="field"><span class="lbl">Runden</span><div class="chips">${[1, 2, 3].map(n => `<button class="chip" type="button" data-act="dset" data-k="rounds" data-v="${n}" aria-pressed="${c.rounds === n}">${n} ${n === 1 ? 'Runde' : 'Runden'}</button>`).join('')}</div><small>Jeder malt pro Runde einmal.</small></div>
-        <div class="field"><span class="lbl">Zeit zum Malen</span><div class="chips">${[60, 80, 100, 120].map(n => `<button class="chip" type="button" data-act="dset" data-k="secs" data-v="${n}" aria-pressed="${c.secs === n}">${n} Sek.</button>`).join('')}</div></div>
+        <div class="dsteps">
+          <div class="field"><span class="lbl">Runden</span><div class="dstepper">${step('rounds', -1, 'Eine Runde weniger', c.rounds <= 1)}<b>${c.rounds}</b>${step('rounds', 1, 'Eine Runde mehr', c.rounds >= 10)}</div><small>Jeder malt pro Runde einmal.</small></div>
+          <div class="field"><span class="lbl">Zeit pro Bild</span><div class="dstepper">${step('secs', -10, '10 Sekunden weniger', c.secs <= 30)}<b>${c.secs}<small> Sek.</small></b>${step('secs', 10, '10 Sekunden mehr', c.secs >= 240)}</div><small>Zwischen 30 und 240 Sekunden.</small></div>
+        </div>
+        <div class="field"><span class="lbl">Schwierigkeit der Wörter</span>
+          <div class="chips">${DLEVELS.map(l => `<button class="chip dlvchip" type="button" style="--lc:${l[2]}" data-act="dset-level" data-v="${l[0]}" aria-pressed="${c.levels.includes(l[0])}">${l[1]} <small>${DRAW_WORDS[l[0]].length + (own[l[0]] || []).length}</small></button>`).join('')}</div>
+          <small>${c.levels.length === 3 ? 'Bei jedem Zug gibt es je ein leichtes, mittleres und schweres Wort zur Wahl.' : c.levels.length === 1 ? `Nur ${dLv(c.levels[0])[4]} Wörter.` : `Gemischt aus ${c.levels.map(k => dLv(k)[1]).join(' und ')}.`}</small></div>
+        <div class="field"><span class="lbl">Buchstaben-Tipps</span><div class="chips"><button class="chip" type="button" data-act="dset" data-k="hints" data-v="1" aria-pressed="${c.hints}">An</button><button class="chip" type="button" data-act="dset" data-k="hints" data-v="0" aria-pressed="${!c.hints}">Aus</button></div><small>Ab der Hälfte der Zeit werden Buchstaben verraten.</small></div>
         <div class="field"><span class="lbl">Reihenfolge</span><div class="chips"><button class="chip" type="button" data-act="dset" data-k="shuffle" data-v="0" aria-pressed="${!c.shuffle}">Wie in der Spielerliste</button><button class="chip" type="button" data-act="dset" data-k="shuffle" data-v="1" aria-pressed="${c.shuffle}">Zufällig</button></div></div>
-        <button class="btn btn-gold btn-lg" type="button" data-act="draw-start" ${selValid.length >= 2 ? '' : 'disabled'}>Malen starten · ${selValid.length * c.rounds} Bilder</button>
-        <p class="kbd">Lass dieses Gerät während des Spiels offen. Es steuert die Zeit und zählt die Punkte. Zum Mitspielen tippst du im Spiel auf deinen Namen.</p>
+        <button class="btn btn-gold btn-lg" type="button" data-act="draw-start" ${selValid.length >= 2 ? '' : 'disabled'}>Malen starten · ${total} Bilder</button>
+        <p class="kbd">${selValid.length >= 2 ? `Dauert etwa ${mins} Minuten. ` : ''}Lass dieses Gerät während des Spiels offen. Es steuert die Zeit und zählt die Punkte. Zum Mitspielen tippst du im Spiel auf deinen Namen.</p>
       </div>
       <div class="card">
         <h3>So geht's</h3>${howto}
-        <h4>Begriffe (${pool})</h4>
-        <p class="m-text">${DRAW_WORDS.length} leichte Begriffe sind schon dabei. Du kannst eigene ergänzen, z. B. Insider oder Spiele.</p>
-        <details><summary>Alle ${DRAW_WORDS.length} Standard-Begriffe ansehen</summary><p class="dwlist">${DRAW_WORDS.map(esc).join(', ')}</p></details>
-        <div class="field"><label for="dw-text">Eigene Begriffe, durch Komma oder Zeile getrennt</label><textarea class="input" id="dw-text" data-draft="dwText" rows="4" placeholder="z. B. Mario Kart, Alans Katze, Lagerfeuer">${esc(D.dwText ?? own.join(', '))}</textarea></div>
-        <label class="toggle"><input type="checkbox" id="dw-only" ${S.dwords.only ? 'checked' : ''}><span>Nur eigene Begriffe benutzen (ab 3 Stück)</span></label>
-        <div><button class="btn" type="button" data-act="dw-save">Begriffe speichern${own.length ? ` · ${own.length} eigene` : ''}</button></div>
+        <h4>Begriffe (${dWordCount() + ownN})</h4>
+        <p class="m-text">${dWordCount()} Begriffe sind schon dabei, sortiert nach Schwierigkeit. Du kannst eigene ergänzen, z. B. Insider oder Spiele.</p>
+        ${DLEVELS.map(l => `<details class="dwgroup" style="--lc:${l[2]}"><summary>${l[1]}: ${DRAW_WORDS[l[0]].length} Begriffe</summary><p class="dwlist">${DRAW_WORDS[l[0]].map(esc).join(', ')}</p></details>`).join('')}
+        <div class="dwown">${DLEVELS.map(l => `<div class="field"><label for="dw-${l[0]}" style="color:${l[2]}">Eigene ${l[4]} Begriffe</label><textarea class="input" id="dw-${l[0]}" data-draft="dwt.${l[0]}" rows="2" placeholder="${{e:'z. B. Alans Katze', m:'z. B. Mario Kart', h:'z. B. Turnier-Siegerehrung'}[l[0]]}">${esc(D.dwt[l[0]] ?? (own[l[0]] || []).join(', '))}</textarea></div>`).join('')}</div>
+        <label class="toggle"><input type="checkbox" id="dw-only" ${own.only ? 'checked' : ''}><span>Nur eigene Begriffe benutzen (ab 3 Stück)</span></label>
+        <div><button class="btn" type="button" data-act="dw-save">Begriffe speichern${ownN ? ` · ${ownN} eigene` : ''}</button></div>
       </div>
     </div>
   </section>`;
@@ -4309,19 +4442,26 @@ function drawWithPending(go) {
   else go();
 }
 function saveDwords() {
-  const raw = String(D.dwText ?? (S.dwords.list || []).join(', '));
-  const seen = new Set(), list = [];
-  for (const w of raw.split(/[\n,;]+/)) { const t = str(w, 30); const k = t.toLowerCase(); if (t && !seen.has(k)) { seen.add(k); list.push(t); } }
-  ops.saveDwords({list:list.slice(0, 300), only:S.dwords.only && list.length >= 3});
-  D.dwText = null;
-  toast(list.length ? `${list.length} eigene ${list.length === 1 ? 'Begriff' : 'Begriffe'} gespeichert.` : 'Eigene Begriffe gelöscht.');
+  const o = {only:false}, seen = new Set(); let n = 0;
+  for (const l of DLEVELS) {
+    const raw = String(D.dwt[l[0]] ?? ((S.dwords || {})[l[0]] || []).join(', '));
+    o[l[0]] = [];
+    for (const w of raw.split(/[\n,;]+/)) { const t = str(w, 30), k = t.toLowerCase(); if (t && !seen.has(k)) { seen.add(k); o[l[0]].push(t); n++; } }
+    o[l[0]] = o[l[0]].slice(0, 200);
+  }
+  o.only = !!(S.dwords && S.dwords.only) && n >= 3;
+  ops.saveDwords(o);
+  D.dwt = {e:null, m:null, h:null};
+  toast(n ? `${n} eigene ${n === 1 ? 'Begriff' : 'Begriffe'} gespeichert.` : 'Eigene Begriffe gelöscht.');
 }
 const drawActions = {
-  'dset': b => { const k = b.dataset.k; D.dset[k] = k === 'shuffle' ? b.dataset.v === '1' : Number(b.dataset.v); render(); },
+  'dset': b => { const k = b.dataset.k; D.dset[k] = (k === 'shuffle' || k === 'hints') ? b.dataset.v === '1' : Number(b.dataset.v); dsetSave(); render(); },
+  'dset-step': b => { const k = b.dataset.k, d = Number(b.dataset.d); D.dset[k] = k === 'rounds' ? Math.min(10, Math.max(1, D.dset.rounds + d)) : Math.min(240, Math.max(30, D.dset.secs + d)); dsetSave(); render(); },
+  'dset-level': b => { const v = b.dataset.v, lv = D.dset.levels || []; const next = lv.includes(v) ? lv.filter(x => x !== v) : [...lv, v]; if (!next.length) { toast('Mindestens eine Schwierigkeit muss an sein.'); return; } D.dset.levels = DLEVELS.map(l => l[0]).filter(k => next.includes(k)); dsetSave(); render(); },
   'dset-player': b => { let sel = D.dset.players || S.players.map(p => p.id); const id = b.dataset.pid; sel = sel.includes(id) ? sel.filter(x => x !== id) : [...sel, id]; D.dset.players = sel; render(); },
   'draw-start': () => drawWithPending(() => drawStart(D.dset)),
-  'draw-again': () => { const st = S.draw; if (!st) return; drawWithPending(() => drawStart({players:st.players, rounds:st.rounds, secs:st.secs, shuffle:D.dset.shuffle})); },
-  'draw-new': () => { const st = S.draw; if (st && st.players) D.dset = {...D.dset, players:st.players.slice(), rounds:st.rounds, secs:st.secs}; D.dnew = true; render(); },
+  'draw-again': () => { const st = S.draw; if (!st) return; drawWithPending(() => drawStart({players:st.players, rounds:st.rounds, secs:st.secs, levels:st.levels, hints:st.hints, shuffle:D.dset.shuffle})); },
+  'draw-new': () => { const st = S.draw; if (st && st.players) { dsetLoad(); D.dset = {...D.dset, players:st.players.slice(), rounds:st.rounds, secs:st.secs, levels:st.levels.slice(), hints:st.hints}; } D.dnew = true; render(); },
   'draw-transfer': () => drawTransfer(),
   'draw-skip': () => { const st = S.draw; if (!st || st.status !== 'running') return; if (st.phase === 'reveal') drawNext(); else drawReveal(); },
   'draw-end': () => confirmBox('Malspiel beenden?', 'Das Spiel endet sofort. Die bisherigen Punkte bleiben stehen.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:drawFinishNow}]),
@@ -4535,7 +4675,8 @@ function copyShareLink() {
 
 /* ---------- Events ---------- */
 function setTab(t) {
-  if (!TABS.some(x => x[0] === t)) t = 'rangliste';
+  t = viewFor(t);
+  if (HUB.includes(t)) { try { localStorage.setItem('turnier-sub', t); } catch (e) {} }
   S.tab = t;
   try { if (location.hash !== '#' + t) location.hash = t; } catch (e) {}
   render();
@@ -4743,7 +4884,7 @@ document.addEventListener('change', async e => {
     try { D.gm.img = await toCover(f); renderModal(); } catch (err) { toast('Das Bild ließ sich nicht öffnen. Versuch ein JPG oder PNG.'); }
     return;
   }
-  if (t.id === 'dw-only') { const own = S.dwords.list || []; if (t.checked && own.length < 3) { t.checked = false; toast('Speicher zuerst mindestens 3 eigene Begriffe.'); return; } ops.saveDwords({list:own, only:t.checked}); return; }
+  if (t.id === 'dw-only') { if (t.checked && dOwnAll().length < 3) { t.checked = false; toast('Speicher zuerst mindestens 3 eigene Begriffe.'); return; } ops.saveDwords({...S.dwords, only:t.checked}); return; }
   if (t.id === 'w-remove') { const w = clone(S.wheel); w.removeDrawn = t.checked; ops.saveWheel(w); return; }
   if (t.id === 'pic-file') { const fs2 = t.files ? Array.from(t.files) : []; t.value = ''; if (fs2.length) addPics(fs2); return; }
   if (t.id === 'deco-bgm' || t.id === 'deco-lobby' || t.id === 'deco-site') { const d = {...(S.deco || DEFAULT_DECO)}; d[{'deco-bgm':'bgm', 'deco-lobby':'flyLobby', 'deco-site':'flySite'}[t.id]] = t.checked; ops.saveDeco(d); return; }
@@ -4893,7 +5034,7 @@ document.addEventListener('keydown', e => {
   else if ((k === 'enter' || k === ' ') && tag !== 'button' && q.phase === 'revealed') { e.preventDefault(); quizNext(); }
   else if (k === 'p') { if (q.phase === 'asking') quizPause(); else if (q.phase === 'paused') quizResume(); }
 });
-window.addEventListener('hashchange', () => { const h = (location.hash || '').slice(1); if (h && h !== S.tab) { S.tab = TABS.some(t => t[0] === h) ? h : 'rangliste'; render(); } });
+window.addEventListener('hashchange', () => { const h = (location.hash || '').slice(1); if (h && h !== S.tab) { S.tab = viewFor(h); render(); } });
 
 /* ---------- Ankündigungen ---------- */
 /* GTA 6: Do, 19.11.2026, 00:00 Uhr deutsche Zeit (MEZ, UTC+1) = 18.11.2026 23:00 UTC */
@@ -5594,7 +5735,7 @@ function boot() {
   if (!S.deco) S.deco = normDeco(null);
   renderBgm();
   const h = (location.hash || '').slice(1);
-  if (TABS.some(t => t[0] === h)) S.tab = h;
+  if (h) S.tab = h === 'spiele' ? 'spiele-pick' : viewFor(h);
   const fc = CFG && CFG.firebase;
   if (!fc || !fc.apiKey || /HIER_EINTRAGEN/.test(fc.apiKey) || /DEIN-PROJEKT/.test(fc.projectId || '') || !window.firebase) {
     S.mode = 'setup'; S.loaded = true;
