@@ -270,7 +270,6 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .g-me{display:flex;align-items:baseline;gap:8px;margin-left:auto}
 .g-me small{color:var(--muted);font-size:13px}
 .g-me b{font-family:var(--pixel);font-size:22px;color:var(--xp)}
-.g-viewpick{margin:0}
 .g-done{margin:0 0 12px;padding:10px 14px;background:rgba(79,240,143,.12);box-shadow:0 0 0 2px #4ff08f;color:#c9ffe0;font-weight:700}
 .g-done.spec{background:rgba(57,214,242,.1);box-shadow:0 0 0 2px var(--xp);color:var(--ink)}
 .g-done small{color:var(--muted);font-weight:500;margin-left:6px}
@@ -1364,7 +1363,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=3"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=4"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3020,7 +3019,7 @@ function renderSubnav() {
     h = `<div class="hub" style="--n:${list.length}" role="group" aria-label="Turnier">${list.map(([k, i, l]) => `<button class="hub-btn" type="button" data-act="tab" data-tab="${k}" aria-pressed="${S.tab === k}"><span class="hub-ico" aria-hidden="true">${i}</span><span class="hub-txt"><b>${l}</b>${sub(k)}</span></button>`).join('')}</div>`;
   } else if (!hide && inRoom) {
     h = roomBarHTML();
-    if (isTouch() && S.tab !== 'raum') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
+    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
   }
   el.setAttribute('aria-label', tx(inRoom ? 'Raum' : 'Turnier'));
   el.classList.toggle('wide', (!!grp || inRoom) && $('#main').classList.contains('wide'));
@@ -3151,7 +3150,7 @@ function viewStart() {
       <div class="stiles">
         ${tile('spiele', '🧠', 'Quiz', 'Spielbrett mit Fragen aus 8 Themen. Such dir einen Raum und spielt los, wann ihr wollt.', gameInfo('quiz'), '#39d6f2')}
         ${tile('spiele', '🎨', 'Malen', 'Einer malt, alle anderen raten im Chat. Wie skribbl.io, jederzeit in einem Raum.', gameInfo('malen'), '#39d6f2')}
-        ${tile('spiele', '⛳', 'Golf', 'Minigolf mit der Maus oder dem Finger: 20 Bahnen von leicht bis schwer, in 2D oder 3D.', gameInfo('golf'), '#39d6f2')}
+        ${tile('spiele', '⛳', 'Golf', 'Minigolf in 3D mit der Maus oder dem Finger: 20 Bahnen, jede ein Stück länger und kniffliger.', gameInfo('golf'), '#39d6f2')}
       </div>
     </div>
     <div class="start-group start-news">
@@ -4096,33 +4095,51 @@ function quizAnswerEst(v) {
 }
 
 /* ---------- Minigolf: Bahnen und Ballphysik (ohne Bildschirm, damit man sie auch prüfen kann) ---------- */
-const GOLF_MAX = 10, GOLF_PLACE_PTS = [3, 2, 1];
+const GOLF_PLACE_PTS = [3, 2, 1];
+const gMax = j => GOLF_HOLES[j].par + 6; // höchstens so viele Schläge auf Bahn j
 const G_R = 9, G_CUP = 14, G_WALL = 18, G_WH = 24, G_SINK_V = 560, G_VMAX = 1150, G_DT = 1 / 400;
 const gR = (x, y, w, h) => [[x, y], [x + w, y], [x + w, y + h], [x, y + h]];
-/* Jede Bahn: f Spielfeld (Umriss), tee Abschlag, cup Loch, par.
+/* Ein Weg mit Breite w entlang der Mittellinie c (vom Abschlag unten bis zum Loch oben) */
+function gLane(c, w) {
+  const n = c.length, L = [], Rr = [];
+  const nrm = (u, v) => { const dx = v[0] - u[0], dy = v[1] - u[1], l = Math.hypot(dx, dy) || 1; return [-dy / l, dx / l]; };
+  for (let i = 0; i < n; i++) {
+    const p = c[i], n1 = i > 0 ? nrm(c[i - 1], p) : nrm(p, c[1]), n2 = i < n - 1 ? nrm(p, c[i + 1]) : n1;
+    const d = 1 + n1[0] * n2[0] + n1[1] * n2[1] || 1;
+    const mx = (n1[0] + n2[0]) / d * w / 2, my = (n1[1] + n2[1]) / d * w / 2;
+    L.push([p[0] + mx, p[1] + my]); Rr.push([p[0] - mx, p[1] - my]);
+  }
+  return L.concat(Rr.reverse());
+}
+/* Jede Bahn: c Mittellinie und w Breite (Abschlag am Anfang, Loch am Ende) oder f Umriss mit tee/cup.
    bl Blöcke [x,y,b,h], bu Bumper [x,y,r], sa Sand, wa Wasser [x,y,b,h], sl Hang [x,y,b,h,ax,ay],
-   sp Windmühle [x,y,Länge,Drehung pro s,Start], mv Schiebeblock [x,y,b,h,dx,dy,Dauer s,Versatz]. */
+   sp Windmühle [x,y,Länge,Drehung pro s,Start], mv Schiebeblock [x,y,b,h,dx,dy,Dauer s,Versatz].
+   Gespielt wird von unten nach oben, mit jeder Stufe länger und kurviger. */
 const GOLF_HOLES = [
-  {n:'Aufwärmen', par:2, f:gR(80, 200, 840, 200), tee:[170, 300], cup:[830, 300]},
-  {n:'Um die Ecke', par:3, f:[[80, 330], [640, 330], [640, 80], [900, 80], [900, 520], [80, 520]], tee:[170, 425], cup:[770, 170]},
-  {n:'Der Block', par:3, f:gR(80, 150, 840, 300), tee:[170, 300], cup:[830, 300], bl:[[440, 150, 120, 175]]},
-  {n:'Bumper-Allee', par:3, f:gR(80, 120, 840, 360), tee:[160, 300], cup:[850, 300], bu:[[350, 220, 28], [350, 380, 28], [520, 300, 32], [690, 200, 28], [690, 400, 28]]},
-  {n:'Sandkasten', par:3, f:gR(80, 140, 840, 320), tee:[160, 300], cup:[860, 300], sa:[[450, 140, 170, 200], [680, 270, 130, 190]]},
-  {n:'Hügel', par:3, f:gR(80, 100, 840, 400), tee:[160, 400], cup:[850, 200], sl:[[340, 100, 320, 400, 0, 330]]},
-  {n:'Windmühle', par:3, f:gR(80, 140, 840, 320), tee:[160, 300], cup:[840, 300], sp:[[500, 300, 230, 1.4, 0]], bl:[[480, 140, 40, 40], [480, 420, 40, 40]]},
-  {n:'Flipper', par:3, f:gR(80, 80, 840, 440), tee:[150, 300], cup:[880, 300], bu:[[300, 180, 26], [300, 420, 26], [420, 300, 26], [540, 180, 26], [540, 420, 26], [660, 300, 26], [780, 180, 26], [780, 420, 26]]},
-  {n:'Fließband', par:4, f:gR(80, 100, 840, 400), tee:[160, 300], cup:[860, 300], bl:[[250, 230, 500, 140]], sl:[[250, 100, 500, 130, 300, 0], [250, 370, 500, 130, -300, 0]], mv:[[790, 160, 30, 70, 0, 200, 2.6, 0]]},
-  {n:'Doppelmühle', par:4, f:gR(80, 120, 840, 360), tee:[160, 300], cup:[850, 300], sp:[[360, 300, 230, 1.5, 0], [640, 300, 230, -1.8, 0.8]], sa:[[760, 120, 110, 90], [760, 390, 110, 90]]},
-  {n:'Wüste', par:4, f:gR(60, 80, 880, 440), tee:[130, 300], cup:[880, 300], sa:[[200, 80, 600, 160], [200, 360, 600, 160]], wa:[[430, 262, 90, 76]]},
-  {n:'S-Kurve', par:4, f:gR(80, 80, 840, 440), tee:[180, 170], cup:[820, 430], bl:[[330, 80, 60, 300], [610, 220, 60, 300]]},
-  {n:'Uhrwerk', par:4, f:gR(60, 80, 880, 440), tee:[130, 300], cup:[890, 300], sp:[[300, 300, 260, 1.2, 0], [560, 300, 260, -1.2, 0.5], [790, 300, 170, 2.0, 0]], bu:[[430, 140, 22], [430, 460, 22]]},
-  {n:'Erster Teich', par:4, f:gR(80, 120, 840, 360), tee:[170, 300], cup:[830, 300], wa:[[400, 120, 200, 140], [400, 340, 200, 140]]},
-  {n:'Schiebetür', par:4, f:gR(80, 180, 840, 240), tee:[170, 300], cup:[830, 300], bl:[[480, 180, 40, 60], [480, 360, 40, 60]], mv:[[470, 240, 60, 45, 0, 75, 2.4, 0]]},
-  {n:'Pendelblöcke', par:4, f:gR(80, 160, 840, 280), tee:[150, 300], cup:[850, 300], mv:[[300, 160, 50, 90, 0, 190, 2.0, 0], [480, 160, 50, 90, 0, 190, 1.6, 0.33], [660, 160, 50, 90, 0, 190, 1.3, 0.66]]},
-  {n:'Vulkan', par:5, f:gR(60, 60, 880, 480), tee:[140, 300], cup:[700, 300], sl:[[600, 200, 200, 100, 0, -200], [600, 300, 200, 100, 0, 200], [540, 220, 60, 160, -220, 0]], wa:[[560, 110, 60, 60], [780, 110, 60, 60], [560, 430, 60, 60], [780, 430, 60, 60]]},
-  {n:'Labyrinth', par:5, f:gR(60, 60, 880, 480), tee:[130, 120], cup:[880, 470], bl:[[220, 60, 30, 360], [420, 180, 30, 360], [620, 60, 30, 360], [780, 180, 30, 360]]},
-  {n:'Insel', par:5, f:gR(60, 60, 880, 480), tee:[150, 300], cup:[830, 300], wa:[[560, 60, 140, 205], [560, 335, 140, 205], [700, 60, 240, 90], [700, 450, 240, 90]], bu:[[470, 300, 24]]},
-  {n:'Finale', par:6, f:gR(40, 60, 920, 480), tee:[130, 150], cup:[880, 480], bl:[[300, 60, 30, 300], [600, 240, 30, 300]], sp:[[450, 440, 190, 1.6, 0]], mv:[[580, 60, 70, 55, 0, 125, 2.2, 0]], wa:[[680, 60, 110, 85]], bu:[[820, 260, 24], [820, 390, 24]]}
+  {n:'Aufwärmen', par:2, c:[[300, 760], [300, 60]], w:220},
+  {n:'Um die Ecke', par:3, c:[[220, 820], [220, 420], [400, 420], [400, 80]], w:200},
+  {n:'Der Block', par:3, c:[[300, 900], [300, 60]], w:260, bl:[[170, 600, 170, 36], [260, 340, 170, 36]]},
+  {n:'Bumper-Allee', par:3, c:[[300, 1000], [300, 60]], w:280, bu:[[240, 760, 22], [360, 760, 22], [300, 600, 26], [215, 440, 22], [385, 440, 22], [300, 290, 24]]},
+  {n:'Sandkasten', par:3, c:[[300, 1050], [300, 620], [420, 450], [420, 60]], w:220, sa:[[200, 700, 100, 110], [330, 440, 190, 90], [300, 150, 85, 90], [445, 230, 80, 80]]},
+  {n:'Hügel', par:3, c:[[300, 1100], [300, 60]], w:300, sl:[[150, 400, 300, 380, 300, 0], [150, 820, 300, 140, -260, 0]]},
+  {n:'Windmühle', par:3, c:[[300, 1150], [300, 60]], w:240, sp:[[300, 620, 220, 1.4, 0]], bu:[[230, 330, 18], [370, 330, 18]]},
+  {n:'Flipper', par:4, c:[[300, 1200], [300, 60]], w:360, bu:[[200, 900, 22], [300, 900, 22], [400, 900, 22], [250, 750, 22], [350, 750, 22], [200, 600, 22], [300, 600, 22], [400, 600, 22], [250, 450, 22], [350, 450, 22], [200, 300, 22], [400, 300, 22]]},
+  {n:'Fließband', par:4, c:[[300, 1250], [300, 60]], w:360, bl:[[250, 330, 100, 600]], sl:[[120, 330, 130, 600, 0, -300], [350, 330, 130, 600, 0, 300]], mv:[[150, 230, 60, 30, 240, 0, 2.6, 0]]},
+  {n:'Doppelmühle', par:4, c:[[200, 1300], [200, 850], [400, 700], [400, 60]], w:240, sp:[[200, 1020, 200, 1.5, 0], [400, 450, 200, -1.8, 0.8]], sa:[[290, 110, 80, 80]]},
+  {n:'Wüste', par:4, c:[[300, 1350], [300, 60]], w:340, sa:[[130, 350, 130, 700], [340, 350, 130, 700]], wa:[[270, 650, 60, 70]], bu:[[300, 250, 20]]},
+  {n:'S-Kurve', par:4, c:[[150, 1400], [150, 1050], [450, 900], [450, 550], [150, 400], [150, 60]], w:200, bu:[[450, 720, 18]]},
+  {n:'Uhrwerk', par:5, c:[[300, 1450], [300, 60]], w:300, sp:[[300, 1050, 260, 1.2, 0], [300, 700, 260, -1.2, 0.5], [300, 380, 200, 2.0, 0]], bu:[[180, 870, 18], [420, 870, 18], [180, 540, 18], [420, 540, 18]]},
+  {n:'Teiche', par:5, c:[[300, 1500], [300, 60]], w:320, wa:[[140, 1100, 240, 90], [220, 800, 240, 90], [140, 500, 240, 90]], sa:[[380, 300, 80, 120]]},
+  {n:'Schiebetür', par:5, c:[[300, 1600], [300, 60]], w:260, bl:[[170, 1150, 90, 30], [340, 1150, 90, 30], [170, 800, 90, 30], [340, 800, 90, 30], [170, 450, 90, 30], [340, 450, 90, 30]],
+    mv:[[255, 1150, 45, 30, 45, 0, 2.2, 0], [255, 800, 45, 30, 45, 0, 1.7, 0.3], [255, 450, 45, 30, 45, 0, 1.3, 0.6]]},
+  {n:'Pendelblöcke', par:5, c:[[200, 1700], [200, 1050], [400, 850], [400, 60]], w:260, mv:[[70, 1400, 60, 40, 200, 0, 2.0, 0], [70, 1200, 60, 40, 200, 0, 1.6, 0.4], [270, 600, 60, 40, 200, 0, 1.8, 0.2], [270, 380, 60, 40, 200, 0, 1.3, 0.7]], sa:[[300, 880, 120, 90]]},
+  {n:'Vulkan', par:6, c:[[300, 1800], [300, 60]], w:380, sl:[[230, 200, 140, 120, 0, 230], [110, 60, 120, 260, -200, 0], [370, 60, 120, 260, 200, 0]],
+    wa:[[120, 300, 80, 70], [400, 300, 80, 70]], bu:[[220, 1100, 24], [380, 1100, 24], [300, 900, 26]], sa:[[110, 600, 140, 140], [350, 500, 140, 140]]},
+  {n:'Labyrinth', par:6, c:[[300, 1900], [300, 60]], w:520, bl:[[40, 1550, 400, 30], [160, 1250, 400, 30], [40, 950, 400, 30], [160, 650, 400, 30], [40, 350, 400, 30]], bu:[[500, 1400, 18], [100, 1100, 18], [500, 800, 18], [100, 500, 18]]},
+  {n:'Insel', par:6, c:[[300, 2000], [300, 1150], [150, 950], [150, 550], [300, 400], [300, 60]], w:260, wa:[[170, 250, 100, 70], [330, 250, 100, 70], [20, 650, 110, 140], [170, 830, 110, 120]], bu:[[300, 1500, 26]], sp:[[300, 1300, 200, 1.4, 0]]},
+  {n:'Finale', par:7, c:[[150, 2400], [150, 1950], [450, 1750], [450, 1250], [150, 1050], [150, 650], [300, 500], [300, 60]], w:240,
+    sp:[[150, 2150, 200, 1.6, 0], [300, 330, 200, -1.8, 0]], mv:[[330, 1500, 60, 40, 180, 0, 2.0, 0]], wa:[[330, 1340, 90, 60], [180, 160, 70, 70], [350, 160, 70, 70]],
+    bu:[[100, 900, 22], [200, 790, 22]], sl:[[30, 680, 240, 120, 0, -150]]}
 ];
 const gIn = (x, y, r) => x >= r[0] && x <= r[0] + r[2] && y >= r[1] && y <= r[1] + r[3];
 function gInPoly(x, y, P) {
@@ -4136,7 +4153,12 @@ function gInPoly(x, y, P) {
 const gCache = {};
 function gHole(i) {
   if (gCache[i]) return gCache[i];
-  const h = GOLF_HOLES[i];
+  const h0 = GOLF_HOLES[i], h = {...h0};
+  if (h.c) {
+    const along = (p, q, d) => { const l = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1; return [p[0] + (q[0] - p[0]) / l * d, p[1] + (q[1] - p[1]) / l * d]; };
+    const n = h.c.length;
+    h.f = gLane(h.c, h.w); h.tee = along(h.c[0], h.c[1], 75); h.cup = along(h.c[n - 1], h.c[n - 2], 75);
+  }
   const f = h.f.slice();
   let area = 0;
   f.forEach((p, k) => { const q = f[(k + 1) % f.length]; area += p[0] * q[1] - q[0] * p[1]; });
@@ -4245,7 +4267,7 @@ function gNorm(x) {
     holeAt:Number(x.holeAt) || 0, transferred:x.transferred === true, end:Math.round(Number(x.end) || 0)};
 }
 const gKey = G => G.id + ':' + G.hi;
-function gScore(G, pid, j) { const v = G.sc[pid] && G.sc[pid][j]; return v == null ? null : Math.max(1, Math.min(GOLF_MAX, Math.round(Number(v)) || GOLF_MAX)); }
+function gScore(G, pid, j) { const v = G.sc[pid] && G.sc[pid][j], mx = gMax(G.holes[j]); return v == null ? null : Math.max(1, Math.min(mx, Math.round(Number(v)) || mx)); }
 const gPar = G => j => GOLF_HOLES[G.holes[j]].par;
 function gActive(G) { const L = lobby(); return G.players.filter(pid => playerById(pid) && L && L.members[pid]); }
 function gPlaying() { const G = S.golf, me = myPid(), L = lobby(); return !!(G && G.status === 'running' && me && G.players.includes(me) && L && L.members[me] && !S.spectate); }
@@ -4256,7 +4278,7 @@ function gTerm(n, par) {
 }
 function gTotals(G, pid, upto) {
   let tot = 0, par = 0;
-  for (let j = 0; j < upto; j++) { tot += gScore(G, pid, j) ?? GOLF_MAX; par += gPar(G)(j); }
+  for (let j = 0; j < upto; j++) { tot += gScore(G, pid, j) ?? gMax(G.holes[j]); par += gPar(G)(j); }
   return {tot, par};
 }
 function gRank(G) {
@@ -4268,7 +4290,7 @@ function gRank(G) {
 
 /* Lokaler Zustand dieses Geräts */
 const gl = {key:'', ball:null, last:null, strokes:0, done:0, shot:false, t0:0, acc:0, prev:0, aim:null, msg:'', msgAt:0, sinkAt:0, introAt:0,
-  cv:null, ctx:null, raf:0, w:0, h:0, V:null, vk:'', view:'', advAt:0, advKey:'', hitAt:0, posAt:0};
+  cv:null, ctx:null, raf:0, w:0, h:0, V:null, cx:0, cy:0, camAt:0, advAt:0, advKey:'', hitAt:0, posAt:0};
 function golfOnSnap() {
   const G = S.golf, me = myPid();
   if (!G || G.status !== 'running') { gl.key = ''; gl.advAt = 0; return; }
@@ -4318,51 +4340,53 @@ function gPhysics(now) {
     if (r === 'water') {
       gl.strokes++; b.x = gl.last.x; b.y = gl.last.y; b.vx = 0; b.vy = 0;
       gl.msg = 'Platsch! +1 Strafschlag'; gl.msgAt = now; tone(140, .32, 'sine', .09);
-      if (gl.strokes >= GOLF_MAX) { gFinishHole(GOLF_MAX); return; }
+      if (gl.strokes >= gMax(H.i)) { gFinishHole(gMax(H.i)); return; }
       gWrite({['golf.pos.' + myPid()]:[Math.round(b.x), Math.round(b.y), gl.strokes, G.hi]}); render(); continue;
     }
     if (wasMoving && b.vx === 0 && b.vy === 0 && gl.shot) {
       gl.shot = false;
-      if (gl.strokes >= GOLF_MAX) { gl.msg = 'Maximum erreicht'; gl.msgAt = now; gFinishHole(GOLF_MAX); return; }
+      if (gl.strokes >= gMax(H.i)) { gl.msg = 'Maximum erreicht'; gl.msgAt = now; gFinishHole(gMax(H.i)); return; }
       gWrite({['golf.pos.' + myPid()]:[Math.round(b.x), Math.round(b.y), gl.strokes, G.hi]});
       render();
     }
   }
 }
 
-/* Kamera: 2D (schräg von oben) oder 3D (Perspektive). P projiziert, U rechnet Bildschirm -> Boden zurück. */
-function gView(H, w, h, mode) {
-  const [x0, y0, x1, y1] = H.box, m = G_WALL + 8;
-  const bx0 = x0 - m, by0 = y0 - m, bx1 = x1 + m, by1 = y1 + m;
-  if (mode !== '3d') {
-    const OB = 0.55, top = 46;
-    const k = Math.min(w / (bx1 - bx0), h / (by1 - by0 + top));
-    const ox = (w - k * (bx1 - bx0)) / 2 - k * bx0, oy = (h - k * (by1 - by0 + top)) / 2 - k * (by0 - top);
-    return {P:(x, y, z) => [ox + k * x, oy + k * (y - z * OB)], S:() => k, D:(x, y) => -y, U:(sx, sy) => [(sx - ox) / k, (sy - oy) / k]};
-  }
-  const cx = (bx0 + bx1) / 2, cy = (by0 + by1) / 2, a = 0.92, dist = Math.max(bx1 - bx0, by1 - by0) * 1.05;
-  const sa = Math.sin(a), ca = Math.cos(a);
-  const C = [cx, cy + sa * dist, ca * dist], f = [0, -sa, -ca], r = [1, 0, 0], u = [0, -ca, sa];
-  const cam = (x, y, z) => { const d = [x - C[0], y - C[1], z - C[2]]; const zc = d[0] * f[0] + d[1] * f[1] + d[2] * f[2]; return [(d[0] * r[0] + d[1] * r[1] + d[2] * r[2]) / zc, -(d[0] * u[0] + d[1] * u[1] + d[2] * u[2]) / zc, zc]; };
-  let mx0 = 1e9, my0 = 1e9, mx1 = -1e9, my1 = -1e9;
-  for (const x of [bx0, bx1]) for (const y of [by0, by1]) for (const z of [0, 70]) { const q = cam(x, y, z); mx0 = Math.min(mx0, q[0]); mx1 = Math.max(mx1, q[0]); my0 = Math.min(my0, q[1]); my1 = Math.max(my1, q[1]); }
-  const k = Math.min(w / (mx1 - mx0), h / (my1 - my0)) * 0.98;
-  const ox = (w - k * (mx1 - mx0)) / 2 - k * mx0, oy = (h - k * (my1 - my0)) / 2 - k * my0;
-  return {
-    P:(x, y, z) => { const q = cam(x, y, z); return [ox + k * q[0], oy + k * q[1]]; },
+/* Kamera: 3D-Perspektive, die dem Ball folgt (Blick von unten nach oben). cam: Welt -> Kamera, P: Bildschirm, U: Bildschirm -> Boden. */
+const G_NEAR = 30;
+function gView(w, h, tx, ty) {
+  const a = 0.95, dist = 820, sa = Math.sin(a), ca = Math.cos(a);
+  const C = [tx, ty + sa * dist, ca * dist], f = [0, -sa, -ca], u = [0, -ca, sa];
+  const k = Math.min(w, h * 1.5) * dist / (w < 600 ? 520 : 660), ox = w / 2, oy = h * 0.6;
+  const cam = (x, y, z) => { const dx = x - C[0], dy = y - C[1], dz = z - C[2]; return [dx, -(dy * u[1] + dz * u[2]), dy * f[1] + dz * f[2]]; };
+  const pr = q => [ox + k * q[0] / q[2], oy + k * q[1] / q[2]];
+  return {cam, pr,
+    P:(x, y, z) => pr(cam(x, y, z)),
     S:(x, y, z) => k / cam(x, y, z)[2],
     D:(x, y, z) => cam(x, y, z)[2],
     U:(sx, sy) => {
       const xn = (sx - ox) / k, yn = (sy - oy) / k;
-      const d = [r[0] * xn - u[0] * yn + f[0], r[1] * xn - u[1] * yn + f[1], r[2] * xn - u[2] * yn + f[2]];
+      const d = [xn, -u[1] * yn + f[1], -u[2] * yn + f[2]];
       if (d[2] > -1e-4) return null;
       const t = -C[2] / d[2];
       return [C[0] + d[0] * t, C[1] + d[1] * t];
     }
   };
 }
+/* Vieleck in Welt-Punkten [x,y,z] zeichnen, hinter der Kamera abgeschnitten */
+function gPath3(c, V, pts) {
+  const q = pts.map(p => V.cam(p[0], p[1], p[2])), out = [];
+  for (let i = 0; i < q.length; i++) {
+    const A = q[i], B = q[(i + 1) % q.length], ia = A[2] >= G_NEAR, ib = B[2] >= G_NEAR;
+    if (ia) out.push(A);
+    if (ia !== ib) { const t = (G_NEAR - A[2]) / (B[2] - A[2]); out.push([A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t, G_NEAR]); }
+  }
+  if (out.length < 3) return false;
+  c.beginPath(); out.forEach((p, i) => { const s = V.pr(p); if (i) c.lineTo(s[0], s[1]); else c.moveTo(s[0], s[1]); }); c.closePath();
+  return true;
+}
+const gPath = (c, V, pts, z) => gPath3(c, V, pts.map(p => [p[0], p[1], z]));
 function gShade(hex, f) { const n = parseInt(hex.slice(1), 16); return `rgb(${[n >> 16, (n >> 8) & 255, n & 255].map(v => Math.max(0, Math.min(255, Math.round(v * f))))})`; }
-function gPath(c, V, pts, z) { c.beginPath(); pts.forEach((p, i) => { const s = V.P(p[0], p[1], z); if (i) c.lineTo(s[0], s[1]); else c.moveTo(s[0], s[1]); }); c.closePath(); }
 const gCirc = (x, y, r, n = 18) => Array.from({length:n}, (_, i) => [x + Math.cos(i / n * Math.PI * 2) * r, y + Math.sin(i / n * Math.PI * 2) * r]);
 /* Körper mit Grundfläche pts (im Uhrzeigersinn) und Höhe h */
 function gPrism(c, V, pts, h, col, edge) {
@@ -4374,17 +4398,18 @@ function gPrism(c, V, pts, h, col, edge) {
   }
   faces.sort((p, q) => q.d - p.d);
   for (const fc of faces) {
-    const q = [V.P(fc.a[0], fc.a[1], 0), V.P(fc.b[0], fc.b[1], 0), V.P(fc.b[0], fc.b[1], h), V.P(fc.a[0], fc.a[1], h)];
-    c.beginPath(); c.moveTo(q[0][0], q[0][1]); for (let i = 1; i < 4; i++) c.lineTo(q[i][0], q[i][1]); c.closePath();
+    if (!gPath3(c, V, [[fc.a[0], fc.a[1], 0], [fc.b[0], fc.b[1], 0], [fc.b[0], fc.b[1], h], [fc.a[0], fc.a[1], h]])) continue;
     c.fillStyle = gShade(col, fc.l); c.fill();
   }
-  gPath(c, V, pts, h); c.fillStyle = gShade(col, 1.15); c.fill();
+  if (!gPath(c, V, pts, h)) return;
+  c.fillStyle = gShade(col, 1.15); c.fill();
   if (edge) { c.strokeStyle = edge; c.lineWidth = 1.5; c.stroke(); }
 }
 function gBall(c, V, x, y, color, alpha, label, now) {
+  if (V.D(x, y, G_R) < G_NEAR + 10) return;
   const s = V.P(x, y, G_R), rr = Math.max(2, G_R * V.S(x, y, G_R));
   c.save(); c.globalAlpha = alpha;
-  gPath(c, V, gCirc(x + 3, y + 3, G_R), 0); c.fillStyle = 'rgba(0,0,0,.35)'; c.fill();
+  if (gPath(c, V, gCirc(x + 3, y + 3, G_R), 0)) { c.fillStyle = 'rgba(0,0,0,.35)'; c.fill(); }
   const g = c.createRadialGradient(s[0] - rr * 0.35, s[1] - rr * 0.4, rr * 0.1, s[0], s[1], rr);
   g.addColorStop(0, '#ffffff'); g.addColorStop(0.55, color); g.addColorStop(1, gShade(color.length === 7 ? color : '#dddddd', 0.55));
   c.beginPath(); c.arc(s[0], s[1], rr, 0, Math.PI * 2); c.fillStyle = g; c.fill();
@@ -4395,40 +4420,43 @@ const G_STARS = Array.from({length:60}, (_, i) => [(i * 9301 + 49297) % 233280 /
 function gDraw(now) {
   const G = S.golf, c = gl.ctx; if (!G || !c) return;
   const H = gHole(G.holes[G.hi]), w = gl.w, h = gl.h, t = (now - gl.t0) / 1000;
-  const vk = H.i + ':' + w + ':' + h + ':' + gl.view;
-  if (gl.vk !== vk) { gl.vk = vk; gl.V = gView(H, w, h, gl.view); }
-  const V = gl.V;
+  const V = gl.V = gView(w, h, gl.cx, gl.cy);
   const bg = c.createLinearGradient(0, 0, 0, h); bg.addColorStop(0, '#1b0f3d'); bg.addColorStop(1, '#0b0620');
   c.fillStyle = bg; c.fillRect(0, 0, w, h);
   for (const [sx, sy, a] of G_STARS) { c.fillStyle = `rgba(255,255,255,${(a * (0.6 + 0.4 * Math.sin(now / 900 + sx * 20))).toFixed(2)})`; c.fillRect(sx * w, sy * h * 0.9, 2, 2); }
   // Boden
-  gPath(c, V, H.f, 0); c.fillStyle = '#2f9a4f'; c.fill();
-  c.save(); gPath(c, V, H.f, 0); c.clip();
-  for (let x = H.box[0]; x < H.box[2]; x += 80) { gPath(c, V, gR(x, H.box[1], 40, H.box[3] - H.box[1]), 0); c.fillStyle = '#36a95a'; c.fill(); }
+  c.save();
+  if (gPath(c, V, H.f, 0)) { c.fillStyle = '#2f9a4f'; c.fill(); c.clip(); }
+  for (let y = H.box[1]; y < H.box[3]; y += 80) if (gPath(c, V, gR(H.box[0] - 20, y, H.box[2] - H.box[0] + 40, 40), 0)) { c.fillStyle = '#36a95a'; c.fill(); }
   for (const r of H.sa || []) {
-    gPath(c, V, gR(...r), 0); c.fillStyle = '#e2c47c'; c.fill();
+    if (!gPath(c, V, gR(...r), 0)) continue;
+    c.fillStyle = '#e2c47c'; c.fill();
     c.fillStyle = 'rgba(150,110,40,.35)';
-    for (let i = 0; i < r[2] * r[3] / 500; i++) { const px = r[0] + (i * 37.7 % r[2]), py = r[1] + (i * 61.3 % r[3]); const s = V.P(px, py, 0); c.fillRect(s[0], s[1], 2, 2); }
+    for (let i = 0; i < r[2] * r[3] / 500; i++) { const px = r[0] + (i * 37.7 % r[2]), py = r[1] + (i * 61.3 % r[3]); if (V.D(px, py, 0) < G_NEAR) continue; const s = V.P(px, py, 0); c.fillRect(s[0], s[1], 2, 2); }
   }
   for (const r of H.wa || []) {
-    gPath(c, V, gR(...r), 0); c.fillStyle = '#1f6fd0'; c.fill();
+    if (!gPath(c, V, gR(...r), 0)) continue;
+    c.fillStyle = '#1f6fd0'; c.fill();
+    if (V.D(r[0], r[1] + r[3], 0) < G_NEAR) continue;
     c.strokeStyle = 'rgba(160,220,255,.45)'; c.lineWidth = 1.5;
     for (let yy = r[1] + 10; yy < r[1] + r[3]; yy += 16) { c.beginPath(); for (let xx = r[0] + 4; xx <= r[0] + r[2] - 4; xx += 8) { const s = V.P(xx, yy + Math.sin(xx / 14 + now / 400) * 3, 0); if (xx === r[0] + 4) c.moveTo(s[0], s[1]); else c.lineTo(s[0], s[1]); } c.stroke(); }
   }
   for (const s of H.sl || []) {
-    gPath(c, V, gR(s[0], s[1], s[2], s[3]), 0); c.fillStyle = 'rgba(255,207,63,.10)'; c.fill();
+    if (!gPath(c, V, gR(s[0], s[1], s[2], s[3]), 0)) continue;
+    c.fillStyle = 'rgba(255,207,63,.10)'; c.fill();
     const L = Math.hypot(s[4], s[5]) || 1, ux = s[4] / L, uy = s[5] / L, ph = (now / 1000 * 40) % 60;
     c.strokeStyle = 'rgba(255,230,140,.55)'; c.lineWidth = 2;
     for (let gx = s[0] + 30; gx < s[0] + s[2]; gx += 60) for (let gy = s[1] + 30; gy < s[1] + s[3]; gy += 60) {
       const cx = gx + ux * (ph - 30), cy = gy + uy * (ph - 30);
+      if (V.D(cx, cy, 0) < G_NEAR + 20) continue;
       const tip = V.P(cx + ux * 10, cy + uy * 10, 0), l1 = V.P(cx - ux * 6 - uy * 9, cy - uy * 6 + ux * 9, 0), l2 = V.P(cx - ux * 6 + uy * 9, cy - uy * 6 - ux * 9, 0);
       c.beginPath(); c.moveTo(l1[0], l1[1]); c.lineTo(tip[0], tip[1]); c.lineTo(l2[0], l2[1]); c.stroke();
     }
   }
   c.restore();
   // Loch
-  gPath(c, V, gCirc(H.cup[0], H.cup[1], G_CUP + 3, 24), 0); c.fillStyle = '#f2f2f2'; c.fill();
-  gPath(c, V, gCirc(H.cup[0], H.cup[1], G_CUP, 24), 0); c.fillStyle = '#0a1a10'; c.fill();
+  if (gPath(c, V, gCirc(H.cup[0], H.cup[1], G_CUP + 3, 24), 0)) { c.fillStyle = '#f2f2f2'; c.fill(); }
+  if (gPath(c, V, gCirc(H.cup[0], H.cup[1], G_CUP, 24), 0)) { c.fillStyle = '#0a1a10'; c.fill(); }
   // Körper nach Tiefe sortiert
   const items = [];
   const f = H.f, n = f.length, nrm = [];
@@ -4436,7 +4464,7 @@ function gDraw(now) {
   const O = f.map((v, i) => { const n1 = nrm[(i + n - 1) % n], n2 = nrm[i], d = 1 + n1[0] * n2[0] + n1[1] * n2[1] || 1; return [v[0] + G_WALL * (n1[0] + n2[0]) / d, v[1] + G_WALL * (n1[1] + n2[1]) / d]; });
   for (let i = 0; i < n; i++) { const q = [f[i], O[i], O[(i + 1) % n], f[(i + 1) % n]]; items.push({d:V.D((f[i][0] + f[(i + 1) % n][0] + O[i][0] + O[(i + 1) % n][0]) / 4, (f[i][1] + f[(i + 1) % n][1] + O[i][1] + O[(i + 1) % n][1]) / 4, 0), fn:() => gPrism(c, V, q, G_WH, '#4b3480', '#ffcf3f')}); }
   for (const r of H.bl || []) items.push({d:V.D(r[0] + r[2] / 2, r[1] + r[3] / 2, 0), fn:() => gPrism(c, V, gR(...r), G_WH, '#4b3480', '#ffcf3f')});
-  for (const b of H.bu || []) items.push({d:V.D(b[0], b[1], 0), fn:() => { gPrism(c, V, gCirc(b[0], b[1], b[2]), 20, '#ff4f9a', null); gPath(c, V, gCirc(b[0], b[1], b[2] * 0.55), 20); c.fillStyle = '#ffd1ea'; c.fill(); }});
+  for (const b of H.bu || []) items.push({d:V.D(b[0], b[1], 0), fn:() => { gPrism(c, V, gCirc(b[0], b[1], b[2]), 20, '#ff4f9a', null); if (gPath(c, V, gCirc(b[0], b[1], b[2] * 0.55), 20)) { c.fillStyle = '#ffd1ea'; c.fill(); } }});
   for (const s of H.sp || []) {
     const [ax, ay, bx, by] = gSpinAt(s, t), l = Math.hypot(bx - ax, by - ay) || 1, px = -(by - ay) / l * 6, py = (bx - ax) / l * 6;
     let bar = [[ax + px, ay + py], [bx + px, by + py], [bx - px, by - py], [ax - px, ay - py]];
@@ -4446,6 +4474,7 @@ function gDraw(now) {
   for (const m of H.mv || []) { const p = gSlideAt(m, t); items.push({d:V.D(p.x + m[2] / 2, p.y + m[3] / 2, 0), fn:() => gPrism(c, V, gR(p.x, p.y, m[2], m[3]), 26, '#2fbfe0', '#c8f6ff')}); }
   // Fahne
   items.push({d:V.D(H.cup[0], H.cup[1], 0) - 0.01, fn:() => {
+    if (V.D(H.cup[0], H.cup[1], 0) < G_NEAR + 20) return;
     const b0 = V.P(H.cup[0], H.cup[1], 0), b1 = V.P(H.cup[0], H.cup[1], 70);
     c.strokeStyle = '#f5f5f5'; c.lineWidth = Math.max(1.5, 2.5 * V.S(H.cup[0], H.cup[1], 35)); c.beginPath(); c.moveTo(b0[0], b0[1]); c.lineTo(b1[0], b1[1]); c.stroke();
     const wv = Math.sin(now / 250) * 4, f1 = V.P(H.cup[0], H.cup[1], 70), f2 = V.P(H.cup[0] + 34, H.cup[1] + wv, 62), f3 = V.P(H.cup[0], H.cup[1], 52);
@@ -4464,7 +4493,8 @@ function gDraw(now) {
     const sinkF = gl.sinkAt ? Math.max(0, 1 - (now - gl.sinkAt) / 500) : 1;
     items.push({d:V.D(b.x, b.y, 0) - 0.03, fn:() => { if (sinkF < 1) { c.save(); c.globalAlpha = sinkF; } gBall(c, V, b.x, b.y, '#ffffff', 1, '', now); if (sinkF < 1) c.restore(); }});
   }
-  items.sort((p, q) => q.d - p.d).forEach(it => it.fn());
+  items.filter(it => it.d > G_NEAR - 400).sort((p, q) => q.d - p.d).forEach(it => it.fn());
+  gMiniMap(c, H, G, w, h, now);
   // Zielhilfe
   if (gl.aim && gl.aim.p > 0.02 && b) {
     const L = Math.hypot(gl.aim.dx, gl.aim.dy) || 1, ux = gl.aim.dx / L, uy = gl.aim.dy / L, len = 40 + gl.aim.p * 220;
@@ -4491,9 +4521,13 @@ function gFrame(now) {
   gl.raf = 0;
   const cv = gl.cv, stage = document.getElementById('golf-stage');
   if (!cv || !stage || cv.parentNode !== stage || S.tab !== 'golf' || !S.golf || S.golf.status !== 'running') return;
-  const w = Math.max(200, stage.clientWidth), h = Math.max(220, Math.round(Math.min(w * 0.6, window.innerHeight - (document.body.classList.contains('ingame') ? 120 : 210)))), dpr = Math.min(2, window.devicePixelRatio || 1);
-  if (gl.w !== w || gl.h !== h || cv.width !== Math.round(w * dpr)) { gl.w = w; gl.h = h; cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px'; gl.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); gl.vk = ''; }
-  gPhysics(now); gl.prev = now;
+  const w = Math.max(200, stage.clientWidth), h = Math.max(260, Math.round(Math.min(w * (w < 600 ? 1.3 : 0.72), window.innerHeight - 90))), dpr = Math.min(2, window.devicePixelRatio || 1);
+  if (gl.w !== w || gl.h !== h || cv.width !== Math.round(w * dpr)) { gl.w = w; gl.h = h; cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px'; gl.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  // Beim Start einmal so scrollen, dass die ganze Bahn im Bild ist
+  if (gl.scrolled !== S.golf.id) { gl.scrolled = S.golf.id; const r = stage.getBoundingClientRect(); if (r.bottom > window.innerHeight || r.top < 0) window.scrollBy(0, r.bottom - window.innerHeight + 12); }
+  gPhysics(now);
+  gCamera(now);
+  gl.prev = now;
   gDraw(now);
   gl.raf = requestAnimationFrame(gFrame);
 }
@@ -4505,6 +4539,7 @@ function golfEnsure() {
   gl.cv = cv; gl.ctx = cv.getContext('2d');
   cv.addEventListener('pointerdown', e => {
     if (!gCanShoot() || !gl.V) return;
+    if (performance.now() - gl.introAt < 2400) { gl.introAt = 0; gl.cx = gl.ball.x; gl.cy = gl.ball.y - 150; gl.V = gView(gl.w, gl.h, gl.cx, gl.cy); }
     const [sx, sy] = gPt(e);
     gl.aim = {sx, sy, dx:0, dy:0, p:0, id:e.pointerId};
     try { cv.setPointerCapture(e.pointerId); } catch (er) {}
@@ -4529,6 +4564,41 @@ function golfMount() {
   if (!gl.raf) gl.raf = requestAnimationFrame(gFrame);
 }
 
+/* Kamera folgt dem eigenen Ball. Am Anfang jeder Bahn fliegt sie vom Loch zum Abschlag, damit man die Bahn sieht. */
+function gCamera(now) {
+  const G = S.golf; if (!G) return;
+  const H = gHole(G.holes[G.hi]), me = myPid();
+  let fx, fy;
+  if (gPlaying() && gl.ball && !gl.done) { fx = gl.ball.x; fy = gl.ball.y; }
+  else if (gPlaying() && gl.done) { fx = H.cup[0]; fy = H.cup[1]; }
+  else { const pid = G.players.find(p => p !== me && gScore(G, p, G.hi) == null && G.pos[p] && G.pos[p][3] === G.hi); const q = pid ? G.pos[pid] : H.tee; fx = q[0]; fy = q[1]; }
+  fy -= 150;
+  const ia = (now - gl.introAt) / 2600;
+  if (ia < 1 && !gl.aim) {
+    const e = ia < 0.3 ? 0 : (ia - 0.3) / 0.7, k = e * e * (3 - 2 * e);
+    gl.cx = H.cup[0] + (fx - H.cup[0]) * k; gl.cy = H.cup[1] + 60 + (fy - H.cup[1] - 60) * k; gl.camAt = now; return;
+  }
+  const dt = Math.min(0.1, (now - (gl.camAt || now)) / 1000); gl.camAt = now;
+  if (gl.aim) return;
+  const f = 1 - Math.exp(-dt * 3.2);
+  gl.cx += (fx - gl.cx) * f; gl.cy += (fy - gl.cy) * f;
+}
+/* Kleine Übersicht der ganzen Bahn oben rechts */
+function gMiniMap(c, H, G, w, h, now) {
+  const [x0, y0, x1, y1] = H.box, mh = Math.min(h * 0.45, 200), sc = mh / (y1 - y0 + 40), mw = (x1 - x0 + 40) * sc;
+  const ox = w - mw - 10 - (x0 - 20) * sc, oy = 10 - (y0 - 20) * sc, M = (x, y) => [ox + x * sc, oy + y * sc];
+  c.save();
+  c.fillStyle = 'rgba(11,6,32,.72)'; c.fillRect(w - mw - 14, 6, mw + 8, mh + 8);
+  const poly = (pts, col) => { c.beginPath(); pts.forEach((p, i) => { const q = M(p[0], p[1]); if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); }); c.closePath(); c.fillStyle = col; c.fill(); };
+  poly(H.f, '#2f9a4f');
+  (H.sa || []).forEach(r => poly(gR(...r), '#e2c47c')); (H.wa || []).forEach(r => poly(gR(...r), '#1f6fd0')); (H.bl || []).forEach(r => poly(gR(...r), '#7a5cc0'));
+  const dot = (x, y, r, col) => { const q = M(x, y); c.beginPath(); c.arc(q[0], q[1], r, 0, Math.PI * 2); c.fillStyle = col; c.fill(); };
+  dot(H.cup[0], H.cup[1], 3, '#0a1a10'); dot(H.cup[0], H.cup[1], 1.6, '#ff4f6d');
+  const me = myPid();
+  for (const pid of G.players) { if (pid === me) continue; const p = G.pos[pid], pl = playerById(pid); if (pl && p && p[3] === G.hi && gScore(G, pid, G.hi) == null) dot(p[0], p[1], 2.5, pl.color); }
+  if (gPlaying() && gl.ball && !gl.done) dot(gl.ball.x, gl.ball.y, 3 + Math.sin(now / 200), '#ffffff');
+  c.restore();
+}
 /* Host: nächste Bahn, wenn alle fertig sind */
 function golfAdvance() {
   const G = S.golf; if (!G || G.status !== 'running' || !ctl()) return;
@@ -4547,7 +4617,7 @@ function golfHostTick() {
 function golfSkip() {
   const G = S.golf; if (!G || !ctl()) return;
   const patch = {};
-  for (const pid of G.players) if (gScore(G, pid, G.hi) == null) patch['golf.sc.' + pid + '.' + G.hi] = GOLF_MAX;
+  for (const pid of G.players) if (gScore(G, pid, G.hi) == null) patch['golf.sc.' + pid + '.' + G.hi] = gMax(G.holes[G.hi]);
   roomWrite(patch).then(() => golfAdvance());
 }
 function golfStart(set) {
@@ -4570,13 +4640,9 @@ function golfTransfer() {
 
 /* Ansichten */
 function viewGolf() {
-  if (!gl.view) gl.view = lsGet('darkime-golf-view', '2d') === '3d' ? '3d' : '2d';
   const G = S.golf;
   if (!G) return golfSetupHTML();
   return G.status === 'finished' ? golfEndHTML(G) : golfPlayHTML(G);
-}
-function gViewChips() {
-  return `<div class="chips g-viewpick"><button class="chip" type="button" data-act="golf-view" data-v="2d" aria-pressed="${gl.view === '2d'}">2D</button><button class="chip" type="button" data-act="golf-view" data-v="3d" aria-pressed="${gl.view === '3d'}">3D</button></div>`;
 }
 function golfSetupHTML() {
   const L = lobby(), hostP = L && L.host && playerById(L.host.pid);
@@ -4589,8 +4655,7 @@ function golfSetupHTML() {
     <p class="muted">Alle spielen gleichzeitig auf dem eigenen Gerät. Zielen: vom Ball weg ziehen und loslassen. Wer eingelocht hat, wartet auf die anderen. Wenigste Schläge gewinnen.</p>
     <span class="lbl">Bahnen</span>
     <div class="g-sets">${GOLF_SETS.map(s => `<button class="g-set" type="button" data-act="golf-set" data-v="${s[0]}" aria-pressed="${set === s[0]}"><b>${s[1]}</b><small>${s[2]}</small></button>`).join('')}</div>
-    <ol class="g-holes">${GOLF_HOLES.map((hh, i) => `<li class="${set === 'quick' || pick.includes(i) ? 'on' : ''}"><span class="g-num">${i + 1}</span><span class="g-hn">${esc(hh.n)}</span><small>Par ${hh.par}</small></li>`).join('')}</ol>
-    <span class="lbl">Ansicht auf diesem Gerät</span>${gViewChips()}
+    <ol class="g-holes">${GOLF_HOLES.map((hh, i) => `<li class="${set === 'quick' || pick.includes(i) ? 'on' : ''}"><span class="g-num">${i + 1}</span><span class="g-hn">${esc(hh.n)}</span><small>${Math.round((gHole(i).box[3] - gHole(i).box[1]) / 10)} m · Par ${hh.par}</small></li>`).join('')}</ol>
     <button class="btn btn-gold btn-big" type="button" data-act="golf-start">Golf starten · ${n} Bahnen</button>
     <p class="muted">Mitspieler im Raum: ${roomMembers(L).length}</p>
   </div></section>`;
@@ -4612,7 +4677,6 @@ function golfPlayHTML(G) {
     <div class="g-top">
       <div class="g-hole"><span class="eyebrow">Bahn ${G.hi + 1} von ${G.holes.length}</span><b>${esc(H.n)}</b><span class="g-par">Par ${H.par}</span></div>
       ${playing ? `<div class="g-me"><small>Schläge</small><b>${gl.strokes}</b></div>` : ''}
-      ${gViewChips()}
     </div>
     ${mine}
     <div class="g-main">
@@ -4622,7 +4686,7 @@ function golfPlayHTML(G) {
           : `<button class="btn btn-sm" type="button" data-act="golf-skip">Weiter, ohne zu warten</button>`}<button class="btn btn-sm btn-ghost" type="button" data-act="golf-end">Beenden</button></div>` : ''}
       </aside>
     </div>
-    <p class="g-help">${isTouch() ? 'Mit dem Finger' : 'Mit der Maus'} auf das Feld drücken, nach hinten ziehen und loslassen. Je weiter du ziehst, desto fester der Schlag. Wasser kostet einen Strafschlag, höchstens ${GOLF_MAX} Schläge pro Bahn.</p>
+    <p class="g-help">${isTouch() ? 'Mit dem Finger' : 'Mit der Maus'} auf das Feld drücken, nach hinten ziehen und loslassen. Je weiter du ziehst, desto fester der Schlag. Wasser kostet einen Strafschlag, höchstens Par + 6 Schläge pro Bahn. Oben rechts siehst du die ganze Bahn.</p>
   </section>`;
 }
 function golfEndHTML(G) {
@@ -4633,7 +4697,7 @@ function golfEndHTML(G) {
   const holes = G.holes.slice(0, end);
   const table = holes.length ? `<div class="g-tablewrap"><table class="g-table"><thead><tr><th>Bahn</th>${holes.map((_, j) => `<th>${j + 1}</th>`).join('')}<th>Σ</th></tr>
     <tr class="g-parrow"><td>Par</td>${holes.map(i => `<td>${GOLF_HOLES[i].par}</td>`).join('')}<td>${holes.reduce((s, i) => s + GOLF_HOLES[i].par, 0)}</td></tr></thead>
-    <tbody>${rows.map(r => `<tr><td>${esc(ghost(r.id).name)}</td>${holes.map((i, j) => { const v = gScore(G, r.id, j) ?? GOLF_MAX, d = v - GOLF_HOLES[i].par; return `<td class="${v === 1 ? 'ace' : d < 0 ? 'under' : d > 0 ? 'over' : ''}">${v}</td>`; }).join('')}<td><b>${r.tot}</b></td></tr>`).join('')}</tbody></table></div>` : '';
+    <tbody>${rows.map(r => `<tr><td>${esc(ghost(r.id).name)}</td>${holes.map((i, j) => { const v = gScore(G, r.id, j) ?? gMax(i), d = v - GOLF_HOLES[i].par; return `<td class="${v === 1 ? 'ace' : d < 0 ? 'under' : d > 0 ? 'over' : ''}">${v}</td>`; }).join('')}<td><b>${r.tot}</b></td></tr>`).join('')}</tbody></table></div>` : '';
   return `<section class="section gsec"><div class="card g-end">
     <span class="eyebrow">⛳ Minigolf · ${end} ${end === 1 ? 'Bahn' : 'Bahnen'}</span><h2>Ergebnis</h2>
     <ol class="g-rank">${list}</ol>
@@ -4644,10 +4708,9 @@ function golfEndHTML(G) {
 }
 const golfActions = {
   'golf-set': b => { D.golfSet = b.dataset.v; render(); },
-  'golf-view': b => { gl.view = b.dataset.v === '3d' ? '3d' : '2d'; lsSet('darkime-golf-view', gl.view); gl.vk = ''; render(); },
   'golf-start': () => golfStart(D.golfSet || 'all'),
   'golf-next': () => { gl.advAt = 0; golfAdvance(); },
-  'golf-skip': () => confirmBox('Ohne Wartende weiter?', `Wer diese Bahn noch nicht fertig hat, bekommt ${GOLF_MAX} Schläge.`, [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Weiter', cls:'btn-gold', fn:golfSkip}]),
+  'golf-skip': () => confirmBox('Ohne Wartende weiter?', 'Wer diese Bahn noch nicht fertig hat, bekommt die höchste Schlagzahl (Par + 6).', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Weiter', cls:'btn-gold', fn:golfSkip}]),
   'golf-end': () => confirmBox('Golf beenden?', 'Gewertet werden alle Bahnen, die schon fertig gespielt sind.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => {
     const G = S.golf; if (!G || !ctl()) return;
     const act = gActive(G), done = act.length > 0 && act.every(pid => gScore(G, pid, G.hi) != null);
@@ -4828,7 +4891,7 @@ function viewRoom() {
       <div class="rc-pick">
         <button class="pick-big" type="button" data-act="room-kind" data-v="quiz" style="--tc:#39d6f2"><span aria-hidden="true">🧠</span><b>Quiz</b><small>Spielbrett mit Fragen aus 8 Themen. Wer dran ist, wählt Feld und Antwort.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="malen" style="--tc:#ff7fc3"><span aria-hidden="true">🎨</span><b>Malen</b><small>Einer malt, alle anderen raten. Wie skribbl.io.</small></button>
-        <button class="pick-big" type="button" data-act="room-kind" data-v="golf" style="--tc:#4ff08f"><span aria-hidden="true">⛳</span><b>Golf</b><small>Minigolf mit 20 Bahnen, in 2D oder 3D. Alle spielen gleichzeitig.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="golf" style="--tc:#4ff08f"><span aria-hidden="true">⛳</span><b>Golf</b><small>Minigolf in 3D mit 20 Bahnen, von kurz und leicht bis lang und kurvig. Alle spielen gleichzeitig.</small></button>
       </div>
       <p class="muted">Danach stellst du das Spiel ein und startest es für alle im Raum.</p>
     </div></section>`;
