@@ -288,6 +288,20 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .gplay .g-done small{display:block;margin:4px 0 0}
 .gplay .g-help{font-size:12px;margin:4px 0 0;line-height:1.5}
 .g-hn-m{display:none}
+.lhs{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.lhs-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.lhs-head h3{margin:0}
+.lhs-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.lhs-list li{display:grid;grid-template-columns:28px 28px 1fr auto;align-items:center;gap:10px;padding:6px 10px;background:var(--bg-2)}
+.lhs-list li.me{box-shadow:0 0 0 2px var(--coin)}
+.lhs-rank{font-family:var(--pixel);font-size:12px;color:var(--coin);text-align:center}
+.lhs-pts{font-family:var(--pixel);font-size:14px;color:var(--xp)}
+.modal .lhs{margin:0;box-shadow:none;padding:0;background:none}
+.invite-card{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.invite-card h3{margin:0}
+.invite-url{width:100%;font-size:13px}
+#brand-sub .online{display:inline-flex;align-items:center;gap:5px}
+#brand-sub .online i{width:8px;height:8px;border-radius:50%;background:#4ff08f;box-shadow:0 0 6px #4ff08f}
 /* Handy: die Bahn nutzt den ganzen Bildschirm, oben links nur kleine Knöpfe */
 .g-sidebtn,.g-watch-m{display:none}
 @media (max-width:760px){
@@ -1429,7 +1443,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=6"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=7"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3109,7 +3123,8 @@ function renderHeader() {
   const parts = [];
   const ts = tourState(); if (ts.k !== 'none' && ts.date) parts.push(tx(ts.date));
   parts.push(tx(`${S.players.length} Spieler`));
-  $('#brand-sub').textContent = parts.join(' · ');
+  const sub = (S.mode === 'db' && S.loaded ? `<span class="online"><i aria-hidden="true"></i>${esc(tx(`${onlineCount()} online`))}</span> · ` : '') + esc(parts.join(' · '));
+  const bs = $('#brand-sub'); if (bs.innerHTML !== sub) bs.innerHTML = sub;
   document.title = SITE_NAME;
   const hideTabs = tabsHidden();
   const tabs = hideTabs ? [] : TABS;
@@ -3308,11 +3323,11 @@ function viewPlayers() {
   const byCreated = S.players.slice().sort((a, b) => a.createdAt - b.createdAt);
   const adm = S.admin;
   if (!D.np.color) D.np.color = COLORS[S.players.length % COLORS.length];
-  const mine = !adm && playerById(lsGet('turnier-me', ''));
-  const meId = playerById(lsGet('turnier-me', '')) ? lsGet('turnier-me', '') : '';
-  const add = adm ? `<form class="pcard add" data-form="add-player"><span class="ptag">Freier Slot</span>${playerForm('np', D.np)}<button class="btn btn-gold" type="submit">Spieler hinzufügen</button></form>`
-    : mine ? `<div class="pcard add codecard"><span class="ptag">Du</span>${avatar(mine, 88, 'pc-av')}<p class="m-text" style="margin:10px 0 0">Du spielst als <b>${nameHTML(mine)}</b>.${ownEdit(mine) ? '' : mine.byGuest ? ' Bearbeiten kannst du ihn auf dem Gerät, mit dem du ihn erstellt hast.' : ' Änderungen am Spieler macht der Spielleiter.'}</p>${ownEdit(mine) ? `<button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(mine.id)}">Spieler bearbeiten</button>` : ''}<button class="link" type="button" data-act="me-clear">Das bin nicht ich</button><button class="btn btn-ghost btn-sm" type="button" data-act="gplayer-open">Weiteren Spieler erstellen</button></div>`
-    : `<div class="pcard add codecard"><span class="ptag">Mitspielen</span><p class="m-text" style="margin-top:14px">Erstell deinen eigenen Spieler mit Foto. Du bist sofort dabei. Steht dein Name schon da? Dann tipp bei dir auf „Das bin ich“.</p><button class="btn btn-gold" type="button" data-act="gplayer-open">Eigenen Spieler erstellen</button></div>`;
+  // Jedes Gerät gehört zu genau einem Spieler: dem, den es selbst erstellt hat
+  const mine = playerById(lsGet('turnier-me', ''));
+  const meId = mine ? mine.id : '';
+  const add = mine ? `<div class="pcard add codecard"><span class="ptag">Du</span>${avatar(mine, 88, 'pc-av')}<p class="m-text" style="margin:10px 0 0">Du spielst als <b>${nameHTML(mine)}</b>.${ownEdit(mine) || adm ? '' : mine.byGuest ? ' Bearbeiten kannst du ihn auf dem Gerät, mit dem du ihn erstellt hast.' : ' Änderungen am Spieler macht der Spielleiter.'}</p>${ownEdit(mine) || adm ? `<button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(mine.id)}">Spieler bearbeiten</button>` : ''}</div>`
+    : `<div class="pcard add codecard"><span class="ptag">Mitspielen</span><p class="m-text" style="margin-top:14px">Erstell deinen eigenen Spieler mit Foto. Du bist sofort dabei.</p><button class="btn btn-gold" type="button" data-act="gplayer-open">Eigenen Spieler erstellen</button></div>`;
   const cards = byCreated.map((p, i) => `
     <div class="pcard ${p.wins > 0 ? 'has-wins' : ''}">
       <span class="ptag">P${i + 1}</span>
@@ -3320,7 +3335,7 @@ function viewPlayers() {
       <div class="pc-name">${nameHTML(p)}</div>${mottoHTML(p)}
       <div class="pc-wins">${p.wins > 0 ? `<span class="pw-cup" aria-hidden="true">🏆</span><b>${p.wins}</b> ${p.wins === 1 ? 'Turniersieg' : 'Turniersiege'}` : 'Noch kein Turniersieg'}
         ${adm ? `<span class="pw-edit"><button class="x" type="button" data-act="win-add" data-pid="${esc(p.id)}" data-d="-1" ${p.wins > 0 ? '' : 'disabled'} aria-label="Einen Turniersieg weniger für ${esc(p.name)}">−</button><button class="x" type="button" data-act="win-add" data-pid="${esc(p.id)}" data-d="1" aria-label="Einen Turniersieg mehr für ${esc(p.name)}">+</button></span>` : ''}</div>
-      ${p.id === meId ? '<span class="you-tag">Das bist du</span>' : !meId ? `<button class="btn btn-sm btn-ghost me-btn" type="button" data-act="set-me" data-pid="${esc(p.id)}">Das bin ich</button>` : ''}
+      ${p.id === meId ? '<span class="you-tag">Das bist du</span>' : ''}
       ${adm ? `<div class="pc-actions"><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Bearbeiten</button><button class="btn btn-sm btn-ghost danger" type="button" data-act="delete-player" data-pid="${esc(p.id)}">Löschen</button></div>`
         : ownEdit(p) ? `<div class="pc-actions"><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Bearbeiten</button></div>` : ''}
     </div>`).join('');
@@ -3362,6 +3377,7 @@ function langCardHTML() {
 function viewSettings() {
   if (!S.admin) return `<section class="section narrow">
     <div class="sec-head"><h2 class="h">Optionen</h2></div>
+    ${inviteCardHTML()}
     ${langCardHTML()}
     <div class="card share-card">
       <h3>Hintergrundmusik</h3>
@@ -3382,6 +3398,7 @@ function viewSettings() {
   const np = S.players.length;
   return `<section class="section narrow">
     <div class="sec-head"><h2 class="h">Optionen</h2></div>
+    ${inviteCardHTML()}
     ${langCardHTML()}
     <form class="card form" data-form="settings">
       <div class="field"><label for="st-title">Name des Turniers</label><input class="input" id="st-title" data-draft="set.title" value="${esc(s.title)}" maxlength="60"></div>
@@ -3960,11 +3977,10 @@ function quizFinished(q) {
     <div class="sec-head"><h2 class="h">Runde ${q.round || 1} geschafft!</h2><span class="muted">${q.board.filter(c => c.used).length} Felder gespielt</span></div>
     <div class="card result">
       <ol class="qres">${rows.map(x => `<li><span class="rank">${x.rank}.</span><span class="who">${avatar(x.p, 40)}<span class="nm">${nameHTML(x.p)}</span>${x.rank === 1 && (x.r.pts || 0) > 0 ? CROWN(22, 16) : ''}</span><span class="score">${x.r.right} von ${x.r.asked} richtig</span><span class="gain">+${x.r.pts || 0}</span></li>`).join('')}</ol>
-      ${adm ? (q.transferred
-        ? `<p class="ok-note">Die Quizpunkte stehen in der Highscore-Liste.</p>`
-        : total > 0 ? `<button class="btn btn-gold btn-lg" type="button" data-act="quiz-transfer">${total} Punkte in die Highscore-Liste übernehmen</button>` : `<p class="m-text">Niemand hat gepunktet, es gibt nichts zu übernehmen.</p>`) : (total > 0 ? `<p class="m-text">In die Highscore-Liste übernehmen kann nur der Spielleiter.</p>` : '')}
+      ${q.transferred && total > 0 ? `<p class="ok-note">Die Punkte stehen im Highscore von ${esc((lobby() || {}).name || 'diesem Raum')}.</p>` : ''}
       ${host ? `<div class="chips"><button class="btn" type="button" data-act="quiz-again">Nächste Runde mit neuen Fragen</button><button class="btn btn-ghost" type="button" data-act="quiz-new">Zur Vorbereitung</button></div>` : `<p class="m-text">Der Host startet gleich die nächste Runde.</p>`}
     </div>
+    ${lobbyHsHTML()}
   </section>`;
 }
 function inRoomNow(id) { const L = S.room && S.lobbies[S.room]; return !L || !!L.members[id]; }
@@ -4087,8 +4103,7 @@ function quizTransfer() {
   }).filter(e => e.delta > 0 && playerById(e.playerId));
   q.transferred = true;
   ops.saveQuiz(q);
-  ops.addPoints(entries);
-  toast('Quizpunkte sind in der Highscore-Liste.');
+  lobbyAward({}, entries);
 }
 function pendingPoints() {
   const q = S.quiz;
@@ -4537,7 +4552,7 @@ const G_NEAR = 30, G_BALL_Y = 0.58, G_LOOK = 0;
 function gView(w, h, tx, ty) {
   const a = 0.95, dist = 820, sa = Math.sin(a), ca = Math.cos(a);
   const C = [tx, ty + sa * dist, ca * dist], f = [0, -sa, -ca], u = [0, -ca, sa];
-  const k = Math.min(w, h * 1.5) * dist / (w < 600 ? 520 : 660), ox = w / 2, oy = h * G_BALL_Y;
+  const k = Math.min(w, h * 1.5) * dist / (w < 600 ? 430 : 660), ox = w / 2, oy = h * G_BALL_Y;
   const cam = (x, y, z) => { const dx = x - C[0], dy = y - C[1], dz = z - C[2]; return [dx, -(dy * u[1] + dz * u[2]), dy * f[1] + dz * f[2]]; };
   const pr = q => [ox + k * q[0] / q[2], oy + k * q[1] / q[2]];
   return {cam, pr,
@@ -4849,6 +4864,7 @@ function golfSkip() {
 }
 function golfStart(set) {
   if (!ctl()) return;
+  if (S.golf && S.golf.status === 'finished' && !S.golf.transferred) golfTransfer();
   const L = lobby(), players = roomMembers(L);
   if (!players.length) { toast('Im Raum ist gerade niemand.'); return; }
   D.golfSet = set;
@@ -4856,13 +4872,11 @@ function golfStart(set) {
   S.lobbies[S.room] = {...L, golf:G}; S.golf = gNorm(G);
   roomWrite({golf:G}); golfOnSnap(); render();
 }
+/* Am Ende bekommen Platz 1 bis 3 Punkte im Highscore des Raums (das macht der Host automatisch) */
 function golfTransfer() {
-  const G = S.golf; if (!S.admin || !G || G.status !== 'finished' || G.transferred) return;
-  const ts = Date.now();
-  const entries = gRank(G).filter(r => r.rank <= 3 && playerById(r.id)).map((r, i) => ({id:uid(), playerId:r.id, delta:GOLF_PLACE_PTS[r.rank - 1], reason:`Golf · ${r.rank}. Platz (${r.tot} Schläge)`, ts:ts + i}));
-  roomWrite({'golf.transferred':true});
-  ops.addPoints(entries);
-  toast('Golf-Punkte sind in der Highscore-Liste.');
+  const G = S.golf; if (!ctl() || !G || G.status !== 'finished' || G.transferred) return;
+  const entries = G.end ? gRank(G).filter(r => r.rank <= 3 && playerById(r.id)).map(r => ({playerId:r.id, delta:GOLF_PLACE_PTS[r.rank - 1]})) : [];
+  lobbyAward({'golf.transferred':true}, entries);
 }
 
 /* Ansichten */
@@ -4937,9 +4951,9 @@ function golfEndHTML(G) {
     <span class="eyebrow">⛳ Minigolf · ${end} ${end === 1 ? 'Bahn' : 'Bahnen'}</span><h2>Ergebnis</h2>
     <ol class="g-rank">${list}</ol>
     ${table}
-    ${S.admin ? (G.transferred ? '<p class="okline">Golf-Punkte sind in der Highscore-Liste.</p>' : rows.length && end ? `<button class="btn btn-gold" type="button" data-act="golf-transfer">In Highscore übernehmen</button>` : '') : G.transferred ? '' : '<p class="muted">In die Highscore-Liste übernehmen kann nur der Spielleiter.</p>'}
+    ${G.transferred && end ? `<p class="okline">✓ Platz 1 bis 3 stehen im Highscore von ${esc((lobby() || {}).name || 'diesem Raum')}.</p>` : ''}
     ${host ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="golf-again">Nochmal spielen</button><button class="btn" type="button" data-act="golf-setup">Andere Bahnen</button></div>` : '<p class="muted">Der Host startet gleich die nächste Runde.</p>'}
-  </div></section>`;
+  </div>${lobbyHsHTML()}</section>`;
 }
 const golfActions = {
   'golf-set': b => { D.golfSet = b.dataset.v; render(); },
@@ -4952,7 +4966,7 @@ const golfActions = {
     roomWrite({'golf.status':'finished', 'golf.end':G.hi + (done ? 1 : 0)});
   }}]),
   'golf-again': () => golfStart(S.golf ? S.golf.set || 'all' : 'all'),
-  'golf-setup': () => { if (!ctl()) return; S.golf = null; S.lobbies[S.room] = {...lobby(), golf:null}; roomWrite({golf:null}); render(); },
+  'golf-setup': () => { if (!ctl()) return; if (S.golf && S.golf.status === 'finished' && !S.golf.transferred) golfTransfer(); S.golf = null; S.lobbies[S.room] = {...lobby(), golf:null}; roomWrite({golf:null}); render(); },
   'golf-transfer': () => golfTransfer(),
   'golf-watch': b => { const l = gSpecList(); if (!l.length) return; const i = l.indexOf(gSpecPid()); gl.spec = l[(i + Number(b.dataset.d) + l.length) % l.length]; render(); },
   'golf-side': () => { gl.sideOpen = !gl.sideOpen; render(); },
@@ -4971,7 +4985,32 @@ function normLobby(id, x) {
   for (const [pid, v] of Object.entries(m)) if (pid && pid.length <= 40 && v && typeof v === 'object') members[pid] = {at:Number(v.at) || 0, dev:str(v.dev, 60)};
   const host = x.host && typeof x.host === 'object' && x.host.dev ? {pid:str(x.host.pid, 40), dev:str(x.host.dev, 60)} : null;
   return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, kind:['quiz', 'malen', 'golf'].includes(x.kind) ? x.kind : '',
-    quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null};
+    quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null,
+    hs:Object.fromEntries(Object.entries(x.hs && typeof x.hs === 'object' && !Array.isArray(x.hs) ? x.hs : {}).filter(([pid, v]) => pid.length <= 40 && Number.isFinite(Number(v))).map(([pid, v]) => [pid, Math.round(Number(v))]))};
+}
+/* Jeder Raum hat seinen eigenen Highscore (Feld hs im Raum). Am Spielende trägt der Host die Punkte automatisch ein.
+   Der Turnier-Highscore (points) gehört nur zum Turnier. */
+function lobbyAward(patch, entries) {
+  const p = {...patch};
+  for (const e of entries) if (e.delta && playerById(e.playerId)) p['hs.' + e.playerId] = FV().increment(e.delta);
+  return roomWrite(p);
+}
+const lhsDone = new Set();
+function lobbyAutoAward() {
+  if (!ctl() || S.mode !== 'db') return;
+  const q = S.quiz, st = S.draw, G = S.golf;
+  if (q && q.status === 'finished' && !q.transferred && !lhsDone.has('q' + q.id + ':' + (q.round || 1))) { lhsDone.add('q' + q.id + ':' + (q.round || 1)); quizTransfer(); }
+  if (st && st.status === 'finished' && !st.transferred && !lhsDone.has('d' + st.id)) { lhsDone.add('d' + st.id); drawTransfer(); }
+  if (G && G.status === 'finished' && !G.transferred && !lhsDone.has('g' + G.id)) { lhsDone.add('g' + G.id); golfTransfer(); }
+}
+function lobbyHsHTML(L = lobby(), max = 10, inModal = false) {
+  if (!L) return '';
+  const rows = Object.entries(L.hs || {}).filter(([id, v]) => v > 0 && playerById(id)).sort((a, b) => b[1] - a[1]).slice(0, max);
+  let rank = 0;
+  return `<div class="card lhs">${inModal && !(S.admin && rows.length) ? '' : `<div class="lhs-head">${inModal ? '<span></span>' : `<h3>🏆 Highscore · ${esc(L.name)}</h3>`}${S.admin && rows.length ? '<button class="btn btn-sm btn-ghost" type="button" data-act="lhs-reset">Zurücksetzen</button>' : ''}</div>`}
+    ${rows.length ? `<ol class="lhs-list">${rows.map(([id, v], i) => { if (!i || v !== rows[i - 1][1]) rank = i + 1; const p = playerById(id); return `<li class="${id === myPid() ? 'me' : ''}"><span class="lhs-rank">${rank}</span>${avatar(p, 28)}<b>${nameHTML(p)}</b><span class="lhs-pts">${v}</span></li>`; }).join('')}</ol>`
+      : '<p class="muted">Noch keine Punkte in diesem Raum. Nach jedem Spiel kommen die Punkte automatisch hierher.</p>'}
+  </div>`;
 }
 function lobby(id = S.room) { return id ? (S.lobbies[id] || normLobby(id, null)) : null; }
 function myPid() { const me = lsGet('turnier-me', ''); return me && playerById(me) ? me : ''; }
@@ -5042,7 +5081,7 @@ function roomWrite(patch) {
 async function roomJoin(r) {
   if (S.mode !== 'db' || !db) return;
   const me = myPid();
-  if (!me) { toast('Wähl zuerst deinen Spieler: Tipp im Tab Spieler bei deinem Namen auf „Das bin ich“.'); setTab('spieler'); return; }
+  if (!me) { toast('Erstell zuerst deinen eigenen Spieler im Tab Spieler.'); setTab('spieler'); return; }
   const L = lobby(r);
   if (L.members[me]) { roomSet(r); setTab('raum'); return; }
   if (roomMembers(L).length >= ROOM_MAX) { toast(`${L.name} ist voll. Höchstens ${ROOM_MAX} Spieler.`); return; }
@@ -5116,7 +5155,7 @@ function viewRooms() {
   const me = myPid();
   return `<section class="section">
     <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen und Golf könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
-    ${me ? '' : `<div class="card rooms-hint"><p class="m-text">Damit du mitspielen kannst, muss dein Gerät zu einem Spieler gehören. Tipp im Tab <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button> bei deinem Namen auf „Das bin ich“ oder leg dir einen Spieler an.</p></div>`}
+    ${me ? '' : `<div class="card rooms-hint"><p class="m-text">Damit du mitspielen kannst, brauchst du einen eigenen Spieler. Den erstellst du unter <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button>.</p></div>`}
     <div class="rooms">${ROOMS.map(roomCardHTML).join('')}</div>
     <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz, Malen oder Golf, stellt alles ein und startet.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
   </section>`;
@@ -5129,7 +5168,7 @@ function viewRoom() {
       <div class="rc-pick">
         <button class="pick-big" type="button" data-act="room-kind" data-v="quiz" style="--tc:#39d6f2"><span aria-hidden="true">🧠</span><b>Quiz</b><small>Spielbrett mit Fragen aus 8 Themen. Wer dran ist, wählt Feld und Antwort.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="malen" style="--tc:#ff7fc3"><span aria-hidden="true">🎨</span><b>Malen</b><small>Einer malt, alle anderen raten. Wie skribbl.io.</small></button>
-        <button class="pick-big" type="button" data-act="room-kind" data-v="golf" style="--tc:#4ff08f"><span aria-hidden="true">⛳</span><b>Golf</b><small>Minigolf in 3D mit 20 Bahnen, von kurz und leicht bis lang und kurvig. Alle spielen gleichzeitig.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="golf" style="--tc:#4ff08f"><span aria-hidden="true">⛳</span><b>Golf</b><small>Minigolf in 3D mit 30 Bahnen, von kurz und leicht bis extrem. Alle spielen gleichzeitig.</small></button>
       </div>
       <p class="muted">Danach stellst du das Spiel ein und startest es für alle im Raum.</p>
     </div></section>`;
@@ -5151,6 +5190,7 @@ function roomBarHTML() {
       <span class="rb-acts">
         ${host && L.kind && st !== 'running' ? `<button class="btn btn-sm" type="button" data-act="room-kind" data-v="">Anderes Spiel</button>` : ''}
         ${!host && (member || S.admin) && hostStale(L) ? `<button class="btn btn-sm btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}
+        <button class="btn btn-sm" type="button" data-act="lhs-open">🏆 Highscore</button>
         <button class="btn btn-sm" type="button" data-act="rooms">Alle Räume</button>
         ${member ? `<button class="btn btn-sm btn-ghost" type="button" data-act="room-leave" data-room="${S.room}">Verlassen</button>` : `<button class="btn btn-sm btn-ghost" type="button" data-act="room-unview">Zurück</button>`}
       </span>
@@ -6105,13 +6145,13 @@ function drawFinished(st) {
     <div class="dfin">
       <div class="card dres">
         ${top && top.pts > 0 ? `<div class="dwin">${CROWN(44, 32)}${avatar(top.p, 96, 'avbig')}<span class="eyebrow">Bester Künstler</span><b class="slot-name">${nameHTML(top.p)}</b><span class="turn-pts"><b>${top.pts}</b> Punkte</span></div>` : ''}
-        <ol class="dplist">${rows.map(r => `<li class="dprow"><span class="st-rank">${r.rank}</span>${avatar(r.p, 34)}<span class="st-name"><b>${nameHTML(r.p)}</b><small>${r.rank <= 3 && r.pts > 0 ? `${D_PLACE_PTS[r.rank - 1]} ${ptsWord(D_PLACE_PTS[r.rank - 1])} für die Highscore` : ''}</small></span><span class="st-pts">${r.pts}</span></li>`).join('')}</ol>
-        ${adm ? `<div class="chips">${!st.transferred && rows.some(r => r.pts > 0) ? `<button class="btn btn-gold" type="button" data-act="draw-transfer">In Highscore übernehmen</button>` : st.transferred ? '<span class="muted">✓ In der Highscore</span>' : ''}</div>
-          <p class="kbd">Highscore: 1. Platz ${D_PLACE_PTS[0]} Punkte, 2. Platz ${D_PLACE_PTS[1]}, 3. Platz ${D_PLACE_PTS[2]}.</p>` : ''}
+        <ol class="dplist">${rows.map(r => `<li class="dprow"><span class="st-rank">${r.rank}</span>${avatar(r.p, 34)}<span class="st-name"><b>${nameHTML(r.p)}</b><small>${r.rank <= 3 && r.pts > 0 ? `${D_PLACE_PTS[r.rank - 1]} ${ptsWord(D_PLACE_PTS[r.rank - 1])} für den Raum-Highscore` : ''}</small></span><span class="st-pts">${r.pts}</span></li>`).join('')}</ol>
+        <p class="kbd">${st.transferred ? '✓ ' : ''}Raum-Highscore: 1. Platz ${D_PLACE_PTS[0]} Punkte, 2. Platz ${D_PLACE_PTS[1]}, 3. Platz ${D_PLACE_PTS[2]}.</p>
         ${host ? `<div class="chips"><button class="btn" type="button" data-act="draw-again">Nochmal spielen</button><button class="btn btn-ghost" type="button" data-act="draw-new">Einstellungen ändern</button></div>` : `<p class="m-text">Der Host startet gleich die nächste Runde.</p>`}
       </div>
       ${drawGalleryHTML(st) || `<div class="card"><h3>Galerie</h3><p class="m-text">Hier erscheinen die Bilder der Runde.</p></div>`}
     </div>
+    ${lobbyHsHTML()}
   </section>`;
 }
 function dsetLoad() {
@@ -6175,15 +6215,10 @@ function drawTransfer() {
   const entries = dRanking(st).filter(r => r.rank <= 3 && r.pts > 0 && playerById(r.id)).map((r, i) => ({id:uid(), playerId:r.id, delta:D_PLACE_PTS[r.rank - 1], reason:`Malen · ${r.rank}. Platz (${r.pts} Punkte)`, ts:ts + i}));
   st.transferred = true;
   ops.saveDraw(st);
-  ops.addPoints(entries);
-  toast('Mal-Punkte sind in der Highscore-Liste.');
+  lobbyAward({}, entries);
 }
 function drawPending() { const st = S.draw; return st && st.status === 'finished' && !st.transferred && Object.values(st.scores || {}).some(v => v > 0); }
-function drawWithPending(go) {
-  if (S.admin && drawPending()) confirmBox('Punkte noch nicht übernommen', 'Die Punkte aus dem letzten Malspiel stehen noch nicht in der Highscore-Liste.', [
-    {label:'Abbrechen', cls:'btn-ghost'}, {label:'Ohne Übernahme', fn:go}, {label:'Übernehmen und weiter', cls:'btn-gold', fn:() => { drawTransfer(); go(); }}]);
-  else go();
-}
+function drawWithPending(go) { if (ctl() && drawPending()) drawTransfer(); go(); }
 function saveDwords() {
   const o = {only:false}, seen = new Set(); let n = 0;
   for (const l of DLEVELS) {
@@ -6230,7 +6265,7 @@ function drawGuessSubmit() {
   const st = S.draw, inp = $('#dg-in'); if (!st || !inp) return;
   const v = str(inp.value, 40), me = dMe();
   if (!v) return;
-  if (!st.players.includes(me)) { toast('Tipp im Tab Spieler bei deinem Namen auf „Das bin ich“.'); return; }
+  if (!st.players.includes(me)) { toast('Erstell zuerst deinen eigenen Spieler im Tab Spieler.'); return; }
   if (me === st.drawer || st.phase !== 'draw' || st.guessed[me]) return;
   inp.value = '';
   const id = uid();
@@ -6249,6 +6284,7 @@ function tick() {
   renderGatebar();
   roomBeat();
   golfHostTick();
+  lobbyAutoAward();
   if (ctl() && S.quiz && S.quiz.status === 'running' && S.answers && S.answers.length) handleAnswers();
   const q = S.quiz;
   if (!q || q.status !== 'running' || !q.cfg || q.phase === 'ready') return;
@@ -6327,6 +6363,7 @@ function renderModal() {
   else if (m.type === 'game') inner = D.gm ? modalGame() : '';
   else if (m.type === 'adminlogin') inner = adminLoginModal();
   else if (m.type === 'player') inner = modalPlayer();
+  else if (m.type === 'lhs') inner = `<div class="m-head"><h2 id="m-title">🏆 Highscore · ${esc((lobby() || {}).name || '')}</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>${lobbyHsHTML(lobby(), 50, true)}`;
   else if (m.type === 'gplayer') inner = `
     <div class="m-head"><h2 id="m-title">Dein Spieler</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
     <p class="m-text">Wähl Foto, Name und Farbe. Danach bist du sofort in der Spielerliste.</p>
@@ -6441,13 +6478,11 @@ function tabIntoView() {
   const l = t.offsetLeft - tb.offsetLeft;
   if (l < tb.scrollLeft || l + t.offsetWidth > tb.scrollLeft + tb.clientWidth) tb.scrollLeft = Math.max(0, l - 24);
 }
-function withPending(go) {
-  if (S.admin && pendingPoints()) {
-    confirmBox('Punkte noch nicht übernommen', 'Die Punkte aus dieser Quizrunde stehen noch nicht in der Highscore-Liste.', [
-      {label:'Abbrechen', cls:'btn-ghost'}, {label:'Ohne Übernahme', fn:go}, {label:'Übernehmen und weiter', cls:'btn-gold', fn:() => { quizTransfer(); go(); }}]);
-  } else go();
-}
+function withPending(go) { if (ctl() && pendingPoints()) quizTransfer(); go(); }
 const actions = {
+  'invite-copy': () => inviteCreate(),
+  'lhs-open': () => openModal({type:'lhs'}),
+  'lhs-reset': () => { const L = lobby(); if (!L || !S.admin) return; confirmBox(`Highscore von ${L.name} zurücksetzen?`, 'Alle Punkte in diesem Raum werden gelöscht. Der Turnier-Highscore bleibt.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Zurücksetzen', cls:'btn-gold', fn:() => roomWrite({hs:{}})}]); },
   'gmenu': () => {
     // Das ☰ zum Schließen sitzt genau dort, wo das ☰ im Spiel ist
     const gb = [...document.querySelectorAll('#main .gmenu')].find(e => e.offsetParent), bs = document.body.style;
@@ -6465,8 +6500,6 @@ const actions = {
   'gate-preview': () => { S.preview = true; renderGate(); },
   'copy-link': () => copyShareLink(),
   'guess': b => { const q = S.quiz; if (!q || q.phase !== 'asking' || lsGet('turnier-me', '') !== q.turn) return; const k = guessKey(q); if (getGuess(k) !== null) return; const i = Number(b.dataset.i); setGuess(k, i); sendAnswer(k, i); render(); },
-  'me-clear': () => { lsSet('turnier-me', ''); render(); },
-  'set-me': b => { const id = b.dataset.pid; lsSet('turnier-me', lsGet('turnier-me', '') === id ? '' : id); render(); },
   'music-toggle': () => { music.on = !music.on; lsSet('turnier-music-on', music.on ? '1' : '0'); syncMusic(); render(); },
   'music-preview': () => { music.preview = !music.preview; musicEl(); syncMusic(); render(); },
   'music-remove': () => confirmBox('Musik entfernen?', 'Die MP3 wird von diesem Gerät gelöscht.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Entfernen', cls:'btn-gold', fn:() => removeMusic()}]),
@@ -6481,7 +6514,7 @@ const actions = {
   'win-add': b => { const p = playerById(b.dataset.pid); if (!p) return; ops.savePlayer({...p, wins:Math.max(0, (p.wins || 0) + Number(b.dataset.d))}); },
   'news-open': () => { D.newsOpen = !D.newsOpen; render(); },
   'news-up': b => { const i = Number(b.dataset.i); if (i < 1) return; const n = clone(S.news); [n.items[i - 1], n.items[i]] = [n.items[i], n.items[i - 1]]; ops.saveNews(n); },
-  'gplayer-open': () => { if (!D.gp.color) D.gp.color = COLORS[S.players.length % COLORS.length]; openModal({type:'gplayer'}); },
+  'gplayer-open': () => { if (myPid()) { toast('Du hast schon deinen eigenen Spieler.'); return; } if (!D.gp.color) D.gp.color = COLORS[S.players.length % COLORS.length]; openModal({type:'gplayer'}); },
   'code-copy': () => copyText(S.modal && S.modal.code || '', 'Code kopiert. Schick ihn jetzt dem Spielleiter.', () => { const t = $('#code-out'); if (t) { t.focus(); t.select(); } toast('Markiere den Code und kopiere ihn von Hand.'); }),
   'pw-save': () => {
     const pw = str(D.pwNew, 64);
@@ -6999,6 +7032,31 @@ const DOC_TITLE = document.title;
 let fs = null, fauth = null, room = null, unsubs = [];
 const devId = (() => { let v = lsGet('turnier-dev', ''); if (!v) { v = 'g' + uid(); lsSet('turnier-dev', v); } return v; })();
 function storedPass() { return lsGet('turnier-pass', ''); }
+/* Einladungslink: ein Zufallscode in invites/{code}, der 24 Stunden lang auf diesen Server zeigt.
+   Danach lassen die Datenbank-Regeln ihn nicht mehr lesen. Wer beigetreten ist, bleibt drin. */
+const INVITE_MS = 86400000;
+function inviteCreate() {
+  if (S.mode !== 'db' || !room || !fs) return;
+  const a = new Uint8Array(18); crypto.getRandomValues(a);
+  const code = [...a].map(b => b.toString(16).padStart(2, '0')).join(''), exp = Date.now() + INVITE_MS;
+  const url = location.origin + location.pathname + '?join=' + code;
+  // Erst kopieren (braucht den Klick), dann speichern
+  copyText(url, 'Einladungslink kopiert. Er gilt 24 Stunden.', () => toast('Kopieren ging nicht. Markier den Link unten und kopier ihn selbst.'));
+  D.invite = {url, exp}; render();
+  fs.doc('invites/' + code).set({r:room, exp, ts:Date.now()}).catch(() => { D.invite = null; render(); toast('Der Link konnte nicht gespeichert werden. Prüf dein Internet und versuch es nochmal.'); });
+}
+function inviteCardHTML() {
+  if (S.mode !== 'db') return '';
+  const iv = D.invite && D.invite.exp > Date.now() ? D.invite : null;
+  return `<div class="card invite-card">
+    <h3>🔗 Freunde einladen</h3>
+    <p class="m-text">Mit diesem Link kommt jeder ohne Passwort auf den Server. Der Link gilt 24 Stunden, danach funktioniert er nicht mehr.</p>
+    <button class="btn btn-gold" type="button" data-act="invite-copy">Einladungslink kopieren</button>
+    ${iv ? `<input class="input invite-url" readonly value="${esc(iv.url)}" aria-label="Einladungslink" onfocus="this.select()"><small class="muted">Gültig bis ${new Date(iv.exp).toLocaleString(LOC, {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'})} Uhr</small>` : ''}
+  </div>`;
+}
+function joinCode() { try { const c = new URLSearchParams(location.search).get('join') || ''; return /^[0-9a-f]{24,64}$/.test(c) ? c : ''; } catch (e) { return ''; } }
+function dropJoinParam() { try { const u = new URL(location.href); u.searchParams.delete('join'); history.replaceState(null, '', u.pathname + (u.search || '') + u.hash); } catch (e) {} }
 function storePass(pw) { try { if (pw) localStorage.setItem('turnier-pass', pw); else localStorage.removeItem('turnier-pass'); } catch (e) {} }
 async function sha256hex(s) {
   const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
@@ -7071,6 +7129,15 @@ function adminLoginModal() {
 }
 
 /* Connect to a room */
+/* Wer gerade online ist: jedes offene Gerät meldet sich alle 30 Sekunden in presence/{Gerät} */
+const PRES_MS = 30000, PRES_ALIVE = 75000;
+function presBeat() { if (S.mode !== 'db' || !db || document.hidden) return; db.collection('presence').doc(devId).set({ts:Date.now(), pid:myPid()}).catch(() => {}); }
+function onlineCount() { const now = Date.now(); return Math.max(document.hidden ? 0 : 1, (S.presence || []).filter(p => now - p.ts < PRES_ALIVE).length); }
+setInterval(presBeat, PRES_MS);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) { presBeat(); return; }
+  if (S.mode === 'db' && db) db.collection('presence').doc(devId).delete().catch(() => {});
+});
 function connectRoom(r) {
   unsubs.forEach(u => { try { u(); } catch (e) {} });
   unsubs = [];
@@ -7080,16 +7147,24 @@ function connectRoom(r) {
   db = {collection: p => fs.collection('rooms/' + r + '/' + p), doc: p => fs.doc('rooms/' + r + '/' + p)};
   S.mode = 'db'; S.loaded = false; S.synced = false; S.answers = []; S.quiz = null;
   subscribe();
+  S.presence = [];
+  unsubs.push(db.collection('presence').onSnapshot(sn => {
+    S.presence = sn.docs.map(d => ({id:d.id, ts:Number((d.data() || {}).ts) || 0}));
+    const el = $('#brand-sub'); if (el) renderHeader();
+  }, () => {}));
+  setTimeout(presBeat, 500);
   if (!S.admin) {
     unsubs.push(fs.doc('rooms/' + r).onSnapshot(d => {
       if (room !== r || S.admin || !(d.data() && d.data().moved)) return;
       unsubs.forEach(u => { try { u(); } catch (e) {} });
-      unsubs = []; storePass('');
+      unsubs = []; storePass(''); lsSet('turnier-room', '');
       S.mode = 'lock'; S.lockMsg = 'Das Passwort wurde geändert. Gib das neue Passwort ein.'; render();
     }, () => {}));
   } else {
     loadMusic();
     cleanupLegacy();
+    db.collection('presence').where('ts', '<', Date.now() - 86400000).limit(200).get()
+      .then(sn => sn.docs.forEach(d => d.ref.delete().catch(() => {}))).catch(() => {});
     db.collection('answers').where('ts', '<', Date.now() - 86400000).limit(300).get()
       .then(sn => sn.docs.forEach(d => d.ref.delete().catch(() => {}))).catch(() => {});
   }
@@ -7125,8 +7200,18 @@ async function tryUnlock(pw) {
 }
 async function guestEnter() {
   S.admin = false; S.secret = null;
+  const jc = joinCode();
+  if (jc) {
+    dropJoinParam();
+    let r = '';
+    try { const d = await fs.doc('invites/' + jc).get(); r = d.exists ? str((d.data() || {}).r, 64) : ''; } catch (e) {}
+    if (r && await openRoom(r)) { lsSet('turnier-room', r); return; }
+    S.lockMsg = 'Dieser Einladungslink ist abgelaufen oder ungültig. Frag nach einem neuen Link oder gib das Passwort ein.';
+  }
   const pw = storedPass();
   if (pw && await openRoom(await roomFor(pw))) return;
+  const sr = lsGet('turnier-room', '');
+  if (!pw && sr && await openRoom(sr)) return;
   if (pw && S.lockMsg.startsWith('Falsches')) S.lockMsg = 'Das Passwort wurde geändert. Gib das neue Passwort ein.';
   S.mode = 'lock'; S.loaded = true; render();
 }
@@ -7256,6 +7341,7 @@ function guessesHTML(q) {
 
 /* Guests create their own player */
 async function createGuestPlayer() {
+  if (myPid()) { closeModal(); toast('Du hast schon deinen eigenen Spieler.'); return; }
   const name = str(D.gp.name, 40);
   if (!name) { toast('Gib einen Namen ein.'); return; }
   if (S.mode !== 'db' || !db) return;

@@ -28,6 +28,21 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // Einladungslinks: ein Zufallscode zeigt 24 Stunden lang auf einen Raum. Danach ist er nicht mehr lesbar.
+    // Anlegen kann ihn nur, wer die Raum-ID schon kennt (also schon drin ist); auflisten kann niemand.
+    match /invites/{id} {
+      allow get: if resource.data.exp > request.time.toMillis();
+      allow list: if false;
+      allow create: if id.size() >= 24 && id.size() <= 64
+        && request.resource.data.keys().hasOnly(['r', 'exp', 'ts'])
+        && request.resource.data.r is string && request.resource.data.r.size() <= 64
+        && exists(/databases/$(database)/documents/rooms/$(request.resource.data.r))
+        && request.resource.data.exp is number
+        && request.resource.data.exp <= request.time.toMillis() + 86400000 + 120000;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
     // Ein Turnier-Raum. Seine ID kennt nur, wer das Turnier-Passwort hat.
     match /rooms/{room} {
       allow get: if true;
@@ -147,9 +162,20 @@ service cloud.firestore {
       match /lobbies/{id} {
         allow read: if true;
         allow create, update: if id in ['r1', 'r2', 'r3']
-          && request.resource.data.keys().hasOnly(['name', 'members', 'host', 'hostSeen', 'kind', 'quiz', 'draw', 'golf', 'v'])
+          && request.resource.data.keys().hasOnly(['name', 'members', 'host', 'hostSeen', 'kind', 'quiz', 'draw', 'golf', 'hs', 'v'])
+          && (!('hs' in request.resource.data) || (request.resource.data.hs is map && request.resource.data.hs.size() <= 300))
           && (!('members' in request.resource.data) || (request.resource.data.members is map && request.resource.data.members.size() <= 8));
         allow delete: if isAdmin();
+      }
+
+      // Wer gerade online ist: jedes Gerät meldet sich alle 30 Sekunden.
+      match /presence/{id} {
+        allow read: if true;
+        allow create, update: if id.size() <= 60
+          && request.resource.data.keys().hasOnly(['ts', 'pid'])
+          && request.resource.data.ts is number
+          && request.resource.data.pid is string && request.resource.data.pid.size() <= 40;
+        allow delete: if true;
       }
 
       // Malen: Galerie-Bilder, die der Host speichert und beim nächsten Spiel wieder löscht.
