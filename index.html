@@ -803,7 +803,7 @@ button.bcell[disabled]{cursor:default}
   text-shadow:0 0 18px rgba(255,207,63,.55),5px 5px 0 #b0287a,10px 10px 0 rgba(0,0,0,.55)}
 .sh-title span{display:inline-block;animation:shBounce 2.4s steps(4) infinite}
 .sh-jp{font-size:clamp(14px,2vw,20px);font-weight:800;letter-spacing:.5em;color:#ffd2ea;text-shadow:0 0 10px rgba(255,127,195,.9),2px 2px 0 #6b1446;margin:-2px 0 4px .5em}
-.sh-text{margin:4px 0 8px;padding:8px 16px;background:rgba(11,6,32,.72);box-shadow:0 0 0 2px rgba(196,147,255,.6);font-size:clamp(18px,2.2vw,24px);font-weight:700;line-height:1.45;color:#fff;text-shadow:2px 2px 0 rgba(0,0,0,.6)}
+.sh-text{margin:44px 0 0;padding:8px 16px;background:rgba(11,6,32,.72);box-shadow:0 0 0 2px rgba(196,147,255,.6);font-size:clamp(18px,2.2vw,24px);font-weight:700;line-height:1.45;color:#fff;text-shadow:2px 2px 0 rgba(0,0,0,.6)}
 .sh-sprite{position:absolute;z-index:1;image-rendering:pixelated}
 .sh-sprite svg{display:block;width:100%;height:auto}
 .sh-girl{left:5%;bottom:8%;width:clamp(96px,12vw,150px);animation:shBob 1.2s steps(2) infinite}
@@ -811,8 +811,6 @@ button.bcell[disabled]{cursor:default}
 .sh-ctrl{left:9%;top:12%;width:clamp(90px,11vw,140px);animation:shFloat 4s steps(8) infinite}
 .sh-floaty span{position:absolute;width:26px;animation:shFloat 5s steps(6) infinite;opacity:.9}
 .sh-floaty svg{display:block;width:100%;height:auto}
-.start-hero .start-facts{margin-top:6px}
-.start-hero .start-fact{background:rgba(11,6,32,.78);box-shadow:0 0 0 2px #c493ff}
 @keyframes shTwinkle{50%{opacity:.55}}
 @keyframes shGrid{to{background-position:0 48px,0 48px}}
 @keyframes shBounce{0%,70%,100%{transform:translateY(0)}80%{transform:translateY(-8px)}90%{transform:translateY(-3px)}}
@@ -826,10 +824,9 @@ button.bcell[disabled]{cursor:default}
   .sh-sun{top:auto;bottom:-30px;transform:translate(-50%,0);width:220px}
   .sh-grid{height:110px}
   .sh-floaty span{width:18px}
+  .sh-text{margin-top:22px}
 }
 @media (prefers-reduced-motion:reduce){.sh-sky,.sh-grid i,.sh-title span,.sh-sprite,.sh-floaty span{animation:none}}
-.start-fact{display:inline-flex;align-items:center;gap:8px;background:var(--bg-2);padding:8px 12px;font-weight:700;font-size:14px;box-shadow:0 0 0 2px var(--shadow)}
-.start-fact small{color:var(--xp);font-weight:700}
 .start-group{margin-bottom:34px}
 .start-h{font-family:var(--display);font-size:26px;text-transform:uppercase;margin:0 0 16px;display:flex;align-items:center;gap:12px;color:var(--tc)}
 .start-h::before{content:"";width:12px;height:12px;background:var(--tc);flex:none}
@@ -842,7 +839,36 @@ button.bcell[disabled]{cursor:default}
 .stile-top b{font-family:var(--display);font-size:26px;text-transform:uppercase;line-height:1;min-width:0;overflow-wrap:anywhere}
 .stile p{margin:0;color:var(--muted);font-size:15px;line-height:1.45}
 .stile-info{margin-top:auto;font-family:var(--pixel);font-size:9px;text-transform:uppercase;color:var(--tc);letter-spacing:.04em;line-height:1.6}
-.start-how h3{margin-top:0}
+.start-hrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.start-hrow .start-h{margin:0}
+.tour-card{--tc:#8890c4;margin:4px;padding:28px 22px 24px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;background:var(--panel);
+  box-shadow:0 -3px 0 var(--tc),0 3px 0 var(--tc),-3px 0 0 var(--tc),3px 0 0 var(--tc),inset 0 5px 0 var(--tc),0 8px 0 3px var(--shadow)}
+.tour-card.is-plan,.tour-card.is-today{--tc:#ffcf3f;background:linear-gradient(180deg,#2a1d0a,var(--panel) 75%)}
+.tour-card.is-live{--tc:#4ff08f;background:linear-gradient(180deg,#0d2a1a,var(--panel) 75%)}
+.tour-big{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(30px,5.6vw,60px);line-height:1;text-transform:uppercase;color:var(--tc);text-shadow:3px 3px 0 var(--shadow);overflow-wrap:anywhere}
+.tour-card.is-none .tour-big{font-size:clamp(26px,4.4vw,46px);color:var(--ink)}
+.tour-when{margin:0;font-family:var(--display);font-size:clamp(20px,3vw,30px);text-transform:uppercase;color:#fff}
+.tour-when:empty{display:none}
+.tour-sub{margin:0;color:var(--muted);font-size:16px;max-width:560px}
+.tour-card .cd-row{width:min(100%,560px);margin-top:4px}
+.tour-live{display:inline-flex;align-items:center;gap:10px;font-family:var(--pixel);font-size:11px;color:#4ff08f;text-transform:uppercase;text-shadow:0 0 8px rgba(79,240,143,.7)}
+.tour-live i{width:12px;height:12px;background:#4ff08f;box-shadow:0 0 10px #4ff08f;animation:tourBlink 1s steps(2) infinite}
+@keyframes tourBlink{50%{opacity:.2}}
+.ts-open{margin-top:4px}
+.ts-edit{width:min(100%,560px);display:flex;flex-direction:column;gap:14px;text-align:left;margin-top:8px;padding:16px;background:var(--bg-2);box-shadow:0 0 0 2px var(--edge)}
+.ts-edit .chips{justify-content:flex-start}
+.ts-btns{display:flex;gap:10px;flex-wrap:wrap}
+.start-news .news-form{margin:0 0 22px;max-width:640px}
+.start-news .news-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:22px;align-items:start}
+.start-news .news-card{max-width:860px;gap:12px}
+.start-news .news-title{font-size:clamp(24px,3.2vw,34px)}
+.start-news .news-text{font-size:16px}
+.start-news .news-img{max-height:300px;object-fit:cover}
+.start-news .cd-row{gap:10px}
+.start-news .cd-box{padding:12px 4px 10px;gap:8px}
+.start-news .cd-box b{font-size:clamp(20px,3.4vw,36px)}
+.start-news .cd-done{font-size:28px}
+@media (prefers-reduced-motion:reduce){.tour-live i{animation:none}}
 @media (max-width:680px){.stiles{grid-template-columns:1fr;gap:12px}.stile{padding:14px}.stile-top b{font-size:22px}.stile-ico{font-size:28px}.start-h{font-size:22px}}
 .hub{grid-template-columns:repeat(var(--n,2),minmax(0,1fr));max-width:calc(var(--n,2) * 320px)}
 @media (max-width:680px){.hub[style*="--n:3"] .hub-btn{flex-direction:column;align-items:center;text-align:center;gap:4px;padding:8px 4px}.hub[style*="--n:3"] .hub-txt{align-items:center}.hub[style*="--n:3"] .hub-txt b{font-size:16px}.hub[style*="--n:3"] .hub-txt small{display:none}}
@@ -2247,8 +2273,8 @@ const DEFAULT_SETTINGS = {title:'Darkime Turnier', date:'', prize:100, places:3,
 const LS_KEY = 'spieleturnier-v1';
 const SHARE_URL = location.href.split('#')[0].split('?')[0];
 const RING = 2 * Math.PI * 44;
-const TABS = [['start', 'Main-Menü'], ['turnier', 'Turnier'], ['spieler', 'Spieler'], ['spiele', 'Spiele'], ['news', 'Ankündigungen'], ['einstellungen', 'Optionen']];
-const TAB_SHORT = {start:'Menü', news:'News'};
+const TABS = [['start', 'Main-Menü'], ['turnier', 'Turnier'], ['spiele', 'Spiele'], ['spieler', 'Spieler'], ['einstellungen', 'Optionen']];
+const TAB_SHORT = {start:'Menü'};
 /* Ober-Tabs mit Unterseiten */
 const GROUPS = {
   turnier:[['rangliste', '🏆', 'Highscore'], ['rad', '🎡', 'Zufallsrad'], ['liste', '📋', 'Spieleliste']]
@@ -2259,7 +2285,7 @@ function groupPick(g) {
   return GROUPS[g].some(x => x[0] === last) ? last : GROUPS[g][0][0];
 }
 /* Ansichten: "Spiele" ist der Ober-Tab für Quiz und Malen */
-const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'news', 'einstellungen'];
+const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'einstellungen'];
 const HUB = ['quiz', 'malen'];
 const viewOk = t => VIEWS.includes(t);
 function viewFor(t) {
@@ -2475,6 +2501,9 @@ function normSettings(x) {
   return {
     title: (str(x.title, 60) || 'Darkime Turnier').replace(/^(Spieleturnier|Adams Turnier|Alans Turnier)$/i, 'Darkime Turnier'),
     date: /^\d{4}-\d{2}-\d{2}$/.test(x.date || '') ? x.date : '',
+    time: /^\d{2}:\d{2}$/.test(x.time || '') ? x.time : '',
+    status: ['none', 'plan', 'live'].includes(x.status) ? x.status : (x.date ? 'plan' : 'none'),
+    liveAt: Number(x.liveAt) || 0,
     prize, places, mode: x.mode === 'eur' ? 'eur' : 'pct', split, amounts
   };
 }
@@ -2825,7 +2854,7 @@ function render() {
   else if (S.mode === 'lock') html = lockHTML();
   else if (blocked()) html = `<div style="min-height:70vh"></div>`;
   else if (S.tab === 'spiele-pick') html = `<div class="loading">${COIN(48, 'spin')}</div>`;
-  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, news:viewNews, einstellungen:viewSettings}[S.tab] || viewStart)();
+  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, einstellungen:viewSettings}[S.tab] || viewStart)();
   const oldStand = m.querySelector('.stand');
   const oldKey = oldStand ? oldStand.dataset.key : null;
   const before = standCapture(oldStand);
@@ -2899,7 +2928,7 @@ function renderHeader() {
   if (S.tab === 'einstellungen' && !S.admin && S.mode !== 'loading') S.tab = 'start';
   if ($('#brand-title').textContent !== SITE_NAME) $('#brand-title').textContent = SITE_NAME;
   const parts = [];
-  const d = fmtDate(S.settings.date); if (d) parts.push(d);
+  const ts = tourState(); if (ts.k !== 'none' && ts.date) parts.push(ts.date);
   parts.push(`${S.players.length} Spieler`);
   $('#brand-sub').textContent = parts.join(' · ');
   document.title = SITE_NAME;
@@ -2925,6 +2954,54 @@ function podiumSlot(p, pos) {
   return `<div class="pod pos${pos}">${pos === 1 ? CROWN() : ''}${avatar(p, big)}<span class="pod-name">${nameHTML(p)}</span><span class="pod-pts">${p.pts} ${ptsWord(p.pts)}</span>${p.prize > 0 ? `<span class="prize-tag">${COIN(12)}${moneyHTML(p.prize)}</span>` : ''}<div class="pod-block"><span>${p.rank}</span></div></div>`;
 }
 const PX = {"GIRL": "<svg class=\"px-girl\" viewBox=\"0 0 18 25\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#140c2c\" d=\"M8 0h2v1h-2zM6 1h2v1h-2zM10 1h3v1h-3zM4 2h2v1h-2zM12 2h2v1h-2zM3 3h1v1h-1zM13 3h2v1h-2zM2 4h1v1h-1zM15 4h1v1h-1zM2 10h1v1h-1zM15 10h1v1h-1zM2 11h1v1h-1zM15 11h1v1h-1zM2 12h1v1h-1zM15 12h1v1h-1zM2 13h1v1h-1zM15 13h1v1h-1zM2 14h1v1h-1zM15 14h1v1h-1zM2 15h1v1h-1zM4 15h2v1h-2zM12 15h2v1h-2zM15 15h1v1h-1zM2 16h3v1h-3zM13 16h3v1h-3zM2 17h1v1h-1zM16 17h1v1h-1zM2 18h1v1h-1zM16 18h1v1h-1zM1 19h1v1h-1zM17 19h1v1h-1zM1 20h1v1h-1zM17 20h1v1h-1zM1 21h1v1h-1zM17 21h1v1h-1zM2 22h3v1h-3zM14 22h3v1h-3zM4 23h1v1h-1zM7 23h1v1h-1zM10 23h1v1h-1zM13 23h1v1h-1zM4 24h4v1h-4zM10 24h4v1h-4z\"/><path fill=\"#a88bff\" d=\"M8 1h1v1h-1zM5 4h2v1h-2zM5 5h1v1h-1z\"/><path fill=\"#6a3cff\" d=\"M9 1h1v1h-1zM6 2h6v1h-6zM4 4h1v1h-1zM7 4h7v1h-7zM3 5h2v1h-2zM6 5h9v1h-9zM3 6h12v1h-12zM3 7h1v1h-1zM5 7h8v1h-8zM14 7h1v1h-1zM3 8h1v1h-1zM5 8h1v1h-1zM13 8h2v1h-2zM3 9h2v1h-2zM14 9h1v1h-1zM3 10h1v1h-1zM3 11h1v1h-1zM3 12h1v1h-1zM3 13h1v1h-1zM3 14h2v1h-2zM14 14h1v1h-1zM3 15h1v1h-1zM14 15h1v1h-1z\"/><path fill=\"#ff5fa2\" d=\"M4 3h9v1h-9zM3 4h1v1h-1zM14 4h1v1h-1zM1 5h2v1h-2zM15 5h2v1h-2zM0 6h1v1h-1zM17 6h1v1h-1zM0 7h1v1h-1zM17 7h1v1h-1zM0 8h1v1h-1zM17 8h1v1h-1zM1 9h2v1h-2zM15 9h2v1h-2z\"/><path fill=\"#ffc2dd\" d=\"M1 6h2v1h-2zM15 6h2v1h-2zM1 7h2v1h-2zM15 7h2v1h-2zM1 8h2v1h-2zM15 8h2v1h-2z\"/><path fill=\"#4a25c9\" d=\"M4 7h1v1h-1zM13 7h1v1h-1zM4 8h1v1h-1z\"/><path fill=\"#ffdcc4\" d=\"M6 8h7v1h-7zM5 9h9v1h-9zM4 10h2v1h-2zM8 10h3v1h-3zM13 10h2v1h-2zM4 11h1v1h-1zM8 11h3v1h-3zM14 11h1v1h-1zM4 12h1v1h-1zM8 12h3v1h-3zM14 12h1v1h-1zM4 13h1v1h-1zM6 13h6v1h-6zM13 13h2v1h-2zM5 14h3v1h-3zM10 14h4v1h-4zM6 15h6v1h-6zM2 20h2v1h-2zM15 20h2v1h-2zM2 21h2v1h-2zM15 21h2v1h-2z\"/><path fill=\"#2a1c5c\" d=\"M6 10h2v1h-2zM11 10h2v1h-2zM5 11h1v1h-1zM13 11h1v1h-1zM5 12h1v1h-1zM13 12h1v1h-1z\"/><path fill=\"#39d6f2\" d=\"M6 11h1v1h-1zM11 11h1v1h-1zM6 12h2v1h-2zM11 12h2v1h-2z\"/><path fill=\"#ffffff\" d=\"M7 11h1v1h-1zM12 11h1v1h-1z\"/><path fill=\"#ff9eb5\" d=\"M5 13h1v1h-1zM12 13h1v1h-1z\"/><path fill=\"#c43c6b\" d=\"M8 14h2v1h-2z\"/><path fill=\"#39d6f2\" d=\"M5 16h3v1h-3zM10 16h3v1h-3zM3 17h13v1h-13zM3 18h1v1h-1zM5 18h3v1h-3zM10 18h4v1h-4zM15 18h1v1h-1zM2 19h2v1h-2zM5 19h2v1h-2zM11 19h3v1h-3zM15 19h2v1h-2zM4 20h1v1h-1zM6 20h7v1h-7zM14 20h1v1h-1zM5 21h9v1h-9z\"/><path fill=\"#f2b79c\" d=\"M8 16h2v1h-2z\"/><path fill=\"#1f8fb0\" d=\"M4 18h1v1h-1zM14 18h1v1h-1zM4 19h1v1h-1zM14 19h1v1h-1zM5 20h1v1h-1zM13 20h1v1h-1zM4 21h1v1h-1zM14 21h1v1h-1zM5 22h9v1h-9z\"/><path fill=\"#ffcf3f\" d=\"M8 18h2v1h-2zM7 19h4v1h-4z\"/><path fill=\"#3a3f66\" d=\"M5 23h2v1h-2zM11 23h2v1h-2z\"/></svg>", "CTRL": "<svg class=\"px-ctrl\" viewBox=\"0 0 20 10\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#140c2c\" d=\"M6 0h8v1h-8zM3 1h3v1h-3zM14 1h3v1h-3zM2 2h1v1h-1zM17 2h1v1h-1zM1 3h1v1h-1zM5 3h1v1h-1zM18 3h1v1h-1zM1 4h1v1h-1zM4 4h3v1h-3zM18 4h1v1h-1zM1 5h1v1h-1zM5 5h1v1h-1zM18 5h1v1h-1zM1 6h1v1h-1zM18 6h1v1h-1zM1 7h1v1h-1zM7 7h6v1h-6zM18 7h1v1h-1zM2 8h1v1h-1zM6 8h1v1h-1zM13 8h1v1h-1zM17 8h1v1h-1zM3 9h3v1h-3zM14 9h3v1h-3z\"/><path fill=\"#3a3f66\" d=\"M6 1h8v1h-8zM3 2h3v1h-3zM14 2h3v1h-3zM2 3h3v1h-3zM6 3h9v1h-9zM16 3h2v1h-2zM2 4h2v1h-2zM7 4h6v1h-6zM14 4h2v1h-2zM17 4h1v1h-1zM2 5h3v1h-3zM6 5h2v1h-2zM12 5h6v1h-6zM2 6h13v1h-13zM16 6h2v1h-2zM2 7h5v1h-5zM13 7h5v1h-5zM3 8h3v1h-3zM14 8h3v1h-3z\"/><path fill=\"#5a6199\" d=\"M6 2h8v1h-8z\"/><path fill=\"#ffcf3f\" d=\"M15 3h1v1h-1z\"/><path fill=\"#39d6f2\" d=\"M13 4h1v1h-1z\"/><path fill=\"#ff4f6d\" d=\"M16 4h1v1h-1z\"/><path fill=\"#8890c4\" d=\"M8 5h4v1h-4z\"/><path fill=\"#4ff08f\" d=\"M15 6h1v1h-1z\"/></svg>", "CAT": "<svg class=\"px-cat\" viewBox=\"0 0 16 13\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#140c2c\" d=\"M1 0h1v1h-1zM14 0h1v1h-1zM0 1h1v1h-1zM2 1h1v1h-1zM13 1h1v1h-1zM15 1h1v1h-1zM0 2h1v1h-1zM3 2h1v1h-1zM12 2h1v1h-1zM15 2h1v1h-1zM0 3h1v1h-1zM4 3h8v1h-8zM15 3h1v1h-1zM0 4h1v1h-1zM15 4h1v1h-1zM0 5h1v1h-1zM15 5h1v1h-1zM0 6h1v1h-1zM15 6h1v1h-1zM0 7h1v1h-1zM4 7h1v1h-1zM11 7h1v1h-1zM15 7h1v1h-1zM0 8h1v1h-1zM15 8h1v1h-1zM0 9h1v1h-1zM15 9h1v1h-1zM0 10h1v1h-1zM15 10h1v1h-1zM1 11h1v1h-1zM14 11h1v1h-1zM2 12h12v1h-12z\"/><path fill=\"#ffc2dd\" d=\"M1 1h1v1h-1zM14 1h1v1h-1zM1 2h2v1h-2zM13 2h2v1h-2zM2 3h1v1h-1zM13 3h1v1h-1z\"/><path fill=\"#5a6199\" d=\"M1 3h1v1h-1zM3 3h1v1h-1zM12 3h1v1h-1zM14 3h1v1h-1zM1 4h14v1h-14zM1 5h1v1h-1zM3 5h12v1h-12zM1 6h2v1h-2zM5 6h6v1h-6zM13 6h2v1h-2zM1 7h2v1h-2zM5 7h6v1h-6zM13 7h2v1h-2zM1 8h2v1h-2zM5 8h6v1h-6zM13 8h2v1h-2zM2 9h5v1h-5zM9 9h5v1h-5zM1 10h5v1h-5zM7 10h2v1h-2zM10 10h5v1h-5zM2 11h5v1h-5zM9 11h5v1h-5z\"/><path fill=\"#8890c4\" d=\"M2 5h1v1h-1z\"/><path fill=\"#ffcf3f\" d=\"M3 6h2v1h-2zM11 6h2v1h-2zM3 7h1v1h-1zM12 7h1v1h-1zM3 8h2v1h-2zM11 8h2v1h-2z\"/><path fill=\"#ff9eb5\" d=\"M1 9h1v1h-1zM14 9h1v1h-1z\"/><path fill=\"#ff5fa2\" d=\"M7 9h2v1h-2z\"/><path fill=\"#c43c6b\" d=\"M6 10h1v1h-1zM9 10h1v1h-1zM7 11h2v1h-2z\"/></svg>", "HEART": "<svg class=\"px-heart\" viewBox=\"0 0 7 7\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#140c2c\" d=\"M1 0h2v1h-2zM4 0h2v1h-2zM0 1h1v1h-1zM3 1h1v1h-1zM6 1h1v1h-1zM0 2h1v1h-1zM6 2h1v1h-1zM0 3h1v1h-1zM6 3h1v1h-1zM1 4h1v1h-1zM5 4h1v1h-1zM2 5h1v1h-1zM4 5h1v1h-1zM3 6h1v1h-1z\"/><path fill=\"#ff5fa2\" d=\"M1 1h2v1h-2zM4 1h2v1h-2zM1 2h1v1h-1zM3 2h3v1h-3zM1 3h5v1h-5zM2 4h3v1h-3zM3 5h1v1h-1z\"/><path fill=\"#ffc2dd\" d=\"M2 2h1v1h-1z\"/></svg>", "STAR": "<svg class=\"px-star\" viewBox=\"0 0 7 7\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#ffcf3f\" d=\"M3 0h1v1h-1zM2 1h3v1h-3zM0 2h7v1h-7zM1 3h5v1h-5zM2 4h3v1h-3zM1 5h2v1h-2zM4 5h2v1h-2zM0 6h1v1h-1zM6 6h1v1h-1z\"/></svg>"};
+/* Turnier-Status im Main-Menü: none | plan | today | live. Wechselt von allein, wenn die Zeit erreicht ist. */
+let lastTourK = '';
+const LIVE_MAX = 20 * 3600000;
+function nextIsoDay(iso) { const [y, m, d] = iso.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10); }
+function tourState() {
+  const st = S.settings, now = Date.now();
+  if (st.status === 'live' && now - st.liveAt < LIVE_MAX) return {k:'live', date:fmtDate(st.date)};
+  if (st.status !== 'plan' || !st.date) return {k:'none'};
+  if (now >= berlinToUtc(nextIsoDay(st.date), '06:00')) return {k:'none'};
+  const at = berlinToUtc(st.date, st.time || '00:00');
+  const date = fmtDate(st.date);
+  if (!st.time) return {k:now >= at ? 'today' : 'plan', at:0, date};
+  return {k:now >= at ? 'live' : 'plan', at, date};
+}
+function tourCardHTML() {
+  const st = S.settings, ts = tourState(), adm = S.admin;
+  lastTourK = ts.k;
+  const day = st.date ? new Date(st.date + 'T12:00:00').toLocaleDateString('de-DE', {weekday:'long', day:'numeric', month:'long'}) : '';
+  const body = {
+    live:`<span class="tour-live"><i aria-hidden="true"></i>Jetzt live</span>
+      <h4 class="tour-big">Das Turnier läuft!</h4>
+      <p class="tour-sub">${esc(st.title)} · Schau in den Highscore, wer gerade vorne liegt.</p>
+      <button class="btn btn-gold" type="button" data-act="tab" data-tab="turnier">Zum Turnier</button>`,
+    today:`<span class="eyebrow">${esc(st.title)}</span>
+      <h4 class="tour-big">Heute ist Turnier!</h4>
+      <p class="tour-when">${esc(day)}</p>`,
+    plan:`<span class="eyebrow">Nächstes Turnier · ${esc(st.title)}</span>
+      <h4 class="tour-big">${esc(day)}</h4>
+      <p class="tour-when">${st.time ? `${esc(st.time)} Uhr` : ''}${(() => { const n = startDays(st.date); return n ? `${st.time ? ' · ' : ''}${n}` : ''; })()}</p>
+      ${ts.at ? `<div class="cd-row" data-cd="${ts.at}">${cdInner(ts.at)}</div>` : ''}`,
+    none:`<h4 class="tour-big">Aktuell ist kein Turnier geplant</h4>
+      <p class="tour-sub">Sobald ein Termin steht, siehst du ihn hier.</p>`
+  }[ts.k];
+  let edit = '';
+  if (adm) {
+    const t = D.ts;
+    edit = D.tsOpen && t ? `<form class="ts-edit" data-form="tour-status">
+        <span class="lbl">Turnier-Status</span>
+        <div class="chips">${[['none', 'Kein Turnier'], ['plan', 'Geplant'], ['live', 'Läuft gerade']].map(([k, l]) => `<button class="chip" type="button" data-act="ts-kind" data-k="${k}" aria-pressed="${t.status === k}">${l}</button>`).join('')}</div>
+        ${t.status === 'plan' ? `<div class="news-dt"><div class="field"><label for="ts-date">Datum</label><input class="input" type="date" id="ts-date" data-draft="ts.date" value="${esc(t.date)}"></div>
+          <div class="field"><label for="ts-time">Uhrzeit (optional)</label><input class="input" type="time" id="ts-time" data-draft="ts.time" value="${esc(t.time)}"></div></div>
+          <small class="muted">Mit Uhrzeit läuft ein Countdown und ab dem Start steht hier „Das Turnier läuft!“. Am nächsten Morgen springt es von allein auf „kein Turnier geplant“.</small>` : ''}
+        ${t.status === 'live' ? `<small class="muted">Steht bis morgen früh hier, außer du stellst es vorher um.</small>` : ''}
+        <div class="ts-btns"><button class="btn btn-gold" type="submit">Speichern</button><button class="btn btn-ghost" type="button" data-act="ts-close">Abbrechen</button></div>
+      </form>` : `<button class="btn btn-sm btn-ghost ts-open" type="button" data-act="ts-open">✎ Status ändern</button>`;
+  }
+  return `<div class="tour-card is-${ts.k}">${body}${edit}</div>`;
+}
 function startDays(iso) {
   if (!iso) return '';
   const d = new Date(iso + 'T00:00:00'); if (isNaN(d)) return '';
@@ -2933,12 +3010,8 @@ function startDays(iso) {
   return n > 1 ? `in ${n} Tagen` : n === 1 ? 'morgen' : n === 0 ? 'heute' : '';
 }
 function viewStart() {
-  const st = S.settings, adm = S.admin;
-  const list = standings(), top = list[0];
+  const adm = S.admin;
   const me = playerById(lsGet('turnier-me', ''));
-  const date = fmtDate(st.date), days = startDays(st.date);
-  const games = S.games || [], planned = games.filter(g => g.status === 'geplant').length;
-  const news = (S.news && S.news.items) || [];
   const tile = (tab, ico, title, text, info, color) => `<button class="stile" type="button" data-act="tab" data-tab="${tab}" style="--tc:${color}">
       <span class="stile-top"><span class="stile-ico" aria-hidden="true">${ico}</span><b>${title}</b></span>
       <p>${text}</p>${info ? `<span class="stile-info">${info}</span>` : ''}</button>`;
@@ -2955,21 +3028,11 @@ function viewStart() {
         <h2 class="sh-title" aria-label="${SITE_NAME}">${[...SITE_NAME].map((c, i) => `<span style="animation-delay:${(i * .12).toFixed(2)}s">${esc(c)}</span>`).join('')}</h2>
         <span class="sh-jp" lang="ja">ダーキメ</span>
         <p class="sh-text">Willkommen auf meinem Server.<br>Genießt die Zeit und habt viel Spaß!</p>
-        <div class="start-facts">
-          <span class="start-fact">🏆 ${esc(st.title)}</span>
-          ${date ? `<span class="start-fact">📅 ${esc(date)}${days ? ` <small>${days}</small>` : ''}</span>` : ''}
-          <span class="start-fact">👥 ${S.players.length} Spieler</span>
-          ${totalPrize() > 0 ? `<span class="start-fact">${COIN(14)} Jackpot ${moneyHTML(totalPrize())}</span>` : ''}
-        </div>
       </div>
     </div>
     <div class="start-group">
       <h3 class="start-h" style="--tc:#ffcf3f">Turnier</h3>
-      <div class="stiles">
-        ${tile('rangliste', '🏆', 'Highscore', 'Wer führt? Alle Punkte, Plätze und wie viel jeder vom Jackpot bekommt.', top && top.pts > 0 ? `Platz 1: ${esc(top.name)} · ${top.pts} ${ptsWord(top.pts)}` : 'Noch keine Punkte vergeben', '#ffcf3f')}
-        ${tile('rad', '🎡', 'Zufallsrad', 'Das Rad entscheidet, welches Spiel als Nächstes drankommt.', (S.wheel.items || []).length ? `${S.wheel.items.length} Spiele im Rad` : 'Noch leer', '#ffcf3f')}
-        ${tile('liste', '📋', 'Spieleliste', 'Alle Spiele fürs Turnier. Gib deinem Favoriten 🔥 Hype oder schlag ein Spiel vor.', games.length ? `${games.length} Spiele · ${planned} geplant` : 'Noch keine Spiele', '#ffcf3f')}
-      </div>
+      ${tourCardHTML()}
     </div>
     <div class="start-group">
       <h3 class="start-h" style="--tc:#39d6f2">Spiele</h3>
@@ -2978,22 +3041,15 @@ function viewStart() {
         ${tile('spiele', '🎨', 'Malen', 'Einer malt, alle anderen raten im Chat. Wie skribbl.io, jederzeit in einem Raum.', gameInfo('malen'), '#39d6f2')}
       </div>
     </div>
-    <div class="start-group">
-      <h3 class="start-h" style="--tc:#c493ff">Mehr</h3>
-      <div class="stiles">
-        ${tile('spieler', '👾', 'Spieler', me ? 'Alle Mitspieler mit Foto und Spruch.' : 'Erstell deinen Spieler mit Foto oder tipp bei deinem Namen auf „Das bin ich“.', me ? `Du bist ${esc(me.name)}` : `${S.players.length} Spieler dabei`, '#c493ff')}
-        ${tile('news', '📣', 'Ankündigungen', 'Neuigkeiten und Countdowns vom Spielleiter.', news[0] && news[0].title ? esc(news[0].title) : `${news.length} Einträge`, '#c493ff')}
-        ${adm ? tile('einstellungen', '⚙️', 'Optionen', 'Preisgeld, Musik, Bilder, Passwort und mehr. Nur für dich als Spielleiter.', '', '#c493ff') : ''}
-      </div>
+    <div class="start-group start-news">
+      <div class="start-hrow"><h3 class="start-h" style="--tc:#c493ff">Ankündigungen</h3>${adm ? `<button class="btn btn-sm" type="button" data-act="news-open">${D.newsOpen ? 'Schließen' : '+ Neue Ankündigung'}</button>` : ''}</div>
+      ${adm && D.newsOpen ? newsFormHTML() : ''}
+      <div class="news-list">${newsCardsHTML()}</div>
     </div>
-    <div class="card start-how">
-      <h3>So geht's</h3>
-      <ol class="dhow">
-        <li><b>Spieler:</b> Erstell deinen Spieler mit Foto oder tipp bei deinem Namen auf „Das bin ich“.</li>
-        <li><b>Turnier:</b> Ihr spielt die Spiele aus der Liste, der Spielleiter verteilt Punkte. Wer am Ende vorne liegt, holt sich den Jackpot.</li>
-        <li><b>Spiele:</b> Bei Quiz und Malen spielst du direkt auf deinem Handy mit. Die Punkte können in den Highscore wandern.</li>
-      </ol>
-    </div>
+    ${adm ? `<div class="start-group">
+      <h3 class="start-h" style="--tc:#8890c4">Einstellungen</h3>
+      <div class="stiles">${tile('einstellungen', '⚙️', 'Optionen', 'Preisgeld, Musik, Bilder, Passwort und mehr. Nur für dich als Spielleiter.', '', '#8890c4')}</div>
+    </div>` : ''}
   </section>`;
 }
 function viewBoard() {
@@ -3135,7 +3191,6 @@ function viewSettings() {
     <div class="sec-head"><h2 class="h">Optionen</h2></div>
     <form class="card form" data-form="settings">
       <div class="field"><label for="st-title">Name des Turniers</label><input class="input" id="st-title" data-draft="set.title" value="${esc(s.title)}" maxlength="60"></div>
-      <div class="field"><label for="st-date">Datum</label><input class="input" type="date" id="st-date" data-draft="set.date" value="${esc(s.date)}"></div>
       <div class="field"><span class="lbl">Wie willst du das Preisgeld festlegen?</span>
         <div class="chips"><button class="chip" type="button" data-act="set-mode" data-m="pct" aria-pressed="${!eur}">Gesamtbetrag in Prozent aufteilen</button><button class="chip" type="button" data-act="set-mode" data-m="eur" aria-pressed="${eur}">Feste Euro-Beträge pro Platz</button></div></div>
       ${eur ? '' : `<div class="field"><label for="st-prize">Preisgeld gesamt in Euro</label><input class="input" type="number" min="0" step="any" inputmode="decimal" id="st-prize" data-draft="set.prize" data-live="set" value="${esc(s.prize)}"></div>`}
@@ -5090,7 +5145,7 @@ function selCats() { const c = (D.qc.cats || []).filter(i => i >= 0 && i < CATS.
 function tick() {
   bgmSync();
   drawTick();
-  if (S.tab === 'news') updateCountdowns();
+  if (S.tab === 'start') { updateCountdowns(); const tk = tourState().k; if (tk !== lastTourK) { lastTourK = tk; render(); } }
   renderGate();
   renderGatebar();
   roomBeat();
@@ -5312,6 +5367,11 @@ const actions = {
   'news-kind': b => { D.news.kind = b.dataset.k; if (D.news.kind === 'countdown' && !D.news.date) { const p = berlinParts(Date.now() + 86400000); D.news.date = `${p.year}-${p.month}-${p.day}`; } render(); },
   'news-del': b => { const n = clone(S.news); const it = n.items.find(x => x.id === b.dataset.id); if (!it) return;
     confirmBox('Ankündigung löschen?', it.title || it.text, [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Löschen', cls:'btn-gold', fn:() => { n.items = n.items.filter(x => x.id !== it.id); ops.saveNews(n); }}]); },
+  'ts-open': () => { const st = S.settings, p = berlinParts(Date.now() + 86400000);
+    D.ts = {status:tourState().k === 'none' ? 'plan' : st.status, date:st.date || `${p.year}-${p.month}-${p.day}`, time:st.time || '20:00'}; D.tsOpen = true; render(); },
+  'ts-kind': b => { if (D.ts) { D.ts.status = b.dataset.k; render(); } },
+  'ts-close': () => { D.tsOpen = false; D.ts = null; render(); },
+  'news-open': () => { D.newsOpen = !D.newsOpen; render(); },
   'news-up': b => { const i = Number(b.dataset.i); if (i < 1) return; const n = clone(S.news); [n.items[i - 1], n.items[i]] = [n.items[i], n.items[i - 1]]; ops.saveNews(n); },
   'gplayer-open': () => { if (!D.gp.color) D.gp.color = COLORS[S.players.length % COLORS.length]; openModal({type:'gplayer'}); },
   'code-copy': () => copyText(S.modal && S.modal.code || '', 'Code kopiert. Schick ihn jetzt dem Spielleiter.', () => { const t = $('#code-out'); if (t) { t.focus(); t.select(); } toast('Markiere den Code und kopiere ihn von Hand.'); }),
@@ -5540,11 +5600,23 @@ document.addEventListener('submit', e => {
     closeModal(); ops.savePlayer(p); toast('Gespeichert.');
   } else if (f === 'settings') {
     const s = D.set; if (!splitValid()) return;
-    const next = draftAsSettings(s);
+    const cur = S.settings;
+    const next = {...draftAsSettings(s), date:cur.date, time:cur.time, status:cur.status, liveAt:cur.liveAt};
     if (next.mode === 'eur') next.prize = totalPrize(next);
     D.set = null;
     ops.saveSettings(next);
     toast('Einstellungen gespeichert.');
+  } else if (f === 'tour-status') {
+    const t = D.ts; if (!t) return;
+    if (t.status === 'plan' && !/^\d{4}-\d{2}-\d{2}$/.test(t.date || '')) { toast('Wähl ein Datum.'); return; }
+    if (t.status === 'plan' && berlinToUtc(nextIsoDay(t.date), '06:00') <= Date.now()) { toast('Das Datum ist schon vorbei.'); return; }
+    const cur = S.settings;
+    const next = {...cur, status:t.status,
+      date:t.status === 'none' ? '' : t.status === 'plan' ? t.date : (p => `${p.year}-${p.month}-${p.day}`)(berlinParts(Date.now())),
+      time:t.status === 'plan' ? (t.time || '') : '',
+      liveAt:t.status === 'live' ? Date.now() : 0};
+    D.tsOpen = false; D.ts = null;
+    ops.saveSettings(normSettings(next)); toast('Turnier-Status gespeichert.');
   } else if (f === 'news-add') {
     const n = D.news, title = str(n.title, 80), text = str(n.text, 600);
     if (!title && !text) { toast('Schreib eine Überschrift oder einen Text.'); return; }
@@ -5555,6 +5627,7 @@ document.addEventListener('submit', e => {
     }
     const nn = clone(S.news); nn.items.unshift({id:uid(), kind:n.kind, title, text, at});
     D.news = {kind:n.kind, title:'', text:'', date:n.date, time:n.time};
+    D.newsOpen = false;
     ops.saveNews(nn); toast('Ankündigung veröffentlicht.');
   } else if (f === 'unlock') {
     tryUnlock(D.pwIn);
@@ -5693,10 +5766,10 @@ function newsImg(it) {
   if (it.img === 'builtin:gta6' || (it.id === 'gta6' && !it.img)) return GTA6_IMG;
   return /^data:image\/(png|jpe?g|webp);base64,[A-Za-z0-9+/=]+$/.test(it.img || '') ? it.img : '';
 }
-function viewNews() {
+function newsCardsHTML() {
   const adm = S.admin;
   const items = S.news.items;
-  const cards = items.length ? items.map((it, i) => `
+  return items.length ? items.map((it, i) => `
     <article class="card news-card ${it.kind === 'countdown' ? 'is-cd' : ''}">
       <div class="news-head"><span class="eyebrow">${it.kind === 'countdown' ? 'Countdown' : 'Ankündigung'}</span>
         ${adm ? `<span class="news-tools"><button class="x" type="button" data-act="news-up" data-i="${i}" ${i === 0 ? 'disabled' : ''} aria-label="Nach oben">▲</button><button class="x" type="button" data-act="news-del" data-id="${esc(it.id)}" aria-label="Ankündigung löschen">×</button></span>` : ''}</div>
@@ -5705,20 +5778,18 @@ function viewNews() {
       ${it.kind === 'countdown' ? `<div class="cd-row" data-cd="${it.at}">${cdInner(it.at)}</div><p class="cd-when">${esc(fmtBerlin(it.at))} (deutsche Zeit)</p>` : ''}
       ${it.text ? `<p class="news-text">${esc(it.text)}</p>` : ''}
     </article>`).join('')
-    : `<div class="card empty-box"><strong>Keine Ankündigungen</strong></div>`;
+    : `<div class="card empty-box"><strong>Gerade gibt es keine Ankündigungen</strong></div>`;
+}
+function newsFormHTML() {
   const n = D.news;
-  const form = adm ? `<form class="card news-form" data-form="news-add">
+  return `<form class="card news-form" data-form="news-add">
       <h3>Neue Ankündigung</h3>
       <div class="chips"><button class="chip" type="button" data-act="news-kind" data-k="text" aria-pressed="${n.kind === 'text'}">Text</button><button class="chip" type="button" data-act="news-kind" data-k="countdown" aria-pressed="${n.kind === 'countdown'}">Countdown</button></div>
       <div class="field"><label for="nw-title">Überschrift</label><input class="input" id="nw-title" data-draft="news.title" value="${esc(n.title)}" maxlength="80" placeholder="${n.kind === 'countdown' ? 'z. B. Turnierstart' : 'z. B. Pizza ist da!'}"></div>
       ${n.kind === 'countdown' ? `<div class="news-dt"><div class="field"><label for="nw-date">Datum</label><input class="input" type="date" id="nw-date" data-draft="news.date" value="${esc(n.date)}"></div><div class="field"><label for="nw-time">Uhrzeit (deutsche Zeit)</label><input class="input" type="time" id="nw-time" data-draft="news.time" value="${esc(n.time)}"></div></div>` : ''}
       <div class="field"><label for="nw-text">Text (optional)</label><textarea class="input" id="nw-text" data-draft="news.text" rows="3" maxlength="600">${esc(n.text)}</textarea></div>
       <div><button class="btn btn-gold" type="submit">Veröffentlichen</button></div>
-    </form>` : '';
-  return `<section class="section">
-    <div class="sec-head"><h2 class="h">Ankündigungen</h2><span class="muted">Alle Zeiten in deutscher Zeit.</span></div>
-    <div class="news-layout"><div class="news-list">${cards}</div>${form}</div>
-  </section>`;
+    </form>`;
 }
 
 /* ---------- Quiz-Musik: MP3 bleibt auf diesem Gerät (IndexedDB) ---------- */
