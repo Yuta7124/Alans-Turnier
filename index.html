@@ -282,6 +282,12 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .g-board li{display:grid;grid-template-columns:30px 1fr auto auto;align-items:center;gap:8px;padding:6px 8px;background:var(--bg-2)}
 .g-board li.me{box-shadow:0 0 0 2px var(--coin)}
 .g-board li.away{opacity:.5}
+.g-board li.canwatch{cursor:pointer}
+.g-board li.canwatch:hover{background:var(--panel-2)}
+.g-board li.watched{box-shadow:0 0 0 2px #39d6f2}
+.g-watch{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:0 0 12px;padding:8px 12px;background:rgba(57,214,242,.1);box-shadow:0 0 0 2px #39d6f2;font-weight:700}
+.g-watch span{display:inline-flex;align-items:center;gap:8px}
+.g-watch .btn{min-width:44px}
 .g-pn{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .g-now{font-family:var(--pixel);font-size:10px;color:var(--xp)}
 .g-tot{font-family:var(--pixel);font-size:12px;text-align:right}
@@ -1002,6 +1008,14 @@ body.picking #bgm-root{display:none}
 
 /* Handy: Spiel groß */
 .gmenu,.gmenu-x{display:none}
+/* Im Spiel: Kopfzeile und Raum-Leiste stecken im ☰-Menü, damit das Spiel mehr Platz hat */
+body.ingame header.top,body.ingame #subnav,body.ingame #foot,body.ingame #fly-site{display:none}
+body.ingame .gmenu{display:grid;place-items:center;flex:none;width:38px;height:38px;border:0;background:var(--panel-2);color:var(--ink);font-size:18px;box-shadow:0 0 0 2px var(--shadow);cursor:pointer}
+body.ingame .gmenu:hover{background:var(--bg-2);color:var(--coin)}
+body.ingame.navshow header.top{display:block;position:fixed;top:0;left:0;right:0;z-index:136}
+body.ingame.navshow #subnav:not([hidden]){display:block;position:fixed;left:0;right:0;top:var(--navh,96px);z-index:136;max-width:none;margin:0;padding:10px 16px 14px;background:rgba(13,9,27,.96);box-shadow:0 4px 0 var(--shadow)}
+body.ingame.navshow .gmenu-x{display:block;position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:137;border:0;background:var(--coin);color:#1a1200;font-weight:700;padding:10px 18px;box-shadow:0 0 0 3px var(--shadow);cursor:pointer}
+body.ingame .section.gsec{padding-top:10px}
 .hub-big{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin:12px 4px 0;font-size:13px;color:var(--muted);font-weight:600}
 .hub-rot{display:none}
 body.ingame .hub-rot{display:inline}
@@ -1211,6 +1225,10 @@ body.ingame .hub-rot{display:inline}
 .dgal{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
 .dgal figure{margin:0;background:var(--panel-2);padding:6px;box-shadow:0 0 0 3px var(--shadow)}
 .dgal img{display:block;width:100%;aspect-ratio:4/3;background:#fff}
+.dgal figure{position:relative}
+.dgal-dl{position:absolute;top:10px;right:10px;padding:4px 8px;font-size:12px;opacity:.9}
+.dtb:disabled{opacity:.35;cursor:default}
+.dcanvas.can[data-tool="line"],.dcanvas.can[data-tool="rect"],.dcanvas.can[data-tool="square"],.dcanvas.can[data-tool="circle"]{cursor:crosshair}
 .dgal figcaption{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:6px 2px 0;font-size:13px}
 .dgal figcaption b{font-family:var(--display);font-size:17px;text-transform:uppercase;color:var(--coin)}
 .dgal figcaption span{display:inline-flex;align-items:center;gap:5px;color:var(--muted);font-weight:600;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1363,7 +1381,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=5"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=6"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -2983,6 +3001,7 @@ function render() {
   renderGatebar();
   renderGate();
   document.body.classList.toggle('ingame', inGame());
+  if (!inGame()) document.body.classList.remove('navshow');
   renderPick();
   tick();
   if (S.tab === 'rad') ensureWheelLoop();
@@ -4114,8 +4133,7 @@ function gLane(c, w) {
 /* Jede Bahn: c Mittellinie und w Breite (Abschlag am Anfang, Loch am Ende) oder f Umriss mit tee/cup.
    bl Blöcke [x,y,b,h], bu Bumper [x,y,r], sa Sand, wa Wasser [x,y,b,h], sl Hang [x,y,b,h,ax,ay],
    sp Windmühle [x,y,Länge,Drehung pro s,Start], mv Schiebeblock [x,y,b,h,dx,dy,Dauer s,Versatz],
-   ho Loch im Boden [x,y,r] rund oder [x,y,b,h] eckig, tt Drehscheibe am Boden [x,y,Radius,Drehung pro s,Arme,Start],
-   po Abkürzung [x,y Eingang, x,y Ausgang] (kleines Loch, nur langsam zu treffen).
+   ho Loch im Boden [x,y,r] rund oder [x,y,b,h] eckig, tt Drehscheibe am Boden [x,y,Radius,Drehung pro s,Arme,Start].
    Gespielt wird von unten nach oben, mit jeder Stufe länger und kurviger. */
 const GOLF_HOLES = [
   {n:'Aufwärmen', par:2, c:[[300, 760], [300, 60]], w:220},
@@ -4137,53 +4155,53 @@ const GOLF_HOLES = [
   {n:'Pendelblöcke', par:5, c:[[200, 1700], [200, 1050], [400, 850], [400, 60]], w:260, mv:[[70, 1400, 60, 40, 200, 0, 2.0, 0], [70, 1200, 60, 40, 200, 0, 1.6, 0.4], [270, 600, 60, 40, 200, 0, 1.8, 0.2], [270, 380, 60, 40, 200, 0, 1.3, 0.7]], sa:[[300, 880, 120, 90]]},
   {n:'Vulkan', par:6, c:[[300, 1800], [300, 60]], w:380, sl:[[230, 200, 140, 120, 0, 230], [110, 60, 120, 260, -200, 0], [370, 60, 120, 260, 200, 0]],
     wa:[[120, 300, 80, 70], [400, 300, 80, 70]], ho:[[200, 1350, 26], [400, 1350, 26]], bu:[[220, 1100, 24], [380, 1100, 24], [300, 900, 26]], sa:[[110, 600, 140, 140], [350, 500, 140, 140]]},
-  {n:'Labyrinth', par:6, c:[[300, 1900], [300, 60]], w:520, bl:[[40, 1550, 400, 30], [160, 1250, 400, 30], [40, 950, 400, 30], [160, 650, 400, 30], [40, 350, 400, 30]], bu:[[500, 1400, 18], [100, 1100, 18], [500, 800, 18], [100, 500, 18]], po:[[62, 1606, 480, 250]]},
+  {n:'Labyrinth', par:6, c:[[300, 1900], [300, 60]], w:520, bl:[[40, 1550, 400, 30], [160, 1250, 400, 30], [40, 950, 400, 30], [160, 650, 400, 30], [40, 350, 400, 30]], bu:[[500, 1400, 18], [100, 1100, 18], [500, 800, 18], [100, 500, 18]]},
   {n:'Insel', par:6, c:[[300, 2000], [300, 1150], [150, 950], [150, 550], [300, 400], [300, 60]], w:260, wa:[[170, 250, 100, 70], [330, 250, 100, 70], [20, 650, 110, 140], [170, 830, 110, 120]], bu:[[300, 1500, 26]], sp:[[300, 1300, 200, 1.4, 0]]},
   {n:'Achterbahn', par:7, c:[[150, 2400], [150, 1950], [450, 1750], [450, 1250], [150, 1050], [150, 650], [300, 500], [300, 60]], w:240,
     sp:[[150, 2150, 200, 1.6, 0], [300, 330, 200, -1.8, 0]], mv:[[330, 1500, 60, 40, 180, 0, 2.0, 0]], wa:[[330, 1340, 90, 60], [180, 160, 70, 70], [350, 160, 70, 70]],
-    bu:[[100, 900, 22], [200, 790, 22]], sl:[[30, 680, 240, 120, 0, -150]], po:[[548, 1300, 300, 240]]},
+    bu:[[100, 900, 22], [200, 790, 22]], sl:[[30, 680, 240, 120, 0, -150]]},
   // Ab hier: Löcher im Boden, Drehscheiben, Abkürzungen und schnellere Hindernisse
   {n:'Abgrund', par:7, c:[[300, 2450], [300, 1450], [450, 1250], [450, 60]], w:300,
     ho:[[150, 2000, 118, 60], [332, 2000, 118, 60], [220, 1720, 38], [385, 1640, 34], [290, 1530, 26], [520, 1000, 42], [380, 820, 42], [505, 560, 40], [400, 330, 30]],
-    bu:[[300, 1800, 20]], mv:[[310, 690, 60, 30, 220, 0, 2.2, 0]], po:[[175, 1600, 450, 250]]},
+    bu:[[300, 1800, 20]], mv:[[310, 690, 60, 30, 220, 0, 2.2, 0]]},
   {n:'Karussell', par:7, c:[[300, 2550], [300, 60]], w:340,
     tt:[[300, 2150, 120, 1.6, 2, 0], [300, 1700, 140, -2.0, 3, 0], [300, 1200, 130, 2.4, 4, 0.4], [300, 700, 150, -1.8, 2, 0]],
     ho:[[175, 1930, 30], [425, 1930, 30], [175, 950, 30], [425, 950, 30], [300, 450, 34]], sa:[[150, 1380, 90, 90]],
-    bu:[[397, 1440, 13], [453, 1440, 13], [425, 1412, 13]], po:[[425, 1450, 300, 290]]},
+    bu:[[397, 1440, 13], [453, 1440, 13], [425, 1412, 13]]},
   {n:'Schleuder', par:7, c:[[150, 2650], [150, 2150], [450, 1950], [450, 1500], [150, 1300], [150, 850], [450, 650], [450, 60]], w:230,
     tt:[[300, 2050, 95, 2.2, 3, 0], [300, 1400, 95, -2.4, 3, 0], [300, 750, 95, 2.6, 4, 0]],
-    ho:[[110, 2420, 36], [200, 2300, 28], [500, 1780, 36], [400, 1640, 28], [110, 1120, 36], [200, 980, 28], [400, 450, 34], [500, 320, 28]], po:[[62, 2150, 450, 230]]},
+    ho:[[110, 2420, 36], [200, 2300, 28], [500, 1780, 36], [400, 1640, 28], [110, 1120, 36], [200, 980, 28], [400, 450, 34], [500, 320, 28]]},
   {n:'Turbo', par:8, c:[[300, 2750], [300, 60]], w:300,
     bl:[[150, 2350, 105, 30], [345, 2350, 105, 30], [150, 1950, 105, 30], [345, 1950, 105, 30], [150, 1550, 105, 30], [345, 1550, 105, 30], [150, 1150, 105, 30], [345, 1150, 105, 30], [150, 750, 105, 30], [345, 750, 105, 30]],
     mv:[[255, 2350, 45, 30, 45, 0, 1.1, 0], [255, 1950, 45, 30, 45, 0, 0.9, 0.3], [255, 1550, 45, 30, 45, 0, 0.8, 0.6], [255, 1150, 45, 30, 45, 0, 0.7, 0.2], [255, 750, 45, 30, 45, 0, 0.6, 0.5]],
     sp:[[300, 2150, 240, 3.2, 0], [300, 1350, 240, -3.6, 0.5], [300, 550, 240, 3.0, 0]],
-    ho:[[195, 1750, 30], [405, 1750, 30], [300, 950, 30], [200, 350, 28], [400, 350, 28]], po:[[172, 2262, 300, 260]]},
+    ho:[[195, 1750, 30], [405, 1750, 30], [300, 950, 30], [200, 350, 28], [400, 350, 28]]},
   {n:'Brücken', par:8, c:[[300, 2850], [300, 1900], [150, 1700], [150, 1100], [450, 900], [450, 60]], w:300,
     ho:[[150, 2470, 110, 70], [340, 2470, 110, 70], [150, 2150, 175, 60], [390, 2150, 60, 60], [0, 1480, 100, 60], [170, 1480, 130, 60], [0, 1250, 190, 60], [250, 1250, 50, 60],
       [300, 650, 120, 70], [480, 650, 120, 70], [300, 400, 120, 60], [480, 400, 120, 60]],
-    mv:[[300, 560, 50, 26, 250, 0, 1.6, 0]], bu:[[300, 2300, 18], [404, 1978, 12], [456, 1978, 12], [430, 2004, 12]], po:[[430, 1960, 450, 260]]},
+    mv:[[300, 560, 50, 26, 250, 0, 1.6, 0]], bu:[[300, 2300, 18], [404, 1978, 12], [456, 1978, 12], [430, 2004, 12]]},
   {n:'Mahlwerk', par:8, c:[[320, 2950], [320, 2300], [500, 2100], [500, 1500], [140, 1250], [140, 700], [320, 520], [320, 60]], w:260,
     sp:[[320, 2600, 220, 3.0, 0], [230, 610, 180, -3.4, 0]], tt:[[500, 1800, 110, -2.6, 3, 0], [320, 1375, 100, 2.8, 2, 0]],
     ho:[[235, 2450, 30], [405, 2450, 30], [420, 1950, 28], [580, 1620, 28], [210, 950, 30], [250, 380, 28], [390, 300, 28]],
-    mv:[[20, 1050, 60, 30, 190, 0, 1.2, 0], [20, 850, 60, 30, 190, 0, 0.9, 0.5]], po:[[602, 1540, 320, 250]]},
+    mv:[[20, 1050, 60, 30, 190, 0, 1.2, 0], [20, 850, 60, 30, 190, 0, 0.9, 0.5]]},
   {n:'Sternenfeld', par:8, c:[[300, 3050], [300, 60]], w:520,
     ho:[[150, 2700, 40], [420, 2650, 46], [290, 2450, 36], [110, 2300, 36], [480, 2250, 40], [260, 2050, 50], [430, 1850, 36], [150, 1750, 44], [320, 1600, 36], [490, 1450, 42],
       [200, 1300, 40], [380, 1150, 46], [120, 950, 36], [480, 900, 40], [290, 750, 44], [160, 550, 36], [440, 480, 40], [300, 330, 32]],
     bu:[[300, 2850, 22], [200, 2550, 18], [380, 2350, 18], [150, 2050, 18], [350, 1750, 18], [250, 1450, 18], [450, 1250, 18], [300, 1000, 18], [200, 800, 18], [400, 650, 18]],
-    sl:[[40, 1950, 520, 150, 210, 0], [40, 1050, 520, 150, -210, 0], [40, 2500, 520, 120, -180, 0]], po:[[62, 1600, 300, 230]]},
+    sl:[[40, 1950, 520, 150, 210, 0], [40, 1050, 520, 150, -210, 0], [40, 2500, 520, 120, -180, 0]]},
   {n:'Schlangengrube', par:9, c:[[120, 3150], [120, 2800], [480, 2600], [480, 2250], [120, 2050], [120, 1700], [480, 1500], [480, 1150], [120, 950], [120, 600], [300, 450], [300, 60]], w:200,
     ho:[[80, 2980, 30], [530, 2420, 30], [430, 2330, 24], [70, 1880, 30], [170, 1780, 24], [530, 1330, 30], [70, 780, 30], [170, 700, 24], [235, 330, 24], [365, 330, 24]],
-    sp:[[300, 2700, 170, 3.6, 0], [300, 2150, 170, -3.8, 0], [300, 1600, 170, 4.0, 0.3], [300, 1050, 170, -4.2, 0]], po:[[398, 2292, 300, 260]]},
+    sp:[[300, 2700, 170, 3.6, 0], [300, 2150, 170, -3.8, 0], [300, 1600, 170, 4.0, 0.3], [300, 1050, 170, -4.2, 0]]},
   {n:'Sturm', par:9, c:[[300, 3250], [300, 2400], [150, 2200], [150, 1500], [450, 1300], [450, 600], [300, 450], [300, 60]], w:300,
     sl:[[150, 2600, 300, 250, 260, 0], [0, 1600, 300, 180, -240, 0]], ho:[[415, 2650, 32], [45, 1690, 32], [380, 1000, 24], [520, 1000, 24], [300, 330, 24]],
     mv:[[160, 2480, 60, 30, 220, 0, 0.8, 0], [310, 1100, 70, 30, 220, 0, 0.9, 0], [310, 900, 70, 30, 220, 0, 0.8, 0.5]],
     tt:[[150, 2020, 95, 3.0, 3, 0]], wa:[[190, 1880, 110, 70], [170, 250, 90, 60], [340, 250, 90, 60]], sa:[[310, 700, 290, 60]],
-    sp:[[300, 1400, 200, 4.2, 0], [375, 525, 160, -4.0, 0]], po:[[285, 1530, 300, 200]]},
+    sp:[[300, 1400, 200, 4.2, 0], [375, 525, 160, -4.0, 0]]},
   {n:'Finale', par:9, c:[[320, 3400], [320, 2900], [520, 2700], [520, 2200], [140, 1950], [140, 1400], [500, 1150], [500, 700], [320, 550], [320, 60]], w:260,
     ho:[[190, 3150, 95, 60], [355, 3150, 95, 60], [420, 2330, 26], [620, 2330, 26], [70, 1550, 30], [210, 1500, 30], [400, 960, 28], [320, 360, 26]],
     sp:[[320, 3000, 200, 3.6, 0], [330, 2075, 190, -4.4, 0], [410, 625, 170, 4.6, 0]], tt:[[520, 2480, 110, -2.8, 4, 0], [320, 1275, 100, 3.2, 3, 0]],
     bl:[[10, 1700, 80, 30], [190, 1700, 80, 30]], mv:[[90, 1700, 50, 30, 50, 0, 0.8, 0], [380, 800, 60, 30, 190, 0, 0.7, 0.3]],
-    wa:[[180, 1830, 90, 60], [210, 260, 80, 60], [350, 260, 80, 60]], sl:[[370, 900, 260, 160, -260, 0]], bu:[[250, 180, 16], [390, 180, 16]], po:[[22, 1440, 320, 215]]}
+    wa:[[180, 1830, 90, 60], [210, 260, 80, 60], [350, 260, 80, 60]], sl:[[370, 900, 260, 160, -260, 0]], bu:[[250, 180, 16], [390, 180, 16]]}
 ];
 const gIn = (x, y, r) => x >= r[0] && x <= r[0] + r[2] && y >= r[1] && y <= r[1] + r[3];
 function gInPoly(x, y, P) {
@@ -4246,7 +4264,7 @@ function gHitCircle(b, cx, cy, r, e, kick) {
   return true;
 }
 const gInPit = (x, y, p) => p.length === 3 ? Math.hypot(x - p[0], y - p[1]) < p[2] - 3 : x > p[0] + 3 && x < p[0] + p[2] - 3 && y > p[1] + 3 && y < p[1] + p[3] - 3;
-const G_PORT = 6, G_PORT_V = 280, G_HUB = 14, G_FREE_V = 320; // langsamer als G_FREE_V darf man schlagen, auch wenn ein Hindernis den Ball schiebt
+const G_HUB = 14, G_FREE_V = 320; // langsamer als G_FREE_V darf man schlagen, auch wenn ein Hindernis den Ball schiebt
 function gArms(T, t) {
   const a0 = T[5] + T[3] * t, out = [];
   for (let k = 0; k < T[4]; k++) { const a = a0 + k * Math.PI * 2 / T[4], c = Math.cos(a), s = Math.sin(a); out.push([T[0] + c * G_HUB, T[1] + s * G_HUB, T[0] + c * (T[2] - 6), T[1] + s * (T[2] - 6)]); }
@@ -4256,7 +4274,7 @@ function gValid(H, x, y) {
   if (!gInPoly(x, y, H.f)) return false;
   return !(H.bl || []).some(r => x > r[0] + 1 && x < r[0] + r[2] - 1 && y > r[1] + 1 && y < r[1] + r[3] - 1);
 }
-/* Ein kleiner Zeitschritt. Gibt 'sink', 'portal', 'pit', 'water' oder '' zurück. b: {x,y,vx,vy,still} */
+/* Ein kleiner Zeitschritt. Gibt 'sink', 'pit', 'water' oder '' zurück. b: {x,y,vx,vy,still} */
 function gStep(b, H, t, dt) {
   let fr = 90, k = 0.9;
   if ((H.sa || []).some(r => gIn(b.x, b.y, r))) { fr = 430; k = 3; }
@@ -4303,7 +4321,6 @@ function gStep(b, H, t, dt) {
   if (sp > 1700) { b.vx *= 1700 / sp; b.vy *= 1700 / sp; sp = 1700; }
   const dc = Math.hypot(b.x - H.cup[0], b.y - H.cup[1]);
   if ((dc < G_CUP - 2 && sp < G_SINK_V) || (dc < G_CUP + 3 && sp < 130)) return 'sink';
-  for (const P of H.po || []) if (Math.hypot(b.x - P[0], b.y - P[1]) < G_PORT && sp < G_PORT_V) { b.x = P[2]; b.y = P[3]; b.vx = 0; b.vy = 0; b.still = 0; return 'portal'; }
   if ((H.ho || []).some(p => gInPit(b.x, b.y, p))) return 'pit';
   if ((H.wa || []).some(r => gIn(b.x, b.y, r))) return 'water';
   if (sp < 7 && !onT) { b.still = (b.still || 0) + dt; if (b.still > 0.15) { b.vx = 0; b.vy = 0; } } else b.still = 0;
@@ -4363,10 +4380,11 @@ function gRank(G) {
 
 /* Lokaler Zustand dieses Geräts */
 const gl = {key:'', ball:null, last:null, strokes:0, done:0, shot:false, t0:0, acc:0, prev:0, aim:null, msg:'', msgAt:0, sinkAt:0, introAt:0,
-  cv:null, ctx:null, raf:0, w:0, h:0, V:null, cx:0, cy:0, camAt:0, advAt:0, advKey:'', hitAt:0, posAt:0};
+  cv:null, ctx:null, raf:0, w:0, h:0, V:null, cx:0, cy:0, camAt:0, advAt:0, advKey:'', hitAt:0, posAt:0, spec:'', allKey:'', allAt:0};
 function golfOnSnap() {
   const G = S.golf, me = myPid();
-  if (!G || G.status !== 'running') { gl.key = ''; gl.advAt = 0; return; }
+  if (!G || G.status !== 'running') { gl.key = ''; gl.advAt = 0; gGhostSync(); return; }
+  gGhostSync();
   const k = gKey(G); if (k === gl.key) return;
   gl.key = k;
   const H = gHole(G.holes[G.hi]), sc = gScore(G, me, G.hi), pos = G.pos[me];
@@ -4378,14 +4396,53 @@ function golfOnSnap() {
   gl.t0 = performance.now() - Math.max(0, Date.now() - (G.holeAt || Date.now()));
   gl.introAt = performance.now(); gl.advAt = 0;
 }
+/* Bälle der anderen: pos ist [x,y,Schläge,Bahn] wenn der Ball liegt, oder [x,y,Schläge,Bahn,vx,vy,t] beim Schlag.
+   Den Schlag rechnet jedes Gerät mit derselben Physik nach, so sieht man die anderen Bälle rollen. */
+const gGhost = {};
+function gGhostSync() {
+  const G = S.golf, me = myPid();
+  if (!G || G.status !== 'running') { for (const k in gGhost) delete gGhost[k]; return; }
+  const H = gHole(G.holes[G.hi]);
+  for (const pid of G.players) {
+    if (pid === me) continue;
+    const p = G.pos[pid], ok = Array.isArray(p) && p[3] === G.hi, sig = gKey(G) + '|' + (ok ? p.join(',') : '');
+    if (gGhost[pid] && gGhost[pid].sig === sig) continue;
+    if (!ok) { gGhost[pid] = {sig, x:H.tee[0], y:H.tee[1], vx:0, vy:0, t:0, acc:0}; continue; }
+    const mv = p.length >= 7 && (Number(p[4]) || Number(p[5]));
+    gGhost[pid] = {sig, x:Number(p[0]) || 0, y:Number(p[1]) || 0, vx:mv ? Number(p[4]) : 0, vy:mv ? Number(p[5]) : 0, t:mv ? Number(p[6]) || 0 : 0, acc:0};
+  }
+  for (const k in gGhost) if (!G.players.includes(k)) delete gGhost[k];
+}
+function gGhostStep(dt) {
+  const G = S.golf; if (!G || G.status !== 'running') return;
+  const H = gHole(G.holes[G.hi]);
+  for (const pid in gGhost) {
+    const g = gGhost[pid]; if (!g.vx && !g.vy) continue;
+    g.acc += Math.min(0.05, dt);
+    while (g.acc >= G_DT) {
+      g.acc -= G_DT; g.t += G_DT;
+      const r = gStep(g, H, g.t, G_DT);
+      if (r) { g.vx = 0; g.vy = 0; if (r === 'sink') { g.x = H.cup[0]; g.y = H.cup[1]; } break; }
+      if (!g.vx && !g.vy) break;
+    }
+  }
+}
+/* Zuschauen: wer eingelocht hat (oder nicht mitspielt), folgt einem Ball, der noch unterwegs ist */
+const gWatching = () => !gPlaying() || !!gl.done;
+function gAllDone(G) { const act = gActive(G); return act.length > 0 && act.every(pid => gScore(G, pid, G.hi) != null); }
+function gSpecList() { const G = S.golf, me = myPid(); return G ? gActive(G).filter(pid => pid !== me && gScore(G, pid, G.hi) == null) : []; }
+function gSpecPid() { const l = gSpecList(); return l.includes(gl.spec) ? gl.spec : l[0] || null; }
 function gWrite(patch) { if (!S.room || S.mode !== 'db' || !db) return; roomRef().update(patch).catch(e => onWriteError(e)); }
 function gCanShoot() { return gPlaying() && !gl.done && gl.ball && !gl.shot && Math.hypot(gl.ball.vx, gl.ball.vy) < G_FREE_V && !gl.sinkAt; }
 function golfShoot(dx, dy, p) {
   if (!gCanShoot()) return;
   const v = gShotSpeed(p), len = Math.hypot(dx, dy) || 1;
+  gl.ball.x = Math.round(gl.ball.x * 10) / 10; gl.ball.y = Math.round(gl.ball.y * 10) / 10;
   gl.last = {x:gl.ball.x, y:gl.ball.y};
-  gl.ball.vx = dx / len * v; gl.ball.vy = dy / len * v; gl.ball.still = 0;
+  gl.ball.vx = Math.round(dx / len * v); gl.ball.vy = Math.round(dy / len * v); gl.ball.still = 0;
   gl.strokes++; gl.shot = true; gl.shotAt = performance.now();
+  const r1 = v => Math.round(v * 10) / 10;
+  gWrite({['golf.pos.' + myPid()]:[r1(gl.last.x), r1(gl.last.y), gl.strokes, S.golf.hi, Math.round(gl.ball.vx), Math.round(gl.ball.vy), +((gl.shotAt - gl.t0) / 1000).toFixed(3)]});
   ensureAudio(); tone(260 + p * 380, .06, 'triangle', .09);
   render();
 }
@@ -4410,7 +4467,6 @@ function gPhysics(now) {
     const r = gStep(b, H, t, G_DT);
     if (b.hit > 120 && now - gl.hitAt > 60) { gl.hitAt = now; tone(b.bump ? 620 : 170, .04, b.bump ? 'sine' : 'square', b.bump ? .08 : .04); }
     if (r === 'sink') { b.vx = 0; b.vy = 0; b.x = H.cup[0]; b.y = H.cup[1]; gl.sinkAt = now; sfx('right'); gFinishHole(Math.max(1, gl.strokes)); return; }
-    if (r === 'portal') { gl.msg = 'Abkürzung!'; gl.msgAt = now; tone(520, .08, 'sine', .09); setTimeout(() => tone(880, .12, 'sine', .09), 90); }
     if (r === 'water' || r === 'pit') {
       gl.strokes++; gl.shot = false; b.x = gl.last.x; b.y = gl.last.y; b.vx = 0; b.vy = 0;
       gl.msg = r === 'pit' ? 'Abgestürzt! +1 Strafschlag' : 'Platsch! +1 Strafschlag'; gl.msgAt = now; tone(r === 'pit' ? 90 : 140, .32, 'sine', .09);
@@ -4538,12 +4594,6 @@ function gDraw(now) {
     }
     if (gPath(c, V, gCirc(T[0], T[1], T[2], 36), 0.5)) { c.strokeStyle = '#ffcf3f'; c.lineWidth = 2; c.stroke(); }
   }
-  for (const P of H.po || []) {
-    const pulse = 0.5 + 0.5 * Math.sin(now / 220);
-    if (gPath(c, V, gCirc(P[0], P[1], G_PORT + 8, 24), 0)) { c.fillStyle = `rgba(57,214,242,${(0.25 + pulse * 0.3).toFixed(2)})`; c.fill(); }
-    if (gPath(c, V, gCirc(P[0], P[1], G_PORT + 2, 24), 0)) { c.fillStyle = '#05020f'; c.fill(); c.strokeStyle = '#39d6f2'; c.lineWidth = 2; c.stroke(); }
-    if (gPath(c, V, gCirc(P[2], P[3], G_PORT + 6, 24), 0)) { c.strokeStyle = 'rgba(57,214,242,.55)'; c.lineWidth = 2; c.setLineDash([5, 5]); c.stroke(); c.setLineDash([]); }
-  }
   for (const p of H.ho || []) {
     const pts = p.length === 3 ? gCirc(p[0], p[1], p[2], 28) : gR(...p);
     c.save();
@@ -4582,13 +4632,6 @@ function gDraw(now) {
     }
     gPrism(c, V, gCirc(T[0], T[1], G_HUB, 12), 16, '#ffcf3f', null);
   }});
-  for (const P of H.po || []) items.push({d:V.D(P[0], P[1], 0) - 0.005, fn:() => {
-    for (let k = 0; k < 3; k++) {
-      const f = (now / 900 + k / 3) % 1;
-      if (!gPath(c, V, gCirc(P[0], P[1], G_PORT + 4 - f * 4, 16), 8 + f * 50)) continue;
-      c.strokeStyle = `rgba(57,214,242,${(0.8 * (1 - f)).toFixed(2)})`; c.lineWidth = 2; c.stroke();
-    }
-  }});
   for (const m of H.mv || []) { const p = gSlideAt(m, t); items.push({d:V.D(p.x + m[2] / 2, p.y + m[3] / 2, 0), fn:() => gPrism(c, V, gR(p.x, p.y, m[2], m[3]), 26, '#2fbfe0', '#c8f6ff')}); }
   // Fahne
   items.push({d:V.D(H.cup[0], H.cup[1], 0) - 0.01, fn:() => {
@@ -4600,11 +4643,12 @@ function gDraw(now) {
   }});
   // Bälle der anderen (wo sie gerade liegen)
   const me = myPid();
+  const spec = gWatching() ? gSpecPid() : null;
   for (const pid of G.players) {
     if (pid === me || gScore(G, pid, G.hi) != null) continue;
-    const p = G.pos[pid], pl = playerById(pid); if (!pl) continue;
-    const at = p && p[3] === G.hi ? p : [H.tee[0], H.tee[1]];
-    items.push({d:V.D(at[0], at[1], 0) - 0.02, fn:() => gBall(c, V, at[0], at[1], pl.color, 0.6, pl.name, now)});
+    const g = gGhost[pid], pl = playerById(pid); if (!pl || !g) continue;
+    const x = g.x, y = g.y;
+    items.push({d:V.D(x, y, 0) - 0.02, fn:() => gBall(c, V, x, y, pl.color, pid === spec ? 1 : 0.6, pl.name, now)});
   }
   const b = gl.ball;
   if (b && gPlaying() && (!gl.done || (gl.sinkAt && now - gl.sinkAt < 500))) {
@@ -4630,20 +4674,36 @@ function gDraw(now) {
     if (sub) { c.font = '600 16px Inter, system-ui, sans-serif'; c.fillStyle = '#fff'; c.fillText(sub, w / 2, h / 2 + 28); }
     c.restore();
   };
+  // Alle fertig: 3 Sekunden runterzählen, dann schaltet der Host weiter
+  const all = gAllDone(G);
+  if (all && gl.allKey !== gKey(G)) { gl.allKey = gKey(G); gl.allAt = now; }
+  if (!all) gl.allKey = '';
+  if (all && now - gl.allAt > 600) {
+    const left = Math.max(1, Math.ceil(3 - (now - gl.allAt) / 1000)), last = G.hi + 1 >= G.holes.length;
+    const txt = tx(last ? `Ergebnis in ${left}` : `Nächste Bahn in ${left}`);
+    c.save(); c.font = `700 ${Math.min(26, Math.round(w / 24))}px "Bungee", "Press Start 2P", sans-serif`; c.textAlign = 'center';
+    const tw = c.measureText(txt).width + 36, y0 = h * 0.16;
+    c.fillStyle = 'rgba(11,6,32,.82)'; c.fillRect(w / 2 - tw / 2, y0 - 30, tw, 46); c.strokeStyle = '#ffcf3f'; c.lineWidth = 2; c.strokeRect(w / 2 - tw / 2, y0 - 30, tw, 46);
+    c.fillStyle = '#ffcf3f'; c.fillText(txt, w / 2, y0 + 3); c.restore();
+  }
   const ia = (now - gl.introAt) / 1000;
   if (ia < 2.2 && !gl.done) banner(`${tx('Bahn')} ${G.hi + 1} · ${tx(H.n)}`, `Par ${H.par}`, Math.min(1, (2.2 - ia) * 2), '#ffcf3f');
   else if (gl.sinkAt && now - gl.sinkAt < 2600) banner(tx(gTerm(gl.done, H.par)), tx(gl.done === 1 ? 'Eingelocht mit 1 Schlag' : `Eingelocht mit ${gl.done} Schlägen`), Math.min(1, (2600 - (now - gl.sinkAt)) / 500), '#4ff08f');
   else if (gl.msg && now - gl.msgAt < 1700) banner(tx(gl.msg), '', Math.min(1, (1700 - (now - gl.msgAt)) / 400), '#39d6f2');
 }
+/* Genau eine Zeichenschleife: gl.raf bleibt gesetzt, solange gFrame läuft. Sonst startet ein render() mitten im Bild
+   über golfMount eine zweite Schleife, und nach vielen Schlägen laufen Dutzende davon gleichzeitig. */
 function gFrame(now) {
-  gl.raf = 0;
   const cv = gl.cv, stage = document.getElementById('golf-stage');
-  if (!cv || !stage || cv.parentNode !== stage || S.tab !== 'golf' || !S.golf || S.golf.status !== 'running') return;
+  if (!cv || !stage || cv.parentNode !== stage || S.tab !== 'golf' || !S.golf || S.golf.status !== 'running') { gl.raf = 0; return; }
   const w = Math.max(200, stage.clientWidth), h = Math.max(260, Math.round(Math.min(w * (w < 600 ? 1.3 : 0.72), window.innerHeight - 90))), dpr = Math.min(2, window.devicePixelRatio || 1);
   if (gl.w !== w || gl.h !== h || cv.width !== Math.round(w * dpr)) { gl.w = w; gl.h = h; cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px'; gl.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
   // Beim Start einmal so scrollen, dass die ganze Bahn im Bild ist
   if (gl.scrolled !== S.golf.id) { gl.scrolled = S.golf.id; const r = stage.getBoundingClientRect(); if (r.bottom > window.innerHeight || r.top < 0) window.scrollBy(0, r.bottom - window.innerHeight + 12); }
+  const dtg = Math.max(0, (now - (gl.prev || now)) / 1000);
   gPhysics(now);
+  gGhostStep(dtg);
+  golfHostTick();
   gCamera(now);
   gl.prev = now;
   gDraw(now);
@@ -4685,11 +4745,12 @@ function golfMount() {
 /* Kamera folgt dem eigenen Ball. Am Anfang jeder Bahn fliegt sie vom Loch zum Abschlag, damit man die Bahn sieht. */
 function gCamera(now) {
   const G = S.golf; if (!G) return;
-  const H = gHole(G.holes[G.hi]), me = myPid();
+  const H = gHole(G.holes[G.hi]);
   let fx, fy;
+  const spec = gWatching() ? gSpecPid() : null, g = spec && gGhost[spec];
   if (gPlaying() && gl.ball && !gl.done) { fx = gl.ball.x; fy = gl.ball.y; }
-  else if (gPlaying() && gl.done) { fx = H.cup[0]; fy = H.cup[1]; }
-  else { const pid = G.players.find(p => p !== me && gScore(G, p, G.hi) == null && G.pos[p] && G.pos[p][3] === G.hi); const q = pid ? G.pos[pid] : H.tee; fx = q[0]; fy = q[1]; }
+  else if (g && !(gl.sinkAt && now - gl.sinkAt < 2600)) { fx = g.x; fy = g.y; }
+  else { fx = H.cup[0]; fy = H.cup[1]; }
   fy -= G_LOOK;
   const ia = (now - gl.introAt) / 2600;
   if (ia < 1 && !gl.aim) {
@@ -4713,10 +4774,9 @@ function gMiniMap(c, H, G, w, h, now) {
   (H.tt || []).forEach(T => poly(gCirc(T[0], T[1], T[2], 20), '#6a48d0'));
   (H.ho || []).forEach(p => poly(p.length === 3 ? gCirc(p[0], p[1], p[2], 14) : gR(...p), '#05020f'));
   const dot = (x, y, r, col) => { const q = M(x, y); c.beginPath(); c.arc(q[0], q[1], r, 0, Math.PI * 2); c.fillStyle = col; c.fill(); };
-  (H.po || []).forEach(P => { dot(P[0], P[1], 2.2, '#39d6f2'); dot(P[2], P[3], 1.6, '#39d6f2'); });
   dot(H.cup[0], H.cup[1], 3, '#0a1a10'); dot(H.cup[0], H.cup[1], 1.6, '#ff4f6d');
   const me = myPid();
-  for (const pid of G.players) { if (pid === me) continue; const p = G.pos[pid], pl = playerById(pid); if (pl && p && p[3] === G.hi && gScore(G, pid, G.hi) == null) dot(p[0], p[1], 2.5, pl.color); }
+  for (const pid of G.players) { if (pid === me) continue; const g = gGhost[pid], pl = playerById(pid); if (pl && g && gScore(G, pid, G.hi) == null) dot(g.x, g.y, 2.5, pl.color); }
   if (gPlaying() && gl.ball && !gl.done) dot(gl.ball.x, gl.ball.y, 3 + Math.sin(now / 200), '#ffffff');
   c.restore();
 }
@@ -4729,10 +4789,9 @@ function golfAdvance() {
 function golfHostTick() {
   const G = S.golf;
   if (!G || G.status !== 'running' || !ctl()) { gl.advAt = 0; return; }
-  const act = gActive(G);
-  const all = act.length > 0 && act.every(pid => gScore(G, pid, G.hi) != null);
+  const all = gAllDone(G);
   if (!all) { if (gl.advAt) { gl.advAt = 0; render(); } return; }
-  if (!gl.advAt || gl.advKey !== gKey(G)) { gl.advAt = Date.now() + 3500; gl.advKey = gKey(G); render(); return; }
+  if (!gl.advAt || gl.advKey !== gKey(G)) { gl.advAt = Date.now() + 3000; gl.advKey = gKey(G); render(); return; }
   if (Date.now() >= gl.advAt) { gl.advAt = 0; golfAdvance(); }
 }
 function golfSkip() {
@@ -4790,16 +4849,22 @@ function golfPlayHTML(G) {
     return {pid, sc, live, tot, diff:tot - par, away:!act.includes(pid)};
   }).sort((a, b) => a.tot - b.tot);
   const fmtDiff = d => d === 0 ? '±0' : d > 0 ? '+' + d : String(d);
-  const side = rows.map(r => { const p = ghost(r.pid);
-    return `<li class="${r.pid === me ? 'me' : ''} ${r.away ? 'away' : ''}">${avatar(p, 30)}<span class="g-pn">${esc(p.name)}</span>
+  const watchList = gWatching() ? gSpecList() : [], spec = gWatching() ? gSpecPid() : null;
+  const side = rows.map(r => { const p = ghost(r.pid), can = watchList.includes(r.pid);
+    return `<li class="${r.pid === me ? 'me' : ''} ${r.away ? 'away' : ''} ${r.pid === spec ? 'watched' : ''} ${can ? 'canwatch' : ''}"${can ? ` data-act="golf-watch-pid" data-pid="${esc(r.pid)}" title="Zuschauen"` : ''}>${avatar(p, 30)}<span class="g-pn">${esc(p.name)}</span>
       <span class="g-now">${r.sc != null ? `✓ ${r.sc}` : r.away ? '–' : `⛳ ${r.live}`}</span><span class="g-tot">${r.tot}<small>${fmtDiff(r.diff)}</small></span></li>`; }).join('');
-  const mine = playing ? (gl.done ? `<div class="g-done">✓ ${gl.done === 1 ? 'Eingelocht mit 1 Schlag' : `Eingelocht mit ${gl.done} Schlägen`} · ${esc(gTerm(gl.done, H.par))}${allDone ? '' : ' <small>Warte auf die anderen …</small>'}</div>` : '') : `<div class="g-done spec">Du schaust zu.</div>`;
+  const sp = spec && ghost(spec);
+  const watchBar = sp ? `<div class="g-watch"><button class="btn btn-sm" type="button" data-act="golf-watch" data-d="-1" aria-label="Vorheriger Spieler"${watchList.length < 2 ? ' disabled' : ''}>◀</button>
+    <span>👀 Du schaust zu: ${avatar(sp, 24)} <b>${esc(sp.name)}</b></span><button class="btn btn-sm" type="button" data-act="golf-watch" data-d="1" aria-label="Nächster Spieler"${watchList.length < 2 ? ' disabled' : ''}>▶</button></div>` : '';
+  const mine = playing ? (gl.done ? `<div class="g-done">✓ ${gl.done === 1 ? 'Eingelocht mit 1 Schlag' : `Eingelocht mit ${gl.done} Schlägen`} · ${esc(gTerm(gl.done, H.par))}${allDone ? '' : ' <small>Warte auf die anderen …</small>'}</div>` : '') : sp ? '' : `<div class="g-done spec">Du schaust zu.</div>`;
   return `<section class="section gsec">
     <div class="g-top">
+      <button class="gmenu" type="button" data-act="gmenu" aria-label="Menü anzeigen" title="Menü">☰</button>
       <div class="g-hole"><span class="eyebrow">Bahn ${G.hi + 1} von ${G.holes.length}</span><b>${esc(H.n)}</b><span class="g-par">Par ${H.par}</span></div>
       ${playing ? `<div class="g-me"><small>Schläge</small><b>${gl.strokes}</b></div>` : ''}
     </div>
     ${mine}
+    ${watchBar}
     <div class="g-main">
       <div class="golf-stage" id="golf-stage"></div>
       <aside class="card g-side"><span class="lbl">Punktetafel</span><ol class="g-board">${side}</ol>
@@ -4807,7 +4872,7 @@ function golfPlayHTML(G) {
           : `<button class="btn btn-sm" type="button" data-act="golf-skip">Weiter, ohne zu warten</button>`}<button class="btn btn-sm btn-ghost" type="button" data-act="golf-end">Beenden</button></div>` : ''}
       </aside>
     </div>
-    <p class="g-help">${isTouch() ? 'Mit dem Finger' : 'Mit der Maus'} auf das Feld drücken, nach hinten ziehen und loslassen. Je weiter du ziehst, desto fester der Schlag. Wasser und Löcher im Boden kosten einen Strafschlag, höchstens Par + 6 Schläge pro Bahn. Die blauen Ringe sind Abkürzungen: nur ganz langsam treffen. Oben rechts siehst du die ganze Bahn.</p>
+    <p class="g-help">${isTouch() ? 'Mit dem Finger' : 'Mit der Maus'} auf das Feld drücken, nach hinten ziehen und loslassen. Je weiter du ziehst, desto fester der Schlag. Wasser und Löcher im Boden kosten einen Strafschlag, höchstens Par + 6 Schläge pro Bahn. Oben rechts siehst du die ganze Bahn.</p>
   </section>`;
 }
 function golfEndHTML(G) {
@@ -4839,7 +4904,9 @@ const golfActions = {
   }}]),
   'golf-again': () => golfStart(S.golf ? S.golf.set || 'all' : 'all'),
   'golf-setup': () => { if (!ctl()) return; S.golf = null; S.lobbies[S.room] = {...lobby(), golf:null}; roomWrite({golf:null}); render(); },
-  'golf-transfer': () => golfTransfer()
+  'golf-transfer': () => golfTransfer(),
+  'golf-watch': b => { const l = gSpecList(); if (!l.length) return; const i = l.indexOf(gSpecPid()); gl.spec = l[(i + Number(b.dataset.d) + l.length) % l.length]; render(); },
+  'golf-watch-pid': b => { if (gSpecList().includes(b.dataset.pid)) { gl.spec = b.dataset.pid; render(); } }
 };
 
 /* ---------- Räume: Quiz, Malen und Golf jederzeit, ohne Spielleiter ---------- */
@@ -5409,7 +5476,33 @@ function dPatternHTML(st) {
 
 /* Zeichenfläche: bleibt beim Neuzeichnen der Seite erhalten */
 const dc = {cv:null, ctx:null, subKey:'', galKey:'', unsubS:null, unsubA:null, unsubG:null, chunks:[], ids:[], acts:[], cur:null, seq:0,
-  color:0, size:1, tool:'pen', lastFlush:0, chose:{}, liked:{}, close:{}, flushT:null};
+  color:0, size:1, tool:'pen', lastFlush:0, chose:{}, liked:{}, close:{}, flushT:null, shape:null, redo:[], gone:new Set(), redoKey:''};
+const DSHAPES = ['line', 'rect', 'square', 'circle'];
+/* Formen werden als normale Linienzüge geschickt, so zeichnen alle Geräte sie ohne Sonderfall */
+function dShapePts(tool, x0, y0, x1, y1) {
+  let dx = x1 - x0, dy = y1 - y0;
+  if (tool === 'line') return [x0, y0, x1, y1];
+  if (tool === 'square' || tool === 'circle') { const sd = Math.max(Math.abs(dx), Math.abs(dy)); dx = (dx < 0 ? -1 : 1) * sd; dy = (dy < 0 ? -1 : 1) * sd; }
+  const xa = x0 + dx, ya = y0 + dy;
+  if (tool !== 'circle') return [x0, y0, xa, y0, xa, ya, x0, ya, x0, y0];
+  const cx = (x0 + xa) / 2, cy = (y0 + ya) / 2, r = Math.abs(dx) / 2, n = Math.max(16, Math.min(64, Math.round(r / 4))), out = [];
+  for (let i = 0; i <= n; i++) { const a = i / n * Math.PI * 2; out.push(Math.round(cx + Math.cos(a) * r), Math.round(cy + Math.sin(a) * r)); }
+  return out;
+}
+function dRedoReset() { if (dc.redoKey !== dc.subKey) { dc.redo = []; dc.gone = new Set(); dc.redoKey = dc.subKey; } }
+/* Bild als JPG herunterladen */
+function dSlug(w) { return (w || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/ß/g, 'ss').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40); }
+function dDownloadJpg(src, name) {
+  try {
+    const c = document.createElement('canvas'); c.width = src.naturalWidth || src.width; c.height = src.naturalHeight || src.height;
+    const x = c.getContext('2d'); x.fillStyle = '#ffffff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(src, 0, 0);
+    c.toBlob(b => {
+      if (!b) { toast('Download klappt hier nicht.'); return; }
+      const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = (name || 'darkime-bild') + '.jpg';
+      document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    }, 'image/jpeg', 0.92);
+  } catch (e) { toast('Download klappt hier nicht.'); }
+}
 const dDone = new Set();
 let dParts = null, dLayout = '', dPrev = {}, dTickKey = '', dHintN = -1, dLastGuessed = -1, dLastTurnKey = '';
 function dKey(st = S.draw) { return st && st.status === 'running' ? st.id + ':' + st.turn : ''; }
@@ -5521,7 +5614,9 @@ function dcDown(e) {
   e.preventDefault();
   try { dc.cv.setPointerCapture(e.pointerId); } catch (err) {}
   const [x, y] = dcPos(e);
+  dRedoReset(); if (dc.redo.length) { dc.redo = []; render(); }
   if (dc.tool === 'fill') { const ch = {sid:uid(), f:true, c:DCOLORS[dc.color][0], w:1, p:[x, y]}; dcFill(x, y, ch.c); dcSend(ch); return; }
+  if (DSHAPES.includes(dc.tool)) { dc.shape = {tool:dc.tool, x0:x, y0:y, x1:x, y1:y, c:DCOLORS[dc.color][0], w:DSIZES[dc.size], pid:e.pointerId, snap:dc.ctx.getImageData(0, 0, DW, DH)}; return; }
   const eraser = dc.tool === 'eraser';
   dc.cur = {sid:uid(), c:eraser ? '#ffffff' : DCOLORS[dc.color][0], w:DSIZES[dc.size] * (eraser ? 1.6 : 1), p:[x, y], from:0, sent:false, pid:e.pointerId};
   dcPaint({c:dc.cur.c, w:dc.cur.w, p:[x, y]});
@@ -5529,6 +5624,14 @@ function dcDown(e) {
   clearInterval(dc.flushT); dc.flushT = setInterval(() => dcFlush(false), 280);
 }
 function dcMove(e) {
+  const sh = dc.shape;
+  if (sh && e.pointerId === sh.pid) {
+    if (!dcCan()) { dcUp(e); return; }
+    [sh.x1, sh.y1] = dcPos(e);
+    dc.ctx.putImageData(sh.snap, 0, 0);
+    dcPaint({c:sh.c, w:sh.w, p:dShapePts(sh.tool, sh.x0, sh.y0, sh.x1, sh.y1)});
+    return;
+  }
   const c = dc.cur; if (!c || e.pointerId !== c.pid) return;
   if (!dcCan()) { dcUp(e); return; }
   const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
@@ -5550,16 +5653,40 @@ function dcFlush(final) {
   c.from = c.p.length - 2; c.sent = true; dc.lastFlush = Date.now();
 }
 function dcUp(e) {
+  const sh = dc.shape;
+  if (sh && (!e || e.pointerId === sh.pid)) {
+    dc.shape = null;
+    if (e && e.type === 'pointerup') [sh.x1, sh.y1] = dcPos(e);
+    dc.ctx.putImageData(sh.snap, 0, 0);
+    if (!dcCan() || Math.hypot(sh.x1 - sh.x0, sh.y1 - sh.y0) < 4) return;
+    const ch = {sid:uid(), c:sh.c, w:sh.w, p:dShapePts(sh.tool, sh.x0, sh.y0, sh.x1, sh.y1)};
+    dcPaint(ch); dcSend(ch);
+    return;
+  }
   if (!dc.cur || (e && e.pointerId !== dc.cur.pid)) return;
   dcFlush(true);
   clearInterval(dc.flushT); dc.flushT = null;
   dc.cur = null;
 }
 function dcUndo() {
-  if (!dcCan() || !dc.chunks.length) return;
-  const sid = dc.chunks[dc.chunks.length - 1].sid;
-  dc.chunks.filter(c => c.sid === sid).forEach(c => db.collection('strokes').doc(c.id).delete().catch(() => {}));
+  if (!dcCan()) return;
+  dRedoReset();
+  const left = dc.chunks.filter(c => !dc.gone.has(c.sid)); if (!left.length) return;
+  const sid = left[left.length - 1].sid, parts = dc.chunks.filter(c => c.sid === sid);
+  dc.gone.add(sid);
+  dc.redo.push({sid, parts:parts.map(c => ({c:c.c, w:c.w, p:c.p, f:c.f, clear:c.clear}))});
+  parts.forEach(c => db.collection('strokes').doc(c.id).delete().catch(() => {}));
+  render();
 }
+function dcRedo() {
+  if (!dcCan()) return;
+  dRedoReset();
+  const it = dc.redo.pop(); if (!it) return;
+  dc.gone.delete(it.sid);
+  it.parts.forEach(ch => dcSend({...ch, sid:it.sid}));
+  render();
+}
+const dcCanUndo = () => dc.chunks.some(c => !dc.gone.has(c.sid));
 function dcClearAll() { if (!dcCan() || !dc.chunks.length) return; dcSend({sid:uid(), clear:true}); dcClear(); }
 
 /* Live-Verbindungen für den aktuellen Zug */
@@ -5692,10 +5819,15 @@ function drawNext() {
 function drawFinishNow() { const st = clone(S.draw); if (!st || st.status !== 'running') return; const k = dKey(st); st.status = 'finished'; st.phase = 'done'; st.phaseAt = Date.now(); ops.saveDraw(st); setTimeout(() => { dDeleteWhere('strokes', 'g', k); dDeleteWhere('dacts', 'g', k); }, 1500); }
 function dSaveThumb(st) {
   try {
-    const c = document.createElement('canvas'); c.width = 320; c.height = 240;
-    c.getContext('2d').drawImage(dc.cv, 0, 0, 320, 240);
-    let img = c.toDataURL('image/webp', .7);
-    if (!/^data:image\/webp/.test(img)) img = c.toDataURL('image/jpeg', .72);
+    // So groß wie möglich, aber unter der Grenze für ein Galerie-Bild
+    let img = '';
+    for (const [w, h, q] of [[800, 600, .8], [640, 480, .75], [480, 360, .72], [320, 240, .7]]) {
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').drawImage(dc.cv, 0, 0, w, h);
+      img = c.toDataURL('image/webp', q);
+      if (!/^data:image\/webp/.test(img)) img = c.toDataURL('image/jpeg', q);
+      if (img.length < 110000) break;
+    }
     if (db) db.collection('dgal').doc(st.id + '_' + st.turn).set({gid:st.id, room:S.room, turn:st.turn, word:st.word, d:st.wd, drawer:st.drawer, img, ts:Date.now()}).catch(() => {});
   } catch (e) {}
 }
@@ -5845,7 +5977,10 @@ function drawToolsHTML(st) {
   return `<div class="dpal" role="group" aria-label="Farben">${DCOLORS.map(([c, n], i) => `<button class="dcol" type="button" style="--c:${c}" data-act="dc-color" data-i="${i}" aria-pressed="${dc.color === i && dc.tool !== 'eraser'}" aria-label="${n}" title="${n}"></button>`).join('')}</div>
     <div class="dsizes" role="group" aria-label="Pinselgröße">${DSIZES.map((s, i) => `<button class="dsz" type="button" data-act="dc-size" data-i="${i}" aria-pressed="${dc.size === i}" aria-label="Pinsel ${['klein', 'mittel', 'groß', 'riesig'][i]}"><i style="--s:${[6, 11, 18, 26][i]}px"></i></button>`).join('')}</div>
     <div class="dtl">${[['pen', '✏️', 'Stift'], ['eraser', '🧽', 'Radierer'], ['fill', '🪣', 'Füllen']].map(([k, i, l]) => `<button class="dtb" type="button" data-act="dc-tool" data-v="${k}" aria-pressed="${dc.tool === k}" title="${l}" aria-label="${l}">${i}</button>`).join('')}
-      <button class="dtb" type="button" data-act="dc-undo" title="Rückgängig (Strg+Z)" aria-label="Rückgängig">↶</button><button class="dtb" type="button" data-act="dc-clear" title="Alles löschen" aria-label="Alles löschen">🗑</button></div>`;
+    </div>
+    <div class="dtl dshapes" role="group" aria-label="Formen">${[['line', 'Gerade Linie', '<path d="M4 20 20 4"/>'], ['rect', 'Rechteck', '<rect x="2.5" y="6" width="19" height="12"/>'], ['square', 'Quadrat', '<rect x="5" y="5" width="14" height="14"/>'], ['circle', 'Kreis', '<circle cx="12" cy="12" r="8"/>']].map(([k, l, d]) => `<button class="dtb" type="button" data-act="dc-tool" data-v="${k}" aria-pressed="${dc.tool === k}" title="${l}" aria-label="${l}"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">${d}</svg></button>`).join('')}</div>
+    <div class="dtl">
+      <button class="dtb" type="button" data-act="dc-undo" title="Zurück (Strg+Z)" aria-label="Zurück"${dcCanUndo() ? '' : ' disabled'}>↶</button><button class="dtb" type="button" data-act="dc-redo" title="Vor (Strg+Y)" aria-label="Vor"${dc.redoKey === dc.subKey && dc.redo.length ? '' : ' disabled'}>↷</button><button class="dtb" type="button" data-act="dc-clear" title="Alles löschen" aria-label="Alles löschen">🗑</button><button class="dtb" type="button" data-act="dc-dl" title="Als JPG speichern" aria-label="Als JPG speichern">⬇</button></div>`;
 }
 function drawLogHTML(st) {
   const me = dMe(), lines = [];
@@ -5902,7 +6037,7 @@ function dPatchParts() {
 function drawGalleryHTML(st) {
   const gal = (S.dgal || []).filter(x => x.gid === st.id);
   if (!gal.length) return '';
-  return `<div class="card dgal-card"><h3>Galerie</h3><div class="dgal">${gal.map(x => { const p = ghost(x.drawer); return `<figure style="--lc:${x.d ? dLv(x.d)[2] : 'var(--shadow)'}"><img src="${x.img}" alt="Zeichnung: ${esc(dWordView(x.word))}" loading="lazy"><figcaption><b>${esc(dWordView(x.word))}</b><span>${avatar(p, 20)} ${esc(p.name)}</span></figcaption></figure>`; }).join('')}</div></div>`;
+  return `<div class="card dgal-card"><h3>Galerie</h3><div class="dgal">${gal.map(x => { const p = ghost(x.drawer); return `<figure style="--lc:${x.d ? dLv(x.d)[2] : 'var(--shadow)'}"><img src="${x.img}" alt="Zeichnung: ${esc(dWordView(x.word))}" loading="lazy"><figcaption><b>${esc(dWordView(x.word))}</b><span>${avatar(p, 20)} ${esc(p.name)}</span></figcaption><button class="btn btn-sm dgal-dl" type="button" data-act="dgal-dl" data-w="${esc(dWordView(x.word))}" title="Als JPG speichern">⬇ JPG</button></figure>`; }).join('')}</div></div>`;
 }
 function drawFinished(st) {
   dParts = null;
@@ -6028,6 +6163,9 @@ const drawActions = {
   'dc-size': b => { dc.size = Number(b.dataset.i); render(); },
   'dc-tool': b => { dc.tool = b.dataset.v; render(); },
   'dc-undo': () => dcUndo(),
+  'dc-redo': () => dcRedo(),
+  'dc-dl': () => { const st = S.draw; if (dc.cv) dDownloadJpg(dc.cv, 'darkime-' + (dSlug(st && st.word && (dMe() === st.drawer || st.phase !== 'draw') ? dWordView(st.word) : '') || 'zeichnung')); },
+  'dgal-dl': b => { const img = b.closest('figure') && b.closest('figure').querySelector('img'); if (img) dDownloadJpg(img, 'darkime-' + (dSlug(b.dataset.w) || 'zeichnung')); },
   'dc-clear': () => dcClearAll(),
   'dw-save': () => saveDwords()
 };
@@ -6253,7 +6391,7 @@ function withPending(go) {
   } else go();
 }
 const actions = {
-  'gmenu': () => { document.body.classList.toggle('navshow'); },
+  'gmenu': () => { document.body.classList.toggle('navshow'); const hd = document.querySelector('header.top'); if (hd) document.body.style.setProperty('--navh', hd.offsetHeight + 'px'); },
   'fullscreen': () => toggleFull(),
   'tab': b => setTab(b.dataset.tab),
   'modal-close': () => closeModal(),
@@ -6602,7 +6740,11 @@ document.addEventListener('submit', e => {
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && S.modal) { closeModal(); return; }
-  if (!S.modal && S.tab === 'malen' && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && dcCan()) { e.preventDefault(); dcUndo(); return; }
+  if (!S.modal && S.tab === 'malen' && (e.ctrlKey || e.metaKey) && dcCan()) {
+    const k = e.key.toLowerCase();
+    if (k === 'z' && !e.shiftKey) { e.preventDefault(); dcUndo(); return; }
+    if (k === 'y' || (k === 'z' && e.shiftKey)) { e.preventDefault(); dcRedo(); return; }
+  }
   if (S.modal || S.tab !== 'quiz' || !ctl()) return;
   const tag = (e.target.tagName || '').toLowerCase();
   if (['input', 'textarea', 'select'].includes(tag)) return;
