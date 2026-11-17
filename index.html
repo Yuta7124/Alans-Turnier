@@ -3326,8 +3326,8 @@ function viewPlayers() {
   // Jedes Gerät gehört zu genau einem Spieler: dem, den es selbst erstellt hat
   const mine = playerById(lsGet('turnier-me', ''));
   const meId = mine ? mine.id : '';
-  const add = mine ? `<div class="pcard add codecard"><span class="ptag">Du</span>${avatar(mine, 88, 'pc-av')}<p class="m-text" style="margin:10px 0 0">Du spielst als <b>${nameHTML(mine)}</b>.${ownEdit(mine) || adm ? '' : mine.byGuest ? ' Bearbeiten kannst du ihn auf dem Gerät, mit dem du ihn erstellt hast.' : ' Änderungen am Spieler macht der Spielleiter.'}</p>${ownEdit(mine) || adm ? `<button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(mine.id)}">Spieler bearbeiten</button>` : ''}</div>`
-    : `<div class="pcard add codecard"><span class="ptag">Mitspielen</span><p class="m-text" style="margin-top:14px">Erstell deinen eigenen Spieler mit Foto. Du bist sofort dabei.</p><button class="btn btn-gold" type="button" data-act="gplayer-open">Eigenen Spieler erstellen</button></div>`;
+  // Die eigene Karte steht schon in der Liste ("Das bist du"); extra Karte nur zum Erstellen, solange es keinen eigenen Spieler gibt
+  const add = mine ? '' : `<div class="pcard add codecard"><span class="ptag">Mitspielen</span><p class="m-text" style="margin-top:14px">Erstell deinen eigenen Spieler mit Foto. Du bist sofort dabei.</p><button class="btn btn-gold" type="button" data-act="gplayer-open">Eigenen Spieler erstellen</button></div>`;
   const cards = byCreated.map((p, i) => `
     <div class="pcard ${p.wins > 0 ? 'has-wins' : ''}">
       <span class="ptag">P${i + 1}</span>
