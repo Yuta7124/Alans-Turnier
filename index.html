@@ -759,6 +759,123 @@ button.bcell[disabled]{cursor:default}
 @media (max-width:680px){.subnav{margin-top:16px}.hub{gap:8px}.hub-btn{padding:8px 10px;gap:10px}.hub-ico{font-size:24px}.hub-txt b{font-size:20px}.hub-txt small{font-size:12px}}
 @media (prefers-reduced-motion:reduce){.hub-txt small.hub-live{animation:none}}
 
+/* Wortwahl-Fenster */
+#dpick-root:empty{display:none}
+.dpick{position:fixed;inset:0;z-index:145;background:rgba(5,3,12,.88);display:flex;overflow:auto;padding:16px}
+.dpick-box{margin:auto;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;width:min(760px,100%);padding:22px 16px;background:var(--panel);
+  box-shadow:0 -4px 0 var(--coin),0 4px 0 var(--coin),-4px 0 0 var(--coin),4px 0 0 var(--coin),0 14px 0 4px rgba(0,0,0,.5)}
+.dpick-box h2{font-family:var(--display);font-size:clamp(24px,4vw,40px);text-transform:uppercase;margin:0;line-height:1.1;text-shadow:3px 3px 0 var(--shadow)}
+.dpick-box .muted{margin:0;font-weight:600}
+.dpick .dchoices{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;width:100%}
+.dpick .dchoice{flex:1 1 180px;min-height:84px;touch-action:manipulation}
+body.picking #bgm-root{display:none}
+@media (max-width:520px){.dpick{padding:10px}.dpick .dchoice{flex-basis:100%;min-height:76px}.dpick-box{gap:12px;padding:18px 12px}}
+@media (orientation:landscape) and (max-height:540px){.dpick{padding:8px}.dpick-box{gap:8px;padding:12px}.dpick .dchoice{flex:1 1 0;min-height:70px;padding:8px}.dpick .dchoice b{font-size:20px}.dpick-box h2{font-size:22px}}
+
+/* Handy: Spiel groß */
+.gmenu,.gmenu-x{display:none}
+.hub-big{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin:12px 4px 0;font-size:13px;color:var(--muted);font-weight:600}
+.hub-rot{display:none}
+body.ingame .hub-rot{display:inline}
+@media (orientation:landscape){.hub-big{display:none}}
+@media (max-width:680px){
+  body.ingame header.top{position:relative}
+  body.ingame .hub-btn{padding:6px 10px}
+  body.ingame .hub-txt small{display:none}
+  body.ingame .hub-ico{font-size:20px}
+}
+@media (orientation:landscape) and (max-height:540px){
+  header.top{position:relative}
+  body.ingame header.top,body.ingame #subnav,body.ingame #foot,body.ingame #bgm-root,body.ingame #fly-site{display:none}
+  body.ingame.navshow header.top{display:block;position:fixed;top:0;left:0;right:0;z-index:136}
+  body.ingame .gmenu{display:grid;place-items:center;flex:none;width:34px;height:34px;border:0;background:var(--panel-2);color:var(--ink);font-size:17px;box-shadow:0 0 0 2px var(--shadow)}
+  body.ingame.navshow .gmenu-x{display:block;position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:137;border:0;background:var(--coin);color:#1a1200;font-weight:700;padding:10px 18px;box-shadow:0 0 0 3px var(--shadow)}
+  body.ingame .wrap.wide{padding:0 8px}
+  body.ingame .section.qsec,body.ingame .section.dsec{margin:0 0 10px;padding-top:6px}
+  body.ingame .whoami{margin-top:6px;gap:6px}
+  body.ingame .whoami .chip{min-height:34px;padding:4px 8px}
+  body.ingame .qbar{margin-bottom:6px;gap:8px}
+  body.ingame .qbar .btn-sm{min-height:30px;padding:4px 8px;font-size:12px}
+
+  /* Malen quer: Leinwand links, alles andere rechts */
+  body.ingame .dsec{--pw:min(calc((100dvh - 16px) * 1.3333), 62vw);display:grid;grid-template-columns:var(--pw) minmax(0,1fr);column-gap:10px;row-gap:6px;align-items:start}
+  body.ingame .dsec .dstage,body.ingame .dsec .dcenter{display:contents}
+  body.ingame .dsec .dpaper{grid-column:1;grid-row:1 / span 6;width:calc(var(--pw) - 10px);margin:5px;position:sticky;top:5px;align-self:start}
+  body.ingame .dsec .dtop{grid-column:2;grid-row:1;margin:0;gap:6px}
+  body.ingame .dsec .dtop .qprog{font-size:9px}
+  body.ingame .dsec .dtop .dtimer{flex:1 1 100%;max-width:none}
+  body.ingame .dsec .dtop .qtools{margin-left:0}
+  body.ingame .dsec .dword{grid-column:2;grid-row:2;min-height:0;padding:4px 8px;gap:4px 8px}
+  body.ingame .dsec .dw-lbl{font-size:8px}
+  body.ingame .dsec .dw-word{font-size:22px}
+  body.ingame .dsec .dl{font-size:17px;border-bottom-width:3px}
+  body.ingame .dsec .dw-pat{gap:10px}
+  body.ingame .dsec .dwrd{gap:3px}
+  body.ingame .dsec .dtools{grid-column:2;grid-row:3;gap:6px}
+  body.ingame .dsec .dpal{grid-template-columns:repeat(8,minmax(0,1fr));width:100%;gap:4px}
+  body.ingame .dsec .dcol{width:100%;height:24px}
+  body.ingame .dsec .dsz{width:34px;height:34px}
+  body.ingame .dsec .dtb{width:36px;height:36px;font-size:17px}
+  body.ingame .dsec .dtb[data-act="dc-undo"]{margin-left:0}
+  body.ingame .dsec .dchat{grid-column:2;grid-row:4;padding:8px;gap:6px;max-height:none;position:static}
+  body.ingame .dsec .dlog{min-height:60px;max-height:calc(100dvh - 210px)}
+  body.ingame .dsec .dlines{font-size:13px}
+  body.ingame .dsec .dlines li{padding:2px 4px}
+  body.ingame .dsec .dguess .input{min-height:40px;padding:6px 10px}
+  body.ingame .dsec .dside{grid-column:2;grid-row:5;padding:6px;position:static}
+  body.ingame .dsec .dside .stand-head{display:none}
+  body.ingame .dsec .dplist{flex-direction:row;overflow-x:auto;gap:6px;padding:3px}
+  body.ingame .dsec .dprow{flex:none;padding:3px 6px;gap:6px}
+  body.ingame .dsec .dprow .av{width:24px!important;height:24px!important;font-size:9px!important}
+  body.ingame .dsec .dprow .st-rank,body.ingame .dsec .dprow .st-name small{display:none}
+  body.ingame .dsec .dprow .st-name b{font-size:13px}
+  body.ingame .dsec .dprow .st-pts{font-size:12px}
+  body.ingame .dsec #dp-who{grid-column:1 / -1;grid-row:7}
+  body.ingame .dover{padding:8px}
+  body.ingame .dover-box{gap:6px}
+  body.ingame .dover-box h3{font-size:20px}
+  body.ingame .dover-box .dreveal{font-size:30px}
+  body.ingame .dgains{gap:4px}
+  body.ingame .dgains li{padding:3px 8px}
+
+  /* Quiz quer: Spielbrett und Frage groß, rechts wer dran ist und die Punkte */
+  body.ingame .qstage3{grid-template-columns:minmax(0,1fr) 190px;grid-template-areas:"center turn" "center stand";gap:8px 10px}
+  body.ingame .qstage3 .turn{grid-area:turn;flex-direction:column;flex-wrap:nowrap;align-items:center;text-align:center;padding:8px;gap:4px;position:static}
+  body.ingame .qstage3 #slot{flex-direction:column}
+  body.ingame .qstage3 .turn .avbig{width:44px!important;height:44px!important;font-size:14px!important}
+  body.ingame .qstage3 .slot-name{font-size:19px}
+  body.ingame .qstage3 .turn .who-is{order:0;margin:0;font-size:9px}
+  body.ingame .qstage3 .turn .motto,body.ingame .turn-next{display:none}
+  body.ingame .qcenter{grid-area:center;gap:8px}
+  body.ingame .stand{grid-area:stand;padding:8px;max-height:calc(100dvh - 170px);overflow:auto;position:static}
+  body.ingame .stand-head{margin-bottom:6px}
+  body.ingame .stand-list{gap:6px}
+  body.ingame .stand-row{padding:4px 6px;gap:6px}
+  body.ingame .stand-row .av{width:24px!important;height:24px!important;font-size:9px!important}
+  body.ingame .stand .st-name b{font-size:14px}
+  body.ingame .stand .st-name small{display:none}
+  body.ingame .stand .st-pts{font-size:14px}
+  body.ingame .qsec .qcard{padding:10px 12px;min-height:0;gap:8px}
+  body.ingame .qsec .qtext{font-size:19px}
+  body.ingame .qsec .answers{gap:6px}
+  body.ingame .qsec .ans{font-size:15px;min-height:44px;padding:6px 10px;gap:8px}
+  body.ingame .qsec .ans .k{width:28px;height:28px;font-size:11px}
+  body.ingame .qsec .boardcard{gap:6px}
+  body.ingame .qsec .bprompt{font-size:16px}
+  body.ingame .qsec .board5{grid-template-columns:58px repeat(var(--cols,5),minmax(0,1fr));gap:5px}
+  body.ingame .qsec .bcat{font-size:10px;min-height:30px;padding:3px 2px}
+  body.ingame .qsec .bcat .long{display:none}
+  body.ingame .qsec .bcat .short{display:inline}
+  body.ingame .qsec .blvl{font-size:9px;gap:2px}
+  body.ingame .qsec .bcell{min-height:max(38px,calc((100dvh - 150px) / 5));padding:2px}
+  body.ingame .qsec .bcell b{font-size:16px}
+  body.ingame .qsec .verdict{font-size:20px}
+  body.ingame .qflag img{height:80px}
+  body.ingame .est{gap:6px}
+  body.ingame .est-scale{margin:40px 8px 44px}
+  body.ingame .autonext{font-size:14px}
+}
+
 /* Malen: Schwierigkeit */
 .dchoice{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:150px;padding:12px 18px;border:0;background:#141026;color:var(--ink);
   box-shadow:0 0 0 4px var(--lc),0 0 0 7px var(--shadow),0 8px 0 4px rgba(0,0,0,.45);margin:6px}
@@ -812,11 +929,11 @@ button.bcell[disabled]{cursor:default}
 .dcanvas{display:block;width:100%;height:auto;aspect-ratio:4/3;touch-action:auto;-webkit-user-select:none;user-select:none}
 .dcanvas.can{touch-action:none;cursor:crosshair}
 .dcanvas.can[data-tool="fill"]{cursor:cell}
-.dover{position:absolute;inset:0;display:grid;place-items:center;padding:16px;background:rgba(15,11,30,.82);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.dover{position:absolute;inset:0;display:flex;flex-direction:column;overflow:auto;padding:16px;background:rgba(15,11,30,.82);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
 .dover:empty{display:none}
 .dover:has(.rv){background:rgba(15,11,30,.45);backdrop-filter:none;-webkit-backdrop-filter:none}
 .dover-box.rv{background:rgba(15,11,30,.9);padding:18px 22px;box-shadow:0 0 0 3px var(--shadow),0 0 0 6px var(--coin)}
-.dover-box{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;max-width:560px}
+.dover-box{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;max-width:560px;margin:auto}
 .dover-box h3{font-family:var(--display);font-size:clamp(24px,2.4vw,36px);text-transform:uppercase;line-height:1.1;text-shadow:3px 3px 0 var(--shadow);margin:0}
 .dover-box .dreveal{color:var(--coin);font-size:clamp(34px,3.6vw,60px)}
 .dover-box .muted{margin:0;font-weight:600}
@@ -1024,6 +1141,8 @@ const SHELL = `<div id="fly-site" aria-hidden="true"></div>
 <main class="wrap" id="main"><div class="loading"><p>Lade Turnier …</p></div></main>
 <footer class="wrap foot" id="foot"></footer>
 <div id="modal-root"></div>
+<div id="dpick-root"></div>
+<button class="gmenu-x" id="gmenu" type="button" data-act="gmenu">✕ Menü schließen</button>
 <div id="gate-root"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div id="bgm-root"></div>`;
@@ -2571,12 +2690,29 @@ function render() {
   if (S.modal) renderModal();
   renderGatebar();
   renderGate();
+  document.body.classList.toggle('ingame', inGame());
+  renderPick();
   tick();
   if (S.tab === 'rad') ensureWheelLoop();
   if (S.tab === 'quiz') ensurePickLoop();
   syncMusic();
 }
 function tabsHidden() { return S.mode === 'loading' || S.mode === 'setup' || S.mode === 'lock' || S.mode === 'firstrun' || (S.mode === 'db' && !S.loaded) || blocked(); }
+function inGame() {
+  if (tabsHidden() || S.mode !== 'db') return false;
+  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running');
+}
+const isTouch = () => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } };
+const canFull = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+async function toggleFull() {
+  try {
+    if (document.fullscreenElement || document.webkitFullscreenElement) { await (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+    const el = document.documentElement;
+    await (el.requestFullscreen ? el.requestFullscreen({navigationUI:'hide'}) : el.webkitRequestFullscreen());
+    try { await screen.orientation.lock('landscape'); } catch (e) {}
+  } catch (e) { toast('Vollbild klappt hier nicht. Dreh dein Handy einfach quer.'); }
+}
+document.addEventListener('fullscreenchange', () => render());
 function renderSubnav() {
   const el = $('#subnav'); if (!el) return;
   const hide = tabsHidden();
@@ -2589,6 +2725,7 @@ function renderSubnav() {
       return `<small>${k === 'quiz' ? 'Fragen-Spielbrett' : 'Zeichnen und raten'}</small>`;
     };
     h = `<div class="hub" role="group" aria-label="Spiel wählen">${[['quiz', '🧠', 'Quiz'], ['malen', '🎨', 'Malen']].map(([k, i, l]) => `<button class="hub-btn" type="button" data-act="tab" data-tab="${k}" aria-pressed="${S.tab === k}"><span class="hub-ico" aria-hidden="true">${i}</span><span class="hub-txt"><b>${l}</b>${st(k)}</span></button>`).join('')}</div>`;
+    if (isTouch()) h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
   }
   el.classList.toggle('wide', HUB.includes(S.tab) && $('#main').classList.contains('wide'));
   el.hidden = !h;
@@ -3317,7 +3454,7 @@ function quizRunning(q) {
   const whoami = adm ? '' : `<div class="whoami"><span class="lbl">Wer bist du?</span><div class="chips">${q.players.map(id => { const p = ghost(id); return `<button class="chip pchip" type="button" data-act="set-me" data-pid="${esc(id)}" aria-pressed="${me === id}">${avatar(p, 24)}${esc(p.name)}</button>`; }).join('')}</div></div>`;
   return `<section class="section qsec">
     <div class="qbar">
-      <span class="qprog">Runde ${q.round || 1} · <b>${used}</b>/${total}</span>
+      <button class="gmenu" type="button" data-act="gmenu" aria-label="Menü anzeigen" title="Menü">☰</button><span class="qprog">Runde ${q.round || 1} · <b>${used}</b>/${total}</span>
       <span class="track" aria-hidden="true"><i style="width:${total ? (used / total) * 100 : 0}%"></i></span>
       ${adm ? `<span class="qtools">${music.ready ? `<button class="btn btn-sm" type="button" data-act="music-toggle" aria-pressed="${music.on}">${music.on ? '♪ Musik an' : '♪ Musik aus'}</button>` : ''}<button class="btn btn-sm" type="button" data-act="quiz-sound" aria-pressed="${!muted}">${muted ? 'Ton aus' : 'Ton an'}</button><button class="btn btn-sm" type="button" data-act="quiz-abort">Beenden</button></span>` : ''}
     </div>
@@ -4065,6 +4202,9 @@ function drawOnSnap(x) {
   const g = st.status === 'running' ? Object.keys(st.guessed).length : 0;
   if (S.tab === 'malen' && g > dLastGuessed && dLastGuessed >= 0 && prev && dKey(prev) === key) sfx('right');
   dLastGuessed = g;
+  if (st.status === 'running' && st.phase === 'draw' && prev && prev.phase === 'choose' && dKey(prev) === key && dMe() === st.drawer && S.tab === 'malen') {
+    requestAnimationFrame(() => { const el = document.getElementById('draw-slot'); if (el && innerWidth <= 1000) el.scrollIntoView({block:'center', behavior:'smooth'}); });
+  }
   drawSync();
   drawHandleActs();
 }
@@ -4209,6 +4349,7 @@ function dPhaseLeft(st) {
 function drawTick() {
   const st = S.draw; if (!st || st.status !== 'running') return;
   const {left, tot} = dPhaseLeft(st);
+  const cl = document.getElementById('dchoose-left'); if (cl && st.phase === 'choose') cl.textContent = Math.ceil(left / 1000);
   if (S.tab === 'malen') {
     const el = document.getElementById('dtimer');
     if (el) {
@@ -4217,7 +4358,6 @@ function drawTick() {
       const fill = el.querySelector('.fill'); if (fill) fill.style.width = (f * 100).toFixed(1) + '%';
       el.className = 'hp dtimer ' + (st.phase === 'draw' ? hpClass(f, sec) : '');
     }
-    const cl = document.getElementById('dchoose-left'); if (cl) cl.textContent = Math.ceil(left / 1000);
     const hn = st.phase === 'draw' ? dHintIdx(st).length : -1;
     if (hn !== dHintN) { dHintN = hn; render(); }
   }
@@ -4253,7 +4393,7 @@ function drawTopHTML(st) {
   const n = st.players.length, total = st.rounds * n, round = Math.floor(st.turn / n) + 1;
   const {left, tot} = dPhaseLeft(st);
   const sec = Math.ceil(left / 1000), f = left / tot;
-  return `<span class="qprog">Runde <b>${round}</b>/${st.rounds} · Zug ${st.turn + 1}/${total}</span>
+  return `<button class="gmenu" type="button" data-act="gmenu" aria-label="Menü anzeigen" title="Menü">☰</button><span class="qprog">Runde <b>${round}</b>/${st.rounds} · Zug ${st.turn + 1}/${total}</span>
     <div class="hp ${st.phase === 'draw' ? hpClass(f, sec) : ''} dtimer" id="dtimer" role="timer" aria-label="Verbleibende Zeit"><span class="hp-lbl">${st.phase === 'draw' ? 'Zeit' : st.phase === 'choose' ? 'Wahl' : 'Weiter'}</span><span class="hp-bar"><i class="fill" style="width:${(f * 100).toFixed(1)}%"></i></span><span class="num">${sec}</span></div>
     ${S.admin ? `<span class="qtools"><button class="btn btn-sm" type="button" data-act="quiz-sound" aria-pressed="${!muted}">${muted ? 'Ton aus' : 'Ton an'}</button><button class="btn btn-sm" type="button" data-act="draw-skip">${st.phase === 'reveal' ? 'Weiter' : 'Überspringen'}</button><button class="btn btn-sm danger" type="button" data-act="draw-end">Beenden</button></span>` : ''}`;
 }
@@ -4265,15 +4405,29 @@ function drawWordHTML(st) {
   if (st.guessed[me]) return `<span class="dw-lbl">Du hast es</span><b class="dw-word ok">${esc(st.word)}</b>${dLvBadge(st.wd)}`;
   return `<span class="dw-lbl">${esc(drawer.name)} malt</span>${dPatternHTML(st)}${dLvBadge(st.wd, true)}`;
 }
+function pickHTML() {
+  const st = S.draw;
+  if (!st || st.status !== 'running' || st.phase !== 'choose' || S.mode !== 'db' || !S.loaded || blocked()) return '';
+  if (!dMe() || dMe() !== st.drawer || dc.chose[dKey(st)] || !st.choices.length) return '';
+  return `<div class="dpick" role="dialog" aria-modal="true" aria-labelledby="dpick-t"><div class="dpick-box">
+    <span class="eyebrow">Du bist dran!</span>
+    <h2 id="dpick-t">Wähl ein Wort zum Malen</h2>
+    <div class="dchoices">${st.choices.map((w, i) => { const l = dLv(st.cdiff[i]); return `<button class="dchoice" type="button" style="--lc:${l[2]}" data-act="draw-choose" data-i="${i}"><small>${l[1]} · ×${String(l[3]).replace('.', ',')} Punkte</small><b>${esc(w)}</b></button>`; }).join('')}</div>
+    <p class="muted">Sonst wird in <b id="dchoose-left">15</b> Sekunden eins gezogen.</p>
+  </div></div>`;
+}
+function renderPick() {
+  const el = $('#dpick-root'); if (!el) return;
+  const h = pickHTML();
+  if (el.innerHTML !== h) el.innerHTML = h;
+  document.body.classList.toggle('picking', !!h);
+}
 function drawOverHTML(st) {
   const me = dMe(), drawer = ghost(st.drawer), key = dKey(st);
   const {left} = dPhaseLeft(st);
   if (st.phase === 'choose') {
     if (me === st.drawer) {
-      if (dc.chose[key]) return `<div class="dover-box"><h3>Gleich geht's los …</h3></div>`;
-      return `<div class="dover-box"><span class="eyebrow">Du bist dran!</span><h3>Wähl ein Wort zum Malen</h3>
-        <div class="dchoices">${st.choices.map((w, i) => { const l = dLv(st.cdiff[i]); return `<button class="dchoice" type="button" style="--lc:${l[2]}" data-act="draw-choose" data-i="${i}"><small>${l[1]} · ×${String(l[3]).replace('.', ',')} Punkte</small><b>${esc(w)}</b></button>`; }).join('')}</div>
-        <p class="muted">Sonst wird in <b id="dchoose-left">${Math.ceil(left / 1000)}</b> Sekunden eins gezogen.</p></div>`;
+      return `<div class="dover-box"><h3>${dc.chose[key] ? "Gleich geht's los …" : 'Wähl dein Wort …'}</h3></div>`;
     }
     return `<div class="dover-box">${avatar(drawer, 72)}<h3>${nameHTML(drawer)} wählt ein Wort …</h3></div>`;
   }
@@ -4469,6 +4623,7 @@ const drawActions = {
     const st = S.draw, i = Number(b.dataset.i), key = dKey(st);
     if (!st || st.phase !== 'choose' || dMe() !== st.drawer || dc.chose[key]) return;
     dc.chose[key] = true;
+    if (S.tab !== 'malen') setTab('malen');
     if (S.admin) drawChoose(i); else { sendDact('choose', String(i)); render(); }
   },
   'draw-like': () => { const st = S.draw, key = dKey(st), me = dMe(); if (!st || !st.players.includes(me) || me === st.drawer || dc.liked[key] || st.likes[me]) return; dc.liked[key] = true; sendDact('like', '1'); render(); },
@@ -4676,6 +4831,7 @@ function copyShareLink() {
 /* ---------- Events ---------- */
 function setTab(t) {
   t = viewFor(t);
+  document.body.classList.remove('navshow');
   if (HUB.includes(t)) { try { localStorage.setItem('turnier-sub', t); } catch (e) {} }
   S.tab = t;
   try { if (location.hash !== '#' + t) location.hash = t; } catch (e) {}
@@ -4696,6 +4852,8 @@ function withPending(go) {
   } else go();
 }
 const actions = {
+  'gmenu': () => { document.body.classList.toggle('navshow'); },
+  'fullscreen': () => toggleFull(),
   'tab': b => setTab(b.dataset.tab),
   'modal-close': () => closeModal(),
   'confirm-do': b => { const fn = confirmFns[Number(b.dataset.i)]; closeModal(); if (fn) fn(); },
