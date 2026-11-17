@@ -250,7 +250,24 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .pcard .pc-av{box-shadow:0 0 0 4px var(--shadow),0 0 0 7px var(--edge);margin:8px 0 6px}
 .pcard.is-top .pc-av{box-shadow:0 0 0 4px var(--shadow),0 0 0 7px var(--coin)}
 .pc-name{font-family:var(--display);font-weight:700;font-size:28px;text-transform:uppercase;line-height:1;max-width:100%;overflow-wrap:anywhere;text-shadow:3px 3px 0 var(--shadow)}
-.pc-meta{color:var(--muted);font-size:14px;font-weight:600}
+.langpick{position:fixed;inset:0;z-index:500;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 35%,#2a1760,#0b0620 70%)}
+.langpick.out{opacity:.4;pointer-events:none}
+.lp-in{display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center;max-width:560px}
+.lp-sub{margin:0;font-family:var(--pixel);font-size:clamp(10px,2.2vw,14px);color:var(--xp);text-transform:uppercase;letter-spacing:.1em;line-height:1.8}
+.lp-btns{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.lp-btn,.lang-btn{display:flex;flex-direction:column;align-items:center;gap:12px;min-width:170px;padding:20px 22px 16px;border:0;cursor:pointer;color:var(--ink);background:var(--panel);font-family:var(--display);font-weight:700;font-size:24px;text-transform:uppercase;
+  box-shadow:0 -3px 0 var(--edge),0 3px 0 var(--edge),-3px 0 0 var(--edge),3px 0 0 var(--edge),0 8px 0 3px var(--shadow)}
+.lp-btn:hover,.lp-btn:focus-visible,.lang-btn:hover,.lang-btn[aria-pressed="true"]{background:var(--panel-2);box-shadow:0 -3px 0 var(--coin),0 3px 0 var(--coin),-3px 0 0 var(--coin),3px 0 0 var(--coin),0 8px 0 3px var(--shadow)}
+.lp-btn .flag,.lang-btn .flag{height:50px;width:auto;display:block;box-shadow:0 0 0 3px var(--shadow)}
+.lp-note{margin:0;color:var(--muted);font-size:14px;line-height:1.6}
+.lang-pick{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0 4px}
+.lang-btn{min-width:150px;font-size:20px;padding:14px 18px 12px}
+.lang-btn .flag{height:36px}
+.pc-wins{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;color:var(--muted);font-size:14px;font-weight:600}
+.pcard.has-wins .pc-wins{color:var(--coin)}
+.pc-wins b{font-family:var(--pixel);font-weight:400;font-size:14px}
+.pw-cup{font-size:18px;line-height:1}
+.pw-edit{display:inline-flex;gap:4px;margin-left:6px}
 .pc-actions{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;justify-content:center}
 .pcard.add{--e:var(--edge);align-items:stretch;text-align:left;background:repeating-linear-gradient(45deg,var(--panel) 0 14px,#201840 14px 28px)}
 .pcard.add .ptag{color:var(--coin)}
@@ -1288,8 +1305,38 @@ body.locked #bgm-root{bottom:96px}
   <p class="intro-skip">Tippen zum Überspringen</p>
 </div>
 <script>
+/* Sprache: wird beim ersten Besuch als Allererstes gewählt (vor dem Intro) und auf dem Gerät gemerkt. */
+(function () {
+  var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
+  if (lang !== 'de' && lang !== 'en') lang = '';
+  window.DARKIME_LANG = lang;
+  if (lang === 'en') document.write('<script src="en.js?v=1"><\/script>');
+})();
 (function () {
   var el = document.getElementById('intro');
+  if (!window.DARKIME_LANG) {
+    el.parentNode.removeChild(el);
+    var lp = document.createElement('div');
+    lp.className = 'langpick'; lp.id = 'langpick';
+    lp.setAttribute('role', 'dialog'); lp.setAttribute('aria-modal', 'true'); lp.setAttribute('aria-labelledby', 'lp-t');
+    lp.innerHTML = '<div class="lp-in"><h1 class="intro-title lp-title" id="lp-t">Darkime</h1>'
+      + '<p class="lp-sub">Sprache wählen · Choose your language</p>'
+      + '<div class="lp-btns"><button class="lp-btn" type="button" data-lang="de"><svg class="flag" viewBox="0 0 5 3" aria-hidden="true"><rect width="5" height="1" fill="#000"/><rect y="1" width="5" height="1" fill="#d00"/><rect y="2" width="5" height="1" fill="#ffce00"/></svg><span>Deutsch</span></button>'
+      + '<button class="lp-btn" type="button" data-lang="en"><svg class="flag" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#00247d"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#cf142b" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#cf142b" stroke-width="6"/></svg><span>English</span></button></div>'
+      + '<p class="lp-note">Du kannst sie später unter Optionen ändern.<br>You can change it later in Options.</p></div>';
+    document.body.appendChild(lp);
+    lp.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-lang]'); if (!b) return;
+      try { localStorage.setItem('darkime-lang', b.getAttribute('data-lang')); } catch (er) {}
+      lp.classList.add('out'); location.reload();
+    });
+    return;
+  }
+  if (window.DARKIME_LANG === 'en') {
+    var sub = el.querySelector('.intro-sub'), sk = el.querySelector('.intro-skip');
+    if (sub) sub.textContent = 'Tournament · Quiz · Drawing';
+    if (sk) sk.textContent = 'Tap to skip';
+  }
   try { if (sessionStorage.getItem('turnier-intro')) { el.parentNode.removeChild(el); return; } sessionStorage.setItem('turnier-intro', '1'); } catch (e) {}
   var t = 'Darkime';
   var h = document.getElementById('intro-title');
@@ -1306,6 +1353,15 @@ body.locked #bgm-root{bottom:96px}
 <script src="config.js"></script>
 <script id="app-js">
 'use strict';
+/* ---------- Sprache ---------- */
+const LANG = window.DARKIME_LANG === 'en' ? 'en' : 'de';
+const EN = LANG === 'en' && window.DARKIME_EN ? window.DARKIME_EN : null;
+const LOC = EN ? 'en-GB' : 'de-DE';
+const H = h => EN ? EN.html(h) : h;
+const tx = t => EN ? EN.text(t) : t;
+const FLAG_DE = '<svg class="flag" viewBox="0 0 5 3" aria-hidden="true"><rect width="5" height="1" fill="#000"/><rect y="1" width="5" height="1" fill="#d00"/><rect y="2" width="5" height="1" fill="#ffce00"/></svg>';
+const FLAG_GB = '<svg class="flag" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#00247d"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#cf142b" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#cf142b" stroke-width="6"/></svg>';
+function setLang(l) { try { localStorage.setItem('darkime-lang', l); } catch (e) {} location.reload(); }
 const SHELL = `<div id="fly-site" aria-hidden="true"></div>
 <header class="top">
   <div class="wrap top-inner">
@@ -2431,14 +2487,14 @@ const ptsWord = n => n === 1 || n === -1 ? 'Punkt' : 'Punkte';
 function fmtMoney(n) {
   n = Math.round((Number(n) || 0) * 100) / 100;
   const whole = Number.isInteger(n);
-  return new Intl.NumberFormat('de-DE', {style:'currency', currency:'EUR', minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: 2}).format(n);
+  return new Intl.NumberFormat(LOC, {style:'currency', currency:'EUR', minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: 2}).format(n);
 }
 function fmtDate(iso) {
   if (!iso) return '';
   const [y, m, d] = iso.split('-').map(Number);
   const dt = new Date(y, m - 1, d);
   if (isNaN(dt)) return '';
-  const s = dt.toLocaleDateString('de-DE', {weekday:'short', day:'numeric', month:'long', year:'numeric'});
+  const s = dt.toLocaleDateString(LOC, {weekday:'short', day:'numeric', month:'long', year:'numeric'});
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const diff = Math.round((dt - today) / 86400000);
   const rel = diff === 0 ? 'heute' : diff === 1 ? 'morgen' : diff > 1 ? `in ${diff} Tagen` : '';
@@ -2446,9 +2502,9 @@ function fmtDate(iso) {
 }
 function fmtTime(ts) {
   const d = new Date(ts); if (isNaN(d)) return '';
-  const t = d.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
+  const t = d.toLocaleTimeString(LOC, {hour:'2-digit', minute:'2-digit'});
   const now = new Date();
-  return d.toDateString() === now.toDateString() ? t : d.toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit'}) + '. ' + t;
+  return d.toDateString() === now.toDateString() ? t : d.toLocaleDateString(LOC, {day:'2-digit', month:'2-digit'}) + (EN ? ' ' : '. ') + t;
 }
 function setPath(obj, path, val) {
   const ks = path.split('.'); let o = obj;
@@ -2486,7 +2542,7 @@ function moneyHTML(n) {
 
 let toastT = null;
 function toast(msg) {
-  const t = $('#toast'); t.innerHTML = COIN(20) + `<span>${esc(msg)}</span>`; t.classList.add('show');
+  const t = $('#toast'); t.innerHTML = COIN(20) + `<span>${esc(tx(msg))}</span>`; t.classList.add('show');
   clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
@@ -2509,7 +2565,7 @@ function normSettings(x) {
 }
 function normPlayer(id, x) {
   x = x || {};
-  return {id, name: str(x.name, 40) || 'Spieler', avatar: safeImg(x.avatar), color: /^#[0-9a-f]{6}$/i.test(x.color || '') ? x.color : COLORS[0], createdAt: Number(x.createdAt) || 0, ...styleFields(x)};
+  return {id, name: str(x.name, 40) || 'Spieler', avatar: safeImg(x.avatar), color: /^#[0-9a-f]{6}$/i.test(x.color || '') ? x.color : COLORS[0], createdAt: Number(x.createdAt) || 0, wins: Math.round(num(x.wins, 0, 999, 0)), ...styleFields(x)};
 }
 function normPoint(id, x) {
   x = x || {};
@@ -2780,7 +2836,7 @@ function renderGate() {
       clearTimeout(gateTimer);
       if (m === 'lobby') { gateSince = Date.now(); lastTip = -1; }
       lastCd = null;
-      root.innerHTML = m === 'lobby' ? lobbyHTML() : countdownHTML();
+      root.innerHTML = H(m === 'lobby' ? lobbyHTML() : countdownHTML());
       gateView = m; lastLobbyKey = lobbyKey();
       document.body.classList.add('locked');
     }
@@ -2796,7 +2852,7 @@ function renderGate() {
       }
     }
     const clk = $('#tv-clock');
-    if (clk) { const t = new Date().toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'}); if (clk.textContent !== t) clk.textContent = t; }
+    if (clk) { const t = new Date().toLocaleTimeString(LOC, {hour:'2-digit', minute:'2-digit'}); if (clk.textContent !== t) clk.textContent = t; }
     if (m === 'countdown') {
       const n = Math.max(1, Math.ceil((S.gate.openAt - Date.now()) / 1000));
       if (n !== lastCd) { lastCd = n; const box = $('#cd-box'); if (box) box.innerHTML = `<div class="cd">${n}</div>`; }
@@ -2805,7 +2861,7 @@ function renderGate() {
   }
   if (gateView === 'lobby' || gateView === 'countdown') {
     gateView = 'revealing';
-    if (!$('#gate')) { root.innerHTML = countdownHTML(); document.body.classList.add('locked'); }
+    if (!$('#gate')) { root.innerHTML = H(countdownHTML()); document.body.classList.add('locked'); }
     const inner = $('#gate .gate-in');
     if (inner) inner.innerHTML = `<div class="cd go">Los!</div>`;
     const pe = $('#gate .preview-end'); if (pe) pe.remove();
@@ -2838,7 +2894,7 @@ function patch(el, html) {
   const id = a && a.id && el.contains(a) ? a.id : null;
   let ss = null, se = null;
   try { ss = a.selectionStart; se = a.selectionEnd; } catch (e) {}
-  el.innerHTML = html;
+  el.innerHTML = H(html);
   if (id) {
     const n = document.getElementById(id);
     if (n) { n.focus({preventScroll:true}); try { if (ss != null) n.setSelectionRange(ss, se); } catch (e) {} }
@@ -2910,32 +2966,32 @@ function renderSubnav() {
     h = roomBarHTML();
     if (isTouch() && S.tab !== 'raum') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
   }
-  el.setAttribute('aria-label', inRoom ? 'Raum' : 'Turnier');
+  el.setAttribute('aria-label', tx(inRoom ? 'Raum' : 'Turnier'));
   el.classList.toggle('wide', (!!grp || inRoom) && $('#main').classList.contains('wide'));
   el.hidden = !h;
+  h = H(h);
   if (el.innerHTML !== h) el.innerHTML = h;
 }
 function renderFoot() {
   const el = $('#foot'); if (!el) return;
-  const h = S.mode !== 'db' ? '' : S.admin
+  const h = H(S.mode !== 'db' ? '' : S.admin
     ? `<span>Du bist als Spielleiter angemeldet.</span> <button class="link" type="button" data-act="admin-logout">Abmelden</button>`
-    : `<button class="link" type="button" data-act="admin-login">Spielleiter-Login</button>`;
+    : `<button class="link" type="button" data-act="admin-login">Spielleiter-Login</button>`);
   if (el.innerHTML !== h) el.innerHTML = h;
 }
 let lastTitle = '';
 function renderHeader() {
   if (S.tab === 'spiele-pick' && (S.mode !== 'db' || S.loaded)) S.tab = S.room ? roomView() : 'spiele';
-  if (S.tab === 'einstellungen' && !S.admin && S.mode !== 'loading') S.tab = 'start';
   if ($('#brand-title').textContent !== SITE_NAME) $('#brand-title').textContent = SITE_NAME;
   const parts = [];
-  const ts = tourState(); if (ts.k !== 'none' && ts.date) parts.push(ts.date);
-  parts.push(`${S.players.length} Spieler`);
+  const ts = tourState(); if (ts.k !== 'none' && ts.date) parts.push(tx(ts.date));
+  parts.push(tx(`${S.players.length} Spieler`));
   $('#brand-sub').textContent = parts.join(' · ');
   document.title = SITE_NAME;
   const hideTabs = tabsHidden();
-  const tabs = hideTabs ? [] : TABS.filter(t => t[0] !== 'einstellungen' || S.admin);
+  const tabs = hideTabs ? [] : TABS;
   const live = roomLiveList().length > 0;
-  const tabsHTML = tabs.map(([k, l]) => `<button class="tab" type="button" data-act="tab" data-tab="${k}" aria-selected="${S.tab === k || groupOf(S.tab) === k || (k === 'spiele' && roomTabs.includes(S.tab))}">${TAB_SHORT[k] ? `<span class="t-long">${l}</span><span class="t-short">${TAB_SHORT[k]}</span>` : l}${k === 'spiele' && live ? ' <span aria-hidden="true" style="color:var(--hp)">■</span><span class="vh">(läuft)</span>' : ''}</button>`).join('');
+  const tabsHTML = H(tabs.map(([k, l]) => `<button class="tab" type="button" data-act="tab" data-tab="${k}" aria-selected="${S.tab === k || groupOf(S.tab) === k || (k === 'spiele' && roomTabs.includes(S.tab))}">${TAB_SHORT[k] ? `<span class="t-long">${l}</span><span class="t-short">${TAB_SHORT[k]}</span>` : l}${k === 'spiele' && live ? ' <span aria-hidden="true" style="color:var(--hp)">■</span><span class="vh">(läuft)</span>' : ''}</button>`).join(''));
   if ($('#tabs').innerHTML !== tabsHTML) $('#tabs').innerHTML = tabsHTML;
   const pill = $('#pill');
   let txt = 'Lädt …', cls = '';
@@ -2944,7 +3000,7 @@ function renderHeader() {
   else if (S.mode === 'lock') txt = 'Gesperrt';
   else if (S.mode === 'setup') { txt = 'Nicht eingerichtet'; cls = 'is-warn'; }
   else if (S.mode === 'firstrun') txt = 'Einrichtung';
-  pill.textContent = txt; pill.className = 'pill ' + cls;
+  pill.textContent = tx(txt); pill.className = 'pill ' + cls;
 }
 
 /* Rangliste */
@@ -2971,7 +3027,7 @@ function tourState() {
 function tourCardHTML() {
   const st = S.settings, ts = tourState(), adm = S.admin;
   lastTourK = ts.k;
-  const day = st.date ? new Date(st.date + 'T12:00:00').toLocaleDateString('de-DE', {weekday:'long', day:'numeric', month:'long'}) : '';
+  const day = st.date ? new Date(st.date + 'T12:00:00').toLocaleDateString(LOC, {weekday:'long', day:'numeric', month:'long'}) : '';
   const body = {
     live:`<span class="tour-live"><i aria-hidden="true"></i>Jetzt live</span>
       <h4 class="tour-big">Das Turnier läuft!</h4>
@@ -3046,10 +3102,10 @@ function viewStart() {
       ${adm && D.newsOpen ? newsFormHTML() : ''}
       <div class="news-list">${newsCardsHTML()}</div>
     </div>
-    ${adm ? `<div class="start-group">
+    <div class="start-group">
       <h3 class="start-h" style="--tc:#8890c4">Einstellungen</h3>
-      <div class="stiles">${tile('einstellungen', '⚙️', 'Optionen', 'Preisgeld, Musik, Bilder, Passwort und mehr. Nur für dich als Spielleiter.', '', '#8890c4')}</div>
-    </div>` : ''}
+      <div class="stiles">${tile('einstellungen', '⚙️', 'Optionen', adm ? 'Sprache, Preisgeld, Musik, Bilder, Passwort und mehr.' : 'Sprache und Hintergrundmusik für dein Gerät.', LANG === 'en' ? 'English' : 'Deutsch', '#8890c4')}</div>
+    </div>
   </section>`;
 }
 function viewBoard() {
@@ -3125,10 +3181,7 @@ function playerForm(prefix, d) {
       <div class="chips">${FRAMES.map(f => `<button type="button" class="chip frchip" data-act="pf-set" data-target="${prefix}" data-k="frame" data-v="${f[0]}" aria-pressed="${pickOpt(FRAMES, d.frame) === f[0]}">${avatar({...prev, frame:f[0]}, 22)}${f[1]}</button>`).join('')}</div></div>`;
 }
 function viewPlayers() {
-  const list = standings();
-  const byCreated = list.slice().sort((a, b) => a.createdAt - b.createdAt);
-  const top = Math.max(1, ...list.map(p => p.pts));
-  const started = S.points.length > 0;
+  const byCreated = S.players.slice().sort((a, b) => a.createdAt - b.createdAt);
   const adm = S.admin;
   if (!D.np.color) D.np.color = COLORS[S.players.length % COLORS.length];
   const mine = !adm && playerById(lsGet('turnier-me', ''));
@@ -3137,13 +3190,12 @@ function viewPlayers() {
     : mine ? `<div class="pcard add codecard"><span class="ptag">Du</span>${avatar(mine, 88, 'pc-av')}<p class="m-text" style="margin:10px 0 0">Du spielst als <b>${nameHTML(mine)}</b>. Änderungen am Spieler macht der Spielleiter.</p><button class="link" type="button" data-act="me-clear">Das bin nicht ich</button><button class="btn btn-ghost btn-sm" type="button" data-act="gplayer-open">Weiteren Spieler erstellen</button></div>`
     : `<div class="pcard add codecard"><span class="ptag">Mitspielen</span><p class="m-text" style="margin-top:14px">Erstell deinen eigenen Spieler mit Foto. Du bist sofort dabei. Steht dein Name schon da? Dann tipp bei dir auf „Das bin ich“.</p><button class="btn btn-gold" type="button" data-act="gplayer-open">Eigenen Spieler erstellen</button></div>`;
   const cards = byCreated.map((p, i) => `
-    <div class="pcard ${started && p.rank === 1 ? 'is-top' : ''}">
+    <div class="pcard ${p.wins > 0 ? 'has-wins' : ''}">
       <span class="ptag">P${i + 1}</span>
-      ${started && p.rank === 1 ? `<span class="pcrown">${CROWN(33, 24)}</span>` : ''}
       ${avatar(p, 112, 'pc-av')}
       <div class="pc-name">${nameHTML(p)}</div>${mottoHTML(p)}
-      <div class="pc-meta">Platz ${p.rank} · ${p.pts} ${ptsWord(p.pts)}</div>
-      <span class="xpbar wide" aria-hidden="true"><i style="width:${(Math.max(0, p.pts) / top * 100).toFixed(1)}%"></i></span>
+      <div class="pc-wins">${p.wins > 0 ? `<span class="pw-cup" aria-hidden="true">🏆</span><b>${p.wins}</b> ${p.wins === 1 ? 'Turniersieg' : 'Turniersiege'}` : 'Noch kein Turniersieg'}
+        ${adm ? `<span class="pw-edit"><button class="x" type="button" data-act="win-add" data-pid="${esc(p.id)}" data-d="-1" ${p.wins > 0 ? '' : 'disabled'} aria-label="Einen Turniersieg weniger für ${esc(p.name)}">−</button><button class="x" type="button" data-act="win-add" data-pid="${esc(p.id)}" data-d="1" aria-label="Einen Turniersieg mehr für ${esc(p.name)}">+</button></span>` : ''}</div>
       ${p.id === meId ? '<span class="you-tag">Das bist du</span>' : !meId ? `<button class="btn btn-sm btn-ghost me-btn" type="button" data-act="set-me" data-pid="${esc(p.id)}">Das bin ich</button>` : ''}
       ${adm ? `<div class="pc-actions"><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Bearbeiten</button><button class="btn btn-sm btn-ghost danger" type="button" data-act="delete-player" data-pid="${esc(p.id)}">Löschen</button></div>` : ''}
     </div>`).join('');
@@ -3175,7 +3227,23 @@ function splitNote() {
   const sum = Math.round(splitSum() * 100) / 100;
   return sum === 100 ? {bad:false, text:'Zusammen 100 %.'} : {bad:true, text:`Zusammen ergibt das ${sum} %. Es müssen genau 100 % sein. Tipp: „Vorschlag einsetzen“.`};
 }
+function langCardHTML() {
+  return `<div class="card share-card lang-card">
+    <h3>Sprache · Language</h3>
+    <div class="lang-pick"><button class="lang-btn" type="button" data-act="set-lang" data-l="de" aria-pressed="${LANG === 'de'}">${FLAG_DE}<span>Deutsch</span></button><button class="lang-btn" type="button" data-act="set-lang" data-l="en" aria-pressed="${LANG === 'en'}">${FLAG_GB}<span>English</span></button></div>
+    <p class="m-text">Gilt nur für dieses Gerät. Die Seite lädt danach kurz neu.</p>
+  </div>`;
+}
 function viewSettings() {
+  if (!S.admin) return `<section class="section narrow">
+    <div class="sec-head"><h2 class="h">Optionen</h2></div>
+    ${langCardHTML()}
+    <div class="card share-card">
+      <h3>Hintergrundmusik</h3>
+      <p class="m-text">Leichte Musik, die die Seite selbst erzeugt. Gilt nur für dieses Gerät.</p>
+      ${bgmControlsHTML('bgmc')}
+    </div>
+  </section>`;
   if (!D.set) D.set = draftSettings();
   const s = D.set;
   const eur = s.mode === 'eur';
@@ -3189,6 +3257,7 @@ function viewSettings() {
   const np = S.players.length;
   return `<section class="section narrow">
     <div class="sec-head"><h2 class="h">Optionen</h2></div>
+    ${langCardHTML()}
     <form class="card form" data-form="settings">
       <div class="field"><label for="st-title">Name des Turniers</label><input class="input" id="st-title" data-draft="set.title" value="${esc(s.title)}" maxlength="60"></div>
       <div class="field"><span class="lbl">Wie willst du das Preisgeld festlegen?</span>
@@ -3286,11 +3355,11 @@ function suggestSplit() {
   s.amounts = pad10(amts).map(String);
 }
 const live = {
-  gsearch() { const el = $('#glist'); if (el) el.innerHTML = gamesListHTML(); },
+  gsearch() { const el = $('#glist'); if (el) el.innerHTML = H(gamesListHTML()); },
   pname(t) {
     const pre = t.dataset.prefix, d = D[pre]; if (!d) return;
     const el = document.querySelector(`.pf-prev-name[data-prev="${pre}"]`);
-    if (el) el.innerHTML = nameHTML({...d, name:d.name || 'Dein Name'});
+    if (el) el.innerHTML = H(nameHTML({...d, name:d.name || 'Dein Name'}));
   },
   set() {
     const s = D.set; if (!s) return;
@@ -3298,7 +3367,7 @@ const live = {
     const total = amounts.reduce((t, a) => t + a, 0);
     amounts.forEach((a, i) => { const el = document.getElementById('st-calc' + i); if (el) el.textContent = s.mode === 'eur' ? '' : fmtMoney(a); });
     const note = splitNote();
-    const w = $('#st-note'); if (w) { w.className = note.bad ? 'warn' : 'okline'; w.textContent = note.text; }
+    const w = $('#st-note'); if (w) { w.className = note.bad ? 'warn' : 'okline'; w.textContent = tx(note.text); }
     const b = $('#st-save'); if (b) b.disabled = !splitValid();
   },
   pd() {
@@ -3498,7 +3567,7 @@ function quizSetup() {
   const canStart = selValid.length > 0;
   const catalog = CATS.map((name, ci) => `<div class="qcat">${esc(name)}</div>${LEVELS.map((ln, li) => {
       const qs = all.filter(x => x.cat === ci && x.lvl === li);
-      return `<div class="qlvl" style="--lc:${LCOL[li]}"><span class="bstars">${stars(li + 1, LCOL[li], 8)}</span>${ln} · ${PTS[li]} ${ptsWord(PTS[li])}</div><ol class="qlist">${qs.map(x => `<li>${x.flag ? `<img class="cat-flag" loading="lazy" src="${flagSrc(x.flag, 40)}" alt="">` : ''}${esc(x.q)} <span class="ans-ok">${x.type === 'est' ? `${fmtEstU(x, x.ans)} (±${fmtEst(x, x.tol)})` : esc(x.a[x.c])}</span>${seen.has(x.id) ? ' <span class="muted">(gespielt)</span>' : ''}</li>`).join('')}</ol>`;
+      return `<div class="qlvl" style="--lc:${LCOL[li]}"><span class="bstars">${stars(li + 1, LCOL[li], 8)}</span>${ln} · ${PTS[li]} ${ptsWord(PTS[li])}</div><ol class="qlist">${qs.map(x => `<li>${x.flag ? `<img class="cat-flag" loading="lazy" src="${flagSrc(x.flag, 40)}" alt="">` : ''}${esc(qL(x))} <span class="ans-ok">${x.type === 'est' ? `${fmtEstU(x, x.ans)} (±${fmtEst(x, x.tol)})` : esc(qA(x, x.a[x.c]))}</span>${seen.has(x.id) ? ' <span class="muted">(gespielt)</span>' : ''}</li>`).join('')}</ol>`;
     }).join('')}`).join('');
   const own = S.questions.length ? `<ol class="qlist">${S.questions.map(q => `<li><div class="qrow"><span>${esc(q.q)}<br><span class="ans-ok">${q.type === 'est' ? `${esc(String(q.ans).replace('.', ','))} ${esc(q.unit)} (±${esc(String(q.tol).replace('.', ','))})` : esc(q.a[q.c] || '')}</span> <span class="muted">· ${esc(CATS[q.cat])} · ${esc(LEVELS[q.lvl])}</span></span><button class="x" type="button" data-act="qq-del" data-id="${esc(q.id)}" aria-label="Frage löschen">×</button></div></li>`).join('')}</ol>` : `<p class="m-text">Noch keine eigenen Fragen.</p>`;
   return `<section class="section">
@@ -3575,7 +3644,7 @@ function ensurePickLoop() {
     const q2 = S.quiz;
     const ps = q2 && q2.status === 'running' ? pickState(q2) : {animating:false};
     if (ps.animating) {
-      if (ps.k !== pickLastK) { pickLastK = ps.k; const el = document.getElementById('slot'); if (el) el.innerHTML = slotHTML(ps.show, false); sfx('pick'); }
+      if (ps.k !== pickLastK) { pickLastK = ps.k; const el = document.getElementById('slot'); if (el) el.innerHTML = H(slotHTML(ps.show, false)); sfx('pick'); }
       requestAnimationFrame(step);
     } else {
       pickLoop = false; pickLastK = -1;
@@ -3677,7 +3746,7 @@ function quizRunning(q) {
       <div class="bhead"><p class="bprompt">${mine ? (sentPick ? 'Feld gewählt, gleich kommt deine Frage …' : '<b>Du bist dran!</b> Tipp auf ein Feld') : `<b>${esc(turnP.name)}</b> wählt ein Feld`}</p>
         ${adm ? `<button class="btn btn-sm" type="button" data-act="quiz-random">Zufälliges Feld</button>` : ''}</div>
       ${boardHTML(q, canPick, adm ? 'quiz-cell' : 'guest-cell')}
-      <p class="legend">Mehr Sterne, mehr Punkte: ${LEVELS.map((l, i) => `${l.toLowerCase()} ${PTS[i]}`).join(' · ')}.</p>
+      <p class="legend">Mehr Sterne, mehr Punkte: ${LEVELS.map((l, i) => `${tx(l).toLowerCase()} ${PTS[i]}`).join(' · ')}.</p>
       ${adm && !mine ? `<p class="kbd">Du bist Host. Ist ${esc(turnP.name)} nicht da, kannst du ein zufälliges Feld wählen.</p>` : ''}
     </div>`;
   } else {
@@ -3688,7 +3757,7 @@ function quizRunning(q) {
       const ok = isRight(cur, q.chosen);
       const gain = PTS[cell.lvl];
       const est = cur.type === 'est';
-      const rightTxt = est ? fmtEstU(cur, cur.ans) : esc(cur.a[cur.c]);
+      const rightTxt = est ? fmtEstU(cur, cur.ans) : esc(qA(cur, cur.a[cur.c]));
       verdict = (est ? q.chosen == null : q.chosen === -1)
         ? `<div class="verdict bad">Zeit um! <span>Richtig wäre: ${rightTxt}</span></div>`
         : ok ? `<div class="verdict good">Richtig! <b class="gain">+${gain}</b> <span>${ptsWord(gain)} für ${esc(turnP.name)}${est ? ` · richtig: ${rightTxt}` : ''}</span></div>`
@@ -3705,7 +3774,7 @@ function quizRunning(q) {
         if (q.phase === 'revealed') { if (i === cur.c) cls = 'right'; else if (i === q.chosen) cls = 'wrong'; else cls = 'dim'; }
         if (g === i) cls += ' mine';
         const can = q.phase === 'asking' && mine && (adm || g === null);
-        return `<button class="ans ${cls}" type="button" data-act="${adm ? 'quiz-answer' : 'guess'}" data-i="${i}" ${can ? '' : 'disabled'}><span class="k">${LETTERS[i]}</span><span>${esc(a)}</span>${g === i ? '<em class="mine-tag">Deine Antwort</em>' : ''}</button>`;
+        return `<button class="ans ${cls}" type="button" data-act="${adm ? 'quiz-answer' : 'guess'}" data-i="${i}" ${can ? '' : 'disabled'}><span class="k">${LETTERS[i]}</span><span>${esc(qA(cur, a))}</span>${g === i ? '<em class="mine-tag">Deine Antwort</em>' : ''}</button>`;
       }).join('')}</div>`;
     let note = '';
     if (q.phase !== 'revealed') {
@@ -3725,7 +3794,7 @@ function quizRunning(q) {
       ${timerHTML(q)}
       <div class="qhead">
         <div class="tags"><span class="cat">${esc(CATS[cell.cat])}</span><span class="lvltag" style="--lc:${LCOL[cell.lvl]}"><span class="bstars">${stars(cell.lvl + 1, LCOL[cell.lvl], 9)}</span>${LEVELS[cell.lvl]} · ${PTS[cell.lvl]} ${ptsWord(PTS[cell.lvl])}</span></div>
-        <h2 class="qtext ${q.phase === 'paused' ? 'blur' : ''}">${esc(cur.q)}</h2>
+        <h2 class="qtext ${q.phase === 'paused' ? 'blur' : ''}">${esc(qL(cur))}</h2>
         ${cur.flag ? flagHTML(cur.flag) : ''}
         ${q.phase === 'paused' ? `<p class="muted" style="margin:0">Pause. Die Zeit steht.</p>` : ''}
       </div>
@@ -3921,9 +3990,12 @@ function fmtEst(cur, v) {
   if (typeof v !== 'number' || !isFinite(v)) return '–';
   if (cur.year) return String(Math.round(v));
   const dec = Math.max(estDec(cur.step), estDec(cur.ans), estDec(cur.tol));
-  return v.toLocaleString('de-DE', {maximumFractionDigits:Math.min(3, dec)});
+  return v.toLocaleString(LOC, {maximumFractionDigits:Math.min(3, dec)});
 }
-const fmtEstU = (cur, v) => fmtEst(cur, v) + (cur.unit ? ' ' + cur.unit : '');
+/* Eingebaute Quizfragen gibt es auch auf Englisch, eigene Fragen bleiben, wie sie geschrieben wurden. */
+const qL = x => (EN && EN.qText(x)) || x.q;
+const qA = (x, a) => (EN && EN.qAns(x, a)) || a;
+const fmtEstU = (cur, v) => fmtEst(cur, v) + (cur.unit ? ' ' + (EN ? EN.unit(cur.unit) : cur.unit) : '');
 function estSnap(cur, v) { const st = cur.step || 1; return Math.max(cur.min, Math.min(cur.max, Math.round((v - cur.min) / st) * st + cur.min)); }
 function estPct(cur, v) { return Math.max(0, Math.min(100, (v - cur.min) / (cur.max - cur.min) * 100)); }
 function isRight(cur, chosen) {
@@ -4294,7 +4366,7 @@ function viewGames() {
 }
 function modalGame() {
   const d = D.gm, adm = S.admin, edit = !!d.id;
-  const chipRow = (k, list) => `<div class="chips">${list.map(x => { const v = Array.isArray(x) ? x[0] : x, l = Array.isArray(x) ? (x[2] ? x[2] + ' ' : '') + x[1] : x; return `<button class="chip" type="button" data-act="gm-set" data-k="${k}" data-v="${esc(v)}" aria-pressed="${d[k] === v}">${esc(l)}</button>`; }).join('')}</div>`;
+  const chipRow = (k, list) => `<div class="chips">${list.map(x => { const v = Array.isArray(x) ? x[0] : x, l = Array.isArray(x) ? (x[2] && x[2][0] !== '#' ? x[2] + ' ' : '') + x[1] : x; return `<button class="chip" type="button" data-act="gm-set" data-k="${k}" data-v="${esc(v)}" aria-pressed="${d[k] === v}">${esc(l)}</button>`; }).join('')}</div>`;
   return `<div class="m-head"><h2 id="m-title">${edit ? 'Spiel bearbeiten' : adm ? 'Spiel hinzufügen' : 'Spiel vorschlagen'}</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
     ${adm ? '' : `<p class="m-text">Dein Vorschlag landet in der Liste. Der Spielleiter entscheidet, ob es ins Turnier kommt.</p>`}
     <form class="stack gform" data-form="game-save">
@@ -4422,12 +4494,35 @@ const DRAW_WORDS = {
     'Trampolin', 'Staubsauger', 'Rasenmäher', 'Zuckerwatte', 'Wackelpudding', 'Fischstäbchen', 'Rührei', 'Weihnachtsmann', 'Osterhase', 'Kartenhaus',
     'Zauberstab', 'Schatzkarte', 'Ritterrüstung', 'Geburtstagstorte', 'Schneeflocke']
 };
+/* Dieselben Begriffe auf Englisch (gleiche Reihenfolge). Mit | getrennt: weitere richtige Antworten beim Raten. */
+const DRAW_WORDS_EN = {
+  e:['House', 'Tree', 'Sun', 'Moon', 'Star', 'Cloud', 'Lightning', 'Heart', 'Eye', 'Tooth', 'Hand', 'Cat', 'Dog', 'Mouse', 'Rabbit|Bunny',
+    'Cow', 'Pig', 'Duck', 'Frog', 'Fish', 'Snail', 'Bee', 'Snake', 'Apple', 'Banana', 'Cherry', 'Strawberry', 'Carrot', 'Mushroom', 'Pizza',
+    'Ice cream', 'Egg', 'Cake', 'Cup|Mug', 'Bottle', 'Glasses', 'Hat', 'Crown', 'Shoe', 'Sock', 'Clock|Watch', 'Key', 'Door', 'Ladder', 'Bed',
+    'Chair', 'Table', 'Book', 'Balloon', 'Ball', 'Flower', 'Mountain', 'Candle', 'Present|Gift', 'Dice|Die', 'Car', 'Bus', 'Ship|Boat', 'Ghost', 'Rainbow'],
+  m:['Horse', 'Lion', 'Monkey', 'Owl', 'Shark', 'Whale', 'Penguin', 'Turtle|Tortoise', 'Crocodile|Alligator', 'Giraffe', 'Elephant', 'Spider', 'Butterfly', 'Octopus', 'Dragon',
+    'Unicorn', 'Dinosaur', 'Robot', 'Pirate', 'Knight', 'Wizard', 'Alien', 'Bicycle|Bike', 'Train', 'Airplane|Plane', 'Helicopter', 'Rocket', 'Submarine', 'Tractor', 'Skateboard',
+    'Guitar', 'Drum', 'Microphone|Mic', 'Headphones', 'Controller', 'Camera', 'Light bulb', 'Toothbrush', 'Bathtub|Bath', 'Toilet', 'Umbrella', 'Snowman', 'Christmas tree', 'Treasure chest', 'Compass',
+    'Anchor', 'Bridge', 'Castle', 'Tent', 'Cactus', 'Palm tree|Palm', 'Island', 'Volcano', 'Tornado', 'Pretzel', 'Popcorn', 'Hot dog', 'Burger|Hamburger', 'Fries|Chips', 'Donut|Doughnut',
+    'Pineapple', 'Trophy', 'Diamond', 'Backpack|Rucksack', 'TV|Television', 'Phone|Smartphone|Mobile', 'Scissors', 'Pencil', 'Football|Soccer'],
+  h:['Spaghetti Bolognese', 'Roller coaster', 'Ferris wheel', 'Eiffel Tower', 'Statue of Liberty', 'Pyramid', 'Lighthouse', 'Waterfall', 'Shooting star', 'Solar eclipse|Eclipse',
+    'Moon landing', 'Astronaut', 'Diver', 'Firefighter|Fireman', 'Dentist', 'Police car', 'Ambulance', 'Parachute', 'Hot air balloon', 'Snowball fight',
+    'Sandcastle', 'Campfire', 'Garden gnome|Gnome', 'Scarecrow', 'Beehive', 'Spider web|Cobweb', 'Soap bubble|Bubble', 'Cuckoo clock', 'Clothesline', 'Hammock',
+    'Trampoline', 'Vacuum cleaner|Hoover', 'Lawn mower', 'Cotton candy|Candy floss', 'Jelly|Jello', 'Fish fingers|Fish sticks', 'Scrambled eggs', 'Santa Claus|Santa', 'Easter bunny', 'House of cards',
+    'Magic wand', 'Treasure map', 'Suit of armor|Armor|Armour', 'Birthday cake', 'Snowflake']
+};
+const DW_EN = {};
+for (const k of ['e', 'm', 'h']) DRAW_WORDS[k].forEach((w, i) => { if (DRAW_WORDS_EN[k][i]) DW_EN[w] = DRAW_WORDS_EN[k][i]; });
+/* Ein Begriff zählt beim Raten auf Deutsch und auf Englisch. Angezeigt wird er in der Sprache des Geräts. */
+const dAlts = w => DW_EN[w] ? [w, ...DW_EN[w].split('|')] : [w];
+const dWordView = w => EN && DW_EN[w] ? DW_EN[w].split('|')[0] : w;
+if (EN) EN.init({BANK, CATS, DW_EN});
 /* Schwierigkeit: Kürzel, Name, Rahmenfarbe, Punkte-Faktor */
 const DLEVELS = [['e', 'Leicht', '#4ff08f', 1, 'leichte'], ['m', 'Mittel', '#ffb020', 1.5, 'mittlere'], ['h', 'Schwer', '#ff4f6d', 2, 'schwere']];
 const dLv = k => DLEVELS.find(l => l[0] === k) || DLEVELS[1];
 const dMult = k => dLv(k)[3];
 const dWordCount = () => DLEVELS.reduce((t, l) => t + DRAW_WORDS[l[0]].length, 0);
-function dLvBadge(k, withMult) { const l = dLv(k); return `<span class="dlv" style="--lc:${l[2]}">${l[1]}${withMult ? ` · ×${String(l[3]).replace('.', ',')}` : ''}</span>`; }
+function dLvBadge(k, withMult) { const l = dLv(k); return `<span class="dlv" style="--lc:${l[2]}">${l[1]}${withMult ? ` · ×${EN ? l[3] : String(l[3]).replace('.', ',')}` : ''}</span>`; }
 const DW = 1000, DH = 750;
 const DCOLORS = [['#000000', 'Schwarz'], ['#ffffff', 'Weiß'], ['#8a8a8a', 'Grau'], ['#d2d2d2', 'Hellgrau'], ['#e8202a', 'Rot'], ['#ff7b00', 'Orange'], ['#ffd400', 'Gelb'], ['#2fbf3a', 'Grün'],
   ['#0b6e2a', 'Dunkelgrün'], ['#22b5f2', 'Hellblau'], ['#1f3fd1', 'Blau'], ['#8e2bd1', 'Lila'], ['#ff7fc3', 'Rosa'], ['#a35a2a', 'Braun'], ['#4a240a', 'Dunkelbraun'], ['#ffd2a8', 'Hautfarbe']];
@@ -4465,7 +4560,7 @@ function dForms(s) {
   const b = base.replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u');
   return [...new Set([a, b].map(v => v.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '')))].filter(Boolean);
 }
-function dMatch(guess, word) { const w = dForms(word); return !!word && dForms(guess).some(g => w.includes(g)); }
+function dMatch(guess, word) { if (!word) return false; const g = dForms(guess); return dAlts(word).some(x => { const w = dForms(x); return g.some(v => w.includes(v)); }); }
 function lev(a, b) {
   if (Math.abs(a.length - b.length) > 2) return 3;
   let prev = Array.from({length:b.length + 1}, (_, i) => i);
@@ -4478,8 +4573,8 @@ function lev(a, b) {
 }
 function dClose(guess, word) {
   if (!word || dMatch(guess, word)) return false;
-  const w = dForms(word), g = dForms(guess);
-  return g.some(x => w.some(y => y.length >= 4 && (lev(x, y) <= (y.length >= 9 ? 2 : 1) || (x.length > y.length && x.includes(y)))));
+  const g = dForms(guess);
+  return dAlts(word).some(alt => { const w = dForms(alt); return g.some(x => w.some(y => y.length >= 4 && (lev(x, y) <= (y.length >= 9 ? 2 : 1) || (x.length > y.length && x.includes(y))))); });
 }
 function hashStr(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 function dHintIdx(st) {
@@ -4495,8 +4590,9 @@ function dHintIdx(st) {
   return order.slice(0, Math.min(n, letters.length - 2));
 }
 function dPatternHTML(st) {
-  const show = dHintIdx(st);
-  const parts = st.word.split(/\s+/);
+  const vw = dWordView(st.word);
+  const show = dHintIdx({...st, word:vw});
+  const parts = vw.split(/\s+/);
   let i = 0;
   const words = parts.map(p => { const h = [...p].map(ch => { const k = i++; return ch === '-' ? '<span class="dl dash">-</span>' : `<span class="dl">${show.includes(k) ? esc(ch) : ''}</span>`; }).join(''); i++; return `<span class="dwrd">${h}</span>`; });
   const lens = parts.map(p => [...p].filter(ch => ch !== '-').length).join(' ');
@@ -4515,7 +4611,7 @@ function dcEnsure() {
   if (dc.cv) return dc.cv;
   const cv = document.createElement('canvas');
   cv.width = DW; cv.height = DH; cv.className = 'dcanvas';
-  cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'Zeichenfläche');
+  cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', tx('Zeichenfläche'));
   dc.cv = cv; dc.ctx = cv.getContext('2d', {willReadFrequently:true});
   dcClear();
   cv.addEventListener('pointerdown', dcDown);
@@ -4896,9 +4992,9 @@ function drawTopHTML(st) {
 function drawWordHTML(st) {
   const me = dMe(), drawer = ghost(st.drawer);
   if (st.phase === 'choose') return `<span class="dw-lbl">${me === st.drawer ? 'Du bist dran' : `${esc(drawer.name)} ist dran`}</span><b class="dw-word">Wort wird gewählt …</b>`;
-  if (st.phase === 'reveal') return `<span class="dw-lbl">Das Wort war</span><b class="dw-word">${st.word ? esc(st.word) : '–'}</b>${st.word ? dLvBadge(st.wd) : ''}`;
-  if (me === st.drawer) return `<span class="dw-lbl">Du malst</span><b class="dw-word">${esc(st.word)}</b>${dLvBadge(st.wd, true)}`;
-  if (st.guessed[me]) return `<span class="dw-lbl">Du hast es</span><b class="dw-word ok">${esc(st.word)}</b>${dLvBadge(st.wd)}`;
+  if (st.phase === 'reveal') return `<span class="dw-lbl">Das Wort war</span><b class="dw-word">${st.word ? esc(dWordView(st.word)) : '–'}</b>${st.word ? dLvBadge(st.wd) : ''}`;
+  if (me === st.drawer) return `<span class="dw-lbl">Du malst</span><b class="dw-word">${esc(dWordView(st.word))}</b>${dLvBadge(st.wd, true)}`;
+  if (st.guessed[me]) return `<span class="dw-lbl">Du hast es</span><b class="dw-word ok">${esc(dWordView(st.word))}</b>${dLvBadge(st.wd)}`;
   return `<span class="dw-lbl">${esc(drawer.name)} malt</span>${dPatternHTML(st)}${dLvBadge(st.wd, true)}`;
 }
 function pickHTML() {
@@ -4908,13 +5004,13 @@ function pickHTML() {
   return `<div class="dpick" role="dialog" aria-modal="true" aria-labelledby="dpick-t"><div class="dpick-box">
     <span class="eyebrow">Du bist dran!</span>
     <h2 id="dpick-t">Wähl ein Wort zum Malen</h2>
-    <div class="dchoices">${st.choices.map((w, i) => { const l = dLv(st.cdiff[i]); return `<button class="dchoice" type="button" style="--lc:${l[2]}" data-act="draw-choose" data-i="${i}"><small>${l[1]} · ×${String(l[3]).replace('.', ',')} Punkte</small><b>${esc(w)}</b></button>`; }).join('')}</div>
+    <div class="dchoices">${st.choices.map((w, i) => { const l = dLv(st.cdiff[i]); return `<button class="dchoice" type="button" style="--lc:${l[2]}" data-act="draw-choose" data-i="${i}"><small>${l[1]} · ×${EN ? l[3] : String(l[3]).replace('.', ',')} Punkte</small><b>${esc(dWordView(w))}</b></button>`; }).join('')}</div>
     <p class="muted">Sonst wird in <b id="dchoose-left">15</b> Sekunden eins gezogen.</p>
   </div></div>`;
 }
 function renderPick() {
   const el = $('#dpick-root'); if (!el) return;
-  const h = pickHTML();
+  const h = H(pickHTML());
   if (el.innerHTML !== h) el.innerHTML = h;
   document.body.classList.toggle('picking', !!h);
 }
@@ -4931,7 +5027,7 @@ function drawOverHTML(st) {
     const gains = Object.entries(st.guessed).map(([id, g]) => ({p:ghost(id), pts:g.pts})).sort((a, b) => b.pts - a.pts);
     const likes = Object.keys(st.likes).length;
     const dpts = gains.length * dDrawerPts(st) + likes * D_LIKE_PTS;
-    return `<div class="dover-box rv" style="--lc:${st.word ? dLv(st.wd)[2] : 'var(--coin)'}"><span class="eyebrow">${st.word ? 'Das Wort war' : 'Übersprungen'}</span><h3 class="dreveal">${st.word ? esc(st.word) : '–'}</h3>${st.word ? dLvBadge(st.wd, true) : ''}
+    return `<div class="dover-box rv" style="--lc:${st.word ? dLv(st.wd)[2] : 'var(--coin)'}"><span class="eyebrow">${st.word ? 'Das Wort war' : 'Übersprungen'}</span><h3 class="dreveal">${st.word ? esc(dWordView(st.word)) : '–'}</h3>${st.word ? dLvBadge(st.wd, true) : ''}
       ${st.word ? (gains.length ? `<ul class="dgains">${gains.map(x => `<li>${avatar(x.p, 26)}<span class="dg-n">${esc(x.p.name)}</span><b>+${x.pts}</b></li>`).join('')}<li class="drawer">${avatar(drawer, 26)}<span class="dg-n">${esc(drawer.name)} (malt)${likes ? ` · ${likes}× 👍` : ''}</span><b>+${dpts}</b></li></ul>` : `<p class="muted">Keiner hat es erraten.${likes ? ` ${esc(drawer.name)} bekommt +${dpts} für ${likes}× 👍.` : ''}</p>`) : ''}</div>`;
   }
   return '';
@@ -4954,7 +5050,7 @@ function drawLogHTML(st) {
       else lines.push(`<li><b>${esc(p.name)}:</b> ${esc(a.v)}</li>`);
     } else if (a.k === 'like' && st.likes[a.pid]) lines.push(`<li class="like"><b>${esc(p.name)}</b> findet die Zeichnung super 👍</li>`);
   }
-  if (st.phase === 'reveal') lines.push(`<li class="sys">Das Wort war: <b>${st.word ? esc(st.word) : '–'}</b></li>`);
+  if (st.phase === 'reveal') lines.push(`<li class="sys">Das Wort war: <b>${st.word ? esc(dWordView(st.word)) : '–'}</b></li>`);
   return `<ul class="dlines">${lines.slice(-60).join('')}</ul>`;
 }
 function drawFormHTML(st) {
@@ -4998,7 +5094,7 @@ function dPatchParts() {
 function drawGalleryHTML(st) {
   const gal = (S.dgal || []).filter(x => x.gid === st.id);
   if (!gal.length) return '';
-  return `<div class="card dgal-card"><h3>Galerie</h3><div class="dgal">${gal.map(x => { const p = ghost(x.drawer); return `<figure style="--lc:${x.d ? dLv(x.d)[2] : 'var(--shadow)'}"><img src="${x.img}" alt="Zeichnung: ${esc(x.word)}" loading="lazy"><figcaption><b>${esc(x.word)}</b><span>${avatar(p, 20)} ${esc(p.name)}</span></figcaption></figure>`; }).join('')}</div></div>`;
+  return `<div class="card dgal-card"><h3>Galerie</h3><div class="dgal">${gal.map(x => { const p = ghost(x.drawer); return `<figure style="--lc:${x.d ? dLv(x.d)[2] : 'var(--shadow)'}"><img src="${x.img}" alt="Zeichnung: ${esc(dWordView(x.word))}" loading="lazy"><figcaption><b>${esc(dWordView(x.word))}</b><span>${avatar(p, 20)} ${esc(p.name)}</span></figcaption></figure>`; }).join('')}</div></div>`;
 }
 function drawFinished(st) {
   dParts = null;
@@ -5057,7 +5153,7 @@ function drawSetup() {
         <h3>So geht's</h3>${howto}
         <h4>Begriffe (${dWordCount() + ownN})</h4>
         ${S.admin ? `        <p class="m-text">${dWordCount()} Begriffe sind schon dabei, sortiert nach Schwierigkeit. Du kannst eigene ergänzen, z. B. Insider oder Spiele.</p>
-        ${DLEVELS.map(l => `<details class="dwgroup" style="--lc:${l[2]}"><summary>${l[1]}: ${DRAW_WORDS[l[0]].length} Begriffe</summary><p class="dwlist">${DRAW_WORDS[l[0]].map(esc).join(', ')}</p></details>`).join('')}
+        ${DLEVELS.map(l => `<details class="dwgroup" style="--lc:${l[2]}"><summary>${l[1]}: ${DRAW_WORDS[l[0]].length} Begriffe</summary><p class="dwlist">${DRAW_WORDS[l[0]].map(w => esc(dWordView(w).split('|')[0])).join(', ')}</p></details>`).join('')}
         <div class="dwown">${DLEVELS.map(l => `<div class="field"><label for="dw-${l[0]}" style="color:${l[2]}">Eigene ${l[4]} Begriffe</label><textarea class="input" id="dw-${l[0]}" data-draft="dwt.${l[0]}" rows="2" placeholder="${{e:'z. B. Alans Katze', m:'z. B. Mario Kart', h:'z. B. Turnier-Siegerehrung'}[l[0]]}">${esc(D.dwt[l[0]] ?? (own[l[0]] || []).join(', '))}</textarea></div>`).join('')}</div>
         <label class="toggle"><input type="checkbox" id="dw-only" ${own.only ? 'checked' : ''}><span>Nur eigene Begriffe benutzen (ab 3 Stück)</span></label>
         <div><button class="btn" type="button" data-act="dw-save">Begriffe speichern${ownN ? ` · ${ownN} eigene` : ''}</button></div>
@@ -5278,7 +5374,7 @@ function pdLabel() {
   if (!n) return 'Punktzahl eingeben';
   return `${n > 0 ? '+' : ''}${n} für ${k === 1 ? esc(ghost(D.pd.sel[0]).name) : k + ' Spieler'}`;
 }
-function updatePdSubmit() { const b = $('#pd-submit'); if (b) b.innerHTML = pdLabel(); }
+function updatePdSubmit() { const b = $('#pd-submit'); if (b) b.innerHTML = H(pdLabel()); }
 function modalPlayer() {
   return `
     <div class="m-head"><h2 id="m-title">Spieler bearbeiten</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
@@ -5371,6 +5467,8 @@ const actions = {
     D.ts = {status:tourState().k === 'none' ? 'plan' : st.status, date:st.date || `${p.year}-${p.month}-${p.day}`, time:st.time || '20:00'}; D.tsOpen = true; render(); },
   'ts-kind': b => { if (D.ts) { D.ts.status = b.dataset.k; render(); } },
   'ts-close': () => { D.tsOpen = false; D.ts = null; render(); },
+  'set-lang': b => { if (b.dataset.l !== LANG) setLang(b.dataset.l); },
+  'win-add': b => { const p = playerById(b.dataset.pid); if (!p) return; ops.savePlayer({...p, wins:Math.max(0, (p.wins || 0) + Number(b.dataset.d))}); },
   'news-open': () => { D.newsOpen = !D.newsOpen; render(); },
   'news-up': b => { const i = Number(b.dataset.i); if (i < 1) return; const n = clone(S.news); [n.items[i - 1], n.items[i]] = [n.items[i], n.items[i - 1]]; ops.saveNews(n); },
   'gplayer-open': () => { if (!D.gp.color) D.gp.color = COLORS[S.players.length % COLORS.length]; openModal({type:'gplayer'}); },
@@ -5596,7 +5694,7 @@ document.addEventListener('submit', e => {
     const name = str(d.name, 40);
     if (!name) { toast('Gib einen Namen ein.'); return; }
     if (d.crop) { toast('Tipp erst auf „Zuschnitt übernehmen“.'); return; }
-    const p = {id:d.id, name, avatar:d.avatar || '', color:d.color, createdAt:d.createdAt || Date.now(), ...styleFields(d)};
+    const p = {id:d.id, name, avatar:d.avatar || '', color:d.color, createdAt:d.createdAt || Date.now(), wins:(playerById(d.id) || {}).wins || 0, ...styleFields(d)};
     closeModal(); ops.savePlayer(p); toast('Gespeichert.');
   } else if (f === 'settings') {
     const s = D.set; if (!splitValid()) return;
@@ -5739,7 +5837,7 @@ function berlinToUtc(dateStr, timeStr) {
   return guess;
 }
 function fmtBerlin(ms) {
-  return new Date(ms).toLocaleString('de-DE', {timeZone:'Europe/Berlin', weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit'}) + ' Uhr';
+  return new Date(ms).toLocaleString(LOC, {timeZone:'Europe/Berlin', weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit'}) + (EN ? '' : ' Uhr');
 }
 function cdParts(ms) {
   let s = Math.max(0, Math.floor(ms / 1000));
@@ -5758,7 +5856,7 @@ function cdInner(at) {
 }
 function updateCountdowns() {
   document.querySelectorAll('[data-cd]').forEach(el => {
-    const html = cdInner(Number(el.dataset.cd));
+    const html = H(cdInner(Number(el.dataset.cd)));
     if (el.innerHTML !== html) el.innerHTML = html;
   });
 }
@@ -6387,8 +6485,8 @@ function renderBgm() {
   const key = [on, bgm.open, bgm.style, bgm.unlocked, bgm.playing].join('|');
   if (key === bgm.key) return;
   bgm.key = key;
-  root.innerHTML = `<button class="bgm-btn ${on ? 'on' : ''} ${bgm.playing ? 'playing' : ''}" type="button" data-act="bgm-open" aria-expanded="${bgm.open}" aria-label="Musik ${on ? 'an' : 'aus'}, Einstellungen öffnen"><span aria-hidden="true">${on ? '♪' : '♪̸'}</span><i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i></button>
-    ${bgm.open ? `<div class="bgm-pop" role="dialog" aria-label="Musik"><b class="bgm-title">Hintergrundmusik</b>${bgmControlsHTML('bgmp')}<p class="m-text">Gilt nur für dieses Gerät.</p></div>` : ''}`;
+  root.innerHTML = H(`<button class="bgm-btn ${on ? 'on' : ''} ${bgm.playing ? 'playing' : ''}" type="button" data-act="bgm-open" aria-expanded="${bgm.open}" aria-label="Musik ${on ? 'an' : 'aus'}, Einstellungen öffnen"><span aria-hidden="true">${on ? '♪' : '♪̸'}</span><i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i></button>
+    ${bgm.open ? `<div class="bgm-pop" role="dialog" aria-label="Musik"><b class="bgm-title">Hintergrundmusik</b>${bgmControlsHTML('bgmp')}<p class="m-text">Gilt nur für dieses Gerät.</p></div>` : ''}`);
 }
 function bgmCardHTML() {
   const def = !(S.deco && S.deco.bgm === false);
@@ -6418,7 +6516,7 @@ function introInit() {
 }
 function boot() {
   introInit();
-  document.body.insertAdjacentHTML('afterbegin', SHELL);
+  document.body.insertAdjacentHTML('afterbegin', H(SHELL));
   if (!S.news) S.news = clone(DEFAULT_NEWS);
   if (!S.deco) S.deco = normDeco(null);
   renderBgm();
