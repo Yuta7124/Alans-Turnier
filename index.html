@@ -759,6 +759,29 @@ button.bcell[disabled]{cursor:default}
 @media (max-width:680px){.subnav{margin-top:16px}.hub{gap:8px}.hub-btn{padding:8px 10px;gap:10px}.hub-ico{font-size:24px}.hub-txt b{font-size:20px}.hub-txt small{font-size:12px}}
 @media (prefers-reduced-motion:reduce){.hub-txt small.hub-live{animation:none}}
 
+/* Intro beim Start */
+.intro{position:fixed;inset:0;z-index:400;display:grid;place-items:center;overflow:hidden;cursor:pointer;
+  background:radial-gradient(1px 1px at 12% 18%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 78% 12%,#fff 50%,transparent 51%),radial-gradient(2px 2px at 30% 72%,#ffcf3f 50%,transparent 51%),radial-gradient(1px 1px at 88% 64%,#fff 50%,transparent 51%),radial-gradient(2px 2px at 60% 30%,#39d6f2 50%,transparent 51%),radial-gradient(1px 1px at 45% 88%,#fff 50%,transparent 51%),radial-gradient(ellipse at 50% 42%,#2a1f55 0%,#120c26 58%,#07050f 100%)}
+.intro-in{display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;padding:20px}
+.intro-coin{width:clamp(72px,14vw,112px);height:auto;animation:introDrop .6s steps(6) both,introSpin .5s steps(4) .65s 3}
+.intro-title{font-family:var(--display);font-weight:700;font-size:clamp(40px,10vw,104px);text-transform:uppercase;color:var(--coin);margin:0;line-height:1;letter-spacing:.04em;text-shadow:4px 4px 0 #8a5a00,8px 8px 0 rgba(0,0,0,.55)}
+.intro-title span{display:inline-block;opacity:0;animation:introPop .28s steps(3) both}
+.intro-sub{font-family:var(--pixel);font-size:clamp(9px,1.6vw,13px);color:var(--xp);text-transform:uppercase;letter-spacing:.14em;margin:0;opacity:0;animation:introFade .3s steps(3) 1.35s both}
+.intro-bar{width:min(320px,70vw);height:14px;background:#0b0817;box-shadow:0 0 0 3px #000,0 0 0 6px #463a80;opacity:0;animation:introFade .2s steps(2) 1.4s both}
+.intro-bar i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,#ffcf3f 0 10px,#d99a00 10px 12px);animation:introFill .95s steps(10) 1.5s forwards}
+.intro-skip{position:absolute;left:0;right:0;bottom:18px;margin:0;text-align:center;font-size:12px;font-weight:600;color:#8f86b3;opacity:0;animation:introFade .3s 1s both}
+.intro.out{pointer-events:none;animation:introOut .6s steps(7) forwards}
+@keyframes introDrop{0%{transform:translateY(-60vh)}70%{transform:translateY(14px)}100%{transform:translateY(0)}}
+@keyframes introSpin{0%,100%{transform:scaleX(1)}25%,75%{transform:scaleX(.5)}50%{transform:scaleX(.12)}}
+@keyframes introPop{from{opacity:0;transform:translateY(-24px) scale(1.7)}to{opacity:1;transform:none}}
+@keyframes introFade{from{opacity:0}to{opacity:1}}
+@keyframes introFill{to{width:100%}}
+@keyframes introOut{0%{filter:brightness(1)}14%{filter:brightness(2.6)}28%{filter:brightness(1);transform:translateY(0)}100%{transform:translateY(-100%)}}
+@media (prefers-reduced-motion:reduce){.intro *{animation-duration:.01s!important;animation-delay:0s!important}.intro.out{animation:introGone .3s forwards}@keyframes introGone{to{opacity:0}}}
+.who-hint{margin:6px 0 0;color:var(--muted);font-weight:600;font-size:14px}
+.pcard .me-btn{margin-top:8px}
+.pcard .you-tag{margin-top:8px;display:inline-block}
+
 /* Wortwahl-Fenster */
 #dpick-root:empty{display:none}
 .dpick{position:fixed;inset:0;z-index:145;background:rgba(5,3,12,.88);display:flex;overflow:auto;padding:16px}
@@ -1120,6 +1143,27 @@ body.locked #bgm-root{bottom:96px}
 </style>
 </head>
 <body>
+<div id="intro" class="intro" role="presentation">
+  <div class="intro-in">
+    <svg class="intro-coin" width="96" height="96" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#6b4300" d="M4 0h4v1H4zM2 1h2v1H2zM8 1h2v1H8zM1 2h1v2H1zM10 2h1v2h-1zM0 4h1v4H0zM11 4h1v4h-1zM1 8h1v2H1zM10 8h1v2h-1zM2 10h2v1H2zM8 10h2v1H8zM4 11h4v1H4z"/><path fill="#ffcf3f" d="M4 1h4v10H4zM2 2h8v8H2zM1 4h10v4H1z"/><path fill="#fff3b0" d="M3 3h1v2H3zM4 2h2v1H4z"/><path fill="#d99a00" d="M5 4h2v4H5zM8 8h1v1H8zM9 6h1v2H9z"/></svg>
+    <h1 class="intro-title" id="intro-title">Alans Turnier</h1>
+    <p class="intro-sub">Highscore · Quiz · Malen</p>
+    <div class="intro-bar"><i></i></div>
+  </div>
+  <p class="intro-skip">Tippen zum Überspringen</p>
+</div>
+<script>
+(function () {
+  var el = document.getElementById('intro');
+  try { if (sessionStorage.getItem('turnier-intro')) { el.parentNode.removeChild(el); return; } sessionStorage.setItem('turnier-intro', '1'); } catch (e) {}
+  var t = 'Alans Turnier';
+  try { t = localStorage.getItem('turnier-title') || t; } catch (e) {}
+  var h = document.getElementById('intro-title');
+  h.setAttribute('aria-label', t); h.textContent = '';
+  t.split('').forEach(function (c, i) { var s = document.createElement('span'); s.textContent = c === ' ' ? '\u00a0' : c; s.style.animationDelay = (0.5 + i * 0.05).toFixed(2) + 's'; s.setAttribute('aria-hidden', 'true'); h.appendChild(s); });
+  window.__introT0 = Date.now();
+})();
+</script>
 
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -2540,15 +2584,18 @@ function allQuestions() {
 }
 
 /* ---------- Gate (lobby for visitors) ---------- */
+/* Wartebildschirm ist vorerst ausgeschaltet. Der Code bleibt, er wird später für etwas anderes gebraucht. Zum Einschalten auf true setzen. */
+const LOBBY = false;
 let lastLobbyKey = '', gateView = 'none', gateSince = 0, gateTimer = null, lastCd = null, lastTip = -1, gbKey = '';
 function gateState() {
+  if (!LOBBY) return 'none';
   if ((S.mode !== 'db' && S.mode !== 'public') || S.admin || !S.loaded || S.locked) return 'none';
   if (!S.gate.open) return 'lobby';
   if (Date.now() < S.gate.openAt) return 'countdown';
   return 'open';
 }
 function blocked() { const g = gateState(); return g === 'lobby' || g === 'countdown'; }
-function wantedGate() { return S.preview && S.admin ? 'lobby' : gateState(); }
+function wantedGate() { return LOBBY && S.preview && S.admin ? 'lobby' : gateState(); }
 function tickerHTML() {
   const tk = S.ticker || DEFAULT_TICKER;
   const parts = [];
@@ -2638,7 +2685,7 @@ function renderGate() {
 }
 function renderGatebar() {
   const el = $('#gatebar');
-  if (S.mode !== 'db' || !S.admin || !S.loaded) { if (gbKey !== '') { el.innerHTML = ''; el.className = ''; gbKey = ''; } return; }
+  if (!LOBBY || S.mode !== 'db' || !S.admin || !S.loaded) { if (gbKey !== '') { el.innerHTML = ''; el.className = ''; gbKey = ''; } return; }
   const g = S.gate, now = Date.now();
   let cls, text, btns;
   if (!g.open) { cls = 'is-closed'; text = `<b>Lobby geschlossen.</b> Deine Freunde sehen den Ladebildschirm, bis du öffnest.`; btns = `<button class="btn btn-sm btn-ghost" type="button" data-act="copy-link">Link kopieren</button><button class="btn btn-sm btn-ghost" type="button" data-act="gate-preview">Vorschau</button><button class="btn btn-sm btn-gold" type="button" data-act="gate-open">Für alle öffnen</button>`; }
@@ -2738,10 +2785,12 @@ function renderFoot() {
     : `<button class="link" type="button" data-act="admin-login">Spielleiter-Login</button>`;
   if (el.innerHTML !== h) el.innerHTML = h;
 }
+let lastTitle = '';
 function renderHeader() {
   if (S.tab === 'spiele-pick' && (S.mode !== 'db' || S.loaded)) S.tab = hubPick();
   if (S.tab === 'einstellungen' && !S.admin && S.mode !== 'loading') S.tab = 'rangliste';
   $('#brand-title').textContent = S.settings.title;
+  if (S.mode === 'db' && S.loaded && S.settings.title !== lastTitle) { lastTitle = S.settings.title; try { localStorage.setItem('turnier-title', S.settings.title); } catch (e) {} }
   const parts = [];
   const d = fmtDate(S.settings.date); if (d) parts.push(d);
   parts.push(`${S.players.length} Spieler`);
@@ -2848,9 +2897,10 @@ function viewPlayers() {
   const adm = S.admin;
   if (!D.np.color) D.np.color = COLORS[S.players.length % COLORS.length];
   const mine = !adm && playerById(lsGet('turnier-me', ''));
+  const meId = playerById(lsGet('turnier-me', '')) ? lsGet('turnier-me', '') : '';
   const add = adm ? `<form class="pcard add" data-form="add-player"><span class="ptag">Freier Slot</span>${playerForm('np', D.np)}<button class="btn btn-gold" type="submit">Spieler hinzufügen</button></form>`
-    : mine ? `<div class="pcard add codecard"><span class="ptag">Du</span>${avatar(mine, 88, 'pc-av')}<p class="m-text" style="margin:10px 0 0">Du spielst als <b>${nameHTML(mine)}</b>. Änderungen am Spieler macht der Spielleiter.</p><button class="btn btn-ghost btn-sm" type="button" data-act="gplayer-open">Weiteren Spieler erstellen</button></div>`
-    : `<div class="pcard add codecard"><span class="ptag">Mitspielen</span><p class="m-text" style="margin-top:14px">Erstell deinen eigenen Spieler mit Foto. Du bist sofort dabei.</p><button class="btn btn-gold" type="button" data-act="gplayer-open">Eigenen Spieler erstellen</button></div>`;
+    : mine ? `<div class="pcard add codecard"><span class="ptag">Du</span>${avatar(mine, 88, 'pc-av')}<p class="m-text" style="margin:10px 0 0">Du spielst als <b>${nameHTML(mine)}</b>. Änderungen am Spieler macht der Spielleiter.</p><button class="link" type="button" data-act="me-clear">Das bin nicht ich</button><button class="btn btn-ghost btn-sm" type="button" data-act="gplayer-open">Weiteren Spieler erstellen</button></div>`
+    : `<div class="pcard add codecard"><span class="ptag">Mitspielen</span><p class="m-text" style="margin-top:14px">Erstell deinen eigenen Spieler mit Foto. Du bist sofort dabei. Steht dein Name schon da? Dann tipp bei dir auf „Das bin ich“.</p><button class="btn btn-gold" type="button" data-act="gplayer-open">Eigenen Spieler erstellen</button></div>`;
   const cards = byCreated.map((p, i) => `
     <div class="pcard ${started && p.rank === 1 ? 'is-top' : ''}">
       <span class="ptag">P${i + 1}</span>
@@ -2859,6 +2909,7 @@ function viewPlayers() {
       <div class="pc-name">${nameHTML(p)}</div>${mottoHTML(p)}
       <div class="pc-meta">Platz ${p.rank} · ${p.pts} ${ptsWord(p.pts)}</div>
       <span class="xpbar wide" aria-hidden="true"><i style="width:${(Math.max(0, p.pts) / top * 100).toFixed(1)}%"></i></span>
+      ${p.id === meId ? '<span class="you-tag">Das bist du</span>' : !meId ? `<button class="btn btn-sm btn-ghost me-btn" type="button" data-act="set-me" data-pid="${esc(p.id)}">Das bin ich</button>` : ''}
       ${adm ? `<div class="pc-actions"><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Bearbeiten</button><button class="btn btn-sm btn-ghost danger" type="button" data-act="delete-player" data-pid="${esc(p.id)}">Löschen</button></div>` : ''}
     </div>`).join('');
   return `<section class="section">
@@ -2924,9 +2975,9 @@ function viewSettings() {
     <div class="card share-card">
       <h3>Link für deine Freunde</h3>
       <div class="wadd"><input class="input" id="share-link" readonly value="${SHARE_URL}" aria-label="Link zur Seite"><button class="btn btn-gold" type="button" data-act="copy-link">Kopieren</button></div>
-      <p class="m-text">Schick deinen Freunden den Link und das Turnier-Passwort. Sie brauchen kein Konto. Sie landen auf dem Wartebildschirm, können eigene Spieler anlegen und im Quiz selbst antworten.</p>
+      <p class="m-text">Schick deinen Freunden den Link und das Turnier-Passwort. Sie brauchen kein Konto. ${LOBBY ? 'Sie landen auf dem Wartebildschirm, ' : 'Nach einem kurzen Intro sind sie direkt auf der Seite, '}können eigene Spieler anlegen und im Quiz selbst antworten.</p>
     </div>
-    ${tickerCardHTML()}
+    ${LOBBY ? tickerCardHTML() : ''}
     ${picsCardHTML()}
     ${bgmCardHTML()}
     ${musicCardHTML()}
@@ -2941,7 +2992,7 @@ function viewSettings() {
       <div class="chips"><button class="btn danger" type="button" data-act="reset-points">Alle Punkte löschen</button><button class="btn danger" type="button" data-act="reset-quiz">Quiz zurücksetzen</button></div>
     </div>
     <p class="note">${S.mode === 'db'
-      ? 'Alles wird online gespeichert. Deine Freunde sehen zuerst den Wartebildschirm. Sobald du oben auf „Für alle öffnen“ tippst, sehen sie Highscore, Jackpot, Zufallsrad und Quiz live. Punkte vergeben und Einstellungen ändern kannst nur du.'
+      ? (LOBBY ? 'Alles wird online gespeichert. Deine Freunde sehen zuerst den Wartebildschirm. Sobald du oben auf „Für alle öffnen“ tippst, sehen sie Highscore, Jackpot, Zufallsrad und Quiz live. Punkte vergeben und Einstellungen ändern kannst nur du.' : 'Alles wird online gespeichert. Deine Freunde sehen nach einem kurzen Intro sofort Highscore, Jackpot, Zufallsrad, Quiz und Malen, alles live. Punkte vergeben und Einstellungen ändern kannst nur du.')
       : 'Der Online-Speicher ist gerade nicht erreichbar. Die Daten bleiben nur in diesem Browser.'}</p>
   </section>`;
 }
@@ -3426,7 +3477,7 @@ function quizRunning(q) {
     let note = '';
     if (!adm && q.phase !== 'revealed') {
       if (mine) note = g === null ? `<div class="guess-note me">Du bist dran! ${cur.type === 'est' ? 'Schieb den Regler und logg deine Schätzung ein.' : 'Tipp auf deine Antwort, sie zählt sofort.'}</div>` : `<div class="guess-note locked">Eingeloggt: <b>${cur.type === 'est' ? fmtEstU(cur, g) : LETTERS[g]}</b> · wird gewertet …</div>`;
-      else note = `<div class="guess-note">Nur <b>${esc(turnP.name)}</b> kann jetzt antworten.${me ? '' : ' Bist du das? Tipp unten bei „Wer bist du?“ auf deinen Namen.'}</div>`;
+      else note = `<div class="guess-note">Nur <b>${esc(turnP.name)}</b> kann jetzt antworten.${me ? '' : ' Bist du das? Tipp im Tab Spieler bei deinem Namen auf „Das bin ich“.'}</div>`;
     }
     let actions = '';
     if (adm) {
@@ -3451,7 +3502,7 @@ function quizRunning(q) {
       ${adm ? `<p class="kbd">Tastatur: ${cur.type === 'est' ? '<kbd>Enter</kbd> Schätzung einloggen / weiter' : `<kbd>1</kbd>–<kbd>${cur.a.length}</kbd> Antwort · <kbd>Enter</kbd> weiter`} · <kbd>P</kbd> Pause</p>` : ''}
     </div>`;
   }
-  const whoami = adm ? '' : `<div class="whoami"><span class="lbl">Wer bist du?</span><div class="chips">${q.players.map(id => { const p = ghost(id); return `<button class="chip pchip" type="button" data-act="set-me" data-pid="${esc(id)}" aria-pressed="${me === id}">${avatar(p, 24)}${esc(p.name)}</button>`; }).join('')}</div></div>`;
+  const whoami = adm || playerById(me) ? '' : `<p class="who-hint">Dieses Gerät ist noch keinem Spieler zugeordnet. Im Tab <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button> tippst du bei deinem Namen auf „Das bin ich“.</p>`;
   return `<section class="section qsec">
     <div class="qbar">
       <button class="gmenu" type="button" data-act="gmenu" aria-label="Menü anzeigen" title="Menü">☰</button><span class="qprog">Runde ${q.round || 1} · <b>${used}</b>/${total}</span>
@@ -4465,15 +4516,14 @@ function drawFormHTML(st) {
   const me = dMe(), amPlayer = st.players.includes(me), key = dKey(st);
   const likeBtn = amPlayer && me !== st.drawer && (st.phase === 'draw' || st.phase === 'reveal') && st.word
     ? `<button class="chip dlike" type="button" data-act="draw-like" aria-pressed="${!!(st.likes[me] || dc.liked[key])}" ${st.likes[me] || dc.liked[key] ? 'disabled' : ''}>👍 Schöne Zeichnung</button>` : '';
-  if (!amPlayer) return `<p class="dhint">${me && playerById(me) ? 'Du spielst diese Runde nicht mit und schaust zu.' : 'Wähl unten, wer du bist, dann kannst du mitraten.'}</p>`;
+  if (!amPlayer) return `<p class="dhint">${me && playerById(me) ? 'Du spielst diese Runde nicht mit und schaust zu.' : 'Dieses Gerät ist noch keinem Spieler zugeordnet. Tipp im Tab Spieler bei deinem Namen auf „Das bin ich“.'}</p>`;
   if (me === st.drawer) return `<p class="dhint">${st.phase === 'draw' ? 'Du malst. Die anderen raten hier im Chat.' : 'Du bist der Zeichner.'}</p>`;
   if (st.phase === 'draw' && !st.guessed[me]) return `<form class="dguess" data-form="draw-guess"><input class="input" id="dg-in" maxlength="40" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="Dein Tipp …" aria-label="Dein Tipp"><button class="btn btn-gold" type="submit">Raten</button></form>${likeBtn}`;
   if (st.phase === 'draw') return `<p class="dhint ok">✓ Du hast es erraten! +${st.guessed[me].pts}</p>${likeBtn}`;
   return `<p class="dhint">${st.phase === 'choose' ? 'Gleich geht es los. Raten kannst du, sobald gemalt wird.' : 'Gleich kommt der Nächste dran.'}</p>${likeBtn}`;
 }
 function drawWhoHTML(st) {
-  const me = dMe();
-  return `<div class="whoami"><span class="lbl">${S.admin ? 'Spielst du an diesem Gerät mit?' : 'Wer bist du?'}</span><div class="chips">${st.players.map(id => { const p = ghost(id); return `<button class="chip pchip" type="button" data-act="set-me" data-pid="${esc(id)}" aria-pressed="${me === id}">${avatar(p, 24)}${esc(p.name)}</button>`; }).join('')}</div></div>`;
+  return S.admin || playerById(dMe()) ? '' : `<p class="who-hint">Dieses Gerät ist noch keinem Spieler zugeordnet. Im Tab <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button> tippst du bei deinem Namen auf „Das bin ich“.</p>`;
 }
 function drawRunning(st) {
   dParts = {top:drawTopHTML(st), side:drawSideHTML(st), word:drawWordHTML(st), over:drawOverHTML(st), tools:drawToolsHTML(st), log:drawLogHTML(st), form:drawFormHTML(st), who:drawWhoHTML(st)};
@@ -4536,7 +4586,7 @@ function drawSetup() {
   const howto = `<ol class="dhow"><li>Wer dran ist, sucht sich eins von <b>3 Wörtern</b> aus: ${dLvBadge('e')} ${dLvBadge('m')} ${dLvBadge('h')}</li><li>Alle anderen raten im Chat. Je <b>schneller</b>, desto mehr Punkte. Der Erste bekommt extra.</li><li>Schwere Wörter zählen mehr: Mittel <b>×1,5</b>, Schwer <b>×2</b>, für Rater und Zeichner.</li><li>Der Zeichner bekommt Punkte für jeden, der es errät, und <b>+${D_LIKE_PTS}</b> für jedes 👍.</li></ol>`;
   if (!adm) return `<section class="section"><div class="sec-head"><h2 class="h">Malen</h2><span class="muted">Zeichnen und raten wie bei skribbl.io</span></div>
     <div class="setup"><div class="card"><h3>Gleich geht's los</h3><p class="m-text">Der Spielleiter startet hier gleich eine Runde. Halt diese Seite offen.</p>${howto}</div>
-    <div class="card"><h3>Wer bist du?</h3><p class="m-text">Damit du mitraten oder malen kannst.</p><div class="chips">${S.players.map(p => `<button class="chip pchip" type="button" data-act="set-me" data-pid="${esc(p.id)}" aria-pressed="${dMe() === p.id}">${avatar(p, 24)}${esc(p.name)}</button>`).join('')}</div></div></div></section>`;
+${playerById(dMe()) ? '' : `<div class="card">${`<p class="who-hint">Dieses Gerät ist noch keinem Spieler zugeordnet. Im Tab <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button> tippst du bei deinem Namen auf „Das bin ich“.</p>`}</div>`}</div></section>`;
   const sel = c.players || S.players.map(p => p.id);
   const selValid = sel.filter(id => playerById(id));
   const own = S.dwords || {}, ownN = dOwnAll().length;
@@ -4638,7 +4688,7 @@ function drawGuessSubmit() {
   const st = S.draw, inp = $('#dg-in'); if (!st || !inp) return;
   const v = str(inp.value, 40), me = dMe();
   if (!v) return;
-  if (!st.players.includes(me)) { toast('Wähl unten, wer du bist.'); return; }
+  if (!st.players.includes(me)) { toast('Tipp im Tab Spieler bei deinem Namen auf „Das bin ich“.'); return; }
   if (me === st.drawer || st.phase !== 'draw' || st.guessed[me]) return;
   inp.value = '';
   const id = uid();
@@ -4863,6 +4913,7 @@ const actions = {
   'gate-preview': () => { S.preview = true; renderGate(); },
   'copy-link': () => copyShareLink(),
   'guess': b => { const q = S.quiz; if (!q || q.phase !== 'asking' || lsGet('turnier-me', '') !== q.turn) return; const k = guessKey(q); if (getGuess(k) !== null) return; const i = Number(b.dataset.i); setGuess(k, i); sendAnswer(k, i); render(); },
+  'me-clear': () => { lsSet('turnier-me', ''); render(); },
   'set-me': b => { const id = b.dataset.pid; lsSet('turnier-me', lsGet('turnier-me', '') === id ? '' : id); render(); },
   'music-toggle': () => { music.on = !music.on; lsSet('turnier-music-on', music.on ? '1' : '0'); syncMusic(); render(); },
   'music-preview': () => { music.preview = !music.preview; musicEl(); syncMusic(); render(); },
@@ -5700,13 +5751,13 @@ function picsCardHTML() {
   const d = S.deco || DEFAULT_DECO, pics = S.pics || [];
   return `<div class="card share-card pics-card">
     <h3>Eigene Bilder</h3>
-    <p class="m-text">Deine Bilder fliegen durch den Wartebildschirm und, wenn du willst, ganz dezent im Hintergrund der Seite. Bilder mit durchsichtigem Hintergrund (PNG) sehen besonders gut aus.</p>
+    <p class="m-text">${LOBBY ? 'Deine Bilder fliegen durch den Wartebildschirm und, wenn du willst, ganz dezent im Hintergrund der Seite.' : 'Deine Bilder fliegen, wenn du willst, ganz dezent im Hintergrund der Seite.'} Bilder mit durchsichtigem Hintergrund (PNG) sehen besonders gut aus.</p>
     <div class="pics-grid">${pics.map((p, i) => `<div class="pic"><img src="${p.img}" alt="Eigenes Bild ${i + 1}"><button class="x" type="button" data-act="pic-del" data-id="${esc(p.id)}" aria-label="Bild ${i + 1} löschen">×</button></div>`).join('')}
       ${pics.length < PICS_MAX ? `<label class="pic add" for="pic-file"><span>+ Bild</span></label>` : ''}</div>
     <input class="vh" type="file" id="pic-file" accept="image/*" multiple>
     <p class="m-text">${pics.length} von ${PICS_MAX} Bildern.</p>
-    <div class="tk-opts"><label class="toggle"><input type="checkbox" id="deco-lobby" ${d.flyLobby ? 'checked' : ''}><span>Im Wartebildschirm fliegen lassen</span></label><label class="toggle"><input type="checkbox" id="deco-site" ${d.flySite ? 'checked' : ''}><span>Dezent auf der ganzen Seite</span></label></div>
-    <div class="chips"><button class="btn btn-sm" type="button" data-act="gate-preview">Vorschau ansehen</button></div>
+    <div class="tk-opts">${LOBBY ? `<label class="toggle"><input type="checkbox" id="deco-lobby" ${d.flyLobby ? 'checked' : ''}><span>Im Wartebildschirm fliegen lassen</span></label>` : ''}<label class="toggle"><input type="checkbox" id="deco-site" ${d.flySite ? 'checked' : ''}><span>Dezent auf der ganzen Seite</span></label></div>
+    ${LOBBY ? `<div class="chips"><button class="btn btn-sm" type="button" data-act="gate-preview">Vorschau ansehen</button></div>` : ''}
   </div>`;
 }
 async function addPics(files) {
@@ -5887,7 +5938,22 @@ function bgmCardHTML() {
 }
 
 /* ---------- Boot ---------- */
+function introEnd() {
+  const el = document.getElementById('intro'); if (!el || el.dataset.out) return;
+  el.dataset.out = '1';
+  el.classList.add('out');
+  setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, reduced() ? 320 : 650);
+}
+function introInit() {
+  const el = document.getElementById('intro'); if (!el) return;
+  const total = reduced() ? 900 : 2700;
+  setTimeout(introEnd, Math.max(0, total - (Date.now() - (window.__introT0 || Date.now()))));
+  el.addEventListener('click', introEnd);
+  const k = () => { introEnd(); document.removeEventListener('keydown', k); };
+  document.addEventListener('keydown', k);
+}
 function boot() {
+  introInit();
   document.body.insertAdjacentHTML('afterbegin', SHELL);
   if (!S.news) S.news = clone(DEFAULT_NEWS);
   if (!S.deco) S.deco = normDeco(null);

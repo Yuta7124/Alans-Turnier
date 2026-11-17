@@ -55,9 +55,9 @@ Das Repository ist öffentlich, aber nur der Programmcode. Die Daten stecken in 
 
 ## So funktioniert es für deine Freunde
 
-- Sie öffnen den Link, geben einmal das Turnier-Passwort ein (ihr Gerät merkt es sich) und landen im Wartebildschirm, bis du die Lobby öffnest.
+- Sie öffnen den Link, sehen ein kurzes Intro, geben einmal das Turnier-Passwort ein (ihr Gerät merkt es sich) und sind sofort auf der Seite.
 - Sie können **eigene Spieler mit Foto** anlegen. Die erscheinen sofort bei allen.
-- Im Quiz tippen sie unten bei „Wer bist du?“ auf ihren Namen. Nur wer dran ist, **wählt das Feld und die Antwort selbst**, das zählt sofort. Alle anderen schauen zu.
+- Wer seinen Spieler selbst anlegt, ist auf seinem Handy automatisch dieser Spieler. Hat der Spielleiter den Spieler angelegt, tippt man einmal im Tab „Spieler“ bei seinem Namen auf „Das bin ich“. Im Quiz gilt: Nur wer dran ist, **wählt das Feld und die Antwort selbst**, das zählt sofort. Alle anderen schauen zu.
 - Links steht, wer gerade dran ist und wer danach kommt, rechts die Punkteführung, die sich live neu sortiert.
 - 5 Sekunden nach jeder Antwort geht es automatisch zurück zum Spielbrett und der nächste Spieler ist dran. Mit **Anhalten** stoppst du das, mit **Sofort weiter** geht es direkt weiter.
 - Wichtig: Die Antworten der Gäste und das automatische Weiter laufen über dein Spielleiter-Gerät. Lass die Seite dort während des Quiz offen.
@@ -74,8 +74,8 @@ Das Repository ist öffentlich, aber nur der Programmcode. Die Daten stecken in 
 - **Flaggenbilder** kommen von flagcdn.com, die Geräte brauchen also Internet (das brauchen sie für die Datenbank sowieso).
 - **Spieler gestalten:** Foto zuschneiden (ziehen und zoomen), Schriftart, Farbverlauf, Rahmen und ein kurzer Spruch. Das geht auch für Gäste, die ihren Spieler selbst anlegen.
 - **Hintergrundmusik:** Die Seite erzeugt selbst leichte Musik (Chill, Arcade, Weltraum). Jeder stellt sie über den ♪-Knopf unten rechts lauter, leiser oder stumm. Unter Optionen legst du fest, ob sie bei Gästen standardmäßig an ist.
-- **Eigene Bilder** (Optionen): fliegen durch den Wartebildschirm und auf Wunsch dezent über die ganze Seite.
-- **Laufschrift im Wartebildschirm** (Optionen): eigene Einträge mit Text und kleinem Bild, zum Beispiel Sponsoren-Logos. Mit „Vorschau ansehen“ siehst du sofort, wie es aussieht.
+- **Eigene Bilder** (Optionen): fliegen auf Wunsch dezent über die ganze Seite.
+- **Wartebildschirm** (mit Laufschrift und fliegenden Bildern): ist vorerst ausgeschaltet, der Code ist noch da. Zum Wiedereinschalten in `index.html` `const LOBBY = false;` auf `true` setzen.
 - **Quiz-Musik** wird nur auf dem Gerät gespeichert, auf dem du sie auswählst. Nimm das Gerät, das an den Lautsprechern hängt.
 - **Kosten:** Der kostenlose Firebase-Tarif (Spark) reicht für so ein Turnier locker aus.
 - **Abmelden** als Spielleiter: ganz unten auf der Seite.
