@@ -2565,7 +2565,8 @@ function normSettings(x) {
 }
 function normPlayer(id, x) {
   x = x || {};
-  return {id, name: str(x.name, 40) || 'Spieler', avatar: safeImg(x.avatar), color: /^#[0-9a-f]{6}$/i.test(x.color || '') ? x.color : COLORS[0], createdAt: Number(x.createdAt) || 0, wins: Math.round(num(x.wins, 0, 999, 0)), ...styleFields(x)};
+  return {id, name: str(x.name, 40) || 'Spieler', avatar: safeImg(x.avatar), color: /^#[0-9a-f]{6}$/i.test(x.color || '') ? x.color : COLORS[0], createdAt: Number(x.createdAt) || 0, wins: Math.round(num(x.wins, 0, 999, 0)), ...styleFields(x),
+    ...(x.byGuest === true ? {byGuest:true} : {}), ...(typeof x.kh === 'string' && /^[0-9a-f]{64}$/.test(x.kh) ? {kh:x.kh} : {})};
 }
 function normPoint(id, x) {
   x = x || {};
@@ -3187,7 +3188,7 @@ function viewPlayers() {
   const mine = !adm && playerById(lsGet('turnier-me', ''));
   const meId = playerById(lsGet('turnier-me', '')) ? lsGet('turnier-me', '') : '';
   const add = adm ? `<form class="pcard add" data-form="add-player"><span class="ptag">Freier Slot</span>${playerForm('np', D.np)}<button class="btn btn-gold" type="submit">Spieler hinzufügen</button></form>`
-    : mine ? `<div class="pcard add codecard"><span class="ptag">Du</span>${avatar(mine, 88, 'pc-av')}<p class="m-text" style="margin:10px 0 0">Du spielst als <b>${nameHTML(mine)}</b>. Änderungen am Spieler macht der Spielleiter.</p><button class="link" type="button" data-act="me-clear">Das bin nicht ich</button><button class="btn btn-ghost btn-sm" type="button" data-act="gplayer-open">Weiteren Spieler erstellen</button></div>`
+    : mine ? `<div class="pcard add codecard"><span class="ptag">Du</span>${avatar(mine, 88, 'pc-av')}<p class="m-text" style="margin:10px 0 0">Du spielst als <b>${nameHTML(mine)}</b>.${ownEdit(mine) ? '' : mine.byGuest ? ' Bearbeiten kannst du ihn auf dem Gerät, mit dem du ihn erstellt hast.' : ' Änderungen am Spieler macht der Spielleiter.'}</p>${ownEdit(mine) ? `<button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(mine.id)}">Spieler bearbeiten</button>` : ''}<button class="link" type="button" data-act="me-clear">Das bin nicht ich</button><button class="btn btn-ghost btn-sm" type="button" data-act="gplayer-open">Weiteren Spieler erstellen</button></div>`
     : `<div class="pcard add codecard"><span class="ptag">Mitspielen</span><p class="m-text" style="margin-top:14px">Erstell deinen eigenen Spieler mit Foto. Du bist sofort dabei. Steht dein Name schon da? Dann tipp bei dir auf „Das bin ich“.</p><button class="btn btn-gold" type="button" data-act="gplayer-open">Eigenen Spieler erstellen</button></div>`;
   const cards = byCreated.map((p, i) => `
     <div class="pcard ${p.wins > 0 ? 'has-wins' : ''}">
@@ -3197,7 +3198,8 @@ function viewPlayers() {
       <div class="pc-wins">${p.wins > 0 ? `<span class="pw-cup" aria-hidden="true">🏆</span><b>${p.wins}</b> ${p.wins === 1 ? 'Turniersieg' : 'Turniersiege'}` : 'Noch kein Turniersieg'}
         ${adm ? `<span class="pw-edit"><button class="x" type="button" data-act="win-add" data-pid="${esc(p.id)}" data-d="-1" ${p.wins > 0 ? '' : 'disabled'} aria-label="Einen Turniersieg weniger für ${esc(p.name)}">−</button><button class="x" type="button" data-act="win-add" data-pid="${esc(p.id)}" data-d="1" aria-label="Einen Turniersieg mehr für ${esc(p.name)}">+</button></span>` : ''}</div>
       ${p.id === meId ? '<span class="you-tag">Das bist du</span>' : !meId ? `<button class="btn btn-sm btn-ghost me-btn" type="button" data-act="set-me" data-pid="${esc(p.id)}">Das bin ich</button>` : ''}
-      ${adm ? `<div class="pc-actions"><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Bearbeiten</button><button class="btn btn-sm btn-ghost danger" type="button" data-act="delete-player" data-pid="${esc(p.id)}">Löschen</button></div>` : ''}
+      ${adm ? `<div class="pc-actions"><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Bearbeiten</button><button class="btn btn-sm btn-ghost danger" type="button" data-act="delete-player" data-pid="${esc(p.id)}">Löschen</button></div>`
+        : ownEdit(p) ? `<div class="pc-actions"><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Bearbeiten</button></div>` : ''}
     </div>`).join('');
   return `<section class="section">
     <div class="sec-head"><h2 class="h">Spielerauswahl <span class="count">${S.players.length} Spieler</span></h2>${adm ? `<span class="muted">Fotos werden automatisch quadratisch zugeschnitten.</span>` : ''}</div>
@@ -5377,7 +5379,7 @@ function pdLabel() {
 function updatePdSubmit() { const b = $('#pd-submit'); if (b) b.innerHTML = H(pdLabel()); }
 function modalPlayer() {
   return `
-    <div class="m-head"><h2 id="m-title">Spieler bearbeiten</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
+    <div class="m-head"><h2 id="m-title">${S.admin ? 'Spieler bearbeiten' : 'Dein Spieler'}</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
     <form class="stack" data-form="edit-player">${playerForm('ep', D.ep)}
       <div class="m-foot"><button class="btn btn-ghost" type="button" data-act="modal-close">Abbrechen</button><button class="btn btn-gold" type="submit">Speichern</button></div>
     </form>`;
@@ -5694,7 +5696,9 @@ document.addEventListener('submit', e => {
     const name = str(d.name, 40);
     if (!name) { toast('Gib einen Namen ein.'); return; }
     if (d.crop) { toast('Tipp erst auf „Zuschnitt übernehmen“.'); return; }
-    const p = {id:d.id, name, avatar:d.avatar || '', color:d.color, createdAt:d.createdAt || Date.now(), wins:(playerById(d.id) || {}).wins || 0, ...styleFields(d)};
+    if (!S.admin) { saveOwnPlayer(d); return; }
+    const old = playerById(d.id) || {};
+    const p = {id:d.id, name, avatar:d.avatar || '', color:d.color, createdAt:d.createdAt || Date.now(), wins:old.wins || 0, ...styleFields(d), ...(old.byGuest ? {byGuest:true} : {}), ...(old.kh ? {kh:old.kh} : {})};
     closeModal(); ops.savePlayer(p); toast('Gespeichert.');
   } else if (f === 'settings') {
     const s = D.set; if (!splitValid()) return;
@@ -6246,13 +6250,59 @@ async function createGuestPlayer() {
   if (D.gp.crop) { toast('Tipp erst auf „Zuschnitt übernehmen“.'); return; }
   const id = uid();
   const avatar = await shrinkImg(D.gp.avatar, 120, .7);
+  const key = newKey();
   try {
-    await db.collection('players').doc(id).set({name, color:D.gp.color || COLORS[0], avatar, createdAt:Date.now(), byGuest:true, ...styleFields(D.gp)});
+    pkeyPut(id, [key]);
+    await db.collection('players').doc(id).set({name, color:D.gp.color || COLORS[0], avatar, createdAt:Date.now(), byGuest:true, kh:await sha256hex(key), ...styleFields(D.gp)});
     lsSet('turnier-me', id);
     D.gp = blankPlayer('');
     closeModal(); render();
     toast(`${name} ist dabei!`);
   } catch (e) { toast('Das hat nicht geklappt. Prüf dein Internet und versuch es nochmal.'); }
+}
+
+/* ---------- Eigenen Spieler bearbeiten ----------
+   Beim Erstellen bekommt ein Spieler einen geheimen Schlüssel, den nur dieses Gerät kennt. In der Datenbank steht nur
+   sein SHA-256-Wert (kh). Zum Ändern zeigt das Gerät den Schlüssel vor (kp) und legt gleichzeitig einen neuen fest,
+   der alte ist damit verbraucht. So kann nur dieses Gerät (und der Spielleiter) den Spieler ändern. */
+const PKEYS = 'darkime-pkeys';
+function pkeyAll() { try { return JSON.parse(lsGet(PKEYS, '{}')) || {}; } catch (e) { return {}; } }
+const pkeyOf = id => pkeyAll()[id] || [];
+function pkeyPut(id, keys) { const o = pkeyAll(); if (keys && keys.length) o[id] = keys; else delete o[id]; lsSet(PKEYS, JSON.stringify(o)); }
+function newKey() { const a = new Uint8Array(24); crypto.getRandomValues(a); return [...a].map(b => b.toString(16).padStart(2, '0')).join(''); }
+async function sha256hex(t) { const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, '0')).join(''); }
+/* own: Schlüssel liegt auf diesem Gerät. claim: älterer Gast-Spieler ohne Schlüssel, dieses Gerät ist dieser Spieler. */
+function ownEdit(p) {
+  if (!p || S.admin || S.mode !== 'db') return '';
+  if (p.kh && pkeyOf(p.id).length) return 'own';
+  if (p.byGuest && !p.kh && lsGet('turnier-me', '') === p.id) return 'claim';
+  return '';
+}
+async function saveOwnPlayer(d) {
+  const old = playerById(d.id), how = ownEdit(old);
+  if (!how || !db) { toast('Diesen Spieler kann nur der Spielleiter ändern.'); return; }
+  const name = str(d.name, 40);
+  const fields = {name, color:d.color || old.color, avatar:await shrinkImg(d.avatar || '', 120, .7), ...styleFields(d)};
+  const ref = db.collection('players').doc(d.id);
+  try {
+    let keys = pkeyOf(d.id);
+    if (how === 'claim') {
+      const k = newKey(); pkeyPut(d.id, [k]);
+      await ref.update({kh:await sha256hex(k)});
+      keys = [k];
+    }
+    // Neuen Schlüssel vorher merken: Kommt die Antwort nicht an, obwohl gespeichert wurde, klappt es beim nächsten Mal damit.
+    const next = newKey();
+    let ok = false;
+    for (const k of keys) {
+      pkeyPut(d.id, [k, next]);
+      try { await ref.update({...fields, kp:k, kh:await sha256hex(next)}); ok = true; break; }
+      catch (e) { if (!e || e.code !== 'permission-denied') throw e; }
+    }
+    if (!ok) { pkeyPut(d.id, keys); toast('Diesen Spieler kann nur der Spielleiter ändern.'); return; }
+    pkeyPut(d.id, [next]);
+    closeModal(); toast('Gespeichert.');
+  } catch (e) { toast('Speichern hat nicht geklappt. Prüfe die Verbindung und versuch es nochmal.'); }
 }
 
 /* ---------- Eigene Bilder, die durchs Bild fliegen ---------- */
