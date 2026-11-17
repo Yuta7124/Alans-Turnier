@@ -288,15 +288,30 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .gplay .g-done small{display:block;margin:4px 0 0}
 .gplay .g-help{font-size:12px;margin:4px 0 0;line-height:1.5}
 .g-hn-m{display:none}
+/* Handy: die Bahn nutzt den ganzen Bildschirm, oben links nur kleine Knöpfe */
+.g-sidebtn,.g-watch-m{display:none}
 @media (max-width:760px){
-  .gplay{padding:8px 8px 10px;gap:8px}
-  .gplay .g-main{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:10px}
-  .gplay .g-side{max-height:32dvh;padding:10px 10px 64px}
-  .gplay .g-help{display:none}
-  .gplay .g-hole .eyebrow{display:none}
-  .gplay .g-hn-m{display:inline;font-family:var(--pixel);font-size:11px;color:var(--xp)}
-  .gplay .g-hole{gap:8px}
-  .gplay .g-me b{font-size:18px}
+  .gplay{padding:0;gap:0}
+  .gplay .g-main{position:absolute;inset:0;display:block}
+  .gplay .golf-stage{position:absolute;inset:0;height:auto;box-shadow:none}
+  .gplay .g-top{position:absolute;top:8px;left:8px;z-index:3;max-width:calc(100% - 120px);gap:6px;padding:4px 10px 4px 4px;background:rgba(11,6,32,.8);box-shadow:0 0 0 2px var(--shadow);pointer-events:none}
+  .gplay .g-top button{pointer-events:auto}
+  .gplay .gmenu,.gplay .g-sidebtn{width:34px;height:34px}
+  .g-sidebtn{display:grid;place-items:center;flex:none;border:0;background:var(--panel-2);color:var(--ink);font-size:16px;box-shadow:0 0 0 2px var(--shadow);cursor:pointer}
+  .g-sidebtn[aria-pressed="true"]{background:var(--coin)}
+  .gplay .g-hole{gap:6px;align-items:baseline}
+  .gplay .g-hole b{font-size:15px}
+  .gplay .g-hole .eyebrow,.gplay .g-par{display:none}
+  .gplay .g-hn-m{display:inline;font-family:var(--pixel);font-size:10px;color:var(--xp)}
+  .gplay .g-me{margin-left:4px;gap:4px}
+  .gplay .g-me small{display:none}
+  .gplay .g-me b{font-size:15px}
+  .gplay .g-side{display:none}
+  .gplay.sideopen .g-side{display:flex;position:absolute;left:8px;right:8px;top:56px;max-height:calc(100% - 70px);z-index:4;padding:12px;box-shadow:0 0 0 3px var(--shadow),0 10px 30px rgba(0,0,0,.6)}
+  .gplay .g-side .g-watch{display:none}
+  .g-watch-m{display:flex;position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:3;align-items:center;gap:8px;padding:4px;background:rgba(11,6,32,.85);box-shadow:0 0 0 2px #39d6f2;font-weight:700;white-space:nowrap}
+  .g-watch-m span{max-width:40vw;overflow:hidden;text-overflow:ellipsis}
+  body.ingame:has(.gplay) #bgm-root{display:none}
 }
 @media (orientation:landscape) and (max-height:540px){.gplay .g-main{grid-template-columns:minmax(0,1fr) 210px}.gplay .g-side{max-height:none}.gplay .g-help{display:none}}
 .gcanvas.can{cursor:crosshair}
@@ -1039,7 +1054,15 @@ body.ingame .gmenu{display:grid;place-items:center;flex:none;width:38px;height:3
 body.ingame .gmenu:hover{background:var(--bg-2);color:var(--coin)}
 body.ingame.navshow header.top{display:block;position:fixed;top:0;left:0;right:0;z-index:136}
 body.ingame.navshow #subnav:not([hidden]){display:block;position:fixed;left:0;right:0;top:var(--navh,96px);z-index:136;max-width:none;margin:0;padding:10px 16px 14px;background:rgba(13,9,27,.96);box-shadow:0 4px 0 var(--shadow)}
-body.ingame.navshow .gmenu.hdr-menu{display:grid;background:var(--coin);color:#1a1200}
+body.ingame.navshow .gmenu.hdr-menu{display:grid;position:fixed;left:var(--gmx,14px);top:var(--gmy,10px);width:var(--gmw,38px);height:var(--gmh,38px);z-index:137;background:var(--coin);color:#1a1200}
+body.ingame.navshow header.top .wrap{max-width:none;margin:0;padding-left:calc(var(--gmx,14px) + var(--gmw,38px) + 14px);padding-right:16px}
+body.ingame.navshow header.top .tabs{margin-left:-9px;justify-content:flex-start}
+body.ingame.navshow #subnav:not([hidden]){padding-left:calc(var(--gmx,14px) + var(--gmw,38px) + 14px)}
+body.ingame.navshow #subnav > *{margin-left:0;margin-right:auto}
+@media (max-width:680px){
+  body.ingame.navshow header.top .tabs{margin-left:calc(-2px - var(--gmx,14px) - var(--gmw,38px));width:calc(100% + var(--gmx,14px) + var(--gmw,38px) + 2px)}
+  body.ingame.navshow #subnav:not([hidden]){padding-left:12px;padding-right:12px}
+}
 .gmenu.hdr-menu{display:none}
 .hub-big{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin:12px 4px 0;font-size:13px;color:var(--muted);font-weight:600}
 .hub-rot{display:none}
@@ -4881,14 +4904,17 @@ function golfPlayHTML(G) {
   const watchBar = sp ? `<div class="g-watch"><small>👀 Du schaust zu:</small><div class="g-watch-row"><button class="btn btn-sm" type="button" data-act="golf-watch" data-d="-1" aria-label="Vorheriger Spieler"${watchList.length < 2 ? ' disabled' : ''}>◀</button>
     <span>${avatar(sp, 24)} <b>${esc(sp.name)}</b></span><button class="btn btn-sm" type="button" data-act="golf-watch" data-d="1" aria-label="Nächster Spieler"${watchList.length < 2 ? ' disabled' : ''}>▶</button></div></div>` : '';
   const mine = playing ? (gl.done ? `<div class="g-done">✓ ${gl.done === 1 ? 'Eingelocht mit 1 Schlag' : `Eingelocht mit ${gl.done} Schlägen`} · ${esc(gTerm(gl.done, H.par))}${allDone ? '' : ' <small>Warte auf die anderen …</small>'}</div>` : '') : sp ? '' : `<div class="g-done spec">Du schaust zu.</div>`;
-  return `<section class="section gsec gplay">
+  const watchM = sp ? `<div class="g-watch-m"><button class="btn btn-sm" type="button" data-act="golf-watch" data-d="-1" aria-label="Vorheriger Spieler"${watchList.length < 2 ? ' disabled' : ''}>◀</button><span>👀 ${esc(sp.name)}</span><button class="btn btn-sm" type="button" data-act="golf-watch" data-d="1" aria-label="Nächster Spieler"${watchList.length < 2 ? ' disabled' : ''}>▶</button></div>` : '';
+  return `<section class="section gsec gplay ${gl.sideOpen ? 'sideopen' : ''}">
     <div class="g-top">
       <button class="gmenu" type="button" data-act="gmenu" aria-label="Menü anzeigen" title="Menü">☰</button>
+      <button class="g-sidebtn" type="button" data-act="golf-side" aria-pressed="${!!gl.sideOpen}" aria-label="Punktetafel" title="Punktetafel">🏆</button>
       <div class="g-hole"><span class="eyebrow">Bahn ${G.hi + 1} von ${G.holes.length}</span><span class="g-hn-m">${G.hi + 1}/${G.holes.length}</span><b>${esc(H.n)}</b><span class="g-par">Par ${H.par}</span></div>
       ${playing ? `<div class="g-me"><small>Schläge</small><b>${gl.strokes}</b></div>` : ''}
     </div>
     <div class="g-main">
       <div class="golf-stage" id="golf-stage"></div>
+      ${watchM}
       <aside class="card g-side">${mine}<span class="lbl">Punktetafel</span><ol class="g-board">${side}</ol>
         ${watchBar}
         ${host ? `<div class="g-host">${allDone ? `<p class="okline">${G.hi + 1 >= G.holes.length ? 'Gleich kommt das Ergebnis …' : 'Gleich kommt die nächste Bahn …'}</p><button class="btn btn-sm btn-gold" type="button" data-act="golf-next">${G.hi + 1 >= G.holes.length ? 'Ergebnis zeigen' : 'Nächste Bahn'}</button>`
@@ -4929,6 +4955,7 @@ const golfActions = {
   'golf-setup': () => { if (!ctl()) return; S.golf = null; S.lobbies[S.room] = {...lobby(), golf:null}; roomWrite({golf:null}); render(); },
   'golf-transfer': () => golfTransfer(),
   'golf-watch': b => { const l = gSpecList(); if (!l.length) return; const i = l.indexOf(gSpecPid()); gl.spec = l[(i + Number(b.dataset.d) + l.length) % l.length]; render(); },
+  'golf-side': () => { gl.sideOpen = !gl.sideOpen; render(); },
   'golf-watch-pid': b => { if (gSpecList().includes(b.dataset.pid)) { gl.spec = b.dataset.pid; render(); } }
 };
 
@@ -6421,7 +6448,13 @@ function withPending(go) {
   } else go();
 }
 const actions = {
-  'gmenu': () => { document.body.classList.toggle('navshow'); const hd = document.querySelector('header.top'); if (hd) document.body.style.setProperty('--navh', hd.offsetHeight + 'px'); },
+  'gmenu': () => {
+    // Das ☰ zum Schließen sitzt genau dort, wo das ☰ im Spiel ist
+    const gb = [...document.querySelectorAll('#main .gmenu')].find(e => e.offsetParent), bs = document.body.style;
+    if (gb) { const r = gb.getBoundingClientRect(); bs.setProperty('--gmx', r.left + 'px'); bs.setProperty('--gmy', r.top + 'px'); bs.setProperty('--gmw', r.width + 'px'); bs.setProperty('--gmh', r.height + 'px'); }
+    document.body.classList.toggle('navshow');
+    const hd = document.querySelector('header.top'); if (hd) bs.setProperty('--navh', hd.offsetHeight + 'px');
+  },
   'fullscreen': () => toggleFull(),
   'tab': b => setTab(b.dataset.tab),
   'modal-close': () => closeModal(),
