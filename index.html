@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Alans Turnier</title>
+<title>Darkime</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Pixelify+Sans:wght@500;700&family=Press+Start+2P&family=Bungee&family=Orbitron:wght@700;900&family=Permanent+Marker&family=Bangers&family=Pacifico&family=Russo+One&family=Creepster&display=swap" rel="stylesheet">
@@ -782,6 +782,36 @@ button.bcell[disabled]{cursor:default}
 .pcard .me-btn{margin-top:8px}
 .pcard .you-tag{margin-top:8px;display:inline-block}
 
+/* Main-Menü */
+.start-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;padding:34px 20px 30px;margin:4px 4px 38px;
+  background:radial-gradient(ellipse at 50% 0%,rgba(57,214,242,.16),transparent 62%),var(--panel);
+  box-shadow:0 -4px 0 var(--edge),0 4px 0 var(--edge),-4px 0 0 var(--edge),4px 0 0 var(--edge),0 12px 0 4px var(--shadow)}
+.start-logo{display:flex;align-items:center;gap:18px}
+.start-logo b{font-family:var(--display);font-size:clamp(50px,9vw,104px);text-transform:uppercase;color:var(--coin);line-height:.95;letter-spacing:.04em;text-shadow:4px 4px 0 #8a5a00,8px 8px 0 rgba(0,0,0,.5)}
+.start-tag{font-size:clamp(16px,1.8vw,20px);max-width:660px;margin:0;font-weight:600;line-height:1.45}
+.start-facts{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.start-fact{display:inline-flex;align-items:center;gap:8px;background:var(--bg-2);padding:8px 12px;font-weight:700;font-size:14px;box-shadow:0 0 0 2px var(--shadow)}
+.start-fact small{color:var(--xp);font-weight:700}
+.start-cta{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.start-live{animation:blink 1.4s steps(1) infinite}
+.start-group{margin-bottom:34px}
+.start-h{font-family:var(--display);font-size:26px;text-transform:uppercase;margin:0 0 16px;display:flex;align-items:center;gap:12px;color:var(--tc)}
+.start-h::before{content:"";width:12px;height:12px;background:var(--tc);flex:none}
+.stiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.stile{display:flex;flex-direction:column;gap:10px;text-align:left;border:0;color:var(--ink);background:var(--panel);padding:18px 18px 16px;margin:4px;cursor:pointer;
+  box-shadow:0 -3px 0 var(--edge),0 3px 0 var(--edge),-3px 0 0 var(--edge),3px 0 0 var(--edge),inset 0 5px 0 var(--tc),0 8px 0 3px var(--shadow)}
+.stile:hover{background:var(--panel-2);transform:translateY(-3px);box-shadow:0 -3px 0 var(--tc),0 3px 0 var(--tc),-3px 0 0 var(--tc),3px 0 0 var(--tc),inset 0 5px 0 var(--tc),0 11px 0 3px var(--shadow)}
+.stile-top{display:flex;align-items:center;gap:12px}
+.stile-ico{font-size:34px;line-height:1}
+.stile-top b{font-family:var(--display);font-size:26px;text-transform:uppercase;line-height:1;min-width:0;overflow-wrap:anywhere}
+.stile p{margin:0;color:var(--muted);font-size:15px;line-height:1.45}
+.stile-info{margin-top:auto;font-family:var(--pixel);font-size:9px;text-transform:uppercase;color:var(--tc);letter-spacing:.04em;line-height:1.6}
+.start-how h3{margin-top:0}
+@media (max-width:680px){.start-hero{padding:24px 14px 22px;margin-bottom:28px}.start-logo{gap:10px}.start-logo .coin{width:44px;height:44px}.stiles{grid-template-columns:1fr;gap:12px}.stile{padding:14px}.stile-top b{font-size:22px}.stile-ico{font-size:28px}.start-h{font-size:22px}}
+@media (prefers-reduced-motion:reduce){.start-live{animation:none}}
+.hub{grid-template-columns:repeat(var(--n,2),minmax(0,1fr));max-width:calc(var(--n,2) * 320px)}
+@media (max-width:680px){.hub[style*="--n:3"] .hub-btn{flex-direction:column;align-items:center;text-align:center;gap:4px;padding:8px 4px}.hub[style*="--n:3"] .hub-txt{align-items:center}.hub[style*="--n:3"] .hub-txt b{font-size:16px}.hub[style*="--n:3"] .hub-txt small{display:none}}
+
 /* Wortwahl-Fenster */
 #dpick-root:empty{display:none}
 .dpick{position:fixed;inset:0;z-index:145;background:rgba(5,3,12,.88);display:flex;overflow:auto;padding:16px}
@@ -1146,8 +1176,8 @@ body.locked #bgm-root{bottom:96px}
 <div id="intro" class="intro" role="presentation">
   <div class="intro-in">
     <svg class="intro-coin" width="96" height="96" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#6b4300" d="M4 0h4v1H4zM2 1h2v1H2zM8 1h2v1H8zM1 2h1v2H1zM10 2h1v2h-1zM0 4h1v4H0zM11 4h1v4h-1zM1 8h1v2H1zM10 8h1v2h-1zM2 10h2v1H2zM8 10h2v1H8zM4 11h4v1H4z"/><path fill="#ffcf3f" d="M4 1h4v10H4zM2 2h8v8H2zM1 4h10v4H1z"/><path fill="#fff3b0" d="M3 3h1v2H3zM4 2h2v1H4z"/><path fill="#d99a00" d="M5 4h2v4H5zM8 8h1v1H8zM9 6h1v2H9z"/></svg>
-    <h1 class="intro-title" id="intro-title">Alans Turnier</h1>
-    <p class="intro-sub">Highscore · Quiz · Malen</p>
+    <h1 class="intro-title" id="intro-title">Darkime</h1>
+    <p class="intro-sub">Turnier · Quiz · Malen</p>
     <div class="intro-bar"><i></i></div>
   </div>
   <p class="intro-skip">Tippen zum Überspringen</p>
@@ -1156,8 +1186,7 @@ body.locked #bgm-root{bottom:96px}
 (function () {
   var el = document.getElementById('intro');
   try { if (sessionStorage.getItem('turnier-intro')) { el.parentNode.removeChild(el); return; } sessionStorage.setItem('turnier-intro', '1'); } catch (e) {}
-  var t = 'Alans Turnier';
-  try { t = localStorage.getItem('turnier-title') || t; } catch (e) {}
+  var t = 'Darkime';
   var h = document.getElementById('intro-title');
   h.setAttribute('aria-label', t); h.textContent = '';
   t.split('').forEach(function (c, i) { var s = document.createElement('span'); s.textContent = c === ' ' ? '\u00a0' : c; s.style.animationDelay = (0.5 + i * 0.05).toFixed(2) + 's'; s.setAttribute('aria-hidden', 'true'); h.appendChild(s); });
@@ -1175,7 +1204,7 @@ body.locked #bgm-root{bottom:96px}
 const SHELL = `<div id="fly-site" aria-hidden="true"></div>
 <header class="top">
   <div class="wrap top-inner">
-    <div class="brand"><svg class="ico coin spin" width="40" height="40" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#6b4300" d="M4 0h4v1H4zM2 1h2v1H2zM8 1h2v1H8zM1 2h1v2H1zM10 2h1v2h-1zM0 4h1v4H0zM11 4h1v4h-1zM1 8h1v2H1zM10 8h1v2h-1zM2 10h2v1H2zM8 10h2v1H8zM4 11h4v1H4z"/><path fill="#ffcf3f" d="M4 1h4v10H4zM2 2h8v8H2zM1 4h10v4H1z"/><path fill="#fff3b0" d="M3 3h1v2H3zM4 2h2v1H4z"/><path fill="#d99a00" d="M5 4h2v4H5zM8 8h1v1H8zM9 6h1v2H9z"/></svg><span class="brand-txt"><b id="brand-title">Alans Turnier</b><small id="brand-sub">Highscore, Jackpot und Quiz</small></span></div>
+    <div class="brand"><svg class="ico coin spin" width="40" height="40" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#6b4300" d="M4 0h4v1H4zM2 1h2v1H2zM8 1h2v1H8zM1 2h1v2H1zM10 2h1v2h-1zM0 4h1v4H0zM11 4h1v4h-1zM1 8h1v2H1zM10 8h1v2h-1zM2 10h2v1H2zM8 10h2v1H8zM4 11h4v1H4z"/><path fill="#ffcf3f" d="M4 1h4v10H4zM2 2h8v8H2zM1 4h10v4H1z"/><path fill="#fff3b0" d="M3 3h1v2H3zM4 2h2v1H4z"/><path fill="#d99a00" d="M5 4h2v4H5zM8 8h1v1H8zM9 6h1v2H9z"/></svg><span class="brand-txt"><b id="brand-title">Darkime</b><small id="brand-sub">Highscore, Jackpot und Quiz</small></span></div>
     <nav class="tabs" id="tabs" aria-label="Bereiche"></nav>
     <span class="pill" id="pill">Lädt …</span>
   </div>
@@ -2134,14 +2163,26 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 const MAX_PLACES = 10;
 const PRESETS = [null, [100], [65, 35], [60, 30, 10], [50, 25, 15, 10], [40, 25, 15, 12, 8], [35, 22, 15, 12, 9, 7], [32, 20, 14, 11, 9, 8, 6], [30, 18, 13, 11, 9, 7, 6, 6], [28, 17, 12, 10, 9, 7, 6, 6, 5], [26, 16, 12, 10, 8, 7, 6, 5, 5, 5]];
 const pad10 = (arr, fill = 0) => Array.from({length:MAX_PLACES}, (_, i) => arr[i] ?? fill);
-const DEFAULT_SETTINGS = {title:'Alans Turnier', date:'', prize:100, places:3, mode:'pct', split:pad10([60, 30, 10]), amounts:pad10([60, 30, 10])};
+const SITE_NAME = 'Darkime';
+const DEFAULT_SETTINGS = {title:'Darkime Turnier', date:'', prize:100, places:3, mode:'pct', split:pad10([60, 30, 10]), amounts:pad10([60, 30, 10])};
 const LS_KEY = 'spieleturnier-v1';
 const SHARE_URL = location.href.split('#')[0].split('?')[0];
 const RING = 2 * Math.PI * 44;
-const TABS = [['rangliste', 'Highscore'], ['spieler', 'Spieler'], ['rad', 'Zufallsrad'], ['liste', 'Spieleliste'], ['spiele', 'Spiele'], ['news', 'Ankündigungen'], ['einstellungen', 'Optionen']];
-const TAB_SHORT = {rad:'Rad', liste:'Liste', news:'News'};
+const TABS = [['start', 'Main-Menü'], ['turnier', 'Turnier'], ['spieler', 'Spieler'], ['spiele', 'Spiele'], ['news', 'Ankündigungen'], ['einstellungen', 'Optionen']];
+const TAB_SHORT = {start:'Menü', news:'News'};
+/* Ober-Tabs mit Unterseiten */
+const GROUPS = {
+  turnier:[['rangliste', '🏆', 'Highscore'], ['rad', '🎡', 'Zufallsrad'], ['liste', '📋', 'Spieleliste']],
+  spiele:[['quiz', '🧠', 'Quiz'], ['malen', '🎨', 'Malen']]
+};
+const groupOf = t => Object.keys(GROUPS).find(g => GROUPS[g].some(x => x[0] === t)) || '';
+function groupPick(g) {
+  if (g === 'spiele') return hubPick();
+  let last = ''; try { last = localStorage.getItem('turnier-sub-' + g) || ''; } catch (e) {}
+  return GROUPS[g].some(x => x[0] === last) ? last : GROUPS[g][0][0];
+}
 /* Ansichten: "Spiele" ist der Ober-Tab für Quiz und Malen */
-const VIEWS = ['rangliste', 'spieler', 'rad', 'liste', 'quiz', 'malen', 'news', 'einstellungen'];
+const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'quiz', 'malen', 'news', 'einstellungen'];
 const HUB = ['quiz', 'malen'];
 const viewOk = t => VIEWS.includes(t);
 function hubPick() {
@@ -2151,7 +2192,7 @@ function hubPick() {
   let last = 'quiz'; try { last = localStorage.getItem('turnier-sub') || 'quiz'; } catch (e) {}
   return HUB.includes(last) ? last : 'quiz';
 }
-function viewFor(t) { return t === 'spiele' ? hubPick() : viewOk(t) ? t : 'rangliste'; }
+function viewFor(t) { return GROUPS[t] ? groupPick(t) : viewOk(t) ? t : 'start'; }
 
 /* ---------- State ---------- */
 /* ---------- Spieler-Stil: Schrift, Farbverlauf, Rahmen, Spruch, Foto zuschneiden ---------- */
@@ -2257,7 +2298,7 @@ const S = {
   players:[], points:[], questions:[], quiz:null, seen:[],
   gate:{open:false, openAt:0}, preview:false, pub:'idle', secret:null, locked:false, lockMsg:'', news:null, ticker:null, pics:[], deco:null,
   wheel:{items:[], history:[], spin:null, rot:0, removeDrawn:true},
-  tab:'rangliste', modal:null,
+  tab:'start', modal:null,
   games:[], gvotes:[], draw:null, dwords:{e:[], m:[], h:[], only:false}, dgal:[]
 };
 const D = {
@@ -2359,7 +2400,7 @@ function normSettings(x) {
   const amounts = pad10([]).map((_, i) => num(Array.isArray(x.amounts) ? x.amounts[i] : undefined, 0, 10000000, Math.round(prize * split[i]) / 100));
   const places = Math.round(num(x.places, 1, MAX_PLACES, 3));
   return {
-    title: (str(x.title, 60) || 'Alans Turnier').replace(/^(Spieleturnier|Adams Turnier)$/i, 'Alans Turnier'),
+    title: (str(x.title, 60) || 'Darkime Turnier').replace(/^(Spieleturnier|Adams Turnier|Alans Turnier)$/i, 'Darkime Turnier'),
     date: /^\d{4}-\d{2}-\d{2}$/.test(x.date || '') ? x.date : '',
     prize, places, mode: x.mode === 'eur' ? 'eur' : 'pct', split, amounts
   };
@@ -2720,7 +2761,7 @@ function render() {
   else if (S.mode === 'lock') html = lockHTML();
   else if (blocked()) html = `<div style="min-height:70vh"></div>`;
   else if (S.tab === 'spiele-pick') html = `<div class="loading">${COIN(48, 'spin')}</div>`;
-  else html = ({rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, quiz:viewQuiz, malen:viewDraw, news:viewNews, einstellungen:viewSettings}[S.tab] || viewBoard)();
+  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, quiz:viewQuiz, malen:viewDraw, news:viewNews, einstellungen:viewSettings}[S.tab] || viewBoard)();
   const oldStand = m.querySelector('.stand');
   const oldKey = oldStand ? oldStand.dataset.key : null;
   const before = standCapture(oldStand);
@@ -2762,19 +2803,26 @@ async function toggleFull() {
 document.addEventListener('fullscreenchange', () => render());
 function renderSubnav() {
   const el = $('#subnav'); if (!el) return;
-  const hide = tabsHidden();
+  const hide = tabsHidden(), grp = groupOf(S.tab);
   let h = '';
-  if (!hide && HUB.includes(S.tab)) {
-    const st = k => {
-      const g = k === 'quiz' ? S.quiz : S.draw;
-      if (g && g.status === 'running') return '<small class="hub-live">■ Läuft gerade</small>';
-      if (g && g.status === 'finished') return '<small>Ergebnis ansehen</small>';
-      return `<small>${k === 'quiz' ? 'Fragen-Spielbrett' : 'Zeichnen und raten'}</small>`;
+  if (!hide && grp) {
+    const sub = k => {
+      if (k === 'quiz' || k === 'malen') {
+        const g = k === 'quiz' ? S.quiz : S.draw;
+        if (g && g.status === 'running') return '<small class="hub-live">■ Läuft gerade</small>';
+        if (g && g.status === 'finished') return '<small>Ergebnis ansehen</small>';
+        return `<small>${k === 'quiz' ? 'Fragen-Spielbrett' : 'Zeichnen und raten'}</small>`;
+      }
+      if (k === 'rangliste') { const top = standings()[0]; return `<small>${top && top.pts > 0 ? 'Platz 1: ' + esc(top.name) : 'Punkte und Jackpot'}</small>`; }
+      if (k === 'rad') { const n = (S.wheel.items || []).length; return `<small>${n ? n + ' Spiele im Rad' : 'Spiel auslosen'}</small>`; }
+      const n = (S.games || []).length; return `<small>${n ? n + (n === 1 ? ' Spiel' : ' Spiele') : 'Spiele fürs Turnier'}</small>`;
     };
-    h = `<div class="hub" role="group" aria-label="Spiel wählen">${[['quiz', '🧠', 'Quiz'], ['malen', '🎨', 'Malen']].map(([k, i, l]) => `<button class="hub-btn" type="button" data-act="tab" data-tab="${k}" aria-pressed="${S.tab === k}"><span class="hub-ico" aria-hidden="true">${i}</span><span class="hub-txt"><b>${l}</b>${st(k)}</span></button>`).join('')}</div>`;
-    if (isTouch()) h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
+    const list = GROUPS[grp];
+    h = `<div class="hub" style="--n:${list.length}" role="group" aria-label="${grp === 'spiele' ? 'Spiel wählen' : 'Turnier'}">${list.map(([k, i, l]) => `<button class="hub-btn" type="button" data-act="tab" data-tab="${k}" aria-pressed="${S.tab === k}"><span class="hub-ico" aria-hidden="true">${i}</span><span class="hub-txt"><b>${l}</b>${sub(k)}</span></button>`).join('')}</div>`;
+    if (grp === 'spiele' && isTouch()) h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
   }
-  el.classList.toggle('wide', HUB.includes(S.tab) && $('#main').classList.contains('wide'));
+  el.setAttribute('aria-label', grp === 'spiele' ? 'Spiele' : 'Turnier');
+  el.classList.toggle('wide', !!grp && $('#main').classList.contains('wide'));
   el.hidden = !h;
   if (el.innerHTML !== h) el.innerHTML = h;
 }
@@ -2788,18 +2836,17 @@ function renderFoot() {
 let lastTitle = '';
 function renderHeader() {
   if (S.tab === 'spiele-pick' && (S.mode !== 'db' || S.loaded)) S.tab = hubPick();
-  if (S.tab === 'einstellungen' && !S.admin && S.mode !== 'loading') S.tab = 'rangliste';
-  $('#brand-title').textContent = S.settings.title;
-  if (S.mode === 'db' && S.loaded && S.settings.title !== lastTitle) { lastTitle = S.settings.title; try { localStorage.setItem('turnier-title', S.settings.title); } catch (e) {} }
+  if (S.tab === 'einstellungen' && !S.admin && S.mode !== 'loading') S.tab = 'start';
+  if ($('#brand-title').textContent !== SITE_NAME) $('#brand-title').textContent = SITE_NAME;
   const parts = [];
   const d = fmtDate(S.settings.date); if (d) parts.push(d);
   parts.push(`${S.players.length} Spieler`);
   $('#brand-sub').textContent = parts.join(' · ');
-  document.title = S.settings.title;
+  document.title = SITE_NAME;
   const hideTabs = tabsHidden();
   const tabs = hideTabs ? [] : TABS.filter(t => t[0] !== 'einstellungen' || S.admin);
   const live = (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running');
-  const tabsHTML = tabs.map(([k, l]) => `<button class="tab" type="button" data-act="tab" data-tab="${k}" aria-selected="${S.tab === k || (k === 'spiele' && HUB.includes(S.tab))}">${TAB_SHORT[k] ? `<span class="t-long">${l}</span><span class="t-short">${TAB_SHORT[k]}</span>` : l}${k === 'spiele' && live ? ' <span aria-hidden="true" style="color:var(--hp)">■</span><span class="vh">(läuft)</span>' : ''}</button>`).join('');
+  const tabsHTML = tabs.map(([k, l]) => `<button class="tab" type="button" data-act="tab" data-tab="${k}" aria-selected="${S.tab === k || groupOf(S.tab) === k}">${TAB_SHORT[k] ? `<span class="t-long">${l}</span><span class="t-short">${TAB_SHORT[k]}</span>` : l}${k === 'spiele' && live ? ' <span aria-hidden="true" style="color:var(--hp)">■</span><span class="vh">(läuft)</span>' : ''}</button>`).join('');
   if ($('#tabs').innerHTML !== tabsHTML) $('#tabs').innerHTML = tabsHTML;
   const pill = $('#pill');
   let txt = 'Lädt …', cls = '';
@@ -2816,6 +2863,72 @@ function podiumSlot(p, pos) {
   const big = pos === 1 ? 92 : 72;
   if (!p) return `<div class="pod pos${pos} empty"><span class="av ghost" style="width:${big}px;height:${big}px"></span><span class="pod-name">Frei</span><span class="pod-pts">&nbsp;</span><div class="pod-block"><span>${pos}</span></div></div>`;
   return `<div class="pod pos${pos}">${pos === 1 ? CROWN() : ''}${avatar(p, big)}<span class="pod-name">${nameHTML(p)}</span><span class="pod-pts">${p.pts} ${ptsWord(p.pts)}</span>${p.prize > 0 ? `<span class="prize-tag">${COIN(12)}${moneyHTML(p.prize)}</span>` : ''}<div class="pod-block"><span>${p.rank}</span></div></div>`;
+}
+function startDays(iso) {
+  if (!iso) return '';
+  const d = new Date(iso + 'T00:00:00'); if (isNaN(d)) return '';
+  const t = new Date(); t.setHours(0, 0, 0, 0);
+  const n = Math.round((d - t) / 86400000);
+  return n > 1 ? `in ${n} Tagen` : n === 1 ? 'morgen' : n === 0 ? 'heute' : '';
+}
+function viewStart() {
+  const st = S.settings, adm = S.admin;
+  const list = standings(), top = list[0];
+  const me = playerById(lsGet('turnier-me', ''));
+  const qRun = S.quiz && S.quiz.status === 'running', dRun = S.draw && S.draw.status === 'running';
+  const date = fmtDate(st.date), days = startDays(st.date);
+  const games = S.games || [], planned = games.filter(g => g.status === 'geplant').length;
+  const news = (S.news && S.news.items) || [];
+  const tile = (tab, ico, title, text, info, color) => `<button class="stile" type="button" data-act="tab" data-tab="${tab}" style="--tc:${color}">
+      <span class="stile-top"><span class="stile-ico" aria-hidden="true">${ico}</span><b>${title}</b></span>
+      <p>${text}</p>${info ? `<span class="stile-info">${info}</span>` : ''}</button>`;
+  const gameInfo = g => g && g.status === 'running' ? '■ Läuft gerade, mitmachen!' : g && g.status === 'finished' ? 'Letztes Ergebnis ansehen' : 'Startet, sobald der Spielleiter loslegt';
+  const live = qRun || dRun ? `<button class="btn btn-gold btn-lg start-live" type="button" data-act="tab" data-tab="${qRun ? 'quiz' : 'malen'}">■ Jetzt live: ${qRun ? 'Quiz' : 'Malen'} · mitspielen</button>` : '';
+  return `<section class="section start">
+    <div class="start-hero">
+      ${me ? `<span class="eyebrow">Hallo ${esc(me.name)}!</span>` : `<span class="eyebrow">Willkommen bei</span>`}
+      <div class="start-logo">${COIN(64, 'spin')}<b>${SITE_NAME}</b></div>
+      <p class="start-tag">Eure Zentrale fürs Zocken: Turnier mit Highscore und Jackpot, dazu Quiz und Malen live auf jedem Handy.</p>
+      <div class="start-facts">
+        <span class="start-fact">🏆 ${esc(st.title)}</span>
+        ${date ? `<span class="start-fact">📅 ${esc(date)}${days ? ` <small>${days}</small>` : ''}</span>` : ''}
+        <span class="start-fact">👥 ${S.players.length} Spieler</span>
+        ${totalPrize() > 0 ? `<span class="start-fact">${COIN(14)} Jackpot ${moneyHTML(totalPrize())}</span>` : ''}
+      </div>
+      <div class="start-cta">${live}<button class="btn ${live ? '' : 'btn-gold btn-lg'}" type="button" data-act="tab" data-tab="turnier">Zum Turnier</button><button class="btn" type="button" data-act="tab" data-tab="spiele">Spiele</button>${me ? '' : `<button class="btn btn-ghost" type="button" data-act="tab" data-tab="spieler">Spieler wählen</button>`}</div>
+    </div>
+    <div class="start-group">
+      <h3 class="start-h" style="--tc:#ffcf3f">Turnier</h3>
+      <div class="stiles">
+        ${tile('rangliste', '🏆', 'Highscore', 'Wer führt? Alle Punkte, Plätze und wie viel jeder vom Jackpot bekommt.', top && top.pts > 0 ? `Platz 1: ${esc(top.name)} · ${top.pts} ${ptsWord(top.pts)}` : 'Noch keine Punkte vergeben', '#ffcf3f')}
+        ${tile('rad', '🎡', 'Zufallsrad', 'Das Rad entscheidet, welches Spiel als Nächstes drankommt.', (S.wheel.items || []).length ? `${S.wheel.items.length} Spiele im Rad` : 'Noch leer', '#ffcf3f')}
+        ${tile('liste', '📋', 'Spieleliste', 'Alle Spiele fürs Turnier. Gib deinem Favoriten 🔥 Hype oder schlag ein Spiel vor.', games.length ? `${games.length} Spiele · ${planned} geplant` : 'Noch keine Spiele', '#ffcf3f')}
+      </div>
+    </div>
+    <div class="start-group">
+      <h3 class="start-h" style="--tc:#39d6f2">Spiele</h3>
+      <div class="stiles">
+        ${tile('quiz', '🧠', 'Quiz', 'Spielbrett mit Fragen aus 8 Themen. Wer dran ist, wählt Feld und Antwort direkt am Handy.', gameInfo(S.quiz), '#39d6f2')}
+        ${tile('malen', '🎨', 'Malen', 'Einer malt, alle anderen raten im Chat. Wie skribbl.io, live auf jedem Handy.', gameInfo(S.draw), '#39d6f2')}
+      </div>
+    </div>
+    <div class="start-group">
+      <h3 class="start-h" style="--tc:#c493ff">Mehr</h3>
+      <div class="stiles">
+        ${tile('spieler', '👾', 'Spieler', me ? 'Alle Mitspieler mit Foto und Spruch.' : 'Erstell deinen Spieler mit Foto oder tipp bei deinem Namen auf „Das bin ich“.', me ? `Du bist ${esc(me.name)}` : `${S.players.length} Spieler dabei`, '#c493ff')}
+        ${tile('news', '📣', 'Ankündigungen', 'Neuigkeiten und Countdowns vom Spielleiter.', news[0] && news[0].title ? esc(news[0].title) : `${news.length} Einträge`, '#c493ff')}
+        ${adm ? tile('einstellungen', '⚙️', 'Optionen', 'Preisgeld, Musik, Bilder, Passwort und mehr. Nur für dich als Spielleiter.', '', '#c493ff') : ''}
+      </div>
+    </div>
+    <div class="card start-how">
+      <h3>So geht's</h3>
+      <ol class="dhow">
+        <li><b>Spieler:</b> Erstell deinen Spieler mit Foto oder tipp bei deinem Namen auf „Das bin ich“.</li>
+        <li><b>Turnier:</b> Ihr spielt die Spiele aus der Liste, der Spielleiter verteilt Punkte. Wer am Ende vorne liegt, holt sich den Jackpot.</li>
+        <li><b>Spiele:</b> Bei Quiz und Malen spielst du direkt auf deinem Handy mit. Die Punkte können in den Highscore wandern.</li>
+      </ol>
+    </div>
+  </section>`;
 }
 function viewBoard() {
   const list = standings();
@@ -4882,7 +4995,8 @@ function copyShareLink() {
 function setTab(t) {
   t = viewFor(t);
   document.body.classList.remove('navshow');
-  if (HUB.includes(t)) { try { localStorage.setItem('turnier-sub', t); } catch (e) {} }
+  const grp = groupOf(t);
+  if (grp) { try { localStorage.setItem(grp === 'spiele' ? 'turnier-sub' : 'turnier-sub-' + grp, t); } catch (e) {} }
   S.tab = t;
   try { if (location.hash !== '#' + t) location.hash = t; } catch (e) {}
   render();
