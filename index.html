@@ -300,6 +300,12 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .invite-card{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
 .invite-card h3{margin:0}
 .invite-url{width:100%;font-size:13px}
+.fs-btn{display:grid;place-items:center;flex:none;width:38px;height:38px;margin-left:10px;border:0;background:var(--bg-2);color:var(--ink);cursor:pointer;box-shadow:0 -2px 0 var(--edge),0 2px 0 var(--edge),-2px 0 0 var(--edge),2px 0 0 var(--edge)}
+.fs-btn[hidden]{display:none}
+.fs-btn:hover{color:var(--coin)}
+.fs-btn[aria-pressed="true"]{background:var(--coin);color:#1a1200}
+.fs-card{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.fs-card h3{margin:0}
 #brand-sub .online{display:inline-flex;align-items:center;gap:5px}
 #brand-sub .online i{width:8px;height:8px;border-radius:50%;background:#4ff08f;box-shadow:0 0 6px #4ff08f}
 /* Handy: die Bahn nutzt den ganzen Bildschirm, oben links nur kleine Knöpfe */
@@ -1482,7 +1488,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=9"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=10"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -1541,6 +1547,7 @@ const SHELL = `<div id="fly-site" aria-hidden="true"></div>
     <div class="brand"><svg class="ico coin spin" width="40" height="40" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#6b4300" d="M4 0h4v1H4zM2 1h2v1H2zM8 1h2v1H8zM1 2h1v2H1zM10 2h1v2h-1zM0 4h1v4H0zM11 4h1v4h-1zM1 8h1v2H1zM10 8h1v2h-1zM2 10h2v1H2zM8 10h2v1H8zM4 11h4v1H4z"/><path fill="#ffcf3f" d="M4 1h4v10H4zM2 2h8v8H2zM1 4h10v4H1z"/><path fill="#fff3b0" d="M3 3h1v2H3zM4 2h2v1H4z"/><path fill="#d99a00" d="M5 4h2v4H5zM8 8h1v1H8zM9 6h1v2H9z"/></svg><span class="brand-txt"><b id="brand-title">Darkime</b><small id="brand-sub">Highscore, Jackpot und Quiz</small></span></div>
     <nav class="tabs" id="tabs" aria-label="Bereiche"></nav>
     <span class="pill" id="pill">Lädt …</span>
+    <button class="fs-btn" id="fs-btn" type="button" data-act="fs-toggle" hidden></button>
   </div>
   <div id="gatebar"></div>
 </header>
@@ -3157,7 +3164,34 @@ function renderFoot() {
   if (el.innerHTML !== h) el.innerHTML = h;
 }
 let lastTitle = '';
+/* Vollbild: Knopf oben rechts und in den Optionen (wo der Browser es kann; das iPhone kann es nicht) */
+const FS_IN = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M3 9V3h6M15 3h6v6M21 15v6h-6M9 21H3v-6"/></svg>';
+const FS_OUT = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M9 3v6H3M21 9h-6V3M15 21v-6h6M3 15h6v6"/></svg>';
+const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+const fsOk = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+function fsToggle() {
+  const d = document.documentElement;
+  try {
+    if (fsEl()) { const r = (document.exitFullscreen || document.webkitExitFullscreen).call(document); if (r && r.catch) r.catch(() => {}); }
+    else { const r = (d.requestFullscreen || d.webkitRequestFullscreen).call(d, {navigationUI:'hide'}); if (r && r.catch) r.catch(() => toast('Vollbild geht in diesem Browser nicht.')); }
+  } catch (e) { toast('Vollbild geht in diesem Browser nicht.'); }
+}
+function renderFsBtn() {
+  const b = $('#fs-btn'); if (!b) return;
+  const on = !!fsEl(), html = on ? FS_OUT : FS_IN, lbl = tx(on ? 'Vollbild beenden' : 'Vollbild');
+  b.hidden = !fsOk();
+  if (b.dataset.on !== String(on)) { b.dataset.on = String(on); b.innerHTML = html; b.setAttribute('aria-label', lbl); b.title = lbl; b.setAttribute('aria-pressed', String(on)); }
+}
+['fullscreenchange', 'webkitfullscreenchange'].forEach(n => document.addEventListener(n, () => { renderFsBtn(); if (S.tab === 'einstellungen') render(); }));
+function fsCardHTML() {
+  return `<div class="card fs-card"><h3>Vollbild</h3>
+    ${fsOk() ? `<p class="m-text">Blendet die Leisten des Browsers aus, damit die Seite den ganzen Bildschirm nutzt. Mit Esc oder dem Knopf oben rechts kommst du wieder zurück.</p>
+      <button class="btn ${fsEl() ? '' : 'btn-gold'}" type="button" data-act="fs-toggle">${fsEl() ? 'Vollbild beenden' : 'Vollbild an'}</button>`
+      : `<p class="m-text">Dieser Browser kann die Seite nicht in den Vollbild-Modus schalten. Auf dem iPhone geht es so: In Safari auf „Teilen“ tippen, dann „Zum Home-Bildschirm“. Von dort geöffnet, läuft die Seite ohne Browser-Leisten.</p>`}
+  </div>`;
+}
 function renderHeader() {
+  renderFsBtn();
   if (S.tab === 'spiele-pick' && (S.mode !== 'db' || S.loaded)) S.tab = S.room ? roomView() : 'spiele';
   if ($('#brand-title').textContent !== SITE_NAME) $('#brand-title').textContent = SITE_NAME;
   const parts = [];
@@ -3418,6 +3452,7 @@ function viewSettings() {
   if (!S.admin) return `<section class="section narrow">
     <div class="sec-head"><h2 class="h">Optionen</h2></div>
     ${inviteCardHTML()}
+    ${fsCardHTML()}
     ${langCardHTML()}
     <div class="card share-card">
       <h3>Hintergrundmusik</h3>
@@ -3439,6 +3474,7 @@ function viewSettings() {
   return `<section class="section narrow">
     <div class="sec-head"><h2 class="h">Optionen</h2></div>
     ${inviteCardHTML()}
+    ${fsCardHTML()}
     ${langCardHTML()}
     <form class="card form" data-form="settings">
       <div class="field"><label for="st-title">Name des Turniers</label><input class="input" id="st-title" data-draft="set.title" value="${esc(s.title)}" maxlength="60"></div>
@@ -6522,6 +6558,7 @@ function tabIntoView() {
 function withPending(go) { if (ctl() && pendingPoints()) quizTransfer(); go(); }
 const actions = {
   'invite-copy': () => inviteCreate(),
+  'fs-toggle': () => fsToggle(),
   'lhs-open': () => openModal({type:'lhs'}),
   'lhs-reset': () => { const L = lobby(); if (!L || !S.admin) return; confirmBox(`Highscore von ${L.name} zurücksetzen?`, 'Alle Punkte in diesem Raum werden gelöscht. Der Turnier-Highscore bleibt.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Zurücksetzen', cls:'btn-gold', fn:() => roomWrite({hs:{}})}]); },
   'gmenu': () => {
