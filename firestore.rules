@@ -158,11 +158,11 @@ service cloud.firestore {
         allow delete: if true;
       }
 
-      // Spiele-Räume (Quiz, Malen und Golf): jeder darf beitreten und als Host das Spiel steuern. Höchstens 8 Spieler pro Raum.
+      // Spiele-Räume (Quiz, Malen, Golf und Kartenwahn): jeder darf beitreten und als Host das Spiel steuern. Höchstens 8 Spieler pro Raum.
       match /lobbies/{id} {
         allow read: if true;
         allow create, update: if id in ['r1', 'r2', 'r3']
-          && request.resource.data.keys().hasOnly(['name', 'members', 'host', 'hostSeen', 'kind', 'quiz', 'draw', 'golf', 'hs', 'v'])
+          && request.resource.data.keys().hasOnly(['name', 'members', 'host', 'hostSeen', 'kind', 'quiz', 'draw', 'golf', 'uno', 'hs', 'v'])
           && (!('hs' in request.resource.data) || (request.resource.data.hs is map && request.resource.data.hs.size() <= 300))
           && (!('members' in request.resource.data) || (request.resource.data.members is map && request.resource.data.members.size() <= 8));
         allow delete: if isAdmin();

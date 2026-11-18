@@ -288,6 +288,175 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .gplay .g-done small{display:block;margin:4px 0 0}
 .gplay .g-help{font-size:12px;margin:4px 0 0;line-height:1.5}
 .g-hn-m{display:none}
+/* KARTEN-CSS-START */
+/* ---------- Kartenwahn: Karten im Pixel-Look der Seite (feste Farben, unabhängig vom Event-Look) ---------- */
+.ksec{--edge:#463a80;--panel:#1c1537;--panel-2:#2a1f4f;--muted:#aaa1d2;--coin:#ffcf3f}
+.kcard{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--w,72px);height:calc(var(--w,72px) * 1.5);
+  background:var(--kc);color:#07050f;font-family:"Press Start 2P","Courier New",monospace;line-height:1;user-select:none;-webkit-user-select:none;
+  background-image:linear-gradient(135deg,rgba(255,255,255,.24) 0 16%,transparent 16% 100%);
+  box-shadow:0 -3px 0 #07050f,0 3px 0 #07050f,-3px 0 0 #07050f,3px 0 0 #07050f,inset 0 0 0 3px rgba(255,255,255,.32),inset 0 -6px 0 rgba(0,0,0,.2)}
+.kc-mid{position:relative;width:70%;height:62%;display:grid;place-items:center;background:#0b0817;color:var(--kc);font-size:calc(var(--w,72px) * .34);
+  box-shadow:0 -2px 0 #07050f,0 2px 0 #07050f,-2px 0 0 #07050f,2px 0 0 #07050f;text-shadow:2px 2px 0 rgba(0,0,0,.65);
+  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 2px,transparent 2px 4px)}
+.kc-mid svg{width:58%;height:auto;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.6))}
+.kc-act .kc-mid{font-size:calc(var(--w,72px) * .27)}
+.kc-i{position:absolute;display:flex;font-size:calc(var(--w,72px) * .15)}
+.kc-i svg{width:calc(var(--w,72px) * .18);height:auto}
+.kc-i.tl{top:7%;left:9%}
+.kc-i.br{bottom:7%;right:9%;transform:rotate(180deg)}
+.kc-w{color:#f5f2ff;background-image:linear-gradient(135deg,rgba(255,255,255,.12) 0 16%,transparent 16% 100%)}
+.kc-w .kc-mid{color:#f5f2ff}
+.kc-wq{display:grid;grid-template-columns:1fr 1fr;width:48%;aspect-ratio:1;gap:3px;transform:rotate(45deg)}
+.kc-wq i{display:block;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+.kc-plus{position:absolute;font-weight:400;font-size:calc(var(--w,72px) * .2);color:#fff;text-shadow:2px 2px 0 #07050f,-1px -1px 0 #07050f}
+.kback{background:#1c1537;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:8px 8px}
+.kb-in{display:grid;place-items:center;width:62%;height:46%;background:#2a1f4f;box-shadow:0 0 0 2px #ffcf3f,0 0 0 4px #07050f}
+.kb-in svg{width:56%;height:auto}
+.kcard.mini{--w:20px;box-shadow:0 -1px 0 #07050f,0 1px 0 #07050f,-1px 0 0 #07050f,1px 0 0 #07050f}
+.kcard.mini .kc-i{display:none}
+.kcard.mini .kc-mid{font-size:7px;width:76%;height:66%;box-shadow:none;text-shadow:none}
+.kcard.mini .kc-mid svg{width:80%}
+.kcard.mini .kc-plus{font-size:6px;text-shadow:none}
+
+/* Spieltisch: fester Bildschirm wie bei Golf */
+.ksec.kplay{position:fixed;inset:0;z-index:30;margin:0;max-width:none;display:flex;flex-direction:column;gap:6px;padding:10px 14px 10px;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 42%,#2a1f4f 0%,#170f30 52%,#0b0817 100%)}
+.ksec.kplay::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px) 0 0/24px 24px}
+.kplay > *{position:relative}
+.k-top{display:flex;align-items:center;gap:12px;flex:none}
+.k-head{display:flex;flex-direction:column;min-width:0}
+.k-head b{font-family:var(--display);font-size:19px;white-space:nowrap}
+.k-head small{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-timer{margin-left:auto;position:relative;flex:none;width:min(200px,30vw);height:26px;background:#0b0817;box-shadow:0 0 0 2px var(--edge);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.k-timer i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#39d6f2,#4ff08f);transition:width 1s linear}
+.k-timer span{position:relative;font-family:var(--pixel);font-size:10px;color:#fff;text-shadow:1px 1px 0 #000}
+.k-timer.low i{background:#ff4f6d}
+.k-timer.low.mine{animation:kPulse .5s steps(2) infinite}
+.k-top .k-endbtn{flex:none}
+.k-top .k-head + .k-endbtn{margin-left:auto}
+.k-opps{display:flex;gap:10px;flex:none;overflow-x:auto;padding:5px 4px 7px;justify-content:safe center;scrollbar-width:none}
+.k-opps::-webkit-scrollbar{display:none}
+.k-opp{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 6px;background:rgba(11,8,23,.78);box-shadow:0 0 0 2px var(--edge);flex:none;transition:box-shadow .2s}
+.k-opp.kturn{box-shadow:0 0 0 3px #ffcf3f,0 0 18px rgba(255,207,63,.45)}
+.k-opp-av{position:relative;flex:none}
+.k-turn-dot{position:absolute;right:-5px;top:-5px;width:12px;height:12px;background:#ffcf3f;box-shadow:0 0 0 2px #07050f;animation:kPulse .8s steps(2) infinite}
+.k-opp-info{display:flex;flex-direction:column;min-width:0}
+.k-opp-info b{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.k-opp-n{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);white-space:nowrap}
+.k-minis{display:inline-flex;padding-left:4px}
+.k-minis i{width:9px;height:13px;margin-left:-4px;background:#2a1f4f;box-shadow:0 0 0 1px #ffcf3f}
+.k-one{font-family:var(--pixel);font-size:10px;color:#ff4f6d;animation:kPulse .6s steps(2) infinite}
+.k-catch{background:#ff4f6d;color:#fff;animation:kAlarm .7s steps(2) infinite}
+.k-table{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;gap:clamp(26px,7vw,80px);--w:clamp(64px,14vh,128px)}
+.k-ring{position:absolute;left:50%;top:50%;width:min(80vw,44vh,440px);aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none}
+.k-ring::before{content:"";position:absolute;inset:0;border-radius:50%;border:3px dashed color-mix(in srgb,var(--cc) 50%,transparent);animation:kSpin 16s linear infinite}
+.k-ring.ccw::before{animation-direction:reverse}
+.k-ring span{position:absolute;left:50%;top:-4px;transform:translateX(-50%);font-size:22px;line-height:1;color:var(--cc);text-shadow:0 0 10px var(--cc)}
+.k-deck{position:relative;display:grid;background:none;border:0;padding:0;cursor:pointer}
+.k-deck > .kcard{grid-area:1/1;transition:transform .12s}
+.k-deck .k-deck2{transform:translate(-4px,4px)}
+.k-deck .k-deck3{transform:translate(-8px,8px)}
+.k-deck:disabled{cursor:default}
+.k-deck:not(:disabled):hover > .kcard:last-of-type{transform:translateY(-6px)}
+.kplay.mine .k-deck:not(:disabled) > .kcard:last-of-type{animation:kGlow 1s steps(2) infinite}
+.k-deckn{position:absolute;left:50%;bottom:-26px;transform:translateX(-50%);font-family:var(--pixel);font-size:10px;color:var(--muted)}
+.k-pile{position:relative;display:grid}
+.k-pile > .kcard{grid-area:1/1}
+.k-pile .u1{transform:rotate(-13deg) translate(-8px,3px)}
+.k-pile .u2{transform:rotate(10deg) translate(7px,4px)}
+.k-topcard{filter:drop-shadow(0 0 16px color-mix(in srgb,var(--cc) 70%,transparent))}
+.k-topcard.drop{animation:kDrop .35s ease-out}
+.k-ghost{opacity:.5}
+.k-pend{position:absolute;right:-22px;top:-16px;z-index:2;background:#ff4f6d;color:#fff;font-family:var(--pixel);font-size:15px;padding:7px 8px;box-shadow:0 0 0 3px #07050f;animation:kPulse .6s steps(2) infinite}
+.k-colorbadge{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;font-family:var(--pixel);font-size:10px;color:#f5f2ff;background:rgba(11,8,23,.85);padding:6px 10px;box-shadow:0 0 0 2px var(--cc);white-space:nowrap}
+.k-colorbadge i{width:12px;height:12px;background:var(--cc)}
+.k-status{flex:none;text-align:center;font-size:15px;min-height:22px}
+.k-status.mine b{color:#ffcf3f;font-family:var(--display);font-size:18px;margin-right:4px}
+.k-log{flex:none;display:flex;flex-direction:column;align-items:center;gap:1px;min-height:36px;font-size:13px;color:#d6d0f2;text-align:center}
+.k-log .old{opacity:.55;font-size:12px}
+.k-actions{flex:none;display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;min-height:44px}
+.k-call{background:#ff4f6d;color:#fff}
+.k-call.armed{background:#4ff08f;color:#07050f}
+.k-hand{flex:none;container-type:inline-size;display:flex;overflow-x:auto;overflow-y:hidden;padding:24px 12px 10px;justify-content:safe center;scrollbar-width:thin;--w:clamp(60px,12vh,98px)}
+.kc-btn{position:relative;flex:none;background:none;border:0;padding:0;cursor:pointer;transition:transform .12s;-webkit-tap-highlight-color:transparent}
+.kc-btn + .kc-btn{margin-left:max(calc(30px - var(--w)),min(8px,calc((100cqw - 24px - var(--n) * var(--w)) / max(1,var(--n) - 1))))}
+.kc-btn.ok{transform:translateY(-14px)}
+.kc-btn.ok .kcard{filter:drop-shadow(0 0 7px rgba(255,207,63,.75))}
+.kc-btn.no .kcard{filter:brightness(.5) saturate(.7)}
+.kc-btn.drawn{transform:translateY(-22px)}
+.kc-btn:hover,.kc-btn:focus-visible{z-index:3}
+@media (hover:hover){.kc-btn.ok:hover{transform:translateY(-24px)}}
+.kc-btn.shake{animation:kWiggle .3s}
+.k-pick{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:rgba(7,5,15,.72)}
+.k-pick-box{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(380px,92vw);padding:20px;background:#1c1537;box-shadow:0 0 0 3px #463a80,0 10px 0 3px #07050f}
+.k-pick-box b{font-family:var(--display);font-size:22px}
+.k-pick-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.k-pick-grid button{height:76px;border:0;background:var(--kc);color:#07050f;font-family:var(--pixel);font-size:12px;cursor:pointer;box-shadow:0 0 0 3px #07050f,inset 0 -7px 0 rgba(0,0,0,.22)}
+.k-pick-grid button:hover{filter:brightness(1.12)}
+@keyframes kPulse{50%{opacity:.4}}
+@keyframes kSpin{to{transform:rotate(360deg)}}
+@keyframes kDrop{from{transform:translateY(-46px) rotate(-16deg) scale(1.18);opacity:.2}}
+@keyframes kWiggle{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@keyframes kAlarm{50%{background:#ffcf3f;color:#07050f}}
+@keyframes kGlow{50%{filter:drop-shadow(0 0 12px #ffcf3f)}}
+@media (prefers-reduced-motion:reduce){.k-ring::before,.k-topcard.drop,.k-catch,.kc-btn.shake{animation:none}}
+@media (max-width:760px){
+  .ksec.kplay{padding:8px 8px 6px;gap:4px}
+  .k-head small{display:none}
+  .k-head b{font-size:16px}
+  .k-timer{width:34vw}
+  .k-opps{justify-content:flex-start;gap:8px}
+  .k-opp{gap:6px;padding:4px 8px 4px 4px}
+  .k-opp-info b{max-width:72px;font-size:13px}
+  .k-table{--w:clamp(60px,11.5vh,104px);gap:clamp(30px,10vw,56px)}
+  .k-status{font-size:14px}
+  .k-status.mine b{font-size:16px}
+  .k-log{min-height:32px;font-size:12px}
+  .k-hand{--w:clamp(58px,10.5vh,86px);padding:22px 8px 8px}
+  body.ingame:has(.kplay) #bgm-root{display:none}
+  .k-opps.many{gap:5px;padding-top:9px}
+  .k-opps.many .k-opp{position:relative;flex-direction:column;gap:2px;width:46px;padding:4px 2px 3px;align-items:center}
+  .k-opps.many .k-opp-info{align-items:center}
+  .k-opps.many .k-opp-info b{max-width:44px;font-size:10px}
+  .k-opps.many .k-minis,.k-opps.many .k-cw{display:none}
+  .k-opps.many .k-opp-n{font-family:var(--pixel);font-size:10px;color:#f5f2ff}
+  .k-opps.many .k-catch{position:absolute;left:50%;top:-8px;transform:translateX(-50%);z-index:2;padding:3px 6px;font-size:10px;min-height:0;white-space:nowrap}
+  .k-opps.many .k-one{position:absolute;right:2px;top:2px;font-size:8px}
+}
+@media (min-width:761px){.kplay .k-hand{padding-right:84px;padding-left:84px}}
+@media (orientation:landscape) and (max-height:540px){
+  .k-table{--w:clamp(50px,20vh,90px)}
+  .k-hand{--w:clamp(48px,19vh,78px);padding-top:16px}
+  .k-log .old{display:none}
+}
+/* Vorbereitung und Ergebnis */
+.k-setup{display:flex;flex-direction:column;gap:12px}
+.k-title-big{margin:0;font-family:var(--display);font-size:clamp(28px,4vw,40px)}
+.k-fan{display:flex;justify-content:center;padding:22px 0 8px;--w:62px}
+.k-fan .kcard{margin-left:-16px;transform-origin:50% 120%}
+.k-fan .kcard:first-child{margin-left:0}
+.k-fan .fan0{transform:rotate(-20deg)}.k-fan .fan1{transform:rotate(-12deg)}.k-fan .fan2{transform:rotate(-4deg)}.k-fan .fan3{transform:rotate(4deg)}.k-fan .fan4{transform:rotate(12deg)}.k-fan .fan5{transform:rotate(20deg)}
+.k-opts{display:flex;flex-direction:column;gap:10px}
+.k-opts .toggle span{display:flex;flex-direction:column;gap:2px}
+.k-opts .toggle small{color:var(--muted);font-size:13px}
+.k-rules{margin-top:16px}
+.k-rules summary{cursor:pointer;font-weight:700}
+.k-rules ul{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.k-end{display:flex;flex-direction:column;gap:14px}
+.k-winner{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.k-winner h2{margin:0;font-family:var(--display);font-size:clamp(26px,4vw,38px);color:#ffcf3f}
+.k-rank{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.k-rank li{display:grid;grid-template-columns:34px 46px minmax(0,1fr) auto;grid-template-rows:auto auto auto;align-items:center;column-gap:12px;row-gap:2px;padding:10px 12px;background:var(--bg-2)}
+.k-rank li.k-r1{box-shadow:0 0 0 2px #ffcf3f}
+.k-med{grid-column:1;grid-row:1 / span 2;text-align:center;font-size:22px;font-family:var(--pixel)}
+.k-av{grid-column:2;grid-row:1 / span 2;display:flex}
+.k-rank b{grid-column:3;grid-row:1}
+.k-rank .k-rest{grid-column:3;grid-row:2;color:var(--muted);font-size:13px}
+.k-rank .g-pts{grid-column:4;grid-row:1 / span 2}
+.k-rest-cards{grid-column:3 / -1;grid-row:3;display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.k-rest-cards:empty{display:none}
+/* KARTEN-CSS-END */
 .lhs{display:flex;flex-direction:column;gap:10px;margin-top:16px}
 .lhs-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .lhs-head h3{margin:0}
@@ -1488,7 +1657,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=10"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=11"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -2521,11 +2690,11 @@ function groupPick(g) {
   return GROUPS[g].some(x => x[0] === last) ? last : GROUPS[g][0][0];
 }
 /* Ansichten: "Spiele" ist der Ober-Tab für Quiz und Malen */
-const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'einstellungen'];
+const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'einstellungen'];
 const HUB = ['quiz', 'malen'];
 const viewOk = t => VIEWS.includes(t);
 function viewFor(t) {
-  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf') return S.room ? roomView() : 'spiele';
+  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf' || t === 'karten') return S.room ? roomView() : 'spiele';
   return GROUPS[t] ? groupPick(t) : viewOk(t) ? t : 'start';
 }
 
@@ -3092,16 +3261,17 @@ function render() {
   else if (S.mode === 'lock') html = lockHTML();
   else if (blocked()) html = `<div style="min-height:70vh"></div>`;
   else if (S.tab === 'spiele-pick') html = `<div class="loading">${COIN(48, 'spin')}</div>`;
-  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, einstellungen:viewSettings}[S.tab] || viewStart)();
+  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, einstellungen:viewSettings}[S.tab] || viewStart)();
   const oldStand = m.querySelector('.stand');
   const oldKey = oldStand ? oldStand.dataset.key : null;
   const before = standCapture(oldStand);
-  m.classList.toggle('wide', /class="section (qsec|dsec|gsec)"/.test(html));
+  m.classList.toggle('wide', /class="section (qsec|dsec|gsec|ksec)"/.test(html));
   renderSubnav();
   if (S.tab === 'malen' && !blocked() && S.mode === 'db' && S.loaded && dPartsOk(m)) dPatchParts();
   else { patch(m, html); dPrev = dParts ? {...dParts} : {}; }
   dcMount();
   golfMount();
+  kMount();
   renderFlySite();
   const newStand = m.querySelector('.stand');
   if (oldStand && newStand && newStand.dataset.key === oldKey) newStand.replaceWith(oldStand);
@@ -3121,7 +3291,7 @@ function render() {
 function tabsHidden() { return S.mode === 'loading' || S.mode === 'setup' || S.mode === 'lock' || S.mode === 'firstrun' || (S.mode === 'db' && !S.loaded) || blocked(); }
 function inGame() {
   if (tabsHidden() || S.mode !== 'db') return false;
-  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running');
+  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running') || (S.tab === 'karten' && !!S.uno && S.uno.status === 'running');
 }
 const isTouch = () => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } };
 const canFull = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
@@ -3148,7 +3318,7 @@ function renderSubnav() {
     h = `<div class="hub" style="--n:${list.length}" role="group" aria-label="Turnier">${list.map(([k, i, l]) => `<button class="hub-btn" type="button" data-act="tab" data-tab="${k}" aria-pressed="${S.tab === k}"><span class="hub-ico" aria-hidden="true">${i}</span><span class="hub-txt"><b>${l}</b>${sub(k)}</span></button>`).join('')}</div>`;
   } else if (!hide && inRoom) {
     h = roomBarHTML();
-    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
+    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf' && S.tab !== 'karten') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
   }
   el.setAttribute('aria-label', tx(inRoom ? 'Raum' : 'Turnier'));
   el.classList.toggle('wide', (!!grp || inRoom) && $('#main').classList.contains('wide'));
@@ -3309,6 +3479,7 @@ function viewStart() {
         ${tile('spiele', '🧠', 'Quiz', 'Spielbrett mit Fragen aus 8 Themen. Such dir einen Raum und spielt los, wann ihr wollt.', gameInfo('quiz'), '#39d6f2')}
         ${tile('spiele', '🎨', 'Malen', 'Einer malt, alle anderen raten im Chat. Wie skribbl.io, jederzeit in einem Raum.', gameInfo('malen'), '#39d6f2')}
         ${tile('spiele', '⛳', 'Golf', 'Minigolf in 3D mit der Maus oder dem Finger: 30 Bahnen, jede ein Stück länger und kniffliger.', gameInfo('golf'), '#39d6f2')}
+        ${tile('spiele', '🃏', 'Kartenwahn', 'Das Ablegespiel für 2 bis 8: gleiche Farbe oder Zahl ablegen, +2, +4, Aussetzen, Richtungswechsel. Wer zuerst keine Karten mehr hat, gewinnt.', gameInfo('karten'), '#39d6f2')}
       </div>
     </div>
     <div class="start-group start-news">
@@ -5060,8 +5231,8 @@ function normLobby(id, x) {
   const m = x.members && typeof x.members === 'object' && !Array.isArray(x.members) ? x.members : {};
   for (const [pid, v] of Object.entries(m)) if (pid && pid.length <= 40 && v && typeof v === 'object') members[pid] = {at:Number(v.at) || 0, dev:str(v.dev, 60)};
   const host = x.host && typeof x.host === 'object' && x.host.dev ? {pid:str(x.host.pid, 40), dev:str(x.host.dev, 60)} : null;
-  return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, kind:['quiz', 'malen', 'golf'].includes(x.kind) ? x.kind : '',
-    quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null,
+  return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, kind:['quiz', 'malen', 'golf', 'karten'].includes(x.kind) ? x.kind : '',
+    quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null, uno:x.uno && typeof x.uno === 'object' ? x.uno : null,
     hs:Object.fromEntries(Object.entries(x.hs && typeof x.hs === 'object' && !Array.isArray(x.hs) ? x.hs : {}).filter(([pid, v]) => pid.length <= 40 && Number.isFinite(Number(v))).map(([pid, v]) => [pid, Math.round(Number(v))]))};
 }
 /* Jeder Raum hat seinen eigenen Highscore (Feld hs im Raum). Am Spielende trägt der Host die Punkte automatisch ein.
@@ -5078,6 +5249,8 @@ function lobbyAutoAward() {
   if (q && q.status === 'finished' && !q.transferred && !lhsDone.has('q' + q.id + ':' + (q.round || 1))) { lhsDone.add('q' + q.id + ':' + (q.round || 1)); quizTransfer(); }
   if (st && st.status === 'finished' && !st.transferred && !lhsDone.has('d' + st.id)) { lhsDone.add('d' + st.id); drawTransfer(); }
   if (G && G.status === 'finished' && !G.transferred && !lhsDone.has('g' + G.id)) { lhsDone.add('g' + G.id); golfTransfer(); }
+  const U = S.uno;
+  if (U && U.status === 'finished' && !U.transferred && !lhsDone.has('k' + U.id)) { lhsDone.add('k' + U.id); kTransfer(); }
 }
 function lobbyHsHTML(L = lobby(), max = 10, inModal = false) {
   if (!L) return '';
@@ -5096,19 +5269,19 @@ function ctl() { const L = S.room && S.lobbies[S.room]; return !!(L && L.host &&
 function hostStale(L) { return !L || !L.host || Date.now() - (L.hostSeen || 0) > HOST_STALE_MS; }
 function roomState(L) {
   if (!L) return 'free';
-  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : null;
+  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : L.kind === 'karten' ? L.uno : null;
   if (g && g.status === 'running') return 'running';
   if (g && g.status === 'finished') return 'finished';
   return roomMembers(L).length ? 'waiting' : 'free';
 }
-function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : 'raum'; }
-const roomTabs = ['raum', 'quiz', 'malen', 'golf'];
+function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : L.kind === 'karten' ? 'karten' : 'raum'; }
+const roomTabs = ['raum', 'quiz', 'malen', 'golf', 'karten'];
 const FV = () => window.firebase && firebase.firestore && firebase.firestore.FieldValue;
 function roomRef(r = S.room) { return db.collection('lobbies').doc(r); }
 function roomSet(r, spectate = false) {
   if (S.room === r && S.spectate === spectate) return;
   S.room = r; S.spectate = !!(r && spectate);
-  S.quiz = null; S.draw = null; S.golf = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false;
+  S.quiz = null; S.draw = null; S.golf = null; S.uno = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false; kl.pend = null; kl.n = 0;
   roomApply();
 }
 function roomApply() {
@@ -5119,6 +5292,8 @@ function roomApply() {
   drawOnSnap(L && L.draw ? L.draw : null);
   S.golf = L && L.golf ? gNorm(L.golf) : null;
   golfOnSnap();
+  S.uno = L && L.uno ? kNorm(L.uno) : null;
+  kOnSnap();
   handleAnswers();
   if (S.room && roomTabs.includes(S.tab)) { const v = roomView(); if (S.tab !== v) { S.tab = v; try { history.replaceState(null, '', '#' + v); } catch (e) {} } }
   if (!S.room && roomTabs.includes(S.tab)) S.tab = 'spiele';
@@ -5164,7 +5339,7 @@ async function roomJoin(r) {
   const old = myRoom();
   if (old && old !== r) await roomLeave(old, true);
   const patch = {members:{[me]:{at:Date.now(), dev:devId}}};
-  if (!roomMembers(L).length) { patch.kind = ''; patch.quiz = null; patch.draw = null; patch.golf = null; }
+  if (!roomMembers(L).length) { patch.kind = ''; patch.quiz = null; patch.draw = null; patch.golf = null; patch.uno = null; }
   if (hostStale(L) && (!L.host || !roomMembers(L).length || Date.now() - (L.hostSeen || 0) > HOST_AUTO_MS)) { patch.host = {pid:me, dev:devId}; patch.hostSeen = Date.now(); }
   try {
     await roomRef(r).set(patch, {merge:true});
@@ -5183,7 +5358,7 @@ async function roomLeave(r = S.room, silent = false) {
     patch.host = next ? {pid:next, dev:L.members[next].dev} : null;
     patch.hostSeen = next ? Date.now() : 0;
   }
-  if (!rest.length) { patch.kind = ''; patch.quiz = null; patch.draw = null; patch.golf = null; patch.host = null; }
+  if (!rest.length) { patch.kind = ''; patch.quiz = null; patch.draw = null; patch.golf = null; patch.uno = null; patch.host = null; }
   try { await roomRef(r).update(patch); } catch (e) {}
   if (r === S.room) roomSet('');
   if (!silent) { setTab('spiele'); toast(`Du hast ${L.name} verlassen.`); }
@@ -5201,7 +5376,7 @@ function roomTake() {
 function roomKind(k) { if (!ctl()) return; D.dnew = false; S.lobbies[S.room] = {...lobby(), kind:k}; roomWrite({kind:k}); S.tab = roomView(); render(); }
 function roomReset(r) {
   confirmBox(`${ROOM_NAMES[r]} zurücksetzen?`, 'Alle fliegen aus dem Raum und ein laufendes Spiel wird abgebrochen.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Zurücksetzen', cls:'btn-gold', fn:() => {
-    db.collection('lobbies').doc(r).set({members:{}, host:null, hostSeen:0, kind:'', quiz:null, draw:null, golf:null}).then(() => toast(`${ROOM_NAMES[r]} ist wieder frei.`)).catch(e => onWriteError(e));
+    db.collection('lobbies').doc(r).set({members:{}, host:null, hostSeen:0, kind:'', quiz:null, draw:null, golf:null, uno:null}).then(() => toast(`${ROOM_NAMES[r]} ist wieder frei.`)).catch(e => onWriteError(e));
   }}]);
 }
 function roomLiveList() { return ROOMS.map(r => S.lobbies[r]).filter(L => L && roomState(L) === 'running'); }
@@ -5209,7 +5384,7 @@ const ROOM_STATE = {free:['Frei', '#4ff08f'], waiting:['Wartet', '#ffcf3f'], run
 function roomCardHTML(r) {
   const L = lobby(r), mem = roomMembers(L), n = mem.length, me = myPid(), mine = !!(me && L.members[me]);
   const st = roomState(L), sl = ROOM_STATE[st];
-  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
+  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : L.kind === 'karten' ? ['🃏', 'Kartenwahn'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
   const hostP = L.host && playerById(L.host.pid);
   const slots = Array.from({length:ROOM_MAX}, (_, i) => mem[i] ? `<span class="rc-slot" title="${esc(ghost(mem[i]).name)}">${avatar(ghost(mem[i]), 34)}</span>` : '<span class="rc-slot empty"></span>').join('');
   let btns = '';
@@ -5230,10 +5405,10 @@ function roomCardHTML(r) {
 function viewRooms() {
   const me = myPid();
   return `<section class="section">
-    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen und Golf könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
+    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf und Kartenwahn könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
     ${me ? '' : `<div class="card rooms-hint"><p class="m-text">Damit du mitspielen kannst, brauchst du einen eigenen Spieler. Den erstellst du unter <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button>.</p></div>`}
     <div class="rooms">${ROOMS.map(roomCardHTML).join('')}</div>
-    <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz, Malen oder Golf, stellt alles ein und startet.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
+    <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz, Malen, Golf oder Kartenwahn, stellt alles ein und startet.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
   </section>`;
 }
 function viewRoom() {
@@ -5245,6 +5420,7 @@ function viewRoom() {
         <button class="pick-big" type="button" data-act="room-kind" data-v="quiz" style="--tc:#39d6f2"><span aria-hidden="true">🧠</span><b>Quiz</b><small>Spielbrett mit Fragen aus 8 Themen. Wer dran ist, wählt Feld und Antwort.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="malen" style="--tc:#ff7fc3"><span aria-hidden="true">🎨</span><b>Malen</b><small>Einer malt, alle anderen raten. Wie skribbl.io.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="golf" style="--tc:#4ff08f"><span aria-hidden="true">⛳</span><b>Golf</b><small>Minigolf in 3D mit 30 Bahnen, von kurz und leicht bis extrem. Alle spielen gleichzeitig.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="karten" style="--tc:#ffcf3f"><span aria-hidden="true">🃏</span><b>Kartenwahn</b><small>Das Ablegespiel für 2 bis 8: Farbe oder Zahl ablegen, +2, +4, Aussetzen, Richtungswechsel.</small></button>
       </div>
       <p class="muted">Danach stellst du das Spiel ein und startest es für alle im Raum.</p>
     </div></section>`;
@@ -5256,7 +5432,7 @@ function roomBarHTML() {
   const L = lobby(); if (!L) return '';
   const mem = roomMembers(L), me = myPid(), member = !!(me && L.members[me]), host = ctl();
   const st = roomState(L);
-  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : 'Spiel wird gewählt';
+  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : 'Spiel wird gewählt';
   const chips = mem.map(pid => { const p = ghost(pid), isHost = L.host && L.host.pid === pid;
     return `<span class="rb-mem ${pid === me ? 'me' : ''}">${avatar(p, 26)}<span>${esc(p.name)}</span>${isHost ? '<i title="Host" aria-label="Host">👑</i>' : ''}${(host || S.admin) && pid !== me ? `<button class="x" type="button" data-act="room-kick" data-pid="${esc(pid)}" aria-label="${esc(p.name)} aus dem Raum werfen" title="Rauswerfen">×</button>` : ''}</span>`; }).join('');
   return `<div class="roombar">
@@ -5291,6 +5467,519 @@ const roomActions = {
   'room-take': () => roomTake(),
   'room-reset': b => roomReset(b.dataset.room)
 };
+
+/* ---------- Kartenwahn: Regeln (Ablegespiel nach den klassischen Regeln) ----------
+   108 Karten: je Farbe (r, y, g, b) eine 0, zweimal 1 bis 9, zweimal Aussetzen (S), Richtungswechsel (R) und +2 (D);
+   dazu 4 Farbwahl (wW) und 4 Farbwahl +4 (wF). Eine Karte ist ein kurzer Text, z. B. "r7", "gS", "wF".
+   Nur das Gerät des Hosts verändert den Spielstand (kApply); alle anderen schicken Wünsche. */
+const K_COLORS = ['r', 'y', 'g', 'b'];
+const K_HEX = {r:'#ff4f6d', y:'#ffcf3f', g:'#4ff08f', b:'#39d6f2'};
+const K_CNAME = {r:'Rot', y:'Gelb', g:'Grün', b:'Blau'};
+const K_TOTAL = 108;
+const kCol = c => c[0], kVal = c => c.slice(1), kWild = c => c[0] === 'w';
+const kValid = c => typeof c === 'string' && /^([rygb]([0-9]|S|R|D)|w[WF])$/.test(c);
+function kDeck() {
+  const d = [];
+  for (const c of K_COLORS) {
+    d.push(c + '0');
+    for (const v of ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'S', 'R', 'D']) d.push(c + v, c + v);
+  }
+  for (let i = 0; i < 4; i++) d.push('wW', 'wF');
+  return d;
+}
+function kShuffle(a, rnd = Math.random) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function kPts(c) { const v = kVal(c); return /^[0-9]$/.test(v) ? Number(v) : kWild(c) ? 50 : 20; }
+const kHandPts = h => h.reduce((s, c) => s + kPts(c), 0);
+/* Sortierung für die Hand: nach Farbe, dann Zahl, dann Aktion */
+const K_ORD = 'rygbw', K_VORD = '0123456789SRDWF';
+const kSort = h => h.slice().sort((a, b) => K_ORD.indexOf(a[0]) - K_ORD.indexOf(b[0]) || K_VORD.indexOf(kVal(a)) - K_VORD.indexOf(kVal(b)));
+function kTop(s) { return s.pile[s.pile.length - 1]; }
+function kTurnPid(s) { return s.order[s.turn]; }
+
+/* Neues Spiel. cfg: {start: Startkarten, stack: +2/+4 stapeln, drawPlay: ziehen bis es passt, time: Sekunden pro Zug (0 = ohne)} */
+function kNew(players, cfg, rnd = Math.random, now = Date.now()) {
+  const deck = kShuffle(kDeck(), rnd), hands = {};
+  for (const p of players) hands[p] = [];
+  for (let i = 0; i < cfg.start; i++) for (const p of players) hands[p].push(deck.pop());
+  // Startkarte ist immer eine Zahl
+  let k = deck.length - 1; while (k >= 0 && !/^[rygb][0-9]$/.test(deck[k])) k--;
+  const first = deck.splice(k, 1)[0];
+  return {order:players.slice(), hands, deck, pile:[first], turn:Math.floor(rnd() * players.length), dir:1, color:kCol(first), pend:0, pendT:'',
+    drewN:false, drew:'', unc:{}, seq:1, turnAt:now, log:[], win:'', done:{}};
+}
+function kCanPlay(s, cfg, c) {
+  if (!kValid(c)) return false;
+  const v = kVal(c);
+  if (s.pend > 0) return !!cfg.stack && (s.pendT === 'D' ? v === 'D' || v === 'F' : v === 'F');
+  if (kWild(c)) return true;
+  const top = kTop(s);
+  return kCol(c) === s.color || (!kWild(top) && kVal(top) === v);
+}
+function kPlayable(s, cfg, pid) {
+  const h = s.hands[pid] || [];
+  if (kTurnPid(s) !== pid || s.win) return [];
+  if (s.drewN) return s.drew && h.includes(s.drew) && kCanPlay(s, cfg, s.drew) ? [s.drew] : [];
+  return h.filter(c => kCanPlay(s, cfg, c));
+}
+function kDrawN(s, pid, n, rnd) {
+  const got = [];
+  for (let i = 0; i < n; i++) {
+    if (!s.deck.length) {
+      // Ablagestapel (ohne die oberste Karte) neu mischen
+      const top = s.pile.pop(); s.deck = kShuffle(s.pile, rnd); s.pile = [top];
+      if (!s.deck.length) break;
+    }
+    const c = s.deck.pop(); s.hands[pid].push(c); got.push(c);
+  }
+  return got;
+}
+function kLog(s, e) { s.log.push({k:s.seq, ...e}); if (s.log.length > 8) s.log.splice(0, s.log.length - 8); }
+function kAdvance(s, steps, now) {
+  const n = s.order.length;
+  s.turn = ((s.turn + s.dir * steps) % n + n) % n;
+  s.drewN = false; s.drew = ''; s.turnAt = now;
+}
+function kBestColor(h, rnd) {
+  const cnt = {r:0, y:0, g:0, b:0};
+  h.forEach(c => { if (!kWild(c)) cnt[kCol(c)]++; });
+  const max = Math.max(...Object.values(cnt));
+  const best = K_COLORS.filter(c => cnt[c] === max);
+  return best[Math.floor(rnd() * best.length)];
+}
+/* Ein Zug oder eine Aktion. req: {a, c, col, call, t}. Gibt den neuen Stand zurück oder null, wenn es nicht erlaubt ist. */
+function kApply(s0, cfg, pid, req, rnd = Math.random, now = Date.now()) {
+  if (!s0 || s0.win) return null;
+  const s = JSON.parse(JSON.stringify(s0));
+  const a = req && req.a, me = s.hands[pid], isTurn = kTurnPid(s) === pid;
+  const clearUnc = () => { for (const x of Object.keys(s.unc)) if (x !== pid) delete s.unc[x]; };
+  const finishTurn = () => { s.seq++; return s; };
+  if (a === 'leave') {
+    const i = s.order.indexOf(pid); if (i < 0) return null;
+    const wasTurn = i === s.turn;
+    s.deck = kShuffle(s.deck.concat(s.hands[pid] || []), rnd);
+    delete s.hands[pid]; delete s.unc[pid];
+    s.order.splice(i, 1);
+    if (s.order.length < 2) { s.win = s.order[0] || ''; kLog(s, {p:pid, a:'leave'}); return finishTurn(); }
+    if (i < s.turn) s.turn--;
+    if (wasTurn) { if (s.dir < 0) s.turn = (i - 1 + s.order.length) % s.order.length; else s.turn = i % s.order.length; s.drewN = false; s.drew = ''; s.turnAt = now; s.pend = s.pend; }
+    s.turn = Math.min(s.turn, s.order.length - 1);
+    kLog(s, {p:pid, a:'leave'});
+    return finishTurn();
+  }
+  if (!me) return null;
+  if (a === 'call') {
+    if (me.length !== 1 || !s.unc[pid]) return null;
+    delete s.unc[pid]; kLog(s, {p:pid, a:'call'});
+    return finishTurn();
+  }
+  if (a === 'catch') {
+    const x = req.t;
+    if (!x || x === pid || !s.unc[x] || !s.hands[x]) return null;
+    delete s.unc[x]; kDrawN(s, x, 2, rnd); kLog(s, {p:pid, a:'catch', x, n:2});
+    return finishTurn();
+  }
+  if (!isTurn) return null;
+  if (a === 'play') {
+    const c = req.c;
+    if (!me.includes(c) || !kCanPlay(s, cfg, c)) return null;
+    if (s.drewN && c !== s.drew) return null;
+    clearUnc();
+    me.splice(me.indexOf(c), 1); s.pile.push(c);
+    s.color = kWild(c) ? (K_COLORS.includes(req.col) ? req.col : kBestColor(me, rnd)) : kCol(c);
+    const v = kVal(c), n = s.order.length;
+    let skip = 1;
+    if (v === 'S') skip = 2;
+    if (v === 'R') { if (n === 2) skip = 2; else s.dir *= -1; }
+    if (v === 'D') { s.pend += 2; s.pendT = 'D'; }
+    if (v === 'F') { s.pend += 4; s.pendT = 'F'; }
+    kLog(s, {p:pid, a:'play', c, col:s.color});
+    if (me.length === 1) { if (req.call) kLog(s, {p:pid, a:'call'}); else s.unc[pid] = 1; }
+    if (!me.length) { s.win = pid; delete s.unc[pid]; s.pend = 0; return finishTurn(); }
+    if (s.pend && !cfg.stack) {
+      const nx = s.order[((s.turn + s.dir) % n + n) % n];
+      const got = kDrawN(s, nx, s.pend, rnd);
+      kLog(s, {p:nx, a:'take', n:got.length});
+      s.pend = 0; s.pendT = ''; skip = 2;
+    }
+    kAdvance(s, skip, now);
+    return finishTurn();
+  }
+  if (a === 'take' || (a === 'timeout' && s.pend > 0)) {
+    if (!s.pend) return null;
+    clearUnc();
+    const got = kDrawN(s, pid, s.pend, rnd);
+    kLog(s, {p:pid, a:'take', n:got.length, to:a === 'timeout'});
+    s.pend = 0; s.pendT = '';
+    kAdvance(s, 1, now);
+    return finishTurn();
+  }
+  if (a === 'draw' || (a === 'timeout' && !s.drewN)) {
+    if (s.pend || s.drewN) return null;
+    clearUnc();
+    let got = [];
+    do { got = got.concat(kDrawN(s, pid, 1, rnd)); } while (cfg.drawPlay && got.length && !kCanPlay(s, cfg, got[got.length - 1]) && s.deck.length + s.pile.length > 1);
+    const last = got[got.length - 1];
+    kLog(s, {p:pid, a:'draw', n:got.length, to:a === 'timeout'});
+    if (a !== 'timeout' && last && kCanPlay(s, cfg, last)) { s.drewN = true; s.drew = last; s.turnAt = now; return finishTurn(); }
+    kAdvance(s, 1, now);
+    return finishTurn();
+  }
+  if (a === 'pass' || (a === 'timeout' && s.drewN)) {
+    if (!s.drewN) return null;
+    kLog(s, {p:pid, a:'pass', to:a === 'timeout'});
+    kAdvance(s, 1, now);
+    return finishTurn();
+  }
+  return null;
+}
+/* Rangliste am Ende: Sieger zuerst, dann nach Punkten auf der Hand (weniger ist besser) */
+function kRank(s) {
+  const rows = Object.keys(s.hands).map(pid => ({id:pid, n:s.hands[pid].length, pts:kHandPts(s.hands[pid]), win:pid === s.win}));
+  rows.sort((a, b) => (b.win - a.win) || a.pts - b.pts || a.n - b.n);
+  let rank = 0;
+  rows.forEach((r, i) => { if (!i || r.win !== rows[i - 1].win || r.pts !== rows[i - 1].pts) rank = i + 1; r.rank = rank; });
+  return rows;
+}
+function kCount(s) { return s.deck.length + s.pile.length + Object.values(s.hands).reduce((n, h) => n + h.length, 0); }
+
+/* ---------- Kartenwahn: Raum-Spiel, Spieltisch und Karten ----------
+   Im Raum steht uno = {id, status, cfg, players, s, r, transferred}. s ist der Spielstand, den nur das Host-Gerät schreibt.
+   Alle anderen schreiben nur ihren eigenen Wunsch in r.<Spieler> = {n, a, c, col, call, t}; der Host prüft ihn mit kApply. */
+const K_PLACE_PTS = [3, 2, 1];
+const K_STARTS = [5, 7, 10];
+const K_TIMES = [[15, '15 s'], [30, '30 s'], [60, '60 s'], [0, 'Ohne']];
+const K_DEF_CFG = {start:7, stack:false, drawPlay:false, time:30};
+const kl = {n:0, pend:null, seenSeq:0, seqAt:0, armed:false, pick:'', handScroll:0, wasMine:false, animSeq:0, hTurnKey:'', hTurnAt:0, warnSeq:0};
+
+function kNormCfg(c) {
+  c = c && typeof c === 'object' ? c : {};
+  return {start:K_STARTS.includes(Number(c.start)) ? Number(c.start) : 7, stack:c.stack === true, drawPlay:c.drawPlay === true,
+    time:K_TIMES.some(t => t[0] === Number(c.time)) ? Number(c.time) : 30};
+}
+function kNormState(s) {
+  if (!s || typeof s !== 'object' || !Array.isArray(s.order) || !s.hands || typeof s.hands !== 'object') return null;
+  const cards = a => Array.isArray(a) ? a.filter(kValid) : [];
+  const order = s.order.filter(p => typeof p === 'string' && p.length <= 40).slice(0, ROOM_MAX);
+  if (!order.length) return null;
+  const hands = {};
+  for (const [p, h] of Object.entries(s.hands)) if (typeof p === 'string' && p.length <= 40) hands[p] = cards(h);
+  for (const p of order) if (!hands[p]) hands[p] = [];
+  const pile = cards(s.pile);
+  if (!pile.length) return null;
+  const num = (v, d = 0) => Number.isFinite(Number(v)) ? Number(v) : d;
+  const obj = v => v && typeof v === 'object' && !Array.isArray(v) ? v : {};
+  return {order, hands, deck:cards(s.deck), pile, turn:Math.max(0, Math.min(order.length - 1, Math.round(num(s.turn)))), dir:num(s.dir) < 0 ? -1 : 1,
+    color:K_COLORS.includes(s.color) ? s.color : kCol(pile[pile.length - 1]) === 'w' ? 'r' : kCol(pile[pile.length - 1]),
+    pend:Math.max(0, Math.round(num(s.pend))), pendT:s.pendT === 'F' ? 'F' : s.pendT === 'D' ? 'D' : '', drewN:s.drewN === true, drew:kValid(s.drew) ? s.drew : '',
+    unc:obj(s.unc), seq:Math.round(num(s.seq, 1)), turnAt:num(s.turnAt), log:Array.isArray(s.log) ? s.log.filter(e => e && typeof e === 'object').slice(-8) : [],
+    win:typeof s.win === 'string' ? s.win : '', done:obj(s.done)};
+}
+function kNorm(x) {
+  if (!x || typeof x !== 'object' || !['running', 'finished'].includes(x.status)) return null;
+  const s = kNormState(x.s); if (!s) return null;
+  const r = {};
+  for (const [p, q] of Object.entries(x.r && typeof x.r === 'object' ? x.r : {})) if (q && typeof q === 'object' && Number(q.n) > 0) r[p] = q;
+  return {id:str(x.id, 40), status:x.status, cfg:kNormCfg(x.cfg), players:Array.isArray(x.players) ? x.players.filter(p => typeof p === 'string').slice(0, ROOM_MAX) : s.order.slice(),
+    s, r, transferred:x.transferred === true, early:x.early === true};
+}
+const kName = pid => esc(ghost(pid).name);
+function kIn() { const U = S.uno, me = myPid(), L = lobby(); return !!(U && U.status === 'running' && me && U.s.order.includes(me) && L && L.members[me] && !S.spectate); }
+function kMyTurn() { const U = S.uno; return kIn() && kTurnPid(U.s) === myPid() && !U.s.win; }
+
+/* ----- Senden: Host wendet direkt an, alle anderen schreiben ihren Wunsch ----- */
+function kSend(a, extra = {}) {
+  const U = S.uno, me = myPid(); if (!U || !kIn()) return;
+  const turnAct = ['play', 'draw', 'take', 'pass'].includes(a);
+  if (turnAct && kl.pend) return;
+  const req = {a, ...extra};
+  if (ctl()) { if (!kHostApply([[me, req]])) { if (turnAct) toast('Das geht gerade nicht.'); } return; }
+  kl.n = Math.max(kl.n, Number(U.r[me] && U.r[me].n) || 0, Number(U.s.done[me]) || 0) + 1;
+  if (turnAct) kl.pend = {a, c:extra.c || '', seq:U.s.seq, t:Date.now()};
+  roomWrite({['uno.r.' + me]:{n:kl.n, ...req, ts:Date.now()}});
+  render();
+}
+/* Host: Wünsche nacheinander prüfen und den neuen Stand in einem Schreibvorgang speichern */
+function kHostApply(list) {
+  const U = S.uno; if (!U || U.status !== 'running' || !ctl()) return false;
+  let s = U.s, changed = false, okAny = false;
+  for (const [pid, req] of list) {
+    const s2 = kApply(s, U.cfg, pid, req);
+    if (s2) { s = s2; okAny = true; changed = true; }
+    // Abgelehnte Wünsche trotzdem als erledigt merken, damit das Gerät seine Karte zurückbekommt
+    if (req.n) { if (!s2) { s = JSON.parse(JSON.stringify(s)); s.seq++; } s.done[pid] = req.n; changed = true; }
+  }
+  if (!changed) return false;
+  const patch = {'uno.s':s};
+  if (s.win || s.order.length < 2) patch['uno.status'] = 'finished';
+  U.s = s; if (patch['uno.status']) U.status = 'finished';
+  roomWrite(patch);
+  kOnState(); render();
+  return okAny;
+}
+function kHostTick() {
+  const U = S.uno, L = lobby();
+  if (!U || U.status !== 'running' || !ctl() || !L) return;
+  const list = [];
+  // Wünsche der Mitspieler
+  for (const [pid, rq] of Object.entries(U.r)) if (Number(rq.n) > (Number(U.s.done[pid]) || 0)) list.push([pid, {...rq, n:Number(rq.n)}]);
+  // Wer den Raum verlassen hat, fliegt aus der Runde
+  for (const pid of U.s.order) if (!L.members[pid] || !playerById(pid)) list.push([pid, {a:'leave'}]);
+  // Zeit pro Zug abgelaufen
+  const tp = kTurnPid(U.s), key = U.s.seq + ':' + tp;
+  if (key !== kl.hTurnKey) { kl.hTurnKey = key; kl.hTurnAt = Date.now(); }
+  if (U.cfg.time && tp && Date.now() - kl.hTurnAt > U.cfg.time * 1000 + 1200 && !list.some(x => x[0] === tp)) list.push([tp, {a:'timeout'}]);
+  if (list.length) kHostApply(list);
+}
+function kOnSnap() {
+  const U = S.uno;
+  if (!U) { kl.pend = null; kl.armed = false; kl.pick = ''; return; }
+  kOnState();
+  if (ctl() && U.status === 'running') kHostTick();
+}
+function kOnState() {
+  const U = S.uno; if (!U) return;
+  const s = U.s, me = myPid();
+  if (s.seq !== kl.seenSeq) { kl.seenSeq = s.seq; kl.seqAt = Date.now(); }
+  if (kl.pend && (s.seq > kl.pend.seq || Date.now() - kl.pend.t > 6000)) {
+    if (s.seq <= kl.pend.seq) toast('Keine Antwort vom Host. Prüf die Verbindung.');
+    kl.pend = null;
+  }
+  const mine = kMyTurn();
+  if (mine && !kl.wasMine) { try { tone(660, .09, 'triangle', .08); tone(990, .14, 'triangle', .08, .09); if (navigator.vibrate) navigator.vibrate(60); } catch (e) {} }
+  kl.wasMine = mine;
+  if (!mine) { kl.armed = false; kl.pick = ''; }
+  if (me && (s.hands[me] || []).length > 2) kl.armed = false;
+}
+
+/* ----- Spiel starten / beenden ----- */
+function kStart() {
+  if (!ctl()) return;
+  if (S.uno && S.uno.status === 'finished' && !S.uno.transferred) kTransfer();
+  const L = lobby(), players = roomMembers(L).slice(0, ROOM_MAX);
+  if (players.length < 2) { toast('Für Kartenwahn braucht ihr mindestens 2 Spieler im Raum.'); return; }
+  const cfg = kNormCfg(D.kcfg || K_DEF_CFG);
+  const U = {id:uid(), status:'running', cfg, players, s:kNew(players, cfg), r:{}, transferred:false, early:false};
+  kl.pend = null; kl.n = 0; kl.armed = false; kl.pick = ''; kl.handScroll = 0;
+  S.lobbies[S.room] = {...L, uno:U}; S.uno = kNorm(U);
+  roomWrite({uno:U}); kOnState(); render();
+}
+function kEnd() {
+  const U = S.uno; if (!U || !ctl() || U.status !== 'running') return;
+  roomWrite({'uno.status':'finished', 'uno.early':true});
+}
+function kTransfer() {
+  const U = S.uno; if (!ctl() || !U || U.status !== 'finished' || U.transferred) return;
+  const entries = U.s.win ? kRank(U.s).filter(r => r.rank <= 3 && playerById(r.id)).map(r => ({playerId:r.id, delta:K_PLACE_PTS[r.rank - 1]})) : [];
+  lobbyAward({'uno.transferred':true}, entries);
+}
+
+/* ----- Karten zeichnen: Pixel-Karten in den Farben der Seite ----- */
+const K_SKIP = '<svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M5 1h6v2H5zM3 3h2v2H3zM11 3h2v2h-2zM1 5h2v6H1zM13 5h2v6h-2zM3 11h2v2H3zM11 11h2v2h-2zM5 13h6v2H5zM5 5h2v2H5zM7 7h2v2H7zM9 9h2v2H9z"/></svg>';
+const K_REV = '<svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M9 1h2v1h1v1h1v1h1v2h-1v1h-1v1h-1v1H9V7H3V4h6zM7 7h0zM5 8h2v2h6v3H7v2H5v-1H4v-1H3v-1H2v-2h1V9h1V8h1z"/></svg>';
+function kSym(v, big) {
+  if (v === 'S') return K_SKIP;
+  if (v === 'R') return K_REV;
+  if (v === 'D') return '+2';
+  if (v === 'F') return big ? '<span class="kc-wq">' + K_COLORS.map(c => `<i style="background:${K_HEX[c]}"></i>`).join('') + '</span><b class="kc-plus">+4</b>' : '+4';
+  if (v === 'W') return big ? '<span class="kc-wq">' + K_COLORS.map(c => `<i style="background:${K_HEX[c]}"></i>`).join('') + '</span>' : '★';
+  return v;
+}
+function kCardName(c) {
+  const v = kVal(c);
+  if (v === 'W') return 'Farbwahl';
+  if (v === 'F') return 'Farbwahl +4';
+  const col = K_CNAME[kCol(c)];
+  return v === 'S' ? `${col} Aussetzen` : v === 'R' ? `${col} Richtungswechsel` : v === 'D' ? `${col} +2` : `${col} ${v}`;
+}
+function kCardHTML(c, cls = '') {
+  const w = kWild(c), v = kVal(c), hex = w ? '#2a1f4f' : K_HEX[kCol(c)];
+  return `<span class="kcard ${w ? 'kc-w' : ''} ${/^[0-9]$/.test(v) ? '' : 'kc-act'} ${cls}" style="--kc:${hex}" role="img" aria-label="${esc(kCardName(c))}">
+    <span class="kc-i tl">${kSym(v)}</span><span class="kc-mid">${kSym(v, true)}</span><span class="kc-i br">${kSym(v)}</span></span>`;
+}
+function kBackHTML(cls = '') { return `<span class="kcard kback ${cls}" aria-hidden="true"><span class="kb-in">${COIN(26)}</span></span>`; }
+
+/* ----- Texte zum Verlauf ----- */
+function kLogText(e) {
+  if (!e) return '';
+  const n = kName(e.p), k = e.n === 1 ? 'eine Karte' : `${e.n} Karten`;
+  if (e.a === 'play') return kWild(e.c) ? `${n} legt ${esc(kCardName(e.c))} und wählt ${K_CNAME[e.col] || ''}` : `${n} legt ${esc(kCardName(e.c))}`;
+  if (e.a === 'draw') return e.to ? `${n} war zu langsam und zieht ${k}` : `${n} zieht ${k}`;
+  if (e.a === 'take') return e.to ? `${n} war zu langsam und nimmt ${k}` : `${n} nimmt ${k}`;
+  if (e.a === 'pass') return e.to ? `${n} war zu langsam` : `${n} behält die Karte`;
+  if (e.a === 'call') return `${n} ruft: „Letzte Karte!“`;
+  if (e.a === 'catch') return `${n} erwischt ${kName(e.x)}: 2 Karten ziehen!`;
+  if (e.a === 'leave') return `${n} hat die Runde verlassen`;
+  return '';
+}
+
+/* ----- Ansichten ----- */
+function viewKarten() {
+  const U = S.uno;
+  if (!U) return kSetupHTML();
+  return U.status === 'finished' ? kEndHTML(U) : kPlayHTML(U);
+}
+function kSetupHTML() {
+  const L = lobby(), hostP = L && L.host && playerById(L.host.pid);
+  if (!ctl()) return `<section class="section ksec"><div class="card waiting">${COIN(56, 'spin')}<span class="eyebrow">${esc(L ? L.name : '')} · 🃏 Kartenwahn</span><h2>Gleich geht's los</h2>
+    <p class="muted">${hostP ? `<b>${esc(hostP.name)}</b> ist Host und stellt das Spiel gerade ein.` : 'Gerade ist niemand Host.'}</p>
+    ${hostStale(L) && L.members[myPid()] ? `<button class="btn btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}</div>
+    ${kRulesHTML(false)}</section>`;
+  const c = kNormCfg(D.kcfg || K_DEF_CFG), n = roomMembers(L).length;
+  const chip = (k, v, label) => `<button class="chip" type="button" data-act="k-cfg" data-k="${k}" data-v="${v}" aria-pressed="${String(c[k]) === String(v)}">${label}</button>`;
+  return `<section class="section ksec"><div class="card k-setup">
+    <span class="eyebrow">Du bist Host</span><h2 class="k-title-big">🃏 Kartenwahn</h2>
+    <p class="muted">Das Ablegespiel für 2 bis ${ROOM_MAX} Spieler: Leg eine Karte mit gleicher Farbe oder gleicher Zahl ab. Wer zuerst keine Karten mehr hat, gewinnt.</p>
+    <div class="k-fan" aria-hidden="true">${['r7', 'yS', 'gR', 'bD', 'wW', 'wF'].map((x, i) => kCardHTML(x, 'fan' + i)).join('')}</div>
+    <span class="lbl">Karten am Anfang</span><div class="chips">${K_STARTS.map(v => chip('start', v, v)).join('')}</div>
+    <span class="lbl">Zeit pro Zug</span><div class="chips">${K_TIMES.map(([v, l]) => chip('time', v, l)).join('')}</div>
+    <span class="lbl">Hausregeln</span>
+    <div class="k-opts">
+      <label class="toggle"><input type="checkbox" data-kopt="stack" ${c.stack ? 'checked' : ''}><span><b>+2 und +4 stapeln</b><small>Wer eine +2 abbekommt, darf mit +2 oder +4 kontern; der Nächste nimmt dann alles.</small></span></label>
+      <label class="toggle"><input type="checkbox" data-kopt="drawPlay" ${c.drawPlay ? 'checked' : ''}><span><b>Ziehen, bis eine Karte passt</b><small>Statt nur einer Karte zieht man so lange, bis man ablegen kann.</small></span></label>
+    </div>
+    <button class="btn btn-gold btn-big" type="button" data-act="k-start" ${n < 2 ? 'disabled' : ''}>Kartenwahn starten · ${n} ${n === 1 ? 'Spieler' : 'Spieler'}</button>
+    ${n < 2 ? '<p class="muted">Ihr braucht mindestens 2 Spieler im Raum.</p>' : ''}
+  </div>${kRulesHTML(true)}</section>`;
+}
+function kRulesHTML(open) {
+  return `<details class="card k-rules" ${open ? '' : 'open'}><summary>So wird gespielt</summary>
+    <ul>
+      <li><b>Ablegen:</b> Wer dran ist, legt eine Karte ab, die in Farbe oder Zahl (bzw. Symbol) zur obersten Karte passt. Am Anfang hat jeder 7 Karten, der Host kann auch 5 oder 10 einstellen.</li>
+      <li><b>Ziehen:</b> Passt nichts, ziehst du eine Karte. Passt sie, darfst du sie sofort legen, sonst ist der Nächste dran.</li>
+      <li><b>Aussetzen:</b> Der Nächste wird übersprungen.</li>
+      <li><b>Richtungswechsel:</b> Die Reihenfolge dreht sich um. Zu zweit wirkt er wie Aussetzen.</li>
+      <li><b>+2:</b> Der Nächste zieht 2 Karten und setzt aus.</li>
+      <li><b>Farbwahl:</b> Passt immer. Du bestimmst die neue Farbe.</li>
+      <li><b>Farbwahl +4:</b> Du bestimmst die Farbe, der Nächste zieht 4 Karten und setzt aus.</li>
+      <li><b>Letzte Karte:</b> Hast du nur noch 2 Karten, drück „Letzte Karte!“, bevor du legst. Vergisst du das, können dich die anderen mit „Erwischt!“ drankriegen: 2 Karten ziehen.</li>
+      <li><b>Sieg:</b> Wer zuerst keine Karte mehr hat, gewinnt. Die anderen werden nach den Punkten auf der Hand sortiert (Zahl = Wert, Aktion = 20, Farbwahl = 50). Platz 1 bis 3 bekommen 3, 2 und 1 Punkt im Raum-Highscore.</li>
+    </ul></details>`;
+}
+function kOppsHTML(U, many) {
+  const s = U.s, me = myPid(), i0 = s.order.indexOf(me);
+  const seats = i0 >= 0 ? s.order.slice(i0 + 1).concat(s.order.slice(0, i0)) : s.order.slice();
+  const canCatch = kIn();
+  return seats.map(pid => {
+    const p = ghost(pid), h = s.hands[pid] || [], turn = kTurnPid(s) === pid, unc = !!s.unc[pid];
+    const backs = Math.min(h.length, 7);
+    return `<div class="k-opp ${turn ? 'kturn' : ''} ${h.length === 1 ? 'kone' : ''}">
+      <div class="k-opp-av">${avatar(p, many && isTouch() ? 28 : 34)}${turn ? '<span class="k-turn-dot" aria-hidden="true"></span>' : ''}</div>
+      <div class="k-opp-info"><b>${esc(p.name)}</b><span class="k-opp-n"><span class="k-minis" aria-hidden="true">${'<i></i>'.repeat(backs)}</span><span class="k-cnt">${h.length}</span><span class="k-cw">${h.length === 1 ? 'Karte' : 'Karten'}</span></span></div>
+      ${unc && canCatch ? `<button class="btn btn-sm k-catch" type="button" data-act="k-catch" data-pid="${esc(pid)}">Erwischt!</button>` : h.length === 1 ? '<span class="k-one">1!</span>' : ''}
+    </div>`;
+  }).join('');
+}
+function kPlayHTML(U) {
+  const s = U.s, me = myPid(), inG = kIn(), mine = kMyTurn(), host = ctl();
+  const tp = kTurnPid(s), top = kTop(s), pend = kl.pend;
+  let hand = inG ? kSort(s.hands[me] || []) : [];
+  if (pend && pend.a === 'play' && pend.c) { const i = hand.indexOf(pend.c); if (i >= 0) hand.splice(i, 1); }
+  const playable = mine && !pend ? kPlayable(s, U.cfg, me) : [];
+  const lastE = s.log[s.log.length - 1];
+  const newMine = lastE && lastE.p === me && ['draw', 'take'].includes(lastE.a) && kl.animSeq !== s.seq ? lastE.n : 0;
+  const drewIdx = s.drewN && s.drew && mine ? hand.lastIndexOf(s.drew) : -1;
+  const cards = hand.map((c, i) => {
+    const ok = playable.includes(c) && (!s.drewN || i === drewIdx);
+    return `<button class="kc-btn ${ok ? 'ok' : mine ? 'no' : ''} ${i === drewIdx ? 'drawn' : ''}" type="button" data-act="k-play" data-c="${c}" ${ok ? '' : 'aria-disabled="true"'} aria-label="${esc(kCardName(c))}${ok ? '' : ' (passt nicht)'}">${kCardHTML(c)}</button>`;
+  }).join('');
+  if (newMine) kl.animSeq = s.seq;
+  const pileShow = s.pile.slice(-3);
+  const pileHTML = pileShow.map((c, i) => kCardHTML(c, i === pileShow.length - 1 ? 'k-topcard' + (kl.lastTopSeq !== s.seq ? ' drop' : '') : 'k-under u' + (pileShow.length - 1 - i))).join('')
+    + (pend && pend.a === 'play' && pend.c ? kCardHTML(pend.c, 'k-topcard k-ghost') : '');
+  kl.lastTopSeq = s.seq;
+  const myN = (s.hands[me] || []).length;
+  const status = !inG ? (S.spectate || !s.order.includes(me) ? '👀 Du schaust zu' : '')
+    : mine ? (s.pend ? `<b>Du bist dran!</b> ${U.cfg.stack ? `Leg +${s.pendT === 'F' ? '4' : '2 oder +4'} drauf oder nimm ${s.pend} Karten.` : ''}` : s.drewN ? '<b>Du bist dran!</b> Leg die gezogene Karte oder behalte sie.' : playable.length ? '<b>Du bist dran!</b> Tipp auf eine Karte.' : '<b>Du bist dran!</b> Nichts passt: Zieh eine Karte.')
+    : `${kName(tp)} ist dran …`;
+  const callBtn = inG && ((mine && myN === 2 && playable.length) || (myN === 1 && s.unc[me]))
+    ? `<button class="btn k-call ${kl.armed ? 'armed' : ''}" type="button" data-act="k-call" aria-pressed="${kl.armed}">${kl.armed ? '✓ Letzte Karte!' : '📣 Letzte Karte!'}</button>` : '';
+  const acts = !mine || pend ? '' : s.pend ? `<button class="btn btn-gold" type="button" data-act="k-take">${s.pend} Karten nehmen</button>`
+    : s.drewN ? `<button class="btn" type="button" data-act="k-pass">Behalten und weiter</button>`
+    : `<button class="btn ${playable.length ? '' : 'btn-gold'}" type="button" data-act="k-draw">Karte ziehen</button>`;
+  const canDraw = mine && !pend && !s.pend && !s.drewN;
+  const left = U.cfg.time ? Math.max(0, U.cfg.time - Math.floor((Date.now() - kl.seqAt) / 1000)) : 0;
+  return `<section class="section ksec kplay ${mine ? 'mine' : ''}">
+    <div class="k-top">
+      <button class="gmenu" type="button" data-act="gmenu" aria-label="Menü anzeigen" title="Menü">☰</button>
+      <div class="k-head"><b>🃏 Kartenwahn</b><small>${esc((lobby() || {}).name || '')} · ${s.order.length} Spieler</small></div>
+      ${U.cfg.time ? `<div class="k-timer ${mine ? 'mine' : ''}" data-ktimer="${U.cfg.time}" aria-label="Zeit für den Zug"><i style="width:${(left / U.cfg.time * 100).toFixed(1)}%"></i><span>${left}</span></div>` : ''}
+      ${host ? `<button class="btn btn-sm btn-ghost k-endbtn" type="button" data-act="k-end">Beenden</button>` : ''}
+    </div>
+    <div class="k-opps ${s.order.length > 4 ? 'many' : ''}">${kOppsHTML(U, s.order.length > 4)}</div>
+    <div class="k-table" style="--cc:${K_HEX[s.color]}">
+      <div class="k-ring ${s.dir < 0 ? 'ccw' : ''}" aria-label="${s.dir < 0 ? 'Gegen den Uhrzeigersinn' : 'Im Uhrzeigersinn'}"><span>${s.dir < 0 ? '↺' : '↻'}</span></div>
+      <button class="k-deck" type="button" data-act="k-draw" ${canDraw ? '' : 'disabled'} aria-label="Karte ziehen, ${s.deck.length} im Stapel">${kBackHTML('k-deck3')}${kBackHTML('k-deck2')}${kBackHTML()}<span class="k-deckn">${s.deck.length}</span></button>
+      <div class="k-pile">${pileHTML}${s.pend ? `<span class="k-pend">+${s.pend}</span>` : ''}</div>
+      <div class="k-colorbadge"><i></i>${K_CNAME[s.color]}</div>
+    </div>
+    <div class="k-status ${mine ? 'mine' : ''}">${status}</div>
+    <div class="k-log" aria-live="polite">${s.log.slice(-2).reverse().map((e, i) => `<span class="${i ? 'old' : ''}">${kLogText(e)}</span>`).join('')}</div>
+    ${inG ? `<div class="k-actions">${callBtn}${acts}</div>
+    <div class="k-hand ${hand.length > 9 ? 'many' : ''}" id="k-hand" style="--n:${Math.max(1, hand.length)}">${cards}</div>` : ''}
+    ${kl.pick ? `<div class="k-pick" role="dialog" aria-label="Farbe wählen"><div class="k-pick-box"><b>Welche Farbe?</b>
+      <div class="k-pick-grid">${K_COLORS.map(c => `<button type="button" data-act="k-color" data-v="${c}" style="--kc:${K_HEX[c]}">${K_CNAME[c]}</button>`).join('')}</div>
+      <button class="btn btn-sm btn-ghost" type="button" data-act="k-color" data-v="">Abbrechen</button></div></div>` : ''}
+  </section>`;
+}
+function kEndHTML(U) {
+  const s = U.s, rows = kRank(s), host = ctl(), wp = s.win && ghost(s.win);
+  const list = rows.map(r => { const p = ghost(r.id);
+    return `<li class="k-r${r.rank}"><span class="k-med">${r.rank <= 3 && s.win ? ['🥇', '🥈', '🥉'][r.rank - 1] : r.rank}</span><span class="k-av">${avatar(p, 40)}</span><b>${esc(p.name)}</b>
+      <span class="k-rest">${r.win ? 'Keine Karte mehr' : `${r.n} ${r.n === 1 ? 'Karte' : 'Karten'} · ${r.pts} ${r.pts === 1 ? 'Punkt' : 'Punkte'}`}</span>${r.rank <= 3 && s.win ? `<span class="g-pts">+${K_PLACE_PTS[r.rank - 1]}</span>` : ''}
+      <span class="k-rest-cards" aria-hidden="true">${kSort(s.hands[r.id] || []).slice(0, 12).map(c => kCardHTML(c, 'mini')).join('')}</span></li>`; }).join('');
+  return `<section class="section ksec"><div class="card k-end">
+    <span class="eyebrow">🃏 Kartenwahn</span>
+    ${wp ? `<div class="k-winner">${avatar(wp, 72)}<h2>${esc(wp.name)} gewinnt!</h2></div>` : `<h2>Spiel beendet</h2>`}
+    <ol class="k-rank">${list}</ol>
+    ${U.transferred && s.win ? `<p class="okline">✓ Platz 1 bis 3 stehen im Highscore von ${esc((lobby() || {}).name || 'diesem Raum')}.</p>` : ''}
+    ${host ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="k-again">Nochmal spielen</button><button class="btn" type="button" data-act="k-setup">Einstellungen</button></div>` : '<p class="muted">Der Host startet gleich die nächste Runde.</p>'}
+  </div>${lobbyHsHTML()}</section>`;
+}
+/* Nach dem Zeichnen: Scrollposition der Hand behalten, Zeitleiste laufen lassen */
+function kMount() {
+  const h = document.getElementById('k-hand');
+  if (h) { h.scrollLeft = kl.handScroll; h.onscroll = () => { kl.handScroll = h.scrollLeft; }; }
+}
+function kTimerTick() {
+  const el = document.querySelector('[data-ktimer]'), U = S.uno; if (!el || !U || U.status !== 'running') return;
+  const T = Number(el.dataset.ktimer), left = Math.max(0, T - Math.floor((Date.now() - kl.seqAt) / 1000));
+  el.querySelector('i').style.width = (left / T * 100).toFixed(1) + '%';
+  el.querySelector('span').textContent = left;
+  el.classList.toggle('low', left <= 5);
+  if (kMyTurn() && left <= 5 && left > 0 && kl.warnSeq !== U.s.seq + ':' + left) { kl.warnSeq = U.s.seq + ':' + left; tone(880, .05, 'square', .03); }
+}
+const kActions = {
+  'k-cfg': b => { const c = kNormCfg(D.kcfg || K_DEF_CFG); c[b.dataset.k] = Number(b.dataset.v); D.kcfg = c; render(); },
+  'k-start': () => kStart(),
+  'k-again': () => kStart(),
+  'k-setup': () => { if (!ctl()) return; if (S.uno && S.uno.status === 'finished' && !S.uno.transferred) kTransfer(); S.uno = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); },
+  'k-end': () => confirmBox('Kartenwahn beenden?', 'Die Runde wird ohne Sieger abgebrochen. Es gibt keine Punkte für den Raum-Highscore.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:kEnd}]),
+  'k-play': b => {
+    const U = S.uno, c = b.dataset.c; if (!U || !kMyTurn() || kl.pend) return;
+    if (!kPlayable(U.s, U.cfg, myPid()).includes(c) || (U.s.drewN && c !== U.s.drew)) { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); tone(180, .08, 'square', .03); return; }
+    if (kWild(c)) { kl.pick = c; render(); return; }
+    tone(520, .05, 'square', .05);
+    kSend('play', {c, call:kl.armed}); kl.armed = false;
+  },
+  'k-color': b => {
+    const c = kl.pick, col = b.dataset.v; kl.pick = '';
+    if (!c || !col) { render(); return; }
+    tone(520, .05, 'square', .05);
+    kSend('play', {c, col, call:kl.armed}); kl.armed = false;
+  },
+  'k-draw': () => { if (!kMyTurn() || kl.pend) return; tone(300, .06, 'triangle', .05); kSend('draw'); },
+  'k-take': () => { if (!kMyTurn() || kl.pend) return; kSend('take'); },
+  'k-pass': () => { if (!kMyTurn() || kl.pend) return; kSend('pass'); },
+  'k-call': () => {
+    const U = S.uno, me = myPid(); if (!U || !kIn()) return;
+    const n = (U.s.hands[me] || []).length;
+    if (n === 1 && U.s.unc[me]) { tone(990, .12, 'square', .06); kSend('call'); return; }
+    kl.armed = !kl.armed; if (kl.armed) tone(990, .1, 'square', .05); render();
+  },
+  'k-catch': b => { if (!kIn()) return; tone(240, .12, 'sawtooth', .05); kSend('catch', {t:b.dataset.pid}); }
+};
+
+/* ---------- Kartenwahn ENDE ---------- */
 
 /* ---------- Spieleliste: welche Spiele im Turnier vorkommen können, für alle sichtbar ---------- */
 const G_STATUS = [['geplant', 'Geplant', '#ffcf3f'], ['vielleicht', 'Vielleicht', '#39d6f2'], ['vorschlag', 'Vorschlag', '#c493ff'], ['gespielt', 'Gespielt', '#4ff08f'], ['raus', 'Fällt raus', '#ff4f6d']];
@@ -6361,6 +7050,8 @@ function tick() {
   renderGatebar();
   roomBeat();
   golfHostTick();
+  kHostTick();
+  kTimerTick();
   lobbyAutoAward();
   if (ctl() && S.quiz && S.quiz.status === 'running' && S.answers && S.answers.length) handleAnswers();
   const q = S.quiz;
@@ -6729,7 +7420,7 @@ const actions = {
   'quiz-again': () => { const base = clone(S.quiz); withPending(() => quizStart(base)); },
   'quiz-new': () => withPending(() => quizDiscard())
 };
-Object.assign(actions, gamesActions, drawActions, roomActions, golfActions);
+Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
   if (e.target.classList && e.target.classList.contains('scrim')) { closeModal(); return; }
@@ -6756,6 +7447,7 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', async e => {
   const t = e.target;
+  if (t.dataset && t.dataset.kopt) { const c = kNormCfg(D.kcfg || K_DEF_CFG); c[t.dataset.kopt] = t.checked; D.kcfg = c; render(); return; }
   if (t.id === 'music-file') { const f = t.files && t.files[0]; t.value = ''; if (f) saveMusicFile(f); return; }
   if (t.id === 'music-auto') { music.auto = t.checked; lsSet('turnier-music-auto', music.auto ? '1' : '0'); syncMusic(); return; }
   if (t.id === 'gm-file') {
@@ -7819,7 +8511,7 @@ function boot() {
   if (!S.deco) S.deco = normDeco(null);
   renderBgm();
   const h = (location.hash || '').slice(1);
-  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf'].includes(h) ? 'spiele-pick' : viewFor(h);
+  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf', 'karten'].includes(h) ? 'spiele-pick' : viewFor(h);
   const fc = CFG && CFG.firebase;
   if (!fc || !fc.apiKey || /HIER_EINTRAGEN/.test(fc.apiKey) || /DEIN-PROJEKT/.test(fc.projectId || '') || !window.firebase) {
     S.mode = 'setup'; S.loaded = true;
