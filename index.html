@@ -288,6 +288,11 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .gplay .g-done small{display:block;margin:4px 0 0}
 .gplay .g-help{font-size:12px;margin:4px 0 0;line-height:1.5}
 .g-hn-m{display:none}
+/* Bots */
+.rb-mem.bot{box-shadow:0 0 0 2px #39d6f2}
+.rb-lvl{font-family:var(--pixel);font-size:8px;color:#39d6f2;text-transform:uppercase}
+.bot-lvls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+@media (max-width:560px){.bot-lvls{grid-template-columns:1fr}}
 /* KARTEN-CSS-START */
 /* ---------- Kartenwahn: Karten im Pixel-Look der Seite (feste Farben, unabhängig vom Event-Look) ---------- */
 .ksec{--edge:#463a80;--panel:#1c1537;--panel-2:#2a1f4f;--muted:#aaa1d2;--coin:#ffcf3f}
@@ -325,8 +330,8 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
   background:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px) 0 0/24px 24px}
 .kplay > *{position:relative}
 .k-top{display:flex;align-items:center;gap:12px;flex:none}
-.k-head{display:flex;flex-direction:column;min-width:0}
-.k-head b{font-family:var(--display);font-size:19px;white-space:nowrap}
+.k-head{display:flex;flex-direction:column;min-width:0;flex:0 1 auto}
+.k-head b{font-family:var(--display);font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .k-head small{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .k-timer{margin-left:auto;position:relative;flex:none;width:min(200px,30vw);height:26px;background:#0b0817;box-shadow:0 0 0 2px var(--edge);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .k-timer i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#39d6f2,#4ff08f);transition:width 1s linear}
@@ -1657,7 +1662,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=11"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=12"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -2871,7 +2876,7 @@ function avatar(p, size, cls = '') {
   const fr = pickOpt(FRAMES, p && p.frame), g = img ? '' : gradCss(p);
   return `<span class="av ${cls} fr-${fr}" style="--c:${esc(c)};${g ? `background:${g};` : ''}width:${size}px;height:${size}px;font-size:${Math.max(8, Math.round(size * .28))}px">${img ? `<img src="${img}" alt="">` : esc(initials(p ? p.name : '?'))}</span>`;
 }
-function playerById(id) { return S.players.find(p => p.id === id) || null; }
+function playerById(id) { return S.players.find(p => p.id === id) || (typeof isBot === 'function' && isBot(id) ? botById(id) : null); }
 function ghost(id) { return playerById(id) || {id, name:'Gelöschter Spieler', color:'#5b5070', avatar:''}; }
 function COIN(s = 24, cls = '') {
   return `<svg class="ico coin ${cls}" width="${s}" height="${s}" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#6b4300" d="M4 0h4v1H4zM2 1h2v1H2zM8 1h2v1H8zM1 2h1v2H1zM10 2h1v2h-1zM0 4h1v4H0zM11 4h1v4h-1zM1 8h1v2H1zM10 8h1v2h-1zM2 10h2v1H2zM8 10h2v1H8zM4 11h4v1H4z"/><path fill="#ffcf3f" d="M4 1h4v10H4zM2 2h8v8H2zM1 4h10v4H1z"/><path fill="#fff3b0" d="M3 3h1v2H3zM4 2h2v1H4z"/><path fill="#d99a00" d="M5 4h2v4H5zM8 8h1v1H8zM9 6h1v2H9z"/></svg>`;
@@ -5233,13 +5238,15 @@ function normLobby(id, x) {
   const host = x.host && typeof x.host === 'object' && x.host.dev ? {pid:str(x.host.pid, 40), dev:str(x.host.dev, 60)} : null;
   return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, kind:['quiz', 'malen', 'golf', 'karten'].includes(x.kind) ? x.kind : '',
     quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null, uno:x.uno && typeof x.uno === 'object' ? x.uno : null,
-    hs:Object.fromEntries(Object.entries(x.hs && typeof x.hs === 'object' && !Array.isArray(x.hs) ? x.hs : {}).filter(([pid, v]) => pid.length <= 40 && Number.isFinite(Number(v))).map(([pid, v]) => [pid, Math.round(Number(v))]))};
+    hs:Object.fromEntries(Object.entries(x.hs && typeof x.hs === 'object' && !Array.isArray(x.hs) ? x.hs : {}).filter(([pid, v]) => pid.length <= 40 && Number.isFinite(Number(v))).map(([pid, v]) => [pid, Math.round(Number(v))])),
+    bots:Object.fromEntries(Object.entries(x.bots && typeof x.bots === 'object' && !Array.isArray(x.bots) ? x.bots : {}).filter(([id, b]) => id.startsWith('bot_') && id.length <= 40 && b && typeof b === 'object').slice(0, ROOM_MAX)
+      .map(([id, b]) => [id, {name:str(b.name, 20) || 'Bot', color:/^#[0-9a-fA-F]{3,8}$/.test(b.color || '') ? b.color : '#39d6f2', lvl:['e', 'm', 'h'].includes(b.lvl) ? b.lvl : 'm'}]))};
 }
 /* Jeder Raum hat seinen eigenen Highscore (Feld hs im Raum). Am Spielende trägt der Host die Punkte automatisch ein.
    Der Turnier-Highscore (points) gehört nur zum Turnier. */
 function lobbyAward(patch, entries) {
   const p = {...patch};
-  for (const e of entries) if (e.delta && playerById(e.playerId)) p['hs.' + e.playerId] = FV().increment(e.delta);
+  for (const e of entries) if (e.delta && playerById(e.playerId) && !isBot(e.playerId)) p['hs.' + e.playerId] = FV().increment(e.delta);
   return roomWrite(p);
 }
 const lhsDone = new Set();
@@ -5312,9 +5319,9 @@ let hbAt = 0, autoHostAt = 0;
 function roomAutoHost() {
   const L = S.room && S.lobbies[S.room], me = myPid();
   if (!L || !me || !L.members[me] || S.mode !== 'db' || !db) return;
-  const first = roomMembers(L).filter(id => !L.host || id !== L.host.pid)[0];
-  const free = !L.host || (Date.now() - (L.hostSeen || 0) > HOST_AUTO_MS && first === me);
-  if (!free || (!L.host && roomMembers(L)[0] !== me) || Date.now() - autoHostAt < 5000) return;
+  const first = roomHumans(L).filter(id => !L.host || id !== L.host.pid)[0];
+  const free = !L.host || isBot(L.host.pid) || (Date.now() - (L.hostSeen || 0) > HOST_AUTO_MS && first === me);
+  if (!free || (!L.host && roomHumans(L)[0] !== me) || Date.now() - autoHostAt < 5000) return;
   autoHostAt = Date.now();
   roomRef().update({host:{pid:me, dev:devId}, hostSeen:Date.now()}).catch(() => {});
 }
@@ -5339,7 +5346,11 @@ async function roomJoin(r) {
   const old = myRoom();
   if (old && old !== r) await roomLeave(old, true);
   const patch = {members:{[me]:{at:Date.now(), dev:devId}}};
-  if (!roomMembers(L).length) { patch.kind = ''; patch.quiz = null; patch.draw = null; patch.golf = null; patch.uno = null; }
+  if (!roomHumans(L).length) {
+    // Leerer Raum (höchstens übrig gebliebene Bots): frisch anfangen
+    patch.kind = ''; patch.quiz = null; patch.draw = null; patch.golf = null; patch.uno = null; patch.bots = {};
+    for (const id of Object.keys(L.members)) if (id !== me) patch.members[id] = FV().delete();
+  }
   if (hostStale(L) && (!L.host || !roomMembers(L).length || Date.now() - (L.hostSeen || 0) > HOST_AUTO_MS)) { patch.host = {pid:me, dev:devId}; patch.hostSeen = Date.now(); }
   try {
     await roomRef(r).set(patch, {merge:true});
@@ -5351,14 +5362,15 @@ async function roomJoin(r) {
 async function roomLeave(r = S.room, silent = false) {
   const me = myPid(), L = lobby(r);
   if (!L || !me || !L.members[me] || !db) { if (r === S.room) roomSet(''); return; }
-  const rest = roomMembers(L).filter(id => id !== me);
-  const patch = {['members.' + me]:FV().delete()};
+  const rest = roomHumans(L).filter(id => id !== me);
+  let patch = {['members.' + me]:FV().delete()};
   if (L.host && (L.host.pid === me || L.host.dev === devId)) {
     const next = rest[0];
     patch.host = next ? {pid:next, dev:L.members[next].dev} : null;
     patch.hostSeen = next ? Date.now() : 0;
   }
-  if (!rest.length) { patch.kind = ''; patch.quiz = null; patch.draw = null; patch.golf = null; patch.uno = null; patch.host = null; }
+  // Geht der letzte Mensch, gehen auch die Bots
+  if (!rest.length) patch = {members:{}, bots:{}, kind:'', quiz:null, draw:null, golf:null, uno:null, host:null, hostSeen:0};
   try { await roomRef(r).update(patch); } catch (e) {}
   if (r === S.room) roomSet('');
   if (!silent) { setTab('spiele'); toast(`Du hast ${L.name} verlassen.`); }
@@ -5366,6 +5378,7 @@ async function roomLeave(r = S.room, silent = false) {
 function roomKick(pid) {
   const L = lobby(); if (!L || !L.members[pid] || !(ctl() || S.admin)) return;
   const patch = {['members.' + pid]:FV().delete()};
+  if (isBot(pid)) patch['bots.' + pid] = FV().delete();
   if (L.host && L.host.pid === pid) patch.host = null;
   roomRef().update(patch).catch(() => {});
 }
@@ -5376,7 +5389,7 @@ function roomTake() {
 function roomKind(k) { if (!ctl()) return; D.dnew = false; S.lobbies[S.room] = {...lobby(), kind:k}; roomWrite({kind:k}); S.tab = roomView(); render(); }
 function roomReset(r) {
   confirmBox(`${ROOM_NAMES[r]} zurücksetzen?`, 'Alle fliegen aus dem Raum und ein laufendes Spiel wird abgebrochen.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Zurücksetzen', cls:'btn-gold', fn:() => {
-    db.collection('lobbies').doc(r).set({members:{}, host:null, hostSeen:0, kind:'', quiz:null, draw:null, golf:null, uno:null}).then(() => toast(`${ROOM_NAMES[r]} ist wieder frei.`)).catch(e => onWriteError(e));
+    db.collection('lobbies').doc(r).set({members:{}, bots:{}, host:null, hostSeen:0, kind:'', quiz:null, draw:null, golf:null, uno:null}).then(() => toast(`${ROOM_NAMES[r]} ist wieder frei.`)).catch(e => onWriteError(e));
   }}]);
 }
 function roomLiveList() { return ROOMS.map(r => S.lobbies[r]).filter(L => L && roomState(L) === 'running'); }
@@ -5433,14 +5446,15 @@ function roomBarHTML() {
   const mem = roomMembers(L), me = myPid(), member = !!(me && L.members[me]), host = ctl();
   const st = roomState(L);
   const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : 'Spiel wird gewählt';
-  const chips = mem.map(pid => { const p = ghost(pid), isHost = L.host && L.host.pid === pid;
-    return `<span class="rb-mem ${pid === me ? 'me' : ''}">${avatar(p, 26)}<span>${esc(p.name)}</span>${isHost ? '<i title="Host" aria-label="Host">👑</i>' : ''}${(host || S.admin) && pid !== me ? `<button class="x" type="button" data-act="room-kick" data-pid="${esc(pid)}" aria-label="${esc(p.name)} aus dem Raum werfen" title="Rauswerfen">×</button>` : ''}</span>`; }).join('');
+  const chips = mem.map(pid => { const p = ghost(pid), isHost = L.host && L.host.pid === pid, bot = isBot(pid);
+    return `<span class="rb-mem ${pid === me ? 'me' : ''} ${bot ? 'bot' : ''}">${avatar(p, 26)}<span>${esc(p.name)}</span>${bot ? `<small class="rb-lvl">${botLvlName(p.lvl)}</small>` : ''}${isHost ? '<i title="Host" aria-label="Host">👑</i>' : ''}${(host || S.admin) && pid !== me ? `<button class="x" type="button" data-act="room-kick" data-pid="${esc(pid)}" aria-label="${esc(p.name)} aus dem Raum werfen" title="Rauswerfen">×</button>` : ''}</span>`; }).join('');
   return `<div class="roombar">
     <div class="rb-top">
       <b class="rb-name">${esc(L.name)}</b><span class="rb-kind">${kind}</span><span class="rb-count">${mem.length}/${ROOM_MAX}</span>
       ${host ? '<span class="rb-host">Du bist Host</span>' : ''}
       <span class="rb-acts">
         ${host && L.kind && st !== 'running' ? `<button class="btn btn-sm" type="button" data-act="room-kind" data-v="">Anderes Spiel</button>` : ''}
+        ${host && st !== 'running' && mem.length < ROOM_MAX ? `<button class="btn btn-sm" type="button" data-act="bot-open">🤖 Bot dazu</button>` : ''}
         ${!host && (member || S.admin) && hostStale(L) ? `<button class="btn btn-sm btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}
         <button class="btn btn-sm" type="button" data-act="lhs-open">🏆 Highscore</button>
         <button class="btn btn-sm" type="button" data-act="rooms">Alle Räume</button>
@@ -5980,6 +5994,251 @@ const kActions = {
 };
 
 /* ---------- Kartenwahn ENDE ---------- */
+
+/* ---------- Bots: Computer-Mitspieler in den Räumen ----------
+   Ein Bot ist ein Raum-Mitglied mit der ID "bot_…". Name, Farbe und Stufe stehen im Raum unter bots.<ID>.
+   Spielen tut für alle Bots das Gerät des Hosts (botTick, 5-mal pro Sekunde). In den Raum-Highscore kommen Bots nicht. */
+const BOT_NAMES = ['Byte', 'Pixel', 'Chip', 'Glitch', 'Turbo', 'Sprite', 'Bitty', 'Robo', 'Nano', 'Volt'];
+const BOT_LVLS = [['e', 'Leicht', 'Macht oft Fehler'], ['m', 'Mittel', 'Spielt solide'], ['h', 'Schwer', 'Spielt fast perfekt']];
+const BOT_COLORS = ['#39d6f2', '#ff4f6d', '#4ff08f', '#c493ff', '#ffcf3f', '#ff9f5a', '#f58fb8', '#6ea8ff'];
+const isBot = id => typeof id === 'string' && id.startsWith('bot_');
+const botLvlName = l => (BOT_LVLS.find(x => x[0] === l) || BOT_LVLS[1])[1];
+function botsOf(L) { return (L && L.bots) || {}; }
+function botById(id) {
+  if (!isBot(id) || !S.lobbies) return null;
+  for (const r of ROOMS) {
+    const b = botsOf(S.lobbies[r])[id];
+    if (b) return {id, name:'🤖 ' + b.name, color:b.color, avatar:botAvatar(b.color), bot:true, lvl:b.lvl, createdAt:0};
+  }
+  return null;
+}
+function botLvl(id) { const b = botsOf(lobby())[id]; return b ? b.lvl : 'm'; }
+function roomHumans(L) { return roomMembers(L).filter(id => !isBot(id)); }
+/* Kleiner Pixel-Roboter als Bild, einmal pro Farbe gezeichnet */
+const botAvCache = {};
+function botAvatar(color) {
+  if (botAvCache[color]) return botAvCache[color];
+  try {
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const x = c.getContext('2d'), px = (a, b, w, h, f) => { x.fillStyle = f; x.fillRect(a * 4, b * 4, w * 4, h * 4); };
+    px(0, 0, 16, 16, '#1c1537');
+    px(7, 1, 2, 2, '#ffcf3f'); px(7.5, 3, 1, 1, '#aaa1d2');
+    px(3, 4, 10, 8, color); px(2, 6, 1, 4, color); px(13, 6, 1, 4, color);
+    px(4, 5, 8, 4, '#0b0817'); px(5, 6, 2, 2, '#4ff08f'); px(9, 6, 2, 2, '#4ff08f');
+    px(5, 10, 6, 1, '#0b0817'); px(6, 10, 1, 1, '#f5f2ff'); px(9, 10, 1, 1, '#f5f2ff');
+    px(4, 12, 8, 3, color); px(6, 13, 4, 1, '#0b0817');
+    botAvCache[color] = c.toDataURL('image/png');
+  } catch (e) { botAvCache[color] = ''; }
+  return botAvCache[color];
+}
+function botGameRunning(L) { return ['running'].includes(roomState(L)); }
+function botAdd(lvl) {
+  const L = lobby(); if (!L || !ctl()) return;
+  if (botGameRunning(L)) { toast('Bots kannst du zwischen den Spielen dazuholen.'); return; }
+  if (roomMembers(L).length >= ROOM_MAX) { toast(`${L.name} ist voll. Höchstens ${ROOM_MAX} Spieler.`); return; }
+  const used = new Set(Object.values(botsOf(L)).map(b => b.name));
+  const name = BOT_NAMES.find(n => !used.has(n)) || 'Bot ' + (used.size + 1);
+  const color = BOT_COLORS.find(c => !Object.values(botsOf(L)).some(b => b.color === c)) || BOT_COLORS[used.size % BOT_COLORS.length];
+  const id = 'bot_' + uid().slice(0, 10);
+  const b = {name, color, lvl:['e', 'm', 'h'].includes(lvl) ? lvl : 'm'};
+  S.lobbies[S.room] = {...L, bots:{...botsOf(L), [id]:b}, members:{...L.members, [id]:{at:Date.now(), dev:'bot'}}};
+  roomWrite({['bots.' + id]:b, ['members.' + id]:{at:Date.now(), dev:'bot'}});
+  closeModal(); render();
+  toast(`🤖 ${name} (${botLvlName(b.lvl)}) spielt mit.`);
+}
+function botRemove(id) {
+  const L = lobby(); if (!L || !(ctl() || S.admin) || !isBot(id)) return;
+  roomWrite({['bots.' + id]:FV().delete(), ['members.' + id]:FV().delete()});
+}
+function botAddModalHTML() {
+  const L = lobby(), free = L ? ROOM_MAX - roomMembers(L).length : 0;
+  return `<div class="m-head"><h2 id="m-title">🤖 Bot dazuholen</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
+    <p class="m-text">Ein Bot spielt wie ein echter Mitspieler mit: bei Kartenwahn, Golf, Quiz und beim Raten im Malspiel (malen tun Bots nicht). Er belegt einen Platz im Raum und bekommt keine Punkte im Raum-Highscore. Noch ${free} ${free === 1 ? 'Platz' : 'Plätze'} frei.</p>
+    <div class="bot-lvls">${BOT_LVLS.map(([k, n, d]) => `<button class="pick-big" type="button" data-act="bot-add" data-v="${k}" ${free > 0 ? '' : 'disabled'}><span aria-hidden="true">${k === 'e' ? '🙂' : k === 'm' ? '😎' : '🧠'}</span><b>${n}</b><small>${d}</small></button>`).join('')}</div>`;
+}
+
+/* ----- Steuerung: läuft auf dem Gerät des Hosts ----- */
+function botTick() {
+  if (!ctl() || S.mode !== 'db') return;
+  const L = lobby(); if (!L || !Object.keys(botsOf(L)).length) return;
+  try {
+    if (L.kind === 'karten') botKarten(L);
+    else if (L.kind === 'golf') botGolf(L);
+    else if (L.kind === 'quiz') botQuiz(L);
+    else if (L.kind === 'malen') botMalen(L);
+  } catch (e) { console.warn('bot', e); }
+}
+const botR = (a, b) => a + Math.random() * (b - a);
+
+/* Kartenwahn */
+const bk = {key:'', at:0, think:0, catches:{}};
+function botKMove(s, cfg, pid, lvl) {
+  const h = s.hands[pid] || [], pl = kPlayable(s, cfg, pid);
+  const callP = lvl === 'h' ? 1 : lvl === 'm' ? .85 : .5;
+  const pick = c => { const rest = h.slice(); rest.splice(rest.indexOf(c), 1);
+    return {a:'play', c, col:kWild(c) ? (lvl === 'e' ? K_COLORS[Math.floor(Math.random() * 4)] : kBestColor(rest, Math.random)) : undefined, call:h.length === 2 && Math.random() < callP}; };
+  if (s.pend > 0) return pl.length && (lvl !== 'e' || Math.random() < .5) ? pick(pl.find(c => kVal(c) === 'D') || pl[0]) : {a:'take'};
+  if (s.drewN) return pl.length ? pick(pl[0]) : {a:'pass'};
+  if (!pl.length) return {a:'draw'};
+  if (lvl === 'e') return pick(pl[Math.floor(Math.random() * pl.length)]);
+  const n = s.order.length, nx = s.order[((s.turn + s.dir) % n + n) % n], nxN = (s.hands[nx] || []).length;
+  const score = c => {
+    const v = kVal(c); let sc = 0;
+    if (kWild(c)) sc -= nxN <= 2 && v === 'F' ? -40 : 30;
+    if (!kWild(c)) sc += h.filter(x => kCol(x) === kCol(c)).length * 2;
+    if ((v === 'D' || v === 'S') && nxN <= 3) sc += lvl === 'h' ? 25 : 10;
+    if (v === 'R' && nxN <= 2 && n > 2) sc += 12;
+    sc += kPts(c) * (lvl === 'h' ? .4 : .2);
+    return sc + Math.random() * (lvl === 'h' ? 1 : 5);
+  };
+  return pick(pl.slice().sort((a, b) => score(b) - score(a))[0]);
+}
+function botKarten(L) {
+  const U = S.uno; if (!U || U.status !== 'running' || U.s.win) return;
+  const s = U.s, now = Date.now(), tp = kTurnPid(s);
+  // Wer "Letzte Karte!" vergessen hat, wird von Bots erwischt (je nach Stufe schnell oder gar nicht)
+  for (const x of Object.keys(s.unc)) {
+    const key = s.seq + ':' + x;
+    if (bk.catches[key] === undefined) {
+      const hunters = s.order.filter(p => isBot(p) && p !== x);
+      const hb = hunters.sort((a, b) => 'hme'.indexOf(botLvl(a)) - 'hme'.indexOf(botLvl(b)))[0];
+      const lv = hb ? botLvl(hb) : 'e', p = {h:.95, m:.6, e:.25}[lv];
+      bk.catches[key] = hb && Math.random() < p ? {by:hb, at:now + {h:1400, m:2600, e:4200}[lv] + botR(0, 900)} : null;
+    }
+    const c = bk.catches[key];
+    if (c && now >= c.at) { bk.catches[key] = null; kHostApply([[c.by, {a:'catch', t:x}]]); return; }
+  }
+  // Ein Bot, der selbst vergessen hat zu rufen, merkt es manchmal noch
+  for (const x of Object.keys(s.unc)) if (isBot(x) && Math.random() < .004) { kHostApply([[x, {a:'call'}]]); return; }
+  if (!isBot(tp)) return;
+  const key = s.seq + ':' + tp;
+  if (bk.key !== key) { bk.key = key; bk.at = now; bk.think = botR(900, 2200); return; }
+  if (now - bk.at < bk.think) return;
+  bk.at = now + 60000;
+  kHostApply([[tp, botKMove(s, U.cfg, tp, botLvl(tp))]]);
+}
+
+/* Golf: der Bot probiert Schläge mit derselben Physik aus und nimmt den besten, mit etwas Ungenauigkeit */
+const bg = {};
+function gBotLeft(H, hi, x, y) {
+  const c = GOLF_HOLES[hi].c; let best = Infinity, after = 0;
+  const lens = c.slice(1).map((p, k) => Math.hypot(p[0] - c[k][0], p[1] - c[k][1]));
+  for (let k = c.length - 2; k >= 0; k--) {
+    const ax = c[k][0], ay = c[k][1], dx = c[k + 1][0] - ax, dy = c[k + 1][1] - ay, l2 = dx * dx + dy * dy || 1;
+    const u = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / l2));
+    const d = Math.hypot(x - ax - dx * u, y - ay - dy * u);
+    best = Math.min(best, lens[k] * (1 - u) + after + d * 1.4);
+    after += lens[k];
+  }
+  return Math.min(best, Math.hypot(x - H.cup[0], y - H.cup[1]) * (best < 400 ? 1 : 9));
+}
+function botGolfAim(H, hi, x, y, t, lvl) {
+  const n = {e:10, m:28, h:70}[lvl], noiseA = {e:.11, m:.045, h:.015}[lvl], noiseP = {e:.16, m:.07, h:.025}[lvl];
+  let best = null;
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, p = .1 + Math.random() * .9, v = gShotSpeed(p);
+    const r = gSimShot(H, x, y, Math.cos(a) * v, Math.sin(a) * v, t, 10);
+    const sc = r.r === 'sink' ? -1e9 : (r.r === 'water' || r.r === 'pit') ? 1e9 : gBotLeft(H, hi, r.x, r.y);
+    if (!best || sc < best.sc) best = {a, p, sc};
+  }
+  const a = best.a + (Math.random() - .5) * 2 * noiseA, v = gShotSpeed(Math.max(.05, Math.min(1, best.p * (1 + (Math.random() - .5) * 2 * noiseP))));
+  return {vx:Math.round(Math.cos(a) * v), vy:Math.round(Math.sin(a) * v)};
+}
+function botGolf(L) {
+  const G = S.golf; if (!G || G.status !== 'running') return;
+  const now = Date.now(), key = gKey(G), hole = G.holes[G.hi], H = gHole(hole);
+  for (const pid of G.players) {
+    if (!isBot(pid) || !L.members[pid] || gScore(G, pid, G.hi) != null) continue;
+    let b = bg[pid];
+    if (!b || b.key !== key) b = bg[pid] = {key, busy:false, nextAt:Math.max(now, (G.holeAt || now) + 2800) + botR(600, 2600)};
+    if (b.busy || now < b.nextAt) continue;
+    const p = G.pos[pid], at = Array.isArray(p) && p[3] === G.hi ? p : null;
+    const x = Math.round((at ? Number(at[0]) : H.tee[0]) * 10) / 10, y = Math.round((at ? Number(at[1]) : H.tee[1]) * 10) / 10, strokes = at ? Number(at[2]) || 0 : 0;
+    const t0 = +((now - (G.holeAt || now)) / 1000).toFixed(3), lvl = botLvl(pid);
+    const shot = botGolfAim(H, hole, x, y, t0, lvl);
+    const r = gSimShot(H, x, y, shot.vx, shot.vy, t0);
+    const n = strokes + 1, mx = gMax(hole), hi = G.hi, gid = G.id;
+    b.busy = true;
+    roomWrite({['golf.pos.' + pid]:[x, y, n, hi, shot.vx, shot.vy, t0]});
+    setTimeout(() => {
+      const G2 = S.golf; b.busy = false; b.nextAt = Date.now() + botR(1200, 3200);
+      if (!G2 || G2.id !== gid || G2.hi !== hi || G2.status !== 'running' || !ctl()) return;
+      const patch = {};
+      if (r.r === 'sink') patch['golf.sc.' + pid + '.' + hi] = Math.min(n, mx);
+      else if (r.r === 'water' || r.r === 'pit') { if (n + 1 >= mx) patch['golf.sc.' + pid + '.' + hi] = mx; else patch['golf.pos.' + pid] = [x, y, n + 1, hi]; }
+      else if (n >= mx) patch['golf.sc.' + pid + '.' + hi] = mx;
+      else patch['golf.pos.' + pid] = [Math.round(r.x * 10) / 10, Math.round(r.y * 10) / 10, n, hi];
+      roomWrite(patch);
+    }, Math.max(250, (r.t - t0) * 1000) + 120);
+  }
+}
+
+/* Quiz */
+const bq = {key:'', at:0, think:0};
+function botQuiz() {
+  const q = S.quiz; if (!q || q.status !== 'running' || !isBot(q.turn) || pickState(q).animating) return;
+  if (q.phase !== 'ready' && q.phase !== 'asking') return;
+  const now = Date.now(), lvl = botLvl(q.turn), key = q.id + ':' + (q.step || 0) + ':' + q.phase + ':' + (q.cell == null ? '' : q.cell);
+  if (bq.key !== key) { bq.key = key; bq.at = now; bq.think = q.phase === 'ready' ? botR(1800, 3500) : botR(2500, Math.max(3000, Math.min(9000, q.cfg.seconds * 600))); return; }
+  if (now - bq.at < bq.think) return;
+  bq.at = now + 600000;
+  if (q.phase === 'ready') {
+    const free = freeCells(q); if (!free.length) return;
+    const w = i => { const l = q.board[i].lvl; return lvl === 'e' ? 5 - l : lvl === 'h' ? 1 + l : 3; };
+    let tot = free.reduce((s, i) => s + w(i), 0), r = Math.random() * tot, pick = free[0];
+    for (const i of free) { r -= w(i); if (r <= 0) { pick = i; break; } }
+    quizPick(pick);
+    return;
+  }
+  const cell = q.board[q.cell], cur = cell && cell.q; if (!cur) return;
+  const pRight = Math.max(.1, {e:.45, m:.68, h:.88}[lvl] - cell.lvl * .06), ok = Math.random() < pRight;
+  if (cur.type === 'est') {
+    const span = cur.max - cur.min, err = ok ? (Math.random() * 2 - 1) * cur.tol * .9 : (Math.random() < .5 ? -1 : 1) * (cur.tol * 1.2 + Math.random() * span * .25);
+    let v = Math.max(cur.min, Math.min(cur.max, cur.ans + err));
+    if (cur.step) v = Math.round(v / cur.step) * cur.step;
+    quizAnswerEst(v);
+  } else {
+    const wrong = cur.a.map((_, i) => i).filter(i => i !== cur.c);
+    quizAnswer(ok || !wrong.length ? cur.c : wrong[Math.floor(Math.random() * wrong.length)]);
+  }
+}
+
+/* Malen: Bots raten nur. Falsche Tipps landen im Chat, irgendwann kommt (vielleicht) der richtige. */
+const bm = {};
+function botDact(pid, k, v) {
+  const st = S.draw; if (!st || !db) return;
+  db.collection('dacts').doc(uid()).set({g:dKey(st), pid, k, v:String(v).slice(0, 60), ts:Date.now()}).catch(() => {});
+}
+function botMalen() {
+  const st = S.draw; if (!st || st.status !== 'running') return;
+  const key = dKey(st), now = Date.now(), total = st.secs * 1000;
+  if (st.phase === 'reveal') {
+    for (const pid of st.players) if (isBot(pid) && !st.likes[pid] && pid !== st.drawer && bm[pid + ':like'] !== key) { bm[pid + ':like'] = key; if (Math.random() < .45) botDact(pid, 'like', '1'); }
+    return;
+  }
+  if (st.phase !== 'draw') return;
+  const pool = Object.values(DRAW_WORDS).flat();
+  for (const pid of dGuessers(st)) {
+    if (!isBot(pid) || st.guessed[pid]) continue;
+    let b = bm[pid];
+    if (!b || b.key !== key) {
+      const f = {e:[.45, 1.4], m:[.25, .95], h:[.12, .6]}[botLvl(pid)];
+      b = bm[pid] = {key, hitAt:st.phaseAt + total * botR(f[0], f[1]), nextAt:now + botR(3500, 8000)};
+    }
+    if (now >= b.hitAt) { b.hitAt = Infinity; botDact(pid, 'guess', st.word); continue; }
+    if (now >= b.nextAt) {
+      b.nextAt = now + botR(5000, 11000);
+      let w = ''; for (let i = 0; i < 8 && (!w || dMatch(w, st.word)); i++) w = pool[Math.floor(Math.random() * pool.length)];
+      if (w && !dMatch(w, st.word)) botDact(pid, 'guess', w);
+    }
+  }
+}
+const botActions = {
+  'bot-open': () => { if (!ctl()) return; openModal({type:'botadd'}); },
+  'bot-add': b => botAdd(b.dataset.v),
+  'bot-del': b => botRemove(b.dataset.pid)
+};
+/* ---------- Bots ENDE ---------- */
 
 /* ---------- Spieleliste: welche Spiele im Turnier vorkommen können, für alle sichtbar ---------- */
 const G_STATUS = [['geplant', 'Geplant', '#ffcf3f'], ['vielleicht', 'Vielleicht', '#39d6f2'], ['vorschlag', 'Vorschlag', '#c493ff'], ['gespielt', 'Gespielt', '#4ff08f'], ['raus', 'Fällt raus', '#ff4f6d']];
@@ -6651,7 +6910,9 @@ function drawStart(cfg) {
   const st = {v:1, id:uid(), status:'running', players:cfg.shuffle ? shuffle(players) : players, rounds:Math.round(num(cfg.rounds, 1, 10, 2)), secs:Math.round(num(cfg.secs, 30, 240, 80)),
     levels:levels.length ? levels : ['e', 'm', 'h'], hints:cfg.hints !== false, used:(S.draw && S.draw.used) || [],
     scores:Object.fromEntries(players.map(id => [id, 0])), transferred:false, created:Date.now()};
-  dSetTurn(st, 0);
+  let t0 = 0; while (t0 < st.players.length && isBot(st.players[t0])) t0++;
+  if (t0 >= st.players.length) { toast('Mindestens ein Mensch muss malen.'); return; }
+  dSetTurn(st, t0);
   D.dnew = false;
   ensureAudio(); sfx('chosen');
   ops.saveDraw(st);
@@ -6672,7 +6933,7 @@ function drawNext() {
   if (st.word && dc.subKey === oldKey && dc.chunks.length) dSaveThumb(st);
   const total = st.rounds * st.players.length;
   let t = st.turn + 1;
-  while (t < total && !(playerById(st.players[t % st.players.length]) && inRoomNow(st.players[t % st.players.length]))) t++;
+  while (t < total && (isBot(st.players[t % st.players.length]) || !(playerById(st.players[t % st.players.length]) && inRoomNow(st.players[t % st.players.length])))) t++;
   if (t >= total) { st.status = 'finished'; st.phase = 'done'; st.phaseAt = Date.now(); }
   else dSetTurn(st, t);
   ops.saveDraw(st);
@@ -6784,10 +7045,12 @@ function drawSideHTML(st) {
     }).join('')}</ol>`;
 }
 function drawTopHTML(st) {
-  const n = st.players.length, total = st.rounds * n, round = Math.floor(st.turn / n) + 1;
+  // Bots malen nicht: gezählt werden nur die Züge der Menschen
+  const n = st.players.length, round = Math.floor(st.turn / n) + 1, humans = st.players.filter(id => !isBot(id));
+  const total = st.rounds * humans.length, done = Array.from({length:st.turn}, (_, t) => st.players[t % n]).filter(id => !isBot(id)).length;
   const {left, tot} = dPhaseLeft(st);
   const sec = Math.ceil(left / 1000), f = left / tot;
-  return `<button class="gmenu" type="button" data-act="gmenu" aria-label="Menü anzeigen" title="Menü">☰</button><span class="qprog">Runde <b>${round}</b>/${st.rounds} · Zug ${st.turn + 1}/${total}</span>
+  return `<button class="gmenu" type="button" data-act="gmenu" aria-label="Menü anzeigen" title="Menü">☰</button><span class="qprog">Runde <b>${round}</b>/${st.rounds} · Zug ${done + 1}/${total}</span>
     <div class="hp ${st.phase === 'draw' ? hpClass(f, sec) : ''} dtimer" id="dtimer" role="timer" aria-label="Verbleibende Zeit"><span class="hp-lbl">${st.phase === 'draw' ? 'Zeit' : st.phase === 'choose' ? 'Wahl' : 'Weiter'}</span><span class="hp-bar"><i class="fill" style="width:${(f * 100).toFixed(1)}%"></i></span><span class="num">${sec}</span></div>
     ${ctl() ? `<span class="qtools"><button class="btn btn-sm" type="button" data-act="quiz-sound" aria-pressed="${!muted}">${muted ? 'Ton aus' : 'Ton an'}</button><button class="btn btn-sm" type="button" data-act="draw-skip">${st.phase === 'reveal' ? 'Weiter' : 'Überspringen'}</button><button class="btn btn-sm danger" type="button" data-act="draw-end">Beenden</button></span>` : ''}`;
 }
@@ -7052,6 +7315,7 @@ function tick() {
   golfHostTick();
   kHostTick();
   kTimerTick();
+  botTick();
   lobbyAutoAward();
   if (ctl() && S.quiz && S.quiz.status === 'running' && S.answers && S.answers.length) handleAnswers();
   const q = S.quiz;
@@ -7131,6 +7395,7 @@ function renderModal() {
   else if (m.type === 'game') inner = D.gm ? modalGame() : '';
   else if (m.type === 'adminlogin') inner = adminLoginModal();
   else if (m.type === 'player') inner = modalPlayer();
+  else if (m.type === 'botadd') inner = botAddModalHTML();
   else if (m.type === 'lhs') inner = `<div class="m-head"><h2 id="m-title">🏆 Highscore · ${esc((lobby() || {}).name || '')}</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>${lobbyHsHTML(lobby(), 50, true)}`;
   else if (m.type === 'gplayer') inner = `
     <div class="m-head"><h2 id="m-title">Dein Spieler</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
@@ -7420,7 +7685,7 @@ const actions = {
   'quiz-again': () => { const base = clone(S.quiz); withPending(() => quizStart(base)); },
   'quiz-new': () => withPending(() => quizDiscard())
 };
-Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions);
+Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
   if (e.target.classList && e.target.classList.contains('scrim')) { closeModal(); return; }
