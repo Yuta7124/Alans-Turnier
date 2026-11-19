@@ -2317,6 +2317,7 @@ textarea.input.nt-text{height:300px;width:100%;min-height:200px;resize:vertical;
 .pf-range span{display:flex;justify-content:space-between}
 .pf-range input{width:100%;accent-color:var(--coin)}
 .pf-hint{font-size:13px;margin:6px 0 0}
+.pbn-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
 /* Formen vom Profilbild (gewinnen gegen das Design) */
 html body .av.sh-circle,html body .av.sh-oval{border-radius:50%}
 html body .av.sh-round{border-radius:24%}
@@ -2349,7 +2350,7 @@ html body .sp-avw.big:is(.sh-hex,.sh-diamond,.sh-shield,.sh-star){background:non
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=33"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=34"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3417,7 +3418,7 @@ function nameHTML(p) {
   return `<span class="pn f-${f} g-${g}${gradCss(p) ? ' is-g' : ''}"${css ? ` style="${css}"` : ''}>${esc(p ? p.name : '')}</span>`;
 }
 function mottoHTML(p) { return p && p.motto ? `<span class="motto">„${esc(p.motto)}“</span>` : ''; }
-function pbgNorm(v) { v = String(v || ''); return v === 'none' || /^g:[A-Za-z0-9_-]{1,36}$/.test(v) ? v : 'auto'; }
+function pbgNorm(v) { v = String(v || ''); return v === 'none' || v === 'img' || /^g:[A-Za-z0-9_-]{1,36}$/.test(v) ? v : 'auto'; }
 function styleFields(d) { return {font:pickOpt(FONTS, d.font), grad:pickOpt(GRADS, d.grad), frame:pickOpt(FRAMES, d.frame), motto:str(d.motto, 40),
   shape:pickOpt(SHAPES, d.shape), pbg:pbgNorm(d.pbg), pblur:Math.round(num(d.pblur, 0, 40, 18)), pdim:Math.round(num(d.pdim, 10, 100, 45))}; }
 const blankPlayer = color => ({name:'', avatar:'', color:color || '', font:'std', grad:'none', frame:'std', motto:'', shape:'std', pbg:'auto', pblur:18, pdim:45, crop:null});
@@ -4301,14 +4302,62 @@ function viewBoard() {
 
 /* Spieler */
 /* Profil-Hintergrund: automatisch (Lieblingsspiel), ein eigenes Spiel oder kein Bild; dazu Unschärfe und Helligkeit */
+/* Eigenes Banner-Bild (pbn/{pid}). Wird nur geladen, wenn jemand das Profil ansieht. */
+const pbnCache = {};
+function pbnGet(pid) {
+  if (!pid || !db) return '';
+  if (pid in pbnCache) return pbnCache[pid] || '';
+  pbnCache[pid] = '';
+  db.collection('pbn').doc(pid).get().then(d => {
+    const img = d.exists ? safeBanner((d.data() || {}).img) : '';
+    pbnCache[pid] = img;
+    if (img) { if (S.modal && S.modal.type === 'player') renderModal(); else if (S.tab === 'spieler') render(); }
+  }).catch(() => {});
+  return '';
+}
+function safeBanner(s) { s = String(s || ''); return /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(s) && s.length < 700000 ? s : ''; }
+function bannerFromFile(f) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(f), img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let w = img.naturalWidth, h = img.naturalHeight, max = 1600, q = .8, out = '';
+      for (let i = 0; i < 6; i++) {
+        const k = Math.min(1, max / Math.max(w, h)), c = document.createElement('canvas');
+        c.width = Math.round(w * k); c.height = Math.round(h * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        out = c.toDataURL('image/jpeg', q);
+        if (out.length < 650000) return res(out);
+        max = Math.round(max * .8); q = Math.max(.55, q - .07);
+      }
+      rej(new Error('big'));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('img')); };
+    img.src = url;
+  });
+}
+function pbgImgOf(d, games) {
+  const cur = pbgNorm(d.pbg);
+  if (cur === 'none') return '';
+  if (cur === 'img') return d.pbnImg != null ? d.pbnImg : pbnGet(d.id);
+  if (cur.startsWith('g:')) { const g = games.find(x => x.id === cur.slice(2) && x.img); if (g) return g.img; }
+  return ((typeof spFav === 'function' && spFav(games.filter(x => x.img))) || games.find(x => x.img) || {}).img || '';
+}
+async function pbnSave(d) {
+  if (d.pbnImg == null || !db) return;
+  const img = d.pbnImg, r = db.collection('pbn').doc(d.id);
+  try { await vgCommit(d.id, b => img ? b.set(r, {pid:d.id, img, ts:Date.now()}) : b.delete(r)); pbnCache[d.id] = img; }
+  catch (e) { toast('Das Banner-Bild konnte nicht gespeichert werden.'); }
+}
 function pfBgHTML(prefix, d) {
   const games = d.id && typeof vgOf === 'function' ? vgOf(d.id).filter(g => g.img) : [];
   const cur = pbgNorm(d.pbg), blur = num(d.pblur, 0, 40, 18), dim = num(d.pdim, 10, 100, 45);
-  const img = cur === 'none' ? '' : cur.startsWith('g:') ? (games.find(g => g.id === cur.slice(2)) || {}).img || '' : (spFav(games) || games[0] || {}).img || '';
+  const img = pbgImgOf(d, games), own = !!d.id && !!vgHow(playerById(d.id));
   const chip = (v, inner) => `<button type="button" class="chip pbg-chip" data-act="pf-set" data-target="${prefix}" data-k="pbg" data-v="${esc(v)}" aria-pressed="${cur === v}">${inner}</button>`;
   return `<div class="pf-sec"><span class="lbl">Profil-Hintergrund</span>
       <div class="pf-bgprev" id="${prefix}-bgprev" style="--pc:${esc(d.color || COLORS[0])};--bgblur:${blur}px;--bgop:${dim / 100};${img ? `--bgimg:url('${img}')` : ''}"><span class="${img ? 'has' : ''}"></span><b>Vorschau</b></div>
-      <div class="chips">${chip('auto', '✨ Automatisch (Lieblingsspiel)')}${chip('none', '⬛ Kein Bild, nur Farbe')}
+      ${own ? `<div class="pbn-row"><label class="btn btn-sm ${cur === 'img' ? 'btn-gold' : ''}" for="${prefix}-pbn">🖼️ ${cur === 'img' && img ? 'Anderes Bild hochladen' : 'Eigenes Bild hochladen'}</label><input class="vh" type="file" id="${prefix}-pbn" accept="image/*" data-pbn="${prefix}">${cur === 'img' && img ? `<button class="link" type="button" data-act="pbn-clear" data-target="${prefix}">Bild entfernen</button>` : ''}</div>` : ''}
+      <div class="chips">${img && cur === 'img' ? chip('img', '🖼️ Eigenes Bild') : ''}${chip('auto', '✨ Automatisch (Lieblingsspiel)')}${chip('none', '⬛ Kein Bild, nur Farbe')}
         ${games.map(g => chip('g:' + g.id, `<img class="pbg-cov" src="${esc(g.img)}" alt="">${esc(g.title)}`)).join('')}</div>
       ${d.id ? (games.length ? '' : '<p class="muted pf-hint">Trag unter Spieler → dein Profil Spiele mit Bild ein, dann kannst du eins als Hintergrund wählen.</p>') : '<p class="muted pf-hint">Sobald du Spiele mit Bild in deinem Profil hast, kannst du eins davon als Hintergrund wählen.</p>'}
       <label class="pf-range"><span>Unschärfe <b id="${prefix}-blurv">${blur === 0 ? 'scharf' : blur}</b></span><input type="range" min="0" max="40" step="1" value="${blur}" data-draft="${prefix}.pblur" data-live="pbg" data-prefix="${prefix}"></label>
@@ -7880,8 +7929,8 @@ function spProfileHTML(p) {
   const sh = spShots[p.id] && spShots[p.id].list;
   const pct = g => g.ach === 'all' ? 100 : g.ach === 'some' && g.achT ? Math.min(100, Math.round(g.achU / g.achT * 100)) : -1;
   const stat = (n, l) => `<div class="sp-stat"><b>${n}</b><span>${l}</span></div>`;
-  const pbg = pbgNorm(p.pbg), pick = pbg.startsWith('g:') ? all.find(g => g.id === pbg.slice(2) && g.img) : null;
-  const bgG = pbg === 'none' ? null : pick || (fav && fav.img ? fav : null);
+  const pbg = pbgNorm(p.pbg), pick = pbg.startsWith('g:') ? all.find(g => g.id === pbg.slice(2) && g.img) : null, own = pbg === 'img' ? pbnGet(p.id) : '';
+  const bgG = pbg === 'none' ? null : own ? {img:own} : pick || (fav && fav.img ? fav : null);
   const bgV = `--pc:${p.color};--bgblur:${num(p.pblur, 0, 40, 18)}px;--bgop:${num(p.pdim, 10, 100, 45) / 100}`;
   const bg = bgG ? `style="${bgV};--bgimg:url('${bgG.img}')"` : `style="${bgV}"`;
   return `<section class="section sp">
@@ -9868,6 +9917,7 @@ const actions = {
   'pick-color': b => { const t = D[b.dataset.target]; if (!t) return; t.color = b.dataset.c; S.modal ? renderModal() : render(); },
   'photo-clear': b => { const t = D[b.dataset.target]; if (!t) return; t.avatar = ''; S.modal ? renderModal() : render(); },
   'edit-player': b => { const p = playerById(b.dataset.pid); if (!p) return; D.ep = {...p, crop:null}; openModal({type:'player'}); },
+  'pbn-clear': b => { const d = D[b.dataset.target]; if (!d) return; d.pbnImg = ''; d.pbg = 'auto'; renderModal(); },
   'pf-set': b => { const t = D[b.dataset.target]; if (!t) return; t[b.dataset.k] = b.dataset.v; S.modal ? renderModal() : render(); },
   'crop-apply': b => { applyCrop(b.dataset.target).catch(() => toast('Das Foto ließ sich nicht zuschneiden.')); },
   'crop-cancel': b => { const t = D[b.dataset.target]; if (!t) return; t.crop = null; S.modal ? renderModal() : render(); },
@@ -10020,6 +10070,13 @@ document.addEventListener('change', async e => {
   }
   if (t.id === 'tk-tag') { const tk = tkCopy(); tk.tag = str(t.value, 30); D.tkTag = null; ops.saveTicker(tk); return; }
   if (t.id === 'tk-players' || t.id === 'tk-date') { const tk = tkCopy(); tk[t.id === 'tk-players' ? 'players' : 'date'] = t.checked; ops.saveTicker(tk); return; }
+  if (t.matches && t.matches('input[type=file][data-pbn]')) {
+    const f = t.files && t.files[0], d = D[t.dataset.pbn]; t.value = '';
+    if (!f || !d) return;
+    try { d.pbnImg = await bannerFromFile(f); d.pbg = 'img'; S.modal ? renderModal() : render(); }
+    catch (err) { toast('Das Bild ließ sich nicht öffnen. Versuch ein JPG oder PNG.'); }
+    return;
+  }
   if (t.matches && t.matches('input[type=file][data-photo]')) {
     const f = t.files && t.files[0]; const target = t.dataset.photo;
     t.value = '';
@@ -10050,7 +10107,8 @@ document.addEventListener('submit', e => {
     if (!S.admin) { saveOwnPlayer(d); return; }
     const old = playerById(d.id) || {};
     const p = {id:d.id, name, avatar:d.avatar || '', color:d.color, createdAt:d.createdAt || Date.now(), wins:old.wins || 0, ...styleFields(d), ...(old.byGuest ? {byGuest:true} : {}), ...(old.kh ? {kh:old.kh} : {})};
-    closeModal(); ops.savePlayer(p); toast('Gespeichert.');
+    closeModal();
+    Promise.resolve(ops.savePlayer(p)).then(() => pbnSave(d)).then(() => toast('Gespeichert.'));
   } else if (f === 'settings') {
     const s = D.set; if (!splitValid()) return;
     const cur = S.settings;
@@ -10790,6 +10848,7 @@ async function saveOwnPlayer(d) {
     }
     if (!ok) { pkeyPut(d.id, keys); toast('Diesen Spieler kann nur der Spielleiter ändern.'); return; }
     pkeyPut(d.id, [next]);
+    await pbnSave(d);
     closeModal(); toast('Gespeichert.');
   } catch (e) { toast('Speichern hat nicht geklappt. Prüfe die Verbindung und versuch es nochmal.'); }
 }

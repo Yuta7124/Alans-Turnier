@@ -292,6 +292,16 @@ service cloud.firestore {
         allow delete: if vgOwner(resource.data.pid);
       }
 
+      // Eigenes Banner-Bild im Spielerprofil: nur der Spieler selbst (Schlüsselwechsel wie bei Videogames).
+      match /pbn/{pid} {
+        allow read: if true;
+        allow create, update: if request.resource.data.keys().hasOnly(['pid', 'img', 'ts'])
+          && request.resource.data.pid == pid
+          && request.resource.data.img is string && request.resource.data.img.size() < 700000
+          && vgOwner(pid);
+        allow delete: if vgOwner(pid);
+      }
+
       // Support-Tickets: lesen alle im Raum. Anlegen, Nachtrag und Zurückziehen nur der Spieler selbst (Schlüsselwechsel
       // wie bei Videogames), Stimmen gibt jeder Spieler nur für sich ab, Status und Antworten setzt der Spielleiter.
       function tkOk(d) {
@@ -349,7 +359,7 @@ service cloud.firestore {
       // Ausnahme Videogames (vg, vgm, vgp): die ändert nur der Spieler selbst (siehe oben).
       match /{coll}/{id} {
         allow read: if true;
-        allow write: if isAdmin() && !(coll in ['vg', 'vgm', 'vgp']);
+        allow write: if isAdmin() && !(coll in ['vg', 'vgm', 'vgp', 'pbn']);
       }
     }
   }
