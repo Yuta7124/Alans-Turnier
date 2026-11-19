@@ -98,9 +98,9 @@ Das Repository ist öffentlich, aber nur der Programmcode. Die Daten stecken in 
 - **Abmelden** als Spielleiter: ganz unten auf der Seite.
 - Daten aus der alten Claude-Version werden nicht automatisch übernommen. Spieler und eigene Quizfragen trägst du einmal neu ein.
 
-## Turnier-Vorschau
+## Turnier-Vorschau (Wartebildschirm)
 
-Solange kein Turnier läuft (Status nicht „Läuft gerade“ und kein Turnier heute), zeigt der Tab „Turnier“ allen nur eine ausgegraute **Vorschau** von Highscore, Zufallsrad und Spieleliste mit Hinweis, wann es losgeht (mit Countdown, wenn ein Termin steht). Darin lässt sich nichts anklicken. Der Spielleiter sieht dieselbe Vorschau mit zwei Knöpfen: **„Turnier bearbeiten“** (alles einrichten, die Spieler sehen weiter die Vorschau) und **„Jetzt für alle starten“** (Status „Läuft gerade“, alle können mitmachen).
+Solange kein Turnier läuft (Status nicht „Läuft gerade“ und kein Turnier heute), zeigt der Tab „Turnier“ allen den **Wartebildschirm im TV-Look** („Gleich geht’s los!“ mit Scheinwerfern, „Live in Kürze“, Uhr, Laufschrift und fliegenden Bildern aus den Optionen), mit Termin und Countdown, wenn einer eingetragen ist. Highscore, Zufallsrad und Spieleliste sind so lange nicht erreichbar. Der Spielleiter sieht denselben Bildschirm mit **„Turnier bearbeiten“** (alles einrichten, die Spieler sehen weiter den Wartebildschirm) und **„Jetzt für alle starten“**.
 
 ## Spieler-Ansicht für den Spielleiter
 
