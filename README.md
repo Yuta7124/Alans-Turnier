@@ -98,10 +98,20 @@ Das Repository ist öffentlich, aber nur der Programmcode. Die Daten stecken in 
 - **Abmelden** als Spielleiter: ganz unten auf der Seite.
 - Daten aus der alten Claude-Version werden nicht automatisch übernommen. Spieler und eigene Quizfragen trägst du einmal neu ein.
 
+## Support
+
+Eigener Tab „Support“ (links neben „Optionen“). Spieler schreiben dort Tickets in einem Assistenten mit 4 Schritten:
+1. **Art:** Fehler, Idee, Verbesserung, Frage oder Sonstiges.
+2. **Bereich:** 16 Bereiche (z. B. Minigolf, Kartenwahn, Profile, Handy-Ansicht), dazu passende Unterpunkte, bei Minigolf die Bahn (1 bis 30) und ein freies Feld „Wo genau?“. Kommt man aus einem Spiel in den Support, ist der Bereich (und bei Minigolf die Bahn) schon vorgeschlagen.
+3. **Details:** Titel und Beschreibung; bei Fehlern Schritte zum Nachstellen, „Was hätte passieren sollen?“, wie oft und wie schlimm; bei Ideen und Verbesserungen „Warum wäre das gut?“ und wie wichtig.
+4. **Bilder und Absenden:** bis zu 3 Screenshots, auf Wunsch technische Infos (Gerät, System, Browser, Fenstergröße), Vorschau des Tickets.
+
+Angefangene Tickets werden als Entwurf gespeichert. Spieler sehen „Meine Tickets“, ein Ideen-Board und bekannte Fehler, können für fremde Ideen und Fehler stimmen („Will ich auch“ / „Passiert mir auch“), eigene Tickets ergänzen oder zurückziehen. Der Spielleiter sieht alle Tickets mit Zählern, Filtern (Status, Art, Bereich), Suche und Sortierung (z. B. „Dringlichste“), setzt den Status (Neu, In Bearbeitung, Erledigt, Abgelehnt) und antwortet, auch mit Schnellantworten. Neue Antworten und neue Tickets zeigt eine Zahl am Tab.
+
 ## Dauerlink für Discord
 
 Unter „Optionen“ kann der Spielleiter einen **Dauerlink** erstellen. Er läuft nie ab (bis 2100), bringt neue und alte Spieler ohne Passwort direkt auf den Server und zeigt nach einem Passwortwechsel automatisch auf den neuen Server. „Neuen Link erstellen“ oder „Sperren“ macht den alten Link sofort ungültig. Beim Posten in Discord erscheint eine Vorschau mit Titel und Bild (og.png).
 
 ## Noch offen (am PC erledigen)
 
-- Die aktuelle `firestore.rules` in der Firebase-Konsole veröffentlichen (Abschnitte `vg`, `vgm`, `vgp`, die Änderung bei `players`, der Dauerlink bei `invites` und `admin/invite`). Vorher können Spieler keine eigenen Spiele, Screenshots oder Clips eintragen, und der Dauerlink lässt sich nicht erstellen.
+- Die aktuelle `firestore.rules` in der Firebase-Konsole veröffentlichen (Abschnitte `vg`, `vgm`, `vgp`, die Änderung bei `players`, der Dauerlink bei `invites` und `admin/invite`, Support bei `tickets` und `tkimg`). Vorher können Spieler keine eigenen Spiele, Screenshots oder Clips eintragen, der Dauerlink lässt sich nicht erstellen, und Spieler können keine Support-Tickets schreiben.

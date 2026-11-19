@@ -859,6 +859,154 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .sp-id .sp-t3{font-size:14px}
 @media (max-width:560px){.sp-id .sp-top3{margin:0 auto}.sp-t3{font-size:12px;grid-template-columns:12px 22px minmax(0,1fr);gap:5px}.vg-cover.t3{width:22px;height:29px}}
 /* VG-CSS-END */
+/* SUPPORT-CSS-START */
+.tab-badge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;margin-left:4px;background:var(--hp);color:#fff;font-family:var(--body);font-style:normal;font-size:11px;font-weight:800;line-height:1;border-radius:9px;vertical-align:2px}
+.tk-hero{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:0 4px 18px}
+.tk-quick{--e:var(--tc);display:flex;flex-direction:column;align-items:flex-start;gap:6px;border:0;cursor:pointer;text-align:left;font:inherit;color:var(--ink);padding:16px;background:var(--panel);
+  box-shadow:0 -3px 0 var(--edge),0 3px 0 var(--edge),-3px 0 0 var(--edge),3px 0 0 var(--edge),inset 0 4px 0 var(--tc);transition:transform .12s}
+.tk-quick:hover,.tk-quick:focus-visible{transform:translateY(-3px)}
+.tk-quick span{font-size:30px;line-height:1}
+.tk-quick b{font-family:var(--display);font-size:19px;text-transform:uppercase;color:var(--tc)}
+.tk-quick small{color:var(--muted);font-size:13px;line-height:1.35}
+.tk-ctxhint{margin:0 4px 16px;padding:10px 14px;background:rgba(57,214,242,.08);box-shadow:inset 3px 0 0 var(--xp);font-size:14px}
+.tk-upd{margin:0 4px 16px;padding:10px 14px;background:rgba(255,207,63,.1);box-shadow:inset 3px 0 0 var(--coin);font-weight:700}
+.tk-seg{display:flex;gap:4px;margin:0 4px 14px;border-bottom:3px solid var(--edge);overflow-x:auto;scrollbar-width:none}
+.tk-seg::-webkit-scrollbar{display:none}
+.tk-segb{flex:none;border:0;background:none;cursor:pointer;font-family:var(--display);font-size:16px;text-transform:uppercase;color:var(--muted);padding:10px 14px;margin-bottom:-3px;border-bottom:3px solid transparent}
+.tk-segb[aria-selected="true"]{color:var(--coin);border-bottom-color:var(--coin)}
+.tk-segb small{font-family:var(--body);font-size:12px;opacity:.75}
+.tk-tools{display:flex;flex-direction:column;gap:10px;margin:0 4px 16px}
+.tk-q{max-width:420px}
+.tk-chips{gap:6px}
+.tk-note{margin:0 4px 14px;font-size:14px}
+.tk-list{display:flex;flex-direction:column;gap:12px;margin:0 4px}
+.tk-card{display:grid;grid-template-columns:48px minmax(0,1fr);gap:14px;align-items:start;width:100%;border:0;cursor:pointer;text-align:left;font:inherit;color:var(--ink);padding:14px 16px;background:var(--panel);
+  box-shadow:inset 5px 0 0 var(--tc),0 -3px 0 var(--edge),0 3px 0 var(--edge),3px 0 0 var(--edge);transition:transform .1s,background .1s}
+.tk-card:hover,.tk-card:focus-visible{background:var(--panel-2);transform:translateX(3px)}
+.tk-card.is-new{box-shadow:inset 5px 0 0 var(--tc),0 -3px 0 var(--coin),0 3px 0 var(--coin),3px 0 0 var(--coin),-3px 0 0 var(--coin)}
+.tk-card.st-done,.tk-card.st-rejected{opacity:.78}
+.tk-ico{font-size:30px;line-height:1;display:grid;place-items:center;width:48px;height:48px;background:var(--bg-2)}
+.tk-main{display:flex;flex-direction:column;gap:5px;min-width:0}
+.tk-top{display:flex;align-items:center;gap:8px;min-width:0}
+.tk-title{font-family:var(--display);font-size:19px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.tk-new{flex:none;font-style:normal;font-family:var(--pixel);font-size:8px;padding:4px 6px;background:var(--coin);color:#120c24;text-transform:uppercase;animation:kPulse 1s steps(2) infinite}
+.tk-meta{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:var(--muted)}
+.tk-by{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--ink)}
+.tk-code{font-family:var(--pixel);font-size:9px;align-self:center}
+.tk-foot{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:2px}
+.tk-st{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;padding:3px 9px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--c) 55%,transparent);white-space:nowrap}
+.tk-tag{font-size:12px;font-weight:700;padding:3px 8px;background:var(--bg-2);white-space:nowrap}
+.tk-tag.sev-low{color:#9be8b4}.tk-tag.sev-mid{color:#ffcf3f}.tk-tag.sev-high{color:#ff9a3c}.tk-tag.sev-block{color:#fff;background:#c4223d}
+.tk-tag.prio-nice{color:#aaa1d2}.tk-tag.prio-cool{color:#39d6f2}.tk-tag.prio-must{color:#ffcf3f}
+.tk-cnt{font-size:13px;font-weight:700;color:var(--muted)}
+.tk-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 4px 18px}
+.tk-stat{display:flex;flex-direction:column;gap:4px;border:0;cursor:pointer;font:inherit;color:var(--ink);text-align:left;padding:14px 16px;background:var(--panel);box-shadow:inset 0 4px 0 var(--c),0 -3px 0 var(--edge),0 3px 0 var(--edge),-3px 0 0 var(--edge),3px 0 0 var(--edge)}
+.tk-stat[aria-pressed="true"]{background:var(--panel-2);box-shadow:inset 0 4px 0 var(--c),0 -3px 0 var(--c),0 3px 0 var(--c),-3px 0 0 var(--c),3px 0 0 var(--c)}
+.tk-stat b{font-family:var(--pixel);font-size:24px;color:var(--c)}
+.tk-stat span{font-size:13px;font-weight:700;color:var(--muted)}
+/* Detail */
+.tk-show{display:flex;flex-direction:column;gap:16px}
+.tk-stbanner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;background:color-mix(in srgb,var(--c) 9%,var(--bg-2));box-shadow:inset 4px 0 0 var(--c);font-size:14px}
+.tk-kvs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 18px}
+.tk-kv{display:flex;flex-direction:column;gap:2px;min-width:0}
+.tk-kv span{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.tk-kv b{font-size:15px;overflow-wrap:anywhere}
+.tk-block h4{margin:0 0 6px;font-family:var(--display);font-size:17px;text-transform:uppercase;color:var(--xp)}
+.tk-block p{margin:0;line-height:1.5;overflow-wrap:anywhere}
+.tk-steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+.tk-shots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tk-shots button{border:0;padding:0;cursor:zoom-in;background:var(--bg-2);aspect-ratio:16/10;overflow:hidden}
+.tk-shots img{width:100%;height:100%;object-fit:cover;display:block}
+.tk-tech{background:var(--bg-2);padding:10px 14px}
+.tk-tech summary{cursor:pointer;font-weight:700;color:var(--muted)}
+.tk-tech .tk-kvs{margin-top:10px}
+.tk-votes{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.tk-votes .btn b{margin-left:6px}
+.tk-vcount{font-weight:700;color:var(--muted)}
+.tk-voters{display:flex;gap:2px;flex-wrap:wrap}
+.tk-tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;position:relative}
+.tk-tl::before{content:"";position:absolute;left:6px;top:8px;bottom:8px;width:2px;background:var(--edge)}
+.tk-ev{display:grid;grid-template-columns:14px minmax(0,1fr);gap:12px;align-items:start;font-size:14px;position:relative}
+.tk-ev small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.tk-ev .tk-st{margin:0 2px}
+.tk-dot{width:14px;height:14px;margin-top:3px;background:var(--c);box-shadow:0 0 0 3px var(--panel)}
+.tk-bubble{margin:8px 0 0;padding:10px 12px;background:var(--bg-2);box-shadow:inset 3px 0 0 var(--xp);line-height:1.45;overflow-wrap:anywhere}
+.tk-bubble.adm{background:rgba(255,207,63,.08);box-shadow:inset 3px 0 0 var(--coin)}
+.tk-admin{display:flex;flex-direction:column;gap:10px;padding:14px;background:var(--bg-2);box-shadow:inset 0 3px 0 var(--coin)}
+.tk-admin h4{margin:0;font-family:var(--display);font-size:17px;text-transform:uppercase}
+.tk-admin p{margin:0;font-size:14px}
+.tk-stbtn[aria-pressed="true"]{background:var(--c);color:#120c24}
+.tk-quickr .chip{font-size:12px;text-transform:none;font-family:var(--body)}
+.tk-abtn{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+/* Assistent */
+.tk-wiz{list-style:none;margin:0 0 16px;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.tk-wiz li{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--muted);padding:6px 8px;background:var(--bg-2);min-width:0}
+.tk-wiz li span{display:grid;place-items:center;flex:none;width:22px;height:22px;background:var(--panel-2);font-family:var(--pixel);font-size:9px}
+.tk-wiz li.on{color:var(--ink);box-shadow:inset 0 -3px 0 var(--coin)}
+.tk-wiz li.on span{background:var(--coin);color:#120c24}
+.tk-wiz li.ok span{background:var(--ok);color:#120c24}
+.tk-types{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.tk-type{display:flex;flex-direction:column;align-items:flex-start;gap:6px;border:0;cursor:pointer;text-align:left;font:inherit;color:var(--ink);padding:14px;background:var(--bg-2);box-shadow:inset 0 4px 0 var(--tc)}
+.tk-type:hover,.tk-type[aria-pressed="true"]{background:var(--panel-2);box-shadow:inset 0 4px 0 var(--tc),0 0 0 3px var(--tc)}
+.tk-type span{font-size:28px;line-height:1}
+.tk-type b{font-family:var(--display);font-size:19px;text-transform:uppercase;color:var(--tc)}
+.tk-type small{color:var(--muted);font-size:13px;line-height:1.35}
+.tk-areas{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:16px}
+.tk-area{display:flex;align-items:center;gap:8px;border:0;cursor:pointer;font:inherit;font-weight:700;font-size:14px;color:var(--ink);text-align:left;padding:10px 12px;background:var(--bg-2)}
+.tk-area span{font-size:20px;line-height:1}
+.tk-area:hover{background:var(--panel-2)}
+.tk-area[aria-pressed="true"]{background:var(--panel-2);box-shadow:0 0 0 3px var(--coin);color:var(--coin)}
+.tk-holes{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px}
+.tk-holes button{border:0;cursor:pointer;min-height:34px;font-family:var(--pixel);font-size:10px;color:var(--ink);background:var(--bg-2)}
+.tk-holes button[aria-pressed="true"]{background:var(--ok);color:#120c24}
+.tk-req{color:var(--hp)}
+.tk-cnt2{align-self:flex-end}
+.tk-stepin{margin:6px 0 4px;padding-left:24px;display:flex;flex-direction:column;gap:6px}
+.tk-stepin li{display:flex;align-items:center;gap:6px}
+.tk-stepin li::marker{font-family:var(--pixel);font-size:10px;color:var(--coin)}
+.tk-stepin .input{flex:1;min-width:0}
+.tk-sevs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.tk-sev{display:flex;flex-direction:column;gap:3px;border:0;cursor:pointer;font:inherit;color:var(--ink);text-align:left;padding:10px;background:var(--bg-2)}
+.tk-sev b{font-size:14px}
+.tk-sev small{font-size:12px;color:var(--muted);line-height:1.3}
+.tk-sev[aria-pressed="true"]{box-shadow:0 0 0 3px var(--sc);background:var(--panel-2)}
+.tk-sev.sev-low{--sc:#4ff08f}.tk-sev.sev-mid{--sc:#ffcf3f}.tk-sev.sev-high{--sc:#ff9a3c}.tk-sev.sev-block{--sc:#ff4f6d}
+.tk-imgs{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
+.tk-img{position:relative;width:150px;aspect-ratio:16/10;background:var(--bg-2)}
+.tk-img img{width:100%;height:100%;object-fit:cover;display:block;box-shadow:0 0 0 3px var(--shadow)}
+.tk-imgadd{width:150px;aspect-ratio:16/10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;font-weight:700;font-size:13px;color:var(--muted);background:var(--bg-2);box-shadow:inset 0 0 0 2px var(--edge)}
+.tk-imgadd span{font-size:26px}
+.tk-imgadd:hover{color:var(--ink);box-shadow:inset 0 0 0 2px var(--xp)}
+.tk-techtog{display:flex;gap:10px;align-items:flex-start;font-weight:700;cursor:pointer}
+.tk-techtog input{width:20px;height:20px;margin-top:2px;flex:none}
+.tk-techtog small{display:block;font-weight:500;margin-top:2px}
+.tk-preview{display:flex;flex-direction:column;gap:8px}
+.tk-preview .tk-card{cursor:default;transform:none}
+.tk-nav{justify-content:space-between}
+@media (max-width:820px){.tk-hero{grid-template-columns:repeat(2,minmax(0,1fr))}.tk-sevs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){
+  .tk-hero{gap:10px}
+  .tk-quick{padding:12px}
+  .tk-quick b{font-size:15px}
+  .tk-quick small{display:none}
+  .tk-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .tk-card{grid-template-columns:36px minmax(0,1fr);gap:10px;padding:12px}
+  .tk-ico{width:36px;height:36px;font-size:22px}
+  .tk-title{font-size:16px;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .tk-kvs{grid-template-columns:minmax(0,1fr)}
+  .tk-wiz li{font-size:0;justify-content:center;padding:6px 4px}
+  .tk-wiz li span{font-size:9px}
+  .tk-types{grid-template-columns:minmax(0,1fr)}
+  .tk-type{flex-direction:row;flex-wrap:wrap;align-items:center;column-gap:10px}
+  .tk-type small{flex-basis:100%}
+  .tk-areas{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tk-holes{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .tk-img,.tk-imgadd{width:calc(50% - 6px)}
+  .tk-segb{font-size:14px;padding:9px 10px}
+}
+@media (max-width:440px){.tab{font-size:12px;padding:10px 2px}}
+@media (max-width:370px){.tab{font-size:10.5px;padding:10px 1px}}
+/* SUPPORT-CSS-END */
 .lhs{display:flex;flex-direction:column;gap:10px;margin-top:16px}
 .lhs-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .lhs-head h3{margin:0}
@@ -2071,7 +2219,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=22"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=24"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3092,7 +3240,7 @@ const DEFAULT_SETTINGS = {title:'Darkime Turnier', date:'', prize:100, places:3,
 const LS_KEY = 'spieleturnier-v1';
 const SHARE_URL = location.href.split('#')[0].split('?')[0];
 const RING = 2 * Math.PI * 44;
-const TABS = [['start', 'Main-Menü'], ['turnier', 'Turnier'], ['spiele', 'Spiele'], ['spieler', 'Spieler'], ['einstellungen', 'Optionen']];
+const TABS = [['start', 'Main-Menü'], ['turnier', 'Turnier'], ['spiele', 'Spiele'], ['spieler', 'Spieler'], ['support', 'Support'], ['einstellungen', 'Optionen']];
 const TAB_SHORT = {start:'Menü'};
 /* Ober-Tabs mit Unterseiten */
 const GROUPS = {
@@ -3104,7 +3252,7 @@ function groupPick(g) {
   return GROUPS[g].some(x => x[0] === last) ? last : GROUPS[g][0][0];
 }
 /* Ansichten: "Spiele" ist der Ober-Tab für Quiz und Malen */
-const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'einstellungen'];
+const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'support', 'einstellungen'];
 const HUB = ['quiz', 'malen'];
 const viewOk = t => VIEWS.includes(t);
 function viewFor(t) {
@@ -3676,7 +3824,7 @@ function render() {
   else if (S.mode === 'lock') html = lockHTML();
   else if (blocked()) html = `<div style="min-height:70vh"></div>`;
   else if (S.tab === 'spiele-pick') html = `<div class="loading">${COIN(48, 'spin')}</div>`;
-  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, einstellungen:viewSettings}[S.tab] || viewStart)();
+  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, support:viewSupport, einstellungen:viewSettings}[S.tab] || viewStart)();
   const oldStand = m.querySelector('.stand');
   const oldKey = oldStand ? oldStand.dataset.key : null;
   const before = standCapture(oldStand);
@@ -3793,7 +3941,7 @@ function renderHeader() {
   const hideTabs = tabsHidden();
   const tabs = hideTabs ? [] : TABS;
   const live = roomLiveList().length > 0;
-  const tabsHTML = H(tabs.map(([k, l]) => `<button class="tab" type="button" data-act="tab" data-tab="${k}" aria-selected="${S.tab === k || groupOf(S.tab) === k || (k === 'spiele' && roomTabs.includes(S.tab))}">${TAB_SHORT[k] ? `<span class="t-long">${l}</span><span class="t-short">${TAB_SHORT[k]}</span>` : l}${k === 'spiele' && live ? ' <span aria-hidden="true" style="color:var(--hp)">■</span><span class="vh">(läuft)</span>' : ''}</button>`).join(''));
+  const tabsHTML = H(tabs.map(([k, l]) => `<button class="tab" type="button" data-act="tab" data-tab="${k}" aria-selected="${S.tab === k || groupOf(S.tab) === k || (k === 'spiele' && roomTabs.includes(S.tab))}">${TAB_SHORT[k] ? `<span class="t-long">${l}</span><span class="t-short">${TAB_SHORT[k]}</span>` : l}${k === 'spiele' && live ? ' <span aria-hidden="true" style="color:var(--hp)">■</span><span class="vh">(läuft)</span>' : ''}${k === 'support' && S.mode === 'db' && tkBadge() ? `<i class="tab-badge" aria-label="${tkBadge()} neu">${tkBadge()}</i>` : ''}</button>`).join(''));
   if ($('#tabs').innerHTML !== tabsHTML) $('#tabs').innerHTML = tabsHTML;
   const pill = $('#pill');
   let txt = 'Lädt …', cls = '';
@@ -7555,6 +7703,447 @@ const spActions = {
     } catch (e) { vgErr(e); }
   }};
 /* ---------- Spieler-Profile ENDE ---------- */
+/* ---------- Support: Tickets für Fehler, Ideen, Verbesserungen und Fragen ----------
+   rooms/{raum}/tickets/{id}: ein Ticket. Anlegen, Nachträge und Zurückziehen nur durch den Spieler selbst
+   (Schlüsselwechsel im selben Schreibvorgang, wie bei Videogames). Stimmen („passiert mir auch“) gibt jeder Spieler
+   für sich ab. Status und Antworten setzt der Spielleiter.
+   rooms/{raum}/tkimg/{id}: bis zu 3 Screenshots pro Ticket, werden erst in der Detailansicht geladen. */
+const TK_TYPES = [
+  ['bug', 'Fehler', '🐞', 'Etwas funktioniert nicht, hängt oder sieht kaputt aus.', '#ff4f6d'],
+  ['idea', 'Idee', '💡', 'Etwas ganz Neues, das es auf der Seite noch nicht gibt.', '#ffcf3f'],
+  ['improve', 'Verbesserung', '🔧', 'Etwas, das es schon gibt, soll besser werden.', '#39d6f2'],
+  ['question', 'Frage', '❓', 'Du weißt nicht, wie etwas geht, oder verstehst etwas nicht.', '#c493ff'],
+  ['other', 'Sonstiges', '💬', 'Alles, was sonst nirgends passt.', '#aaa1d2']
+];
+const TK_AREAS = [
+  ['menu', 'Main-Menü', '🏠'], ['turnier', 'Turnier', '🏆'], ['raeume', 'Spiele-Räume', '🚪'], ['quiz', 'Quiz', '❔'], ['malen', 'Malen', '🎨'],
+  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
+  ['support', 'Support', '🛟'], ['musik', 'Musik und Sound', '🎵'], ['optionen', 'Optionen', '⚙️'], ['login', 'Login und Einladungen', '🔑'], ['handy', 'Handy-Ansicht', '📱'], ['other', 'Sonstiges', '🧩']
+];
+const TK_SUB = {
+  menu:['Ankündigungen', 'Countdown', 'Online-Anzeige', 'Event-Look'],
+  turnier:['Rangliste', 'Glücksrad', 'Spieleliste', 'Highscore', 'Turnier-Start'],
+  raeume:['Raum beitreten', 'Raum verlassen', 'Spiel starten', 'Lobby-Highscore', 'Zuschauen', 'Menü im Spiel'],
+  quiz:['Fragen', 'Antworten', 'Punkte', 'Spielfeld', 'Schätzfragen', 'Timer'],
+  malen:['Stift', 'Formen', 'Radierer', 'Rückgängig / Wiederholen', 'Wort raten', 'Bild speichern'],
+  golf:['Ball schießen', 'Kamera', 'Hindernisse', 'Wasser / Loch im Boden', 'Drehscheibe', 'Zuschauen', 'Countdown', 'Punkte'],
+  karten:['Karte legen', 'Karte ziehen', 'Farbwahl', 'Letzte Karte', '+2 / +4', 'Timer', 'Animation', 'Ende / Punkte'],
+  bots:['Bot hinzufügen', 'Bot spielt komisch', 'Bot hängt', 'Schwierigkeit'],
+  profile:['Profilbild', 'Name / Spruch', 'Level / Abzeichen', 'Online-Status', 'Top 3', 'Profil bearbeiten'],
+  games:['Spiel eintragen', 'Bewertung', 'Screenshots', 'Clips', 'Achievements', 'Spielzeit', 'Genre / FSK'],
+  support:['Ticket schreiben', 'Antworten', 'Stimmen'],
+  musik:['Musik spielt nicht', 'Lautstärke', 'Eigene Musik', 'Event-Musik', 'Soundeffekte'],
+  optionen:['Sprache', 'Vollbild', 'Darstellung', 'Einladungslink'],
+  login:['Passwort', 'Einladungslink', 'Dauerlink', 'Admin-Login'],
+  handy:['Hochkant', 'Querformat', 'Zu klein / zu groß', 'Knöpfe schwer zu treffen', 'Scrollen', 'Tastatur']
+};
+const TK_PH = {golf:'z. B. „Ball bleibt an der Wand hängen“', quiz:'z. B. „Kategorie Filme, 400 Punkte“', karten:'z. B. „nach einer +4-Karte“', malen:'z. B. „beim Kreis-Werkzeug“',
+  profile:'z. B. „auf dem Handy im Profil von Lena“', games:'z. B. „beim Hochladen eines Clips“'};
+const TK_ST = [['open', 'Neu', '🆕', '#39d6f2'], ['progress', 'In Bearbeitung', '🔧', '#ffcf3f'], ['done', 'Erledigt', '✅', '#4ff08f'], ['rejected', 'Abgelehnt', '⛔', '#ff4f6d']];
+const TK_ST_TEXT = {open:'Neu: Der Spielleiter hat es noch nicht bearbeitet.', progress:'In Bearbeitung: Der Spielleiter kümmert sich darum.',
+  done:'Erledigt: Das ist umgesetzt oder behoben.', rejected:'Abgelehnt: Das wird nicht gemacht. Den Grund findest du im Verlauf.'};
+const TK_FREQ = [['always', 'Immer'], ['often', 'Oft'], ['sometimes', 'Manchmal'], ['once', 'Nur einmal']];
+const TK_SEV = [['low', 'Kleinigkeit', 'Sieht komisch aus, stört kaum'], ['mid', 'Nervig', 'Stört beim Spielen'], ['high', 'Schlimm', 'Spiel geht kaputt oder hängt'], ['block', 'Geht gar nicht', 'Ich komme nicht mehr weiter']];
+const TK_PRIO = [['nice', 'Wäre nett'], ['cool', 'Wäre richtig cool'], ['must', 'Will ich unbedingt']];
+const TK_QUICK = {
+  progress:['Danke, ich schau mir das an!', 'Kann ich nachstellen, ich arbeite dran.'],
+  done:['Ist behoben, danke fürs Melden!', 'Ist umgesetzt, probier es aus!'],
+  rejected:['Gibt es schon als Ticket.', 'Kann ich nicht nachstellen. Schreib gern einen Nachtrag, wenn es wieder passiert.', 'Passt leider nicht zur Seite.', 'Ist technisch leider nicht machbar.'],
+  open:['Kannst du noch genauer beschreiben, was du gemacht hast?', 'Schick mir gern einen Screenshot.']
+};
+const tkL = (list, v) => list.find(x => x[0] === v) || null;
+const tkCode = id => '#' + String(id).replace(/[^a-z0-9]/gi, '').slice(0, 4).toUpperCase();
+function normTk(id, x) {
+  x = x || {};
+  const one = (v, list, d) => list.some(l => l[0] === v) ? v : d;
+  const msgs = Array.isArray(x.msgs) ? x.msgs.filter(m => m && typeof m === 'object').slice(-80).map(m => ({by:str(m.by, 40), t:Number(m.t) || 0, text:str(m.text, 1000), st:one(m.st, TK_ST, '')})) : [];
+  const votes = {}; if (x.votes && typeof x.votes === 'object') Object.keys(x.votes).slice(0, 60).forEach(k => { if (x.votes[k] === true) votes[k] = true; });
+  const tech = {}; if (x.tech && typeof x.tech === 'object') ['dev', 'os', 'br', 'scr', 'lang', 'tab', 'room', 'ori'].forEach(k => { if (x.tech[k] != null) tech[k] = str(x.tech[k], 60); });
+  return {id, by:str(x.by, 40), type:one(x.type, TK_TYPES, 'other'), area:one(x.area, TK_AREAS, 'other'), sub:str(x.sub, 80), hole:vgInt(x.hole, 0, 30),
+    title:str(x.title, 100), desc:str(x.desc, 2000), steps:Array.isArray(x.steps) ? x.steps.map(s => str(s, 200)).filter(Boolean).slice(0, 10) : [],
+    expect:str(x.expect, 800), why:str(x.why, 800), freq:one(x.freq, TK_FREQ, ''), sev:one(x.sev, TK_SEV, ''), prio:one(x.prio, TK_PRIO, ''),
+    tech, nimg:vgInt(x.nimg, 0, 3), status:one(x.status, TK_ST, 'open'), msgs, votes, ts:Number(x.ts) || 0, up:Number(x.up) || Number(x.ts) || 0, lastBy:x.lastBy === 'admin' ? 'admin' : 'player'};
+}
+let tkSub = false;
+function tkEnsure() {
+  if (tkSub || S.mode !== 'db' || !db) return;
+  tkSub = true;
+  unsubs.push(db.collection('tickets').onSnapshot(sn => {
+    S.tk = sn.docs.map(d => normTk(d.id, d.data())).filter(t => t.title && t.by);
+    renderHeader();
+    if (S.tab === 'support') render(); else if (S.modal && /^tk/.test(S.modal.type)) renderModal();
+    if (S.modal && S.modal.type === 'tkshow') renderModal();
+  }, () => { S.tk = S.tk || []; if (S.tab === 'support') render(); }));
+  unsubs.push(() => { tkSub = false; });
+}
+/* Gelesen-Merker pro Gerät: id -> Zeitpunkt der letzten Änderung, die man gesehen hat */
+const tkSeen = () => { try { return JSON.parse(lsGet('turnier-tk-seen', '{}')) || {}; } catch (e) { return {}; } };
+function tkMarkSeen(t) { const s = tkSeen(); s[t.id] = t.up; const keys = Object.keys(s); if (keys.length > 300) keys.slice(0, keys.length - 300).forEach(k => delete s[k]); lsSet('turnier-tk-seen', JSON.stringify(s)); }
+function tkUnseen(t) {
+  const seen = tkSeen()[t.id] || 0;
+  if (S.admin) return t.lastBy === 'player' && t.up > seen;
+  return t.by === myPid() && t.lastBy === 'admin' && t.up > seen;
+}
+function tkBadge() { tkEnsure(); return (S.tk || []).filter(tkUnseen).length; }
+/* Wo war der Spieler gerade? Wird beim Öffnen des Support-Tabs gemerkt und als Vorschlag eingetragen. */
+function tkContext() {
+  const t = S.tab, L = typeof lobby === 'function' ? lobby() : null, me = myPid();
+  const map = {start:'menu', turnier:'turnier', rangliste:'turnier', rad:'turnier', liste:'turnier', spiele:'raeume', raum:'raeume', spieler:'profile', einstellungen:'optionen'};
+  let area = map[t] || '', hole = 0, sub = '';
+  if (['quiz', 'malen', 'golf', 'karten'].includes(t)) area = t;
+  if (t === 'spieler' && D.vgP) area = 'games';
+  if (area === 'golf' && S.golf && S.golf.status === 'running') { const p = S.golf.pos && S.golf.pos[me]; hole = (Array.isArray(p) ? p[3] : S.golf.hi) + 1 || 0; }
+  if (area === 'turnier') sub = {rangliste:'Rangliste', rad:'Glücksrad', liste:'Spieleliste'}[t] || '';
+  return area ? {area, hole, sub, at:Date.now(), room:L && L.name ? L.name : ''} : null;
+}
+function tkTech() {
+  const ua = navigator.userAgent || '';
+  const os = /Android/i.test(ua) ? 'Android' : /iPhone|iPad|iPod/i.test(ua) ? 'iOS' : /Windows/i.test(ua) ? 'Windows' : /Mac OS/i.test(ua) ? 'macOS' : /Linux/i.test(ua) ? 'Linux' : 'Unbekannt';
+  const br = /SamsungBrowser/i.test(ua) ? 'Samsung Internet' : /Edg\//i.test(ua) ? 'Edge' : /OPR\//i.test(ua) ? 'Opera' : /Firefox\//i.test(ua) ? 'Firefox' : /Chrome\//i.test(ua) ? 'Chrome' : /Safari\//i.test(ua) ? 'Safari' : 'Unbekannt';
+  const touch = matchMedia('(pointer:coarse)').matches || /Mobi|Android|iPhone|iPad/i.test(ua), w = screen.width, h = screen.height;
+  const dev = touch ? (Math.min(w, h) >= 700 ? 'Tablet' : 'Handy') : 'PC';
+  const ctx = D.tkCtx;
+  return {dev, os, br, scr:`${innerWidth}×${innerHeight}`, lang:EN ? 'English' : 'Deutsch', ori:innerWidth > innerHeight ? 'Quer' : 'Hochkant',
+    tab:ctx ? (tkL(TK_AREAS, ctx.area) || ['', ctx.area])[1] : '', room:ctx && ctx.room ? ctx.room : ''};
+}
+/* Bereich als HTML: jedes Stück einzeln, damit die Übersetzung greift */
+const tkAreaText = t => { const a = tkL(TK_AREAS, t.area) || ['', t.area, '🧩']; return `${a[2]} <span>${esc(a[1])}</span>${t.hole ? ` · <span>Bahn ${t.hole}</span>` : ''}${t.sub ? ` · <span>${esc(t.sub)}</span>` : ''}`; };
+function tkStPill(st) { const s = tkL(TK_ST, st); return `<span class="tk-st" style="--c:${s[3]}">${s[2]} ${esc(s[1])}</span>`; }
+function tkCardHTML(t) {
+  const ty = tkL(TK_TYPES, t.type), p = ghost(t.by), nv = Object.keys(t.votes).length, nm = t.msgs.filter(m => !m.st || m.text).length;
+  const sev = t.type === 'bug' && t.sev ? tkL(TK_SEV, t.sev) : null, prio = (t.type === 'idea' || t.type === 'improve') && t.prio ? tkL(TK_PRIO, t.prio) : null;
+  return `<button class="tk-card ${tkUnseen(t) ? 'is-new' : ''} st-${t.status}" type="button" data-act="tk-open" data-id="${esc(t.id)}" style="--tc:${ty[4]}">
+    <span class="tk-ico" aria-hidden="true">${ty[2]}</span>
+    <span class="tk-main">
+      <span class="tk-top"><b class="tk-title">${esc(t.title)}</b>${tkUnseen(t) ? `<i class="tk-new">${S.admin ? 'Neu' : 'Antwort'}</i>` : ''}</span>
+      <span class="tk-meta"><span>${esc(ty[1])}</span><span>${tkAreaText(t)}</span></span>
+      <span class="tk-meta"><span class="tk-by">${avatar(p, 18)}${esc(p.name)}</span><span>${esc(new Date(t.ts).toLocaleDateString(LOC, {day:'numeric', month:'short'}))}</span><span class="tk-code">${tkCode(t.id)}</span></span>
+      <span class="tk-foot">${tkStPill(t.status)}${sev ? `<span class="tk-tag sev-${sev[0]}">${esc(sev[1])}</span>` : ''}${prio ? `<span class="tk-tag prio-${prio[0]}">${esc(prio[1])}</span>` : ''}
+        ${nm ? `<span class="tk-cnt">💬 ${nm}</span>` : ''}${nv ? `<span class="tk-cnt">👍 ${nv}</span>` : ''}${t.nimg ? `<span class="tk-cnt">📷 ${t.nimg}</span>` : ''}</span>
+    </span>
+  </button>`;
+}
+function tkSortList(list, so) {
+  const sevR = {block:4, high:3, mid:2, low:1}, prR = {must:3, cool:2, nice:1};
+  const v = t => Object.keys(t.votes).length;
+  return list.slice().sort(so === 'old' ? (a, b) => a.ts - b.ts : so === 'votes' ? (a, b) => v(b) - v(a) || b.ts - a.ts
+    : so === 'urgent' ? (a, b) => ((sevR[b.sev] || 0) * 2 + (prR[b.prio] || 0) + v(b)) - ((sevR[a.sev] || 0) * 2 + (prR[a.prio] || 0) + v(a)) || a.ts - b.ts
+    : so === 'act' ? (a, b) => b.up - a.up : (a, b) => b.ts - a.ts);
+}
+function viewSupport() {
+  if (S.mode !== 'db') return `<section class="section"><div class="sec-head"><h2 class="h">Support</h2></div><div class="empty-box"><strong>Nur mit Verbindung</strong><p>Tickets gibt es nur, wenn die Seite mit der Datenbank verbunden ist.</p></div></section>`;
+  tkEnsure();
+  if (!S.tk) return `<div class="loading">${COIN(48, 'spin')}<p>Lade Tickets …</p></div>`;
+  return S.admin ? tkAdminHTML() : tkPlayerHTML();
+}
+function tkFilterBar(list, chips) { return `<div class="chips tk-chips" role="group">${chips.map(([k, l, n, act, cur]) => `<button class="chip" type="button" data-act="${act}" data-v="${k}" aria-pressed="${cur === k}">${esc(l)}${n != null ? ` <small>${n}</small>` : ''}</button>`).join('')}</div>`; }
+function tkSearch(list) {
+  const q = String(D.tkQ || '').trim().toLowerCase(); if (!q) return list;
+  return list.filter(t => [t.title, t.desc, t.sub, t.expect, t.why, tkCode(t.id), ghost(t.by).name, (tkL(TK_AREAS, t.area) || [])[1]].join(' ').toLowerCase().includes(q));
+}
+function tkPlayerHTML() {
+  const me = playerById(myPid()), can = me && vgCan(me), all = S.tk;
+  const mine = all.filter(t => t.by === myPid()), ideas = all.filter(t => (t.type === 'idea' || t.type === 'improve') && t.status !== 'rejected');
+  const bugs = all.filter(t => t.type === 'bug' && (t.status === 'open' || t.status === 'progress'));
+  const seg = D.tkSeg || (mine.length ? 'mine' : 'ideas'), so = D.tkSo || (seg === 'ideas' ? 'votes' : 'new');
+  const lists = {mine, ideas, bugs, all};
+  const list = tkSortList(tkSearch(lists[seg] || mine), so);
+  const ctx = D.tkCtx && Date.now() - D.tkCtx.at < 15 * 60000 ? D.tkCtx : null;
+  const upd = mine.filter(tkUnseen).length;
+  return `<section class="section tk">
+    <div class="sec-head"><h2 class="h">Support</h2><span class="muted">Fehler gefunden? Eine Idee? Hier schreibst du direkt an den Spielleiter. Du siehst immer, was aus deinem Ticket geworden ist.</span></div>
+    ${can ? `<div class="tk-hero">
+      ${TK_TYPES.slice(0, 4).map(ty => `<button class="tk-quick" type="button" data-act="tk-new" data-type="${ty[0]}" style="--tc:${ty[4]}"><span>${ty[2]}</span><b>${esc({bug:'Fehler melden', idea:'Idee teilen', improve:'Verbesserung vorschlagen', question:'Frage stellen'}[ty[0]])}</b><small>${esc(ty[3])}</small></button>`).join('')}
+    </div>
+    ${ctx ? `<p class="tk-ctxhint">📍 Du kommst gerade aus <b>${esc((tkL(TK_AREAS, ctx.area) || ['', ctx.area])[1])}${ctx.hole ? ` (Bahn ${ctx.hole})` : ''}</b>. Das wird beim neuen Ticket schon eingetragen.</p>` : ''}`
+    : `<div class="card vg-cta"><div><b>Erst mitspielen</b><span>Um Tickets zu schreiben, brauchst du deinen eigenen Spieler.</span></div><button class="btn btn-gold" type="button" data-act="tab" data-tab="spieler">Zu den Spielern</button></div>`}
+    ${upd ? `<p class="tk-upd">🔔 ${upd === 1 ? 'Eins deiner Tickets hat eine neue Antwort.' : `${upd} deiner Tickets haben neue Antworten.`}</p>` : ''}
+    <div class="tk-seg" role="tablist">
+      ${[['mine', 'Meine Tickets', mine.length], ['ideas', 'Ideen-Board', ideas.length], ['bugs', 'Bekannte Fehler', bugs.length], ['all', 'Alle', all.length]].map(([k, l, n]) => `<button class="tk-segb" type="button" role="tab" data-act="tk-seg" data-v="${k}" aria-selected="${seg === k}">${esc(l)} <small>${n}</small></button>`).join('')}
+    </div>
+    <div class="tk-tools">
+      <input class="input tk-q" id="tk-q" type="search" data-draft="tkQ" value="${esc(D.tkQ || '')}" placeholder="Suchen: Titel, Bereich, Nummer …" autocomplete="off">
+      ${tkFilterBar(list, [['new', 'Neueste', null, 'tk-so', so], ['votes', 'Meiste Stimmen', null, 'tk-so', so], ['act', 'Letzte Aktivität', null, 'tk-so', so]])}
+    </div>
+    ${seg === 'ideas' ? '<p class="muted tk-note">Gefällt dir eine Idee? Öffne sie und drück „Will ich auch“. Je mehr Stimmen, desto eher sieht der Spielleiter, was allen wichtig ist.</p>' : ''}
+    ${seg === 'bugs' ? '<p class="muted tk-note">Bevor du einen Fehler meldest: Schau hier, ob es ihn schon gibt. Dann drück einfach „Passiert mir auch“.</p>' : ''}
+    ${list.length ? `<div class="tk-list">${list.map(tkCardHTML).join('')}</div>` : `<div class="empty-box"><strong>${seg === 'mine' ? 'Du hast noch keine Tickets geschrieben' : 'Hier ist noch nichts'}</strong>${D.tkQ ? '<p>Mit dieser Suche gibt es keinen Treffer.</p>' : ''}</div>`}
+  </section>`;
+}
+function tkAdminHTML() {
+  const all = S.tk, f = D.tkAf || 'active', ty = D.tkAt || '', ar = D.tkAa || '', so = D.tkSo || 'urgent';
+  const cnt = st => all.filter(t => t.status === st).length;
+  let list = all.filter(t => f === 'all' ? true : f === 'active' ? t.status === 'open' || t.status === 'progress' : t.status === f);
+  if (ty) list = list.filter(t => t.type === ty);
+  if (ar) list = list.filter(t => t.area === ar);
+  list = tkSortList(tkSearch(list), so);
+  const areasUsed = TK_AREAS.filter(a => all.some(t => t.area === a[0]));
+  return `<section class="section tk">
+    <div class="sec-head"><h2 class="h">Support <span class="count">${all.length} Tickets</span></h2><span class="muted">Alles, was die Spieler gemeldet haben. Öffne ein Ticket, um zu antworten und den Status zu setzen.</span></div>
+    <div class="tk-stats">${TK_ST.map(s => `<button class="tk-stat" type="button" data-act="tk-af" data-v="${s[0]}" aria-pressed="${f === s[0]}" style="--c:${s[3]}"><b>${cnt(s[0])}</b><span>${s[2]} ${esc(s[1])}</span></button>`).join('')}</div>
+    <div class="tk-tools">
+      <input class="input tk-q" id="tk-q" type="search" data-draft="tkQ" value="${esc(D.tkQ || '')}" placeholder="Suchen: Titel, Spieler, Bereich, Nummer …" autocomplete="off">
+      ${tkFilterBar(list, [['active', 'Offen', cnt('open') + cnt('progress'), 'tk-af', f], ...TK_ST.map(s => [s[0], s[1], cnt(s[0]), 'tk-af', f]), ['all', 'Alle', all.length, 'tk-af', f]])}
+      ${tkFilterBar(list, [['', 'Alle Arten', null, 'tk-at', ty], ...TK_TYPES.map(t => [t[0], `${t[2]} ${t[1]}`, all.filter(x => x.type === t[0]).length, 'tk-at', ty])])}
+      ${areasUsed.length > 1 ? tkFilterBar(list, [['', 'Alle Bereiche', null, 'tk-aa', ar], ...areasUsed.map(a => [a[0], `${a[2]} ${a[1]}`, all.filter(x => x.area === a[0]).length, 'tk-aa', ar])]) : ''}
+      ${tkFilterBar(list, [['urgent', 'Dringlichste', null, 'tk-so', so], ['new', 'Neueste', null, 'tk-so', so], ['old', 'Älteste', null, 'tk-so', so], ['votes', 'Meiste Stimmen', null, 'tk-so', so], ['act', 'Letzte Aktivität', null, 'tk-so', so]])}
+    </div>
+    ${list.length ? `<div class="tk-list">${list.map(tkCardHTML).join('')}</div>` : `<div class="empty-box"><strong>${f === 'active' ? 'Keine offenen Tickets. Alles erledigt!' : 'Keine Tickets mit diesem Filter'}</strong></div>`}
+  </section>`;
+}
+
+/* Detailansicht */
+let tkImgSub = null, tkImgId = '';
+function tkImgEnsure(id) {
+  if (tkImgId === id) return;
+  tkImgStop(); tkImgId = id; S.tkImgs = null;
+  tkImgSub = db.collection('tkimg').where('tid', '==', id).onSnapshot(sn => {
+    if (tkImgId !== id) return;
+    S.tkImgs = sn.docs.map(d => d.data()).filter(x => typeof x.img === 'string' && /^data:image\//.test(x.img)).sort((a, b) => a.i - b.i);
+    if (S.modal && S.modal.type === 'tkshow') renderModal();
+  }, () => { S.tkImgs = []; });
+}
+function tkImgStop() { if (tkImgSub) { try { tkImgSub(); } catch (e) {} } tkImgSub = null; tkImgId = ''; S.tkImgs = null; }
+function tkShowModal() {
+  const t = (S.tk || []).find(x => x.id === S.modal.id);
+  if (!t) return `<div class="m-head"><h2 id="m-title">Ticket</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div><p class="m-text">Dieses Ticket gibt es nicht mehr.</p>`;
+  if (tkUnseen(t)) setTimeout(() => { tkMarkSeen(t); renderHeader(); }, 0);
+  if (t.nimg) tkImgEnsure(t.id);
+  const ty = tkL(TK_TYPES, t.type), p = ghost(t.by), me = myPid(), own = t.by === me && !S.admin, voters = Object.keys(t.votes);
+  const sev = tkL(TK_SEV, t.sev), prio = tkL(TK_PRIO, t.prio), freq = tkL(TK_FREQ, t.freq);
+  const canVote = !S.admin && !own && playerById(me) && vgCan(playerById(me)) && (t.type === 'bug' || t.type === 'idea' || t.type === 'improve');
+  const voted = !!t.votes[me];
+  const row = (k, v) => v ? `<div class="tk-kv"><span>${esc(k)}</span><b>${v}</b></div>` : '';
+  const block = (h, v) => v ? `<div class="tk-block"><h4>${esc(h)}</h4><p>${esc(v).replace(/\n/g, '<br>')}</p></div>` : '';
+  const shots = S.tkImgs;
+  const fmtT = ms => new Date(ms).toLocaleString(LOC, {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+  const timeline = [`<li class="tk-ev"><span class="tk-dot" style="--c:${ty[4]}"></span><div><b>${esc(p.name)}</b> hat das Ticket erstellt<small>${esc(fmtT(t.ts))}</small></div></li>`]
+    .concat(t.msgs.map(m => {
+      const adm = m.by === 'admin', who = adm ? 'Spielleiter' : ghost(m.by).name, s = m.st ? tkL(TK_ST, m.st) : null;
+      return `<li class="tk-ev ${adm ? 'adm' : ''}"><span class="tk-dot" style="--c:${s ? s[3] : adm ? 'var(--coin)' : 'var(--xp)'}"></span><div>
+        ${s ? `<b>${esc(who)}</b> hat den Status geändert: ${tkStPill(m.st)}` : `<b>${esc(who)}</b> ${adm ? 'hat geantwortet' : 'hat einen Nachtrag geschrieben'}`}<small>${esc(fmtT(m.t))}</small>
+        ${m.text ? `<p class="tk-bubble ${adm ? 'adm' : ''}">${esc(m.text).replace(/\n/g, '<br>')}</p>` : ''}</div></li>`;
+    })).join('');
+  const adminBox = S.admin ? `<div class="tk-admin">
+      <h4>Status setzen und antworten</h4>
+      <div class="chips">${TK_ST.map(s => `<button class="chip tk-stbtn" type="button" data-act="tk-pickst" data-v="${s[0]}" aria-pressed="${(D.tkSt || t.status) === s[0]}" style="--c:${s[3]}">${s[2]} ${esc(s[1])}</button>`).join('')}</div>
+      <div class="chips tk-quickr">${(TK_QUICK[D.tkSt || t.status] || []).map((q, i) => `<button class="chip" type="button" data-act="tk-qr" data-i="${i}">${esc(q)}</button>`).join('')}</div>
+      <textarea class="input" id="tk-reply" rows="3" maxlength="1000" data-draft="tkReply" placeholder="Nachricht an ${esc(p.name)} (optional)">${esc(D.tkReply || '')}</textarea>
+      <div class="tk-abtn"><button class="btn btn-ghost danger" type="button" data-act="tk-del" data-id="${esc(t.id)}">Ticket löschen</button>
+        <button class="btn btn-gold" type="button" data-act="tk-send" data-id="${esc(t.id)}">${D.tkSt && D.tkSt !== t.status ? 'Status ändern und senden' : 'Antwort senden'}</button></div>
+    </div>` : '';
+  const ownBox = own ? `<div class="tk-admin">
+      <h4>Nachtrag schreiben</h4>
+      <p class="muted">Dir ist noch etwas eingefallen, oder der Spielleiter hat nachgefragt? Schreib es hier dazu.</p>
+      <textarea class="input" id="tk-reply" rows="3" maxlength="1000" data-draft="tkReply" placeholder="Noch etwas, das hilft …">${esc(D.tkReply || '')}</textarea>
+      <div class="tk-abtn">${t.status === 'open' ? `<button class="btn btn-ghost danger" type="button" data-act="tk-withdraw" data-id="${esc(t.id)}">Ticket zurückziehen</button>` : '<span></span>'}
+        <button class="btn btn-gold" type="button" data-act="tk-send" data-id="${esc(t.id)}">Nachtrag senden</button></div>
+    </div>` : '';
+  return `<div class="m-head"><h2 id="m-title"><span aria-hidden="true">${ty[2]}</span> ${esc(t.title)}</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
+    <div class="tk-show">
+      <div class="tk-stbanner" style="--c:${tkL(TK_ST, t.status)[3]}">${tkStPill(t.status)}<span>${esc(TK_ST_TEXT[t.status])}</span></div>
+      <div class="tk-kvs">
+        ${row('Nummer', tkCode(t.id))}${row('Art', `${ty[2]} ${esc(ty[1])}`)}${row('Bereich', tkAreaText(t))}
+        ${row('Gemeldet von', `<span class="tk-by">${avatar(p, 20)}${esc(p.name)}</span>`)}${row('Am', esc(fmtT(t.ts)))}
+        ${t.type === 'bug' ? row('Wie oft', freq ? esc(freq[1]) : '') + row('Wie schlimm', sev ? `<span class="tk-tag sev-${sev[0]}">${esc(sev[1])}</span>` : '') : ''}
+        ${prio ? row('Wie wichtig', `<span class="tk-tag prio-${prio[0]}">${esc(prio[1])}</span>`) : ''}
+      </div>
+      ${block(t.type === 'bug' ? 'Was ist passiert?' : t.type === 'question' ? 'Die Frage' : t.type === 'improve' ? 'Was soll besser werden?' : t.type === 'idea' ? 'Die Idee' : 'Beschreibung', t.desc)}
+      ${t.steps.length ? `<div class="tk-block"><h4>So kann man es nachstellen</h4><ol class="tk-steps">${t.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol></div>` : ''}
+      ${block('Was hätte passieren sollen?', t.expect)}
+      ${block(t.type === 'improve' ? 'Warum wäre das besser?' : 'Warum wäre das gut?', t.why)}
+      ${t.nimg ? `<div class="tk-block"><h4>Screenshots</h4>${shots ? `<div class="tk-shots">${shots.map((s, i) => `<button type="button" data-act="tk-shot" data-i="${i}"><img src="${s.img}" alt="Screenshot ${i + 1}"></button>`).join('')}</div>` : '<p class="muted">Lädt …</p>'}</div>` : ''}
+      ${Object.keys(t.tech).length ? `<details class="tk-tech"><summary>Technische Infos</summary><div class="tk-kvs">${row('Gerät', esc(t.tech.dev || ''))}${row('System', esc(t.tech.os || ''))}${row('Browser', esc(t.tech.br || ''))}${row('Fenster', esc((t.tech.scr || '') + (t.tech.ori ? ` (${t.tech.ori})` : '')))}${row('Sprache', esc(t.tech.lang || ''))}${row('Kam aus', esc(t.tech.tab || ''))}${row('Raum', esc(t.tech.room || ''))}</div></details>` : ''}
+      ${t.type === 'bug' || t.type === 'idea' || t.type === 'improve' ? `<div class="tk-votes">
+        ${canVote ? `<button class="btn ${voted ? 'btn-gold' : ''}" type="button" data-act="tk-vote" data-id="${esc(t.id)}" aria-pressed="${voted}">👍 ${t.type === 'bug' ? 'Passiert mir auch' : 'Will ich auch'} <b>${voters.length}</b></button>` : `<span class="tk-vcount">👍 ${voters.length} ${voters.length === 1 ? 'Stimme' : 'Stimmen'}</span>`}
+        <span class="tk-voters">${voters.slice(0, 12).map(v => avatar(ghost(v), 24)).join('')}</span>
+      </div>` : ''}
+      <div class="tk-block"><h4>Verlauf</h4><ol class="tk-tl">${timeline}</ol></div>
+      ${adminBox}${ownBox}
+    </div>`;
+}
+
+/* Neues Ticket: Schritt für Schritt */
+function tkBlank(type) {
+  const c = D.tkCtx && Date.now() - D.tkCtx.at < 15 * 60000 ? D.tkCtx : null;
+  return {step:type ? 2 : 1, type:type || '', area:c ? c.area : '', sub:c ? c.sub : '', hole:c ? c.hole : 0, ctx:!!c, title:'', desc:'', steps:['', ''], expect:'', why:'',
+    freq:'', sev:'', prio:'', imgs:[], tech:true};
+}
+function tkDraftSave() { try { const d = {...D.tkF, imgs:[]}; lsSet('turnier-tk-draft', JSON.stringify(d)); } catch (e) {} }
+function tkDraftLoad() { try { const d = JSON.parse(lsGet('turnier-tk-draft', '') || 'null'); return d && typeof d === 'object' && d.type ? {...tkBlank(''), ...d, imgs:[]} : null; } catch (e) { return null; } }
+function tkNewModal() {
+  const d = D.tkF; if (!d) return '';
+  const steps = ['Art', 'Bereich', 'Details', 'Bilder und Absenden'];
+  const head = `<div class="m-head"><h2 id="m-title">${d.type ? `${tkL(TK_TYPES, d.type)[2]} ` : ''}Neues Ticket</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
+    <ol class="tk-wiz" aria-label="Schritte">${steps.map((s, i) => `<li class="${d.step === i + 1 ? 'on' : d.step > i + 1 ? 'ok' : ''}"><span>${d.step > i + 1 ? '✓' : i + 1}</span>${esc(s)}</li>`).join('')}</ol>`;
+  const nav = (next, label) => `<div class="m-foot tk-nav">${d.step > 1 ? '<button class="btn btn-ghost" type="button" data-act="tk-back">← Zurück</button>' : '<span></span>'}${next ? `<button class="btn btn-gold" type="button" data-act="tk-next">${label || 'Weiter →'}</button>` : ''}</div>`;
+  let body = '';
+  if (d.step === 1) {
+    body = `<p class="m-text">Was möchtest du melden?</p><div class="tk-types">${TK_TYPES.map(t => `<button class="tk-type" type="button" data-act="tkf-type" data-v="${t[0]}" aria-pressed="${d.type === t[0]}" style="--tc:${t[4]}"><span>${t[2]}</span><b>${esc(t[1])}</b><small>${esc(t[3])}</small></button>`).join('')}</div>` + nav(false);
+  } else if (d.step === 2) {
+    const subs = TK_SUB[d.area] || [];
+    body = `${d.ctx && d.area ? `<p class="tk-ctxhint">📍 Vorschlag: Du warst gerade in <b>${esc((tkL(TK_AREAS, d.area) || ['', d.area])[1])}</b>. Passt das nicht, wähl einfach etwas anderes.</p>` : ''}
+      <p class="m-text">In welchem Bereich?</p>
+      <div class="tk-areas">${TK_AREAS.map(a => `<button class="tk-area" type="button" data-act="tkf-area" data-v="${a[0]}" aria-pressed="${d.area === a[0]}"><span>${a[2]}</span>${esc(a[1])}</button>`).join('')}</div>
+      ${d.area === 'golf' ? `<div class="field"><span class="lbl">Welche Bahn? (optional)</span><div class="tk-holes">${Array.from({length:30}, (_, i) => `<button type="button" data-act="tkf-hole" data-v="${i + 1}" aria-pressed="${d.hole === i + 1}">${i + 1}</button>`).join('')}</div></div>` : ''}
+      ${subs.length ? `<div class="field"><span class="lbl">Was genau? (optional)</span><div class="chips">${subs.map(s => `<button class="chip" type="button" data-act="tkf-sub" data-v="${esc(s)}" aria-pressed="${d.sub === s}">${esc(s)}</button>`).join('')}</div></div>` : ''}
+      ${d.area ? `<div class="field"><label for="tk-sub">Oder in eigenen Worten: Wo genau? (optional)</label><input class="input" id="tk-sub" data-draft="tkF.sub" value="${esc(d.sub)}" maxlength="80" placeholder="${esc(TK_PH[d.area] || 'z. B. „oben rechts im Menü“')}" autocomplete="off"></div>` : ''}
+      ${nav(true)}`;
+  } else if (d.step === 3) {
+    const t = d.type;
+    const titlePh = {bug:'z. B. „Ball fliegt durch die Wand auf Bahn 4“', idea:'z. B. „Schach als neues Spiel“', improve:'z. B. „Größere Knöpfe beim Malen“', question:'z. B. „Wie lade ich einen Clip hoch?“', other:'Worum geht es?'}[t];
+    const descL = {bug:'Was ist passiert?', idea:'Was stellst du dir vor?', improve:'Was soll besser werden, und wie?', question:'Deine Frage', other:'Beschreibung'}[t];
+    const descPh = {bug:'Beschreib so genau wie möglich, was passiert ist.', idea:'Wie soll es funktionieren? Wie sieht es aus? Je genauer, desto besser.', improve:'Was stört dich heute, und wie wäre es besser?', question:'Was möchtest du wissen?', other:'Schreib, was du loswerden willst.'}[t];
+    body = `<div class="stack tk-form">
+      <div class="field"><label for="tk-title">Kurzer Titel <span class="tk-req">*</span></label><input class="input" id="tk-title" data-draft="tkF.title" value="${esc(d.title)}" maxlength="100" placeholder="${esc(titlePh)}" autocomplete="off"><small class="muted tk-cnt2" id="tk-tcnt">${d.title.length}/100</small></div>
+      <div class="field"><label for="tk-desc">${esc(descL)} <span class="tk-req">*</span></label><textarea class="input" id="tk-desc" rows="5" maxlength="2000" data-draft="tkF.desc" placeholder="${esc(descPh)}">${esc(d.desc)}</textarea></div>
+      ${t === 'bug' ? `
+      <div class="field"><span class="lbl">So kann man es nachstellen (optional)</span><small class="muted">Schritt für Schritt, was du gemacht hast, bevor der Fehler kam.</small>
+        <ol class="tk-stepin">${d.steps.map((s, i) => `<li><input class="input" id="tk-step-${i}" data-draft="tkF.steps.${i}" value="${esc(s)}" maxlength="200" placeholder="${esc(['z. B. „Minigolf gestartet“', 'z. B. „Auf Bahn 4 ganz fest geschossen“', 'z. B. „Ball ist durch die Wand geflogen“'][i] || 'Nächster Schritt')}" autocomplete="off">${d.steps.length > 1 ? `<button class="x" type="button" data-act="tkf-steprm" data-i="${i}" aria-label="Schritt entfernen">×</button>` : ''}</li>`).join('')}</ol>
+        ${d.steps.length < 10 ? '<button class="btn btn-sm btn-ghost" type="button" data-act="tkf-stepadd">+ Schritt</button>' : ''}</div>
+      <div class="field"><label for="tk-expect">Was hätte passieren sollen? (optional)</label><textarea class="input" id="tk-expect" rows="2" maxlength="800" data-draft="tkF.expect" placeholder="z. B. „Der Ball hätte abprallen sollen.“">${esc(d.expect)}</textarea></div>
+      <div class="field"><span class="lbl">Wie oft passiert das?</span><div class="chips">${TK_FREQ.map(f => `<button class="chip" type="button" data-act="tkf-set" data-k="freq" data-v="${f[0]}" aria-pressed="${d.freq === f[0]}">${esc(f[1])}</button>`).join('')}</div></div>
+      <div class="field"><span class="lbl">Wie schlimm ist es?</span><div class="tk-sevs">${TK_SEV.map(s => `<button class="tk-sev sev-${s[0]}" type="button" data-act="tkf-set" data-k="sev" data-v="${s[0]}" aria-pressed="${d.sev === s[0]}"><b>${esc(s[1])}</b><small>${esc(s[2])}</small></button>`).join('')}</div></div>` : ''}
+      ${t === 'idea' || t === 'improve' ? `
+      <div class="field"><label for="tk-why">Warum wäre das gut? (optional)</label><textarea class="input" id="tk-why" rows="2" maxlength="800" data-draft="tkF.why" placeholder="Was hätten alle davon?">${esc(d.why)}</textarea></div>
+      <div class="field"><span class="lbl">Wie wichtig ist dir das?</span><div class="chips">${TK_PRIO.map(s => `<button class="chip" type="button" data-act="tkf-set" data-k="prio" data-v="${s[0]}" aria-pressed="${d.prio === s[0]}">${esc(s[1])}</button>`).join('')}</div></div>` : ''}
+    </div>${nav(true)}`;
+  } else {
+    const tech = tkTech();
+    body = `<div class="stack tk-form">
+      <div class="field"><span class="lbl">Screenshots (optional, bis zu 3)</span><small class="muted">Ein Bild sagt oft mehr als tausend Worte. Mach einen Screenshot und füg ihn hier ein.</small>
+        <div class="tk-imgs">${d.imgs.map((im, i) => `<div class="tk-img"><img src="${im}" alt="Screenshot ${i + 1}"><button class="vgm-x" type="button" data-act="tkf-imgrm" data-i="${i}" aria-label="Entfernen">×</button></div>`).join('')}
+        ${d.imgs.length < 3 ? `<label class="tk-imgadd" for="tk-file"><span>📷</span>Bild hinzufügen</label><input type="file" id="tk-file" accept="image/*" multiple hidden>` : ''}</div></div>
+      <label class="tk-techtog"><input type="checkbox" id="tk-tech" ${d.tech ? 'checked' : ''}> <span>Technische Infos mitschicken <small class="muted">(${esc(tech.dev)}, ${esc(tech.os)}, ${esc(tech.br)}, ${esc(tech.scr)}). Das hilft beim Finden von Fehlern.</small></span></label>
+      <div class="tk-preview"><span class="lbl">So sieht dein Ticket aus</span>${tkCardHTML(normTk('vorschau', {by:myPid(), type:d.type, area:d.area, sub:d.sub, hole:d.hole, title:d.title, desc:d.desc, sev:d.sev, prio:d.prio, nimg:d.imgs.length, status:'open', ts:Date.now()})).replace('data-act="tk-open"', 'tabindex="-1"')}</div>
+    </div>
+    <div class="m-foot tk-nav"><button class="btn btn-ghost" type="button" data-act="tk-back">← Zurück</button><button class="btn btn-gold" type="button" data-act="tk-submit" ${tkBusy ? 'disabled' : ''}>${tkBusy ? 'Wird gesendet …' : 'Ticket absenden'}</button></div>`;
+  }
+  return head + body;
+}
+function tkCheck(d) {
+  if (d.step === 1 && !d.type) return 'Wähl aus, was du melden möchtest.';
+  if (d.step === 2 && !d.area) return 'Wähl einen Bereich aus.';
+  if (d.step === 3) {
+    if (str(d.title, 100).length < 4) { setTimeout(() => { const n = $('#tk-title'); if (n) n.focus(); }, 20); return 'Gib einen kurzen Titel ein (mindestens 4 Zeichen).'; }
+    if (str(d.desc, 2000).length < 10) { setTimeout(() => { const n = $('#tk-desc'); if (n) n.focus(); }, 20); return 'Beschreib es bitte etwas genauer (mindestens 10 Zeichen).'; }
+    if (d.type === 'bug' && !d.sev) return 'Sag noch, wie schlimm der Fehler ist.';
+  }
+  return '';
+}
+let tkBusy = false;
+async function tkSubmit() {
+  const d = D.tkF, me = playerById(myPid()); if (!d || tkBusy) return;
+  if (!me || !vgCan(me)) { toast('Um Tickets zu schreiben, brauchst du deinen eigenen Spieler.'); return; }
+  for (const s of [1, 2, 3]) { const err = tkCheck({...d, step:s}); if (err) { d.step = s; renderModal(); toast(err); return; } }
+  const id = uid(), now = Date.now();
+  const doc = {by:me.id, type:d.type, area:d.area, title:str(d.title, 100), desc:str(d.desc, 2000), status:'open', msgs:[], votes:{}, nimg:d.imgs.length, ts:now, up:now, lastBy:'player'};
+  if (str(d.sub, 80)) doc.sub = str(d.sub, 80);
+  if (d.area === 'golf' && d.hole) doc.hole = d.hole;
+  if (d.type === 'bug') { const st = d.steps.map(s => str(s, 200)).filter(Boolean); if (st.length) doc.steps = st; if (str(d.expect, 800)) doc.expect = str(d.expect, 800); if (d.freq) doc.freq = d.freq; if (d.sev) doc.sev = d.sev; }
+  if (d.type === 'idea' || d.type === 'improve') { if (str(d.why, 800)) doc.why = str(d.why, 800); if (d.prio) doc.prio = d.prio; }
+  if (d.tech) doc.tech = tkTech();
+  tkBusy = true; renderModal();
+  try {
+    await vgCommit(me.id, b => {
+      b.set(db.collection('tickets').doc(id), doc);
+      d.imgs.forEach((img, i) => b.set(db.collection('tkimg').doc(id + '_' + i), {tid:id, by:me.id, i, img, ts:now}));
+    });
+    lsSet('turnier-tk-draft', ''); D.tkF = null; D.tkCtx = null; D.tkSeg = 'mine';
+    tkMarkSeen({id, up:now});
+    closeModal(); render();
+    toast(`Danke! Dein Ticket ${tkCode(id)} ist beim Spielleiter.`);
+  } catch (e) {
+    toast(e && e.code === 'permission-denied' ? 'Tickets sind noch nicht freigeschaltet. Der Spielleiter muss die neuen Datenbank-Regeln veröffentlichen.' : 'Absenden hat nicht geklappt. Prüf die Verbindung und versuch es nochmal.');
+  } finally { tkBusy = false; if (S.modal && S.modal.type === 'tknew') renderModal(); }
+}
+async function tkAddImgs(files) {
+  const d = D.tkF; if (!d) return;
+  for (const f of files.slice(0, 3 - d.imgs.length)) {
+    try {
+      const {i, u} = await vgmLoad(f);
+      try { let out = ''; for (const max of [1400, 1100, 860, 640]) { out = vgmEncode(vgmCanvas(i, i.naturalWidth, i.naturalHeight, max), 280000, .8); if (out) break; } if (out) d.imgs.push(out); }
+      finally { URL.revokeObjectURL(u); }
+    } catch (e) { toast('Ein Bild ließ sich nicht öffnen. Versuch ein JPG oder PNG.'); }
+  }
+  renderModal();
+}
+async function tkSend(t) {
+  const text = str(D.tkReply, 1000), now = Date.now();
+  if (S.admin) {
+    const st = D.tkSt && D.tkSt !== t.status ? D.tkSt : '';
+    if (!st && !text) { toast('Schreib eine Nachricht oder wähl einen neuen Status.'); return; }
+    const m = {by:'admin', t:now, text}; if (st) m.st = st;
+    try {
+      await db.collection('tickets').doc(t.id).update({...(st ? {status:st} : {}), msgs:t.msgs.concat([m]).slice(-80), up:now, lastBy:'admin'});
+      D.tkReply = ''; D.tkSt = ''; tkMarkSeen({id:t.id, up:now}); renderModal(); toast(st ? `Status: ${tkL(TK_ST, st)[1]}` : 'Antwort gesendet.');
+    } catch (e) { toast('Senden hat nicht geklappt. Versuch es nochmal.'); }
+    return;
+  }
+  if (!text) { toast('Schreib zuerst etwas.'); return; }
+  try {
+    await vgCommit(t.by, b => b.update(db.collection('tickets').doc(t.id), {msgs:t.msgs.concat([{by:t.by, t:now, text}]).slice(-80), up:now, lastBy:'player'}));
+    D.tkReply = ''; tkMarkSeen({id:t.id, up:now}); renderModal(); toast('Nachtrag gesendet.');
+  } catch (e) { toast(e && e.code === 'permission-denied' ? 'Das ist noch nicht freigeschaltet. Der Spielleiter muss die neuen Datenbank-Regeln veröffentlichen.' : 'Senden hat nicht geklappt. Versuch es nochmal.'); }
+}
+async function tkRemove(t) {
+  const refs = [db.collection('tickets').doc(t.id)];
+  for (let i = 0; i < t.nimg; i++) refs.push(db.collection('tkimg').doc(t.id + '_' + i));
+  if (S.admin) { const b = fs.batch(); refs.forEach(r => b.delete(r)); await b.commit(); return; }
+  await vgCommit(t.by, b => refs.forEach(r => b.delete(r)));
+}
+const tkActions = {
+  'tk-new': b => {
+    const me = playerById(myPid());
+    if (!me || !vgCan(me)) { toast('Um Tickets zu schreiben, brauchst du deinen eigenen Spieler.'); return; }
+    const dr = tkDraftLoad(), type = b.dataset.type || '';
+    if (dr && (!type || dr.type === type) && (dr.title || dr.desc)) {
+      confirmBox('Entwurf fortsetzen?', `Du hast noch ein angefangenes Ticket: „${dr.title || 'ohne Titel'}“.`, [
+        {label:'Neu anfangen', cls:'btn-ghost', fn:() => { lsSet('turnier-tk-draft', ''); D.tkF = tkBlank(type); openModal({type:'tknew'}); }},
+        {label:'Fortsetzen', cls:'btn-gold', fn:() => { D.tkF = dr; openModal({type:'tknew'}); }}]);
+      return;
+    }
+    D.tkF = tkBlank(type); openModal({type:'tknew'});
+  },
+  'tk-open': b => { D.tkReply = ''; D.tkSt = ''; openModal({type:'tkshow', id:b.dataset.id}); },
+  'tk-seg': b => { D.tkSeg = b.dataset.v; D.tkSo = ''; render(); },
+  'tk-so': b => { D.tkSo = b.dataset.v; render(); },
+  'tk-af': b => { D.tkAf = b.dataset.v; render(); },
+  'tk-at': b => { D.tkAt = b.dataset.v; render(); },
+  'tk-aa': b => { D.tkAa = b.dataset.v; render(); },
+  'tk-next': () => { const d = D.tkF; if (!d) return; const err = tkCheck(d); if (err) { toast(err); return; } d.step = Math.min(4, d.step + 1); tkDraftSave(); renderModal(); const m = $('#modal-root .modal'); if (m) m.scrollTop = 0; },
+  'tk-back': () => { const d = D.tkF; if (!d) return; d.step = Math.max(1, d.step - 1); renderModal(); const m = $('#modal-root .modal'); if (m) m.scrollTop = 0; },
+  'tkf-type': b => { const d = D.tkF; if (!d) return; d.type = b.dataset.v; d.step = 2; tkDraftSave(); renderModal(); },
+  'tkf-area': b => { const d = D.tkF; if (!d) return; if (d.area !== b.dataset.v) { d.sub = ''; d.hole = 0; d.ctx = false; } d.area = b.dataset.v; tkDraftSave(); renderModal(); },
+  'tkf-sub': b => { const d = D.tkF; if (!d) return; d.sub = d.sub === b.dataset.v ? '' : b.dataset.v; tkDraftSave(); renderModal(); },
+  'tkf-hole': b => { const d = D.tkF; if (!d) return; const v = Number(b.dataset.v); d.hole = d.hole === v ? 0 : v; tkDraftSave(); renderModal(); },
+  'tkf-set': b => { const d = D.tkF; if (!d) return; d[b.dataset.k] = d[b.dataset.k] === b.dataset.v ? '' : b.dataset.v; tkDraftSave(); renderModal(); },
+  'tkf-stepadd': () => { const d = D.tkF; if (!d || d.steps.length >= 10) return; d.steps.push(''); renderModal(); setTimeout(() => { const n = $('#tk-step-' + (d.steps.length - 1)); if (n) n.focus(); }, 20); },
+  'tkf-steprm': b => { const d = D.tkF; if (!d) return; d.steps.splice(Number(b.dataset.i), 1); if (!d.steps.length) d.steps.push(''); tkDraftSave(); renderModal(); },
+  'tkf-imgrm': b => { const d = D.tkF; if (!d) return; d.imgs.splice(Number(b.dataset.i), 1); renderModal(); },
+  'tk-submit': () => tkSubmit(),
+  'tk-pickst': b => { D.tkSt = b.dataset.v; renderModal(); },
+  'tk-qr': b => { const t = (S.tk || []).find(x => S.modal && x.id === S.modal.id); if (!t) return; const q = (TK_QUICK[D.tkSt || t.status] || [])[Number(b.dataset.i)]; if (q) { D.tkReply = tx(q); renderModal(); } },
+  'tk-send': b => { const t = (S.tk || []).find(x => x.id === b.dataset.id); if (t) tkSend(t); },
+  'tk-shot': b => { S.vgm = (S.tkImgs || []).map(x => ({k:'shot', img:x.img})); vgLbOpen(Number(b.dataset.i) || 0); },
+  'tk-vote': async b => {
+    const t = (S.tk || []).find(x => x.id === b.dataset.id), me = myPid(); if (!t || !me) return;
+    const votes = {...t.votes}; if (votes[me]) delete votes[me]; else votes[me] = true;
+    try { await vgCommit(me, bt => bt.update(db.collection('tickets').doc(t.id), {votes, vby:me})); }
+    catch (e) { toast(e && e.code === 'permission-denied' ? 'Abstimmen ist noch nicht freigeschaltet.' : 'Das hat nicht geklappt. Versuch es nochmal.'); }
+  },
+  'tk-withdraw': b => {
+    const t = (S.tk || []).find(x => x.id === b.dataset.id); if (!t) return;
+    confirmBox('Ticket zurückziehen?', `„${t.title}“ wird gelöscht.`, [{label:'Abbrechen', cls:'btn-ghost', fn:() => openModal({type:'tkshow', id:t.id})},
+      {label:'Zurückziehen', cls:'btn-gold', fn:async () => { try { await tkRemove(t); toast('Ticket zurückgezogen.'); } catch (e) { toast('Das hat nicht geklappt.'); } }}]);
+  },
+  'tk-del': b => {
+    const t = (S.tk || []).find(x => x.id === b.dataset.id); if (!t) return;
+    confirmBox('Ticket löschen?', `„${t.title}“ von ${ghost(t.by).name} wird endgültig gelöscht. Der Spieler sieht es dann nicht mehr.`, [{label:'Abbrechen', cls:'btn-ghost', fn:() => openModal({type:'tkshow', id:t.id})},
+      {label:'Löschen', cls:'btn-gold', fn:async () => { try { await tkRemove(t); toast('Ticket gelöscht.'); } catch (e) { toast('Das hat nicht geklappt.'); } }}]);
+  }
+};
+/* ---------- Support ENDE ---------- */
 
 /* ---------- Spieleliste: welche Spiele im Turnier vorkommen können, für alle sichtbar ---------- */
 const G_STATUS = [['geplant', 'Geplant', '#ffcf3f'], ['vielleicht', 'Vielleicht', '#39d6f2'], ['vorschlag', 'Vorschlag', '#c493ff'], ['gespielt', 'Gespielt', '#4ff08f'], ['raus', 'Fällt raus', '#ff4f6d']];
@@ -8702,7 +9291,7 @@ function sfx(n) {
 /* ---------- Modals ---------- */
 let confirmFns = [];
 function openModal(m) { S.modal = m; renderModal(); setTimeout(() => { const f = $('#modal-root [data-autofocus]') || $('#modal-root .modal button'); if (f) f.focus(); }, 30); }
-function closeModal() { S.modal = null; D.ep = null; $('#modal-root').innerHTML = ''; $('#modal-root').dataset.mk = ''; if (typeof vgmStop === 'function') { vgmStop(); D.vgmLink = null; } }
+function closeModal() { S.modal = null; D.ep = null; $('#modal-root').innerHTML = ''; $('#modal-root').dataset.mk = ''; if (typeof vgmStop === 'function') { vgmStop(); D.vgmLink = null; } if (typeof tkImgStop === 'function') tkImgStop(); }
 function renderModal() {
   const m = S.modal; const root = $('#modal-root');
   if (!m) { root.innerHTML = ''; return; }
@@ -8714,6 +9303,8 @@ function renderModal() {
   else if (m.type === 'botadd') inner = botAddModalHTML();
   else if (m.type === 'vgshow') inner = vgShowModal();
   else if (m.type === 'vgform') inner = vgFormModal();
+  else if (m.type === 'tkshow') inner = tkShowModal();
+  else if (m.type === 'tknew') inner = tkNewModal();
   else if (m.type === 'lhs') inner = `<div class="m-head"><h2 id="m-title">🏆 Highscore · ${esc((lobby() || {}).name || '')}</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>${lobbyHsHTML(lobby(), 50, true)}`;
   else if (m.type === 'gplayer') inner = `
     <div class="m-head"><h2 id="m-title">Dein Spieler</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
@@ -8851,7 +9442,7 @@ const actions = {
     const hd = document.querySelector('header.top'); if (hd) bs.setProperty('--navh', hd.offsetHeight + 'px');
   },
   'fullscreen': () => toggleFull(),
-  'tab': b => { if (b.dataset.tab === 'spieler') D.vgP = ''; setTab(b.dataset.tab); },
+  'tab': b => { if (b.dataset.tab === 'spieler') D.vgP = ''; if (b.dataset.tab === 'support' && S.tab !== 'support') D.tkCtx = tkContext(); setTab(b.dataset.tab); },
   'modal-close': () => closeModal(),
   'confirm-do': b => { const fn = confirmFns[Number(b.dataset.i)]; closeModal(); if (fn) fn(); },
   'gate-open': () => confirmBox('Für alle öffnen?', 'Alle, die gerade warten, sehen einen Countdown und danach gleichzeitig die Seite.', [
@@ -9011,7 +9602,7 @@ const actions = {
   'quiz-again': () => { const base = clone(S.quiz); withPending(() => quizStart(base)); },
   'quiz-new': () => withPending(() => quizDiscard())
 };
-Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions);
+Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
   if (e.target.classList && e.target.classList.contains('scrim')) { closeModal(); return; }
@@ -9033,12 +9624,16 @@ document.addEventListener('input', e => {
   }
   if (t.dataset && t.dataset.draft) {
     setPath(D, t.dataset.draft, t.value);
+    if (t.dataset.draft.startsWith('tkF.')) { tkDraftSave(); if (t.id === 'tk-title') { const c = $('#tk-tcnt'); if (c) c.textContent = t.value.length + '/100'; } }
+    if (t.id === 'tk-q') render();
     if (t.dataset.live && live[t.dataset.live]) live[t.dataset.live](t);
   }
 });
 document.addEventListener('change', async e => {
   const t = e.target;
   if (t.dataset && t.dataset.kopt) { const c = kNormCfg(D.kcfg || K_DEF_CFG); c[t.dataset.kopt] = t.checked; D.kcfg = c; render(); return; }
+  if (t.id === 'tk-tech') { if (D.tkF) D.tkF.tech = !!t.checked; return; }
+  if (t.id === 'tk-file') { const files = t.files ? Array.from(t.files) : []; t.value = ''; if (files.length) tkAddImgs(files); return; }
   if (t.id === 'vgm-shot' || t.id === 'vgm-clip') {
     const files = t.files ? Array.from(t.files) : []; t.value = '';
     const g = S.modal && S.modal.type === 'vgshow' && (S.vg || []).find(x => x.id === S.modal.id);

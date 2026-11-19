@@ -275,6 +275,59 @@ service cloud.firestore {
         allow delete: if vgOwner(resource.data.pid);
       }
 
+      // Support-Tickets: lesen alle im Raum. Anlegen, Nachtrag und Zurückziehen nur der Spieler selbst (Schlüsselwechsel
+      // wie bei Videogames), Stimmen gibt jeder Spieler nur für sich ab, Status und Antworten setzt der Spielleiter.
+      function tkOk(d) {
+        return d.keys().hasOnly(['by', 'type', 'area', 'sub', 'hole', 'title', 'desc', 'steps', 'expect', 'why', 'freq', 'sev', 'prio', 'tech', 'nimg', 'status', 'msgs', 'votes', 'vby', 'ts', 'up', 'lastBy'])
+          && d.by is string && d.by.size() > 0 && d.by.size() <= 40
+          && d.type in ['bug', 'idea', 'improve', 'question', 'other']
+          && d.area is string && d.area.size() <= 20
+          && (!('sub' in d) || (d.sub is string && d.sub.size() <= 80))
+          && d.title is string && d.title.size() > 0 && d.title.size() <= 100
+          && d.desc is string && d.desc.size() <= 2000
+          && (!('steps' in d) || (d.steps is list && d.steps.size() <= 10))
+          && (!('expect' in d) || (d.expect is string && d.expect.size() <= 800))
+          && (!('why' in d) || (d.why is string && d.why.size() <= 800))
+          && (!('tech' in d) || (d.tech is map && d.tech.size() <= 10))
+          && (!('nimg' in d) || (d.nimg is int && d.nimg >= 0 && d.nimg <= 3))
+          && d.status in ['open', 'progress', 'done', 'rejected']
+          && d.msgs is list && d.msgs.size() <= 80
+          && (!('votes' in d) || (d.votes is map && d.votes.size() <= 60));
+      }
+      match /tickets/{id} {
+        allow read: if true;
+        allow create: if tkOk(request.resource.data) && request.resource.data.status == 'open'
+          && request.resource.data.msgs.size() == 0 && request.resource.data.get('votes', {}).size() == 0
+          && request.resource.data.lastBy == 'player'
+          && vgOwner(request.resource.data.by);
+        allow update: if tkOk(request.resource.data) && request.resource.data.by == resource.data.by && (
+            isAdmin()
+            || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['msgs', 'up', 'lastBy'])
+                && request.resource.data.msgs.size() == resource.data.msgs.size() + 1
+                && request.resource.data.lastBy == 'player'
+                && vgOwner(resource.data.by))
+            || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes', 'vby'])
+                && request.resource.data.vby is string
+                && request.resource.data.get('votes', {}).diff(resource.data.get('votes', {})).affectedKeys().hasOnly([request.resource.data.vby])
+                && vgOwner(request.resource.data.vby))
+          );
+        allow delete: if isAdmin() || (resource.data.status == 'open' && vgOwner(resource.data.by));
+      }
+      // Screenshots zu Tickets (bis zu 3), nur der Spieler selbst beim Anlegen.
+      function tkDoc(tid) { return /databases/$(database)/documents/rooms/$(room)/tickets/$(tid); }
+      match /tkimg/{id} {
+        allow read: if true;
+        allow create: if request.resource.data.keys().hasOnly(['tid', 'by', 'i', 'img', 'ts'])
+          && request.resource.data.tid is string && request.resource.data.tid.size() <= 40
+          && request.resource.data.i is int && request.resource.data.i >= 0 && request.resource.data.i < 3
+          && request.resource.data.img is string && request.resource.data.img.size() < 300000
+          && existsAfter(tkDoc(request.resource.data.tid))
+          && getAfter(tkDoc(request.resource.data.tid)).data.by == request.resource.data.by
+          && vgOwner(request.resource.data.by);
+        allow update: if false;
+        allow delete: if isAdmin() || vgOwner(resource.data.by);
+      }
+
       // Alles andere (Punkte, Einstellungen, Quiz, Rad, Ankündigungen): lesen alle, ändern nur der Spielleiter.
       // Ausnahme Videogames (vg, vgm, vgp): die ändert nur der Spieler selbst (siehe oben).
       match /{coll}/{id} {
