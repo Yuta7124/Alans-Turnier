@@ -4347,16 +4347,16 @@ async function pbnSave(d) {
   if (d.pbnImg == null || !db) return;
   const img = d.pbnImg, r = db.collection('pbn').doc(d.id);
   try { await vgCommit(d.id, b => img ? b.set(r, {pid:d.id, img, ts:Date.now()}) : b.delete(r)); pbnCache[d.id] = img; }
-  catch (e) { toast('Das Banner-Bild konnte nicht gespeichert werden.'); }
+  catch (e) { toast(e && e.code === 'permission-denied' ? 'Das Banner-Bild kann nur der Spieler selbst auf seinem Gerät ändern.' : 'Das Banner-Bild konnte nicht gespeichert werden.'); }
 }
 function pfBgHTML(prefix, d) {
   const games = d.id && typeof vgOf === 'function' ? vgOf(d.id).filter(g => g.img) : [];
   const cur = pbgNorm(d.pbg), blur = num(d.pblur, 0, 40, 18), dim = num(d.pdim, 10, 100, 45);
-  const img = pbgImgOf(d, games), own = !!d.id && !!vgHow(playerById(d.id));
+  const img = pbgImgOf(d, games), own = !!d.id;
   const chip = (v, inner) => `<button type="button" class="chip pbg-chip" data-act="pf-set" data-target="${prefix}" data-k="pbg" data-v="${esc(v)}" aria-pressed="${cur === v}">${inner}</button>`;
   return `<div class="pf-sec"><span class="lbl">Profil-Hintergrund</span>
       <div class="pf-bgprev" id="${prefix}-bgprev" style="--pc:${esc(d.color || COLORS[0])};--bgblur:${blur}px;--bgop:${dim / 100};${img ? `--bgimg:url('${img}')` : ''}"><span class="${img ? 'has' : ''}"></span><b>Vorschau</b></div>
-      ${own ? `<div class="pbn-row"><label class="btn btn-sm ${cur === 'img' ? 'btn-gold' : ''}" for="${prefix}-pbn">🖼️ ${cur === 'img' && img ? 'Anderes Bild hochladen' : 'Eigenes Bild hochladen'}</label><input class="vh" type="file" id="${prefix}-pbn" accept="image/*" data-pbn="${prefix}">${cur === 'img' && img ? `<button class="link" type="button" data-act="pbn-clear" data-target="${prefix}">Bild entfernen</button>` : ''}</div>` : ''}
+      ${own ? `<div class="pbn-row"><label class="btn btn-gold" for="${prefix}-pbn">🖼️ ${cur === 'img' && img ? 'Anderes Bild hochladen' : 'Eigenes Bild hochladen'}</label><input class="vh" type="file" id="${prefix}-pbn" accept="image/*" data-pbn="${prefix}">${cur === 'img' && img ? `<button class="link" type="button" data-act="pbn-clear" data-target="${prefix}">Bild entfernen</button>` : ''}</div>` : ''}
       <div class="chips">${img && cur === 'img' ? chip('img', '🖼️ Eigenes Bild') : ''}${chip('auto', '✨ Automatisch (Lieblingsspiel)')}${chip('none', '⬛ Kein Bild, nur Farbe')}
         ${games.map(g => chip('g:' + g.id, `<img class="pbg-cov" src="${esc(g.img)}" alt="">${esc(g.title)}`)).join('')}</div>
       ${d.id ? (games.length ? '' : '<p class="muted pf-hint">Trag unter Spieler → dein Profil Spiele mit Bild ein, dann kannst du eins als Hintergrund wählen.</p>') : '<p class="muted pf-hint">Sobald du Spiele mit Bild in deinem Profil hast, kannst du eins davon als Hintergrund wählen.</p>'}
