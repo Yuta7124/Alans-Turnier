@@ -1799,14 +1799,11 @@ button.bcell[disabled]{cursor:default}
 .ts-edit .chips{justify-content:flex-start}
 .ts-btns{display:flex;gap:10px;flex-wrap:wrap}
 .start-news .news-form{margin:0 0 22px;max-width:640px}
-.start-news .news-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:22px;align-items:start}
-.start-news .news-card{max-width:860px;gap:12px}
-.start-news .news-title{font-size:clamp(24px,3.2vw,34px)}
-.start-news .news-text{font-size:16px}
-.start-news .news-img{max-height:300px}
+.start-news .news-list{display:grid;grid-template-columns:1fr;gap:26px;align-items:start}
+.start-news .news-card{max-width:none;gap:12px}
 .start-news .cd-row{gap:10px}
-.start-news .cd-box{padding:12px 4px 10px;gap:8px}
-.start-news .cd-box b{font-size:clamp(20px,3.4vw,36px)}
+.start-news .cd-box{padding:18px 6px 14px;gap:10px}
+.start-news .cd-box b{font-size:clamp(30px,5.5vw,60px)}
 .start-news .cd-done{font-size:28px}
 @media (prefers-reduced-motion:reduce){.tour-live i{animation:none}}
 @media (max-width:680px){.stiles{grid-template-columns:1fr;gap:12px}.stile{padding:14px}.stile-top b{font-size:22px}.stile-ico{font-size:28px}.start-h{font-size:22px}}
@@ -2290,6 +2287,17 @@ html[data-design="neon"] .toast{border-radius:14px;backdrop-filter:blur(12px);-w
 html[data-design="neon"] .bgm-btn{border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,207,63,.6),0 10px 24px -10px rgba(0,0,0,.9)}
 html[data-design="neon"] .pv-pill{border-radius:999px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 @media (max-width:680px){html[data-design="neon"] h2.h{font-size:23px}html[data-design="neon"] .brand b{font-size:21px}html[data-design="neon"] .tab{border-radius:10px}}
+.start-news .start-h{font-size:34px;--tc:#c493ff;text-shadow:0 0 22px rgba(196,147,255,.55)}
+.start-news .news-card{padding:clamp(18px,3vw,32px);gap:18px;--e:#c493ff;box-shadow:0 0 0 3px var(--shadow),0 0 0 6px #c493ff,0 0 40px -6px rgba(196,147,255,.55)}
+.start-news .news-title{font-size:clamp(34px,6vw,64px);color:#fff}
+.start-news .news-text{font-size:clamp(18px,2.2vw,22px);line-height:1.5}
+.start-news .news-img{width:100%;max-height:none;object-fit:contain}
+.start-news .news-head .eyebrow{font-size:13px;color:#c493ff}
+html[data-design="neon"] .start-news .start-h{font-size:30px}
+html[data-design="neon"] .start-news .news-card{border-radius:24px;box-shadow:inset 0 0 0 2px #c493ff,0 0 50px -10px rgba(196,147,255,.7)}
+html[data-design="neon"] .start-news .news-img{border-radius:14px;box-shadow:none}
+html[data-design="neon"] .start-news .news-title{font-family:var(--head);font-size:clamp(28px,5vw,56px);line-height:1.05}
+@media (max-width:680px){.start-news .start-h{font-size:26px}}
 </style>
 </head>
 <body>
@@ -4044,13 +4052,6 @@ function renderFsBtn() {
   if (b.dataset.on !== String(on)) { b.dataset.on = String(on); b.innerHTML = html; b.setAttribute('aria-label', lbl); b.title = lbl; b.setAttribute('aria-pressed', String(on)); }
 }
 ['fullscreenchange', 'webkitfullscreenchange'].forEach(n => document.addEventListener(n, () => { renderFsBtn(); if (S.tab === 'einstellungen') render(); }));
-function fsCardHTML() {
-  return `<div class="card fs-card"><h3>Vollbild</h3>
-    ${fsOk() ? `<p class="m-text">Blendet die Leisten des Browsers aus, damit die Seite den ganzen Bildschirm nutzt. Mit Esc oder dem Knopf oben rechts kommst du wieder zurück.</p>
-      <button class="btn ${fsEl() ? '' : 'btn-gold'}" type="button" data-act="fs-toggle">${fsEl() ? 'Vollbild beenden' : 'Vollbild an'}</button>`
-      : `<p class="m-text">Dieser Browser kann die Seite nicht in den Vollbild-Modus schalten. Auf dem iPhone geht es so: In Safari auf „Teilen“ tippen, dann „Zum Home-Bildschirm“. Von dort geöffnet, läuft die Seite ohne Browser-Leisten.</p>`}
-  </div>`;
-}
 function renderHeader() {
   renderPv();
   renderFsBtn();
@@ -4187,10 +4188,6 @@ function startDays(iso) {
 function viewStart() {
   const adm = S.admin;
   const me = playerById(lsGet('turnier-me', ''));
-  const tile = (tab, ico, title, text, info, color) => `<button class="stile" type="button" data-act="tab" data-tab="${tab}" style="--tc:${color}">
-      <span class="stile-top"><span class="stile-ico" aria-hidden="true">${ico}</span><b>${title}</b></span>
-      <p>${text}</p>${info ? `<span class="stile-info">${info}</span>` : ''}</button>`;
-  const gameInfo = k => { const run = ROOMS.filter(r => S.lobbies[r] && S.lobbies[r].kind === k && roomState(S.lobbies[r]) === 'running'); return run.length ? `■ Läuft in ${run.map(r => ROOM_NAMES[r]).join(', ')}` : `Jederzeit spielbar · ${ROOMS.length} Räume`; };
   return `<section class="section start">
     ${eventHeroHTML()}
     <div class="start-hero">
@@ -4206,27 +4203,14 @@ function viewStart() {
         <p class="sh-text">Willkommen auf meinem Server.<br>Genießt die Zeit und habt viel Spaß!</p>
       </div>
     </div>
-    <div class="start-group">
-      <h3 class="start-h" style="--tc:#ffcf3f">Turnier</h3>
-      ${tourCardHTML()}
-    </div>
-    <div class="start-group">
-      <h3 class="start-h" style="--tc:#39d6f2">Spiele</h3>
-      <div class="stiles">
-        ${tile('spiele', '🧠', 'Quiz', 'Spielbrett mit Fragen aus 8 Themen. Such dir einen Raum und spielt los, wann ihr wollt.', gameInfo('quiz'), '#39d6f2')}
-        ${tile('spiele', '🎨', 'Malen', 'Einer malt, alle anderen raten im Chat. Wie skribbl.io, jederzeit in einem Raum.', gameInfo('malen'), '#39d6f2')}
-        ${tile('spiele', '⛳', 'Golf', 'Minigolf in 3D mit der Maus oder dem Finger: 30 Bahnen, jede ein Stück länger und kniffliger.', gameInfo('golf'), '#39d6f2')}
-        ${tile('spiele', '🃏', 'Kartenwahn', 'Das Ablegespiel für 2 bis 8: gleiche Farbe oder Zahl ablegen, +2, +4, Aussetzen, Richtungswechsel. Wer zuerst keine Karten mehr hat, gewinnt.', gameInfo('karten'), '#39d6f2')}
-      </div>
-    </div>
     <div class="start-group start-news">
       <div class="start-hrow"><h3 class="start-h" style="--tc:#c493ff">Ankündigungen</h3>${adm ? `<button class="btn btn-sm" type="button" data-act="news-open">${D.newsOpen ? 'Schließen' : '+ Neue Ankündigung'}</button>` : ''}</div>
       ${adm && D.newsOpen ? newsFormHTML() : ''}
       <div class="news-list">${newsCardsHTML()}</div>
     </div>
     <div class="start-group">
-      <h3 class="start-h" style="--tc:#8890c4">Einstellungen</h3>
-      <div class="stiles">${tile('einstellungen', '⚙️', 'Optionen', adm ? 'Sprache, Preisgeld, Musik, Bilder, Passwort und mehr.' : 'Sprache und Hintergrundmusik für dein Gerät.', LANG === 'en' ? 'English' : 'Deutsch', '#8890c4')}</div>
+      <h3 class="start-h" style="--tc:#ffcf3f">Turnier</h3>
+      ${tourCardHTML()}
     </div>
   </section>`;
 }
@@ -4334,7 +4318,6 @@ function viewSettings() {
   if (!S.admin) return `<section class="section narrow">
     <div class="sec-head"><h2 class="h">Optionen</h2></div>
     ${inviteCardHTML()}
-    ${fsCardHTML()}
     ${langCardHTML()}
     <div class="card share-card">
       <h3>Hintergrundmusik</h3>
@@ -4359,7 +4342,6 @@ function viewSettings() {
       <div class="chips"><button class="btn btn-sm" type="button" data-act="gate-preview">Wartebildschirm ansehen</button></div></div>
     ${designCardHTML()}
     ${inviteCardHTML()}
-    ${fsCardHTML()}
     ${langCardHTML()}
     <form class="card form" data-form="settings">
       <div class="field"><label for="st-title">Name des Turniers</label><input class="input" id="st-title" data-draft="set.title" value="${esc(s.title)}" maxlength="60"></div>
@@ -7944,7 +7926,7 @@ const TK_SUB = {
   games:['Spiel eintragen', 'Bewertung', 'Screenshots', 'Clips', 'Achievements', 'Spielzeit', 'Genre / FSK'],
   support:['Ticket schreiben', 'Antworten', 'Stimmen'],
   musik:['Musik spielt nicht', 'Lautstärke', 'Eigene Musik', 'Event-Musik', 'Soundeffekte'],
-  optionen:['Sprache', 'Vollbild', 'Darstellung', 'Einladungslink'],
+  optionen:['Sprache', 'Design', 'Darstellung', 'Einladungslink'],
   login:['Passwort', 'Einladungslink', 'Dauerlink', 'Admin-Login'],
   handy:['Hochkant', 'Querformat', 'Zu klein / zu groß', 'Knöpfe schwer zu treffen', 'Scrollen', 'Tastatur']
 };
