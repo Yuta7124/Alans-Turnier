@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Darkime</title>
+<meta name="description" content="Darkime: Turnier, Minispiele und Spieler-Profile für unsere Gruppe. Einfach reinkommen und mitspielen.">
+<meta name="theme-color" content="#ffcf3f">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Darkime">
+<meta property="og:title" content="Darkime">
+<meta property="og:description" content="Turnier, Minispiele und Spieler-Profile. Klick auf den Link und du bist direkt dabei.">
+<meta property="og:image" content="https://yuta7124.github.io/Alans-Turnier/og.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Pixelify+Sans:wght@500;700&family=Press+Start+2P&family=Bungee&family=Orbitron:wght@700;900&family=Permanent+Marker&family=Bangers&family=Pacifico&family=Russo+One&family=Creepster&display=swap" rel="stylesheet">
@@ -863,6 +871,8 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .invite-card{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
 .invite-card h3{margin:0}
 .invite-url{width:100%;font-size:13px}
+.perm-box{display:flex;flex-direction:column;gap:10px;align-items:flex-start;width:100%;margin-top:8px;padding:14px 16px;background:rgba(255,207,63,.06);box-shadow:inset 3px 0 0 var(--coin)}
+.perm-box h4{margin:0;font-family:var(--display);font-size:18px;text-transform:uppercase}
 .fs-btn{display:grid;place-items:center;flex:none;width:38px;height:38px;margin-left:10px;border:0;background:var(--bg-2);color:var(--ink);cursor:pointer;box-shadow:0 -2px 0 var(--edge),0 2px 0 var(--edge),-2px 0 0 var(--edge),2px 0 0 var(--edge)}
 .fs-btn[hidden]{display:none}
 .fs-btn:hover{color:var(--coin)}
@@ -2061,7 +2071,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=21"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=22"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -8827,6 +8837,9 @@ function tabIntoView() {
 function withPending(go) { if (ctl() && pendingPoints()) quizTransfer(); go(); }
 const actions = {
   'invite-copy': () => inviteCreate(),
+  'perm-copy': () => { if (S.perm) copyText(permUrl(S.perm), 'Dauerlink kopiert. Den kannst du in Discord posten.', () => toast('Kopieren ging nicht. Markier den Link und kopier ihn selbst.')); },
+  'perm-new': () => S.perm ? confirmBox('Neuen Dauerlink erstellen?', 'Der alte Link funktioniert danach nicht mehr. Du musst den neuen Link in Discord posten.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Neuen Link erstellen', cls:'btn-gold', fn:permCreate}]) : permCreate(),
+  'perm-off': () => confirmBox('Dauerlink sperren?', 'Der Link funktioniert dann nicht mehr. Wer schon drin ist, bleibt drin.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Sperren', cls:'btn-gold', fn:permRevoke}]),
   'fs-toggle': () => fsToggle(),
   'lhs-open': () => openModal({type:'lhs'}),
   'lhs-reset': () => { const L = lobby(); if (!L || !S.admin) return; confirmBox(`Highscore von ${L.name} zurücksetzen?`, 'Alle Punkte in diesem Raum werden gelöscht. Der Turnier-Highscore bleibt.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Zurücksetzen', cls:'btn-gold', fn:() => roomWrite({hs:{}})}]); },
@@ -9438,14 +9451,55 @@ function inviteCreate() {
   D.invite = {url, exp}; render();
   fs.doc('invites/' + code).set({r:room, exp, ts:Date.now()}).catch(() => { D.invite = null; render(); toast('Der Link konnte nicht gespeichert werden. Prüf dein Internet und versuch es nochmal.'); });
 }
+/* Dauerlink (nur Spielleiter): zeigt immer auf den aktuellen Server, läuft nie ab. Der Code steht in admin/invite.
+   Ändert der Spielleiter das Passwort, zeigt der Link automatisch auf den neuen Server. */
+const PERM_EXP = 4102444800000; // 1. Januar 2100
+const permUrl = code => location.origin + location.pathname + '?join=' + code;
+async function permLoad() {
+  if (!S.admin || !fs) return;
+  try { const d = await fs.doc('admin/invite').get(); S.perm = d.exists ? str((d.data() || {}).code, 64) : ''; } catch (e) { S.perm = ''; }
+  if (S.tab === 'einstellungen') render();
+}
+async function permCreate() {
+  if (!S.admin || S.mode !== 'db' || !room || !fs) return;
+  const a = new Uint8Array(16); crypto.getRandomValues(a);
+  const code = [...a].map(b => b.toString(16).padStart(2, '0')).join(''), old = S.perm;
+  copyText(permUrl(code), 'Dauerlink kopiert. Den kannst du in Discord posten.', () => {});
+  try {
+    const b = fs.batch();
+    b.set(fs.doc('invites/' + code), {r:room, exp:PERM_EXP, ts:Date.now(), perm:true});
+    b.set(fs.doc('admin/invite'), {code});
+    if (old) b.delete(fs.doc('invites/' + old));
+    await b.commit();
+    S.perm = code; render();
+  } catch (e) { toast(e && e.code === 'permission-denied' ? 'Der Dauerlink braucht erst die neuen Datenbank-Regeln.' : 'Der Link konnte nicht gespeichert werden. Prüf dein Internet und versuch es nochmal.'); }
+}
+async function permRevoke() {
+  const old = S.perm; if (!S.admin || !old) return;
+  try { const b = fs.batch(); b.delete(fs.doc('invites/' + old)); b.delete(fs.doc('admin/invite')); await b.commit(); S.perm = ''; render(); toast('Der Dauerlink funktioniert nicht mehr.'); }
+  catch (e) { toast('Das hat nicht geklappt. Versuch es nochmal.'); }
+}
+function permBoxHTML() {
+  if (!S.admin) return '';
+  const p = S.perm;
+  return `<div class="perm-box">
+    <h4>♾️ Dauerlink für Discord</h4>
+    <p class="m-text">Läuft nie ab. Neue und alte Spieler kommen damit immer direkt auf den Server, auch nachdem du das Passwort geändert hast. Ideal für deinen Discord-Server.</p>
+    ${p === undefined ? '<p class="muted">Lädt …</p>' : p ? `<input class="input invite-url" readonly value="${esc(permUrl(p))}" aria-label="Dauerlink" onfocus="this.select()">
+      <div class="chips"><button class="btn btn-gold" type="button" data-act="perm-copy">Dauerlink kopieren</button><button class="btn btn-ghost" type="button" data-act="perm-new">Neuen Link erstellen</button><button class="btn btn-ghost danger" type="button" data-act="perm-off">Sperren</button></div>
+      <small class="muted">„Neuen Link erstellen“ und „Sperren“ machen den alten Link sofort ungültig. Wer schon drin ist, bleibt drin.</small>`
+      : `<button class="btn btn-gold" type="button" data-act="perm-new">Dauerlink erstellen</button>`}
+  </div>`;
+}
 function inviteCardHTML() {
   if (S.mode !== 'db') return '';
   const iv = D.invite && D.invite.exp > Date.now() ? D.invite : null;
   return `<div class="card invite-card">
     <h3>🔗 Freunde einladen</h3>
     <p class="m-text">Mit diesem Link kommt jeder ohne Passwort auf den Server. Der Link gilt 24 Stunden, danach funktioniert er nicht mehr.</p>
-    <button class="btn btn-gold" type="button" data-act="invite-copy">Einladungslink kopieren</button>
+    <button class="btn ${S.admin ? '' : 'btn-gold'}" type="button" data-act="invite-copy">Einladungslink kopieren (24 Stunden)</button>
     ${iv ? `<input class="input invite-url" readonly value="${esc(iv.url)}" aria-label="Einladungslink" onfocus="this.select()"><small class="muted">Gültig bis ${new Date(iv.exp).toLocaleString(LOC, {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'})} Uhr</small>` : ''}
+  ${permBoxHTML()}
   </div>`;
 }
 function joinCode() { try { const c = new URLSearchParams(location.search).get('join') || ''; return /^[0-9a-f]{24,64}$/.test(c) ? c : ''; } catch (e) { return ''; } }
@@ -9557,6 +9611,7 @@ function connectRoom(r) {
   } else {
     loadMusic();
     cleanupLegacy();
+    permLoad();
     db.collection('presence').where('ts', '<', Date.now() - 86400000).limit(200).get()
       .then(sn => sn.docs.forEach(d => d.ref.delete().catch(() => {}))).catch(() => {});
     db.collection('answers').where('ts', '<', Date.now() - 86400000).limit(300).get()
@@ -9682,6 +9737,8 @@ async function changePassword(pw) {
     if (cur.length) chunks.push(cur);
     for (const ch of chunks) { const b = fs.batch(); ch.forEach(o => b.set(fs.doc(o.path), o.data)); await b.commit(); }
     await fs.doc('admin/config').set({room:nr, password:pw});
+    // Der Dauerlink zeigt ab jetzt auf den neuen Server
+    try { const iv = await fs.doc('admin/invite').get(); const ic = iv.exists ? str((iv.data() || {}).code, 64) : ''; if (ic) await fs.doc('invites/' + ic).update({r:nr}); } catch (e) {}
     await fs.doc('rooms/' + old).set({moved:true});
     for (let i = 0; i < ops2.length; i += 200) {
       const b = fs.batch();

@@ -98,6 +98,10 @@ Das Repository ist öffentlich, aber nur der Programmcode. Die Daten stecken in 
 - **Abmelden** als Spielleiter: ganz unten auf der Seite.
 - Daten aus der alten Claude-Version werden nicht automatisch übernommen. Spieler und eigene Quizfragen trägst du einmal neu ein.
 
+## Dauerlink für Discord
+
+Unter „Optionen“ kann der Spielleiter einen **Dauerlink** erstellen. Er läuft nie ab (bis 2100), bringt neue und alte Spieler ohne Passwort direkt auf den Server und zeigt nach einem Passwortwechsel automatisch auf den neuen Server. „Neuen Link erstellen“ oder „Sperren“ macht den alten Link sofort ungültig. Beim Posten in Discord erscheint eine Vorschau mit Titel und Bild (og.png).
+
 ## Noch offen (am PC erledigen)
 
-- Die aktuelle `firestore.rules` in der Firebase-Konsole veröffentlichen (Abschnitte `vg`, `vgm`, `vgp` und die Änderung bei `players`). Vorher können Spieler keine eigenen Spiele, Screenshots oder Clips eintragen.
+- Die aktuelle `firestore.rules` in der Firebase-Konsole veröffentlichen (Abschnitte `vg`, `vgm`, `vgp`, die Änderung bei `players`, der Dauerlink bei `invites` und `admin/invite`). Vorher können Spieler keine eigenen Spiele, Screenshots oder Clips eintragen, und der Dauerlink lässt sich nicht erstellen.

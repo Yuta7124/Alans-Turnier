@@ -27,19 +27,27 @@ service cloud.firestore {
     match /admin/config {
       allow read, write: if isAdmin();
     }
+    // Code des Dauerlinks. Nur für den Spielleiter.
+    match /admin/invite {
+      allow read, write: if isAdmin();
+    }
 
     // Einladungslinks: ein Zufallscode zeigt 24 Stunden lang auf einen Raum. Danach ist er nicht mehr lesbar.
+    // Ausnahme: der Dauerlink des Spielleiters (perm) läuft erst im Jahr 2100 ab.
     // Anlegen kann ihn nur, wer die Raum-ID schon kennt (also schon drin ist); auflisten kann niemand.
     match /invites/{id} {
       allow get: if resource.data.exp > request.time.toMillis();
       allow list: if false;
       allow create: if id.size() >= 24 && id.size() <= 64
-        && request.resource.data.keys().hasOnly(['r', 'exp', 'ts'])
+        && request.resource.data.keys().hasOnly(['r', 'exp', 'ts', 'perm'])
         && request.resource.data.r is string && request.resource.data.r.size() <= 64
         && exists(/databases/$(database)/documents/rooms/$(request.resource.data.r))
         && request.resource.data.exp is number
-        && request.resource.data.exp <= request.time.toMillis() + 86400000 + 120000;
-      allow update: if false;
+        && (request.resource.data.exp <= request.time.toMillis() + 86400000 + 120000
+            || (isAdmin() && request.resource.data.get('perm', false) == true));
+      // Dauerlink: nur der Spielleiter darf ihn auf einen neuen Server (nach Passwortwechsel) umstellen.
+      allow update: if isAdmin() && request.resource.data.keys().hasOnly(['r', 'exp', 'ts', 'perm'])
+        && request.resource.data.r is string && request.resource.data.r.size() <= 64;
       allow delete: if isAdmin();
     }
 
