@@ -192,7 +192,7 @@ service cloud.firestore {
       // Videogames: gespielte Spiele im Profil eines Spielers. Eintragen, ändern und löschen darf nur das Gerät, dem der
       // Spieler gehört: Es wechselt im selben Schreibvorgang den geheimen Spieler-Schlüssel (siehe players oben).
       function vgOk(d) {
-        return d.keys().hasOnly(['pid', 'title', 'img', 'plat', 'gen', 'md', 'st', 'ach', 'achU', 'achT', 'r', 'rd', 'hrs', 'note', 'ts', 'up'])
+        return d.keys().hasOnly(['pid', 'title', 'img', 'plat', 'gen', 'md', 'fsk', 'ms', 'mv', 'st', 'ach', 'achU', 'achT', 'r', 'rd', 'hrs', 'note', 'ts', 'up'])
           && d.pid is string && d.pid.size() > 0 && d.pid.size() <= 40
           && d.title is string && d.title.size() > 0 && d.title.size() <= 80
           && (!('img' in d) || (d.img is string && d.img.size() < 60000))
@@ -200,6 +200,9 @@ service cloud.firestore {
           && (!('gen' in d) || (d.gen is list && d.gen.size() <= 4))
           && (!('md' in d) || (d.md is list && d.md.size() <= 4))
           && (!('st' in d) || d.st in ['done', 'play', 'drop', 'endless'])
+          && (!('fsk' in d) || d.fsk in [0, 6, 12, 16, 18])
+          && (!('ms' in d) || (d.ms is int && d.ms >= 0 && d.ms <= 99))
+          && (!('mv' in d) || (d.mv is int && d.mv >= 0 && d.mv <= 99))
           && (!('ach' in d) || d.ach in ['all', 'some', 'none', 'na'])
           && (!('achU' in d) || (d.achU is int && d.achU >= 0 && d.achU <= 9999))
           && (!('achT' in d) || (d.achT is int && d.achT >= 0 && d.achT <= 9999))
@@ -231,11 +234,42 @@ service cloud.firestore {
         allow delete: if vgOwner(resource.data.pid);
       }
 
+      // Videogames: Screenshots, Clips und Clip-Links zu einem Spiel. Nur der Spieler selbst, wie oben.
+      function vgGame(gid) { return /databases/$(database)/documents/rooms/$(room)/vg/$(gid); }
+      match /vgm/{id} {
+        allow read: if true;
+        allow create: if request.resource.data.keys().hasOnly(['gid', 'pid', 'k', 'img', 'url', 'cnt', 'mime', 'dur', 'ts'])
+          && request.resource.data.gid is string && request.resource.data.gid.size() <= 40
+          && request.resource.data.k in ['shot', 'clip', 'link']
+          && (!('img' in request.resource.data) || (request.resource.data.img is string && request.resource.data.img.size() < 600000))
+          && (!('url' in request.resource.data) || (request.resource.data.url is string && request.resource.data.url.size() <= 300))
+          && (!('cnt' in request.resource.data) || (request.resource.data.cnt is int && request.resource.data.cnt <= 12))
+          && (!('mime' in request.resource.data) || (request.resource.data.mime is string && request.resource.data.mime.size() <= 40))
+          && existsAfter(vgGame(request.resource.data.gid))
+          && getAfter(vgGame(request.resource.data.gid)).data.pid == request.resource.data.pid
+          && vgOwner(request.resource.data.pid);
+        allow update: if false;
+        allow delete: if vgOwner(resource.data.pid);
+      }
+      // Teilstücke hochgeladener Clips (werden erst beim Abspielen geladen).
+      match /vgp/{id} {
+        allow read: if true;
+        allow create: if request.resource.data.keys().hasOnly(['mid', 'gid', 'pid', 'i', 'd', 'ts'])
+          && request.resource.data.mid is string && request.resource.data.mid.size() <= 40
+          && request.resource.data.i is int && request.resource.data.i >= 0 && request.resource.data.i < 12
+          && request.resource.data.d is string && request.resource.data.d.size() < 1000000
+          && existsAfter(vgGame(request.resource.data.gid))
+          && getAfter(vgGame(request.resource.data.gid)).data.pid == request.resource.data.pid
+          && vgOwner(request.resource.data.pid);
+        allow update: if false;
+        allow delete: if vgOwner(resource.data.pid);
+      }
+
       // Alles andere (Punkte, Einstellungen, Quiz, Rad, Ankündigungen): lesen alle, ändern nur der Spielleiter.
-      // Ausnahme Videogames: die ändert nur der Spieler selbst (siehe vg oben).
+      // Ausnahme Videogames (vg, vgm, vgp): die ändert nur der Spieler selbst (siehe oben).
       match /{coll}/{id} {
         allow read: if true;
-        allow write: if isAdmin() && coll != 'vg';
+        allow write: if isAdmin() && !(coll in ['vg', 'vgm', 'vgp']);
       }
     }
   }

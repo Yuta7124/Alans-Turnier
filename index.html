@@ -609,6 +609,43 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
   .vg-filters .chips::-webkit-scrollbar{display:none}
   .vg-filters .chip,.vg-filters .lbl{flex:none}
 }
+.vg-fsk{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 4px;background:var(--fb);color:var(--fc);font-family:var(--body);font-weight:800;font-size:14px;line-height:1;border-radius:4px;box-shadow:0 0 0 2px rgba(0,0,0,.55)}
+.vg-fsk.on-cv{position:absolute;left:8px;top:8px}
+.vg-fskchips .chip{padding-left:8px}
+.vg-mc{font-size:13px;font-weight:700;color:var(--xp)}
+.vgm-sec{display:flex;flex-direction:column;gap:12px;padding-top:6px;border-top:3px solid var(--edge)}
+.vgm-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.vgm-head b{font-family:var(--display);font-size:20px;text-transform:uppercase}
+.vgm-head small{color:var(--muted);font-weight:700}
+.vgm-clips{display:flex;flex-direction:column;gap:12px}
+.vgm-clip{position:relative;width:100%;aspect-ratio:16/9;background:#000;box-shadow:0 0 0 3px var(--shadow),0 0 0 6px var(--edge)}
+.vgm-clip.tall{aspect-ratio:9/16;max-width:320px;margin:0 auto}
+.vgm-clip iframe,.vgm-clip video{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.vgm-play{position:absolute;inset:0;border:0;padding:0;cursor:pointer;background:#000;display:grid;place-items:center;overflow:hidden}
+.vgm-play img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.vgm-pbtn{position:relative;width:64px;height:64px;display:grid;place-items:center;font-size:28px;color:#120c24;background:var(--coin);box-shadow:0 0 0 4px var(--shadow),0 6px 0 4px rgba(0,0,0,.5)}
+.vgm-dur{position:absolute;right:8px;bottom:8px;font-size:12px;font-weight:700;padding:2px 7px;background:rgba(7,5,15,.85);color:var(--ink)}
+.vgm-link{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--ink);font-family:var(--display);font-size:22px;text-decoration:none;background:linear-gradient(160deg,var(--panel-2),var(--bg-2))}
+.vgm-link small{font-family:var(--body);font-size:13px;color:var(--muted)}
+.vgm-shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.vgm-shot{position:relative}
+.vgm-shot button{display:block;width:100%;border:0;padding:0;cursor:zoom-in;background:var(--bg-2);aspect-ratio:16/9;overflow:hidden;box-shadow:0 0 0 3px var(--shadow)}
+.vgm-shot img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .15s}
+.vgm-shot button:hover img{transform:scale(1.05)}
+.vgm-x{position:absolute;top:-8px;right:-8px;z-index:2;width:28px;height:28px;border:0;cursor:pointer;background:var(--hp);color:#fff;font-size:18px;font-weight:700;line-height:1;box-shadow:0 0 0 2px var(--shadow)}
+.vgm-add{display:flex;flex-wrap:wrap;gap:8px}
+.vgm-add label.btn{cursor:pointer}
+.vgm-add .is-off{opacity:.45;pointer-events:none}
+.vgm-linkform{display:flex;gap:8px}
+.vgm-linkform .input{flex:1;min-width:0}
+.vgm-prog{margin:0;font-weight:700;color:var(--coin)}
+.vg-lb{position:fixed;inset:0;z-index:200;background:rgba(5,3,12,.94);display:grid;place-items:center;padding:20px}
+.vg-lb img{max-width:100%;max-height:calc(100vh - 80px);object-fit:contain;box-shadow:0 0 0 3px var(--shadow),0 0 0 6px var(--edge)}
+.vg-lb-x{position:absolute;top:14px;right:14px;width:44px;height:44px;border:0;cursor:pointer;background:var(--panel);color:var(--ink);font-size:26px;box-shadow:0 0 0 3px var(--edge)}
+.vg-lb-n{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:64px;border:0;cursor:pointer;background:rgba(28,21,55,.85);color:var(--ink);font-size:34px;box-shadow:0 0 0 3px var(--edge)}
+.vg-lb-n.p{left:10px}.vg-lb-n.n{right:10px}
+.vg-lb-c{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-family:var(--pixel);font-size:11px;color:var(--muted)}
+@media (max-width:560px){.vgm-shots{grid-template-columns:repeat(2,minmax(0,1fr))}.vg-lb{padding:8px}.vg-lb-n{width:40px;height:56px}}
 /* VG-CSS-END */
 .lhs{display:flex;flex-direction:column;gap:10px;margin-top:16px}
 .lhs-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -1822,7 +1859,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=16"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=17"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -6412,6 +6449,8 @@ const VG_MODE = [['story', 'Story / Einzelspieler', '📖'], ['online', 'Online-
 const VG_GEN = [['action', 'Action'], ['adventure', 'Abenteuer'], ['rpg', 'Rollenspiel'], ['openworld', 'Open World'], ['shooter', 'Shooter'], ['horror', 'Horror'], ['soulslike', 'Soulslike'],
   ['platformer', 'Jump ’n’ Run'], ['metroidvania', 'Metroidvania'], ['fighting', 'Kampfspiel'], ['racing', 'Rennspiel'], ['sport', 'Sport'], ['strategy', 'Strategie'], ['sim', 'Simulation'],
   ['survival', 'Survival'], ['sandbox', 'Sandbox'], ['puzzle', 'Puzzle'], ['party', 'Party'], ['br', 'Battle Royale'], ['mmo', 'MMO'], ['rhythm', 'Musik / Rhythmus'], ['vn', 'Visual Novel'], ['indie', 'Indie']];
+const VG_FSK = [[0, '#ffffff', '#111'], [6, '#ffd400', '#111'], [12, '#2fb34a', '#fff'], [16, '#1a9fe0', '#fff'], [18, '#e3001b', '#fff']];
+function vgFskHTML(f, cls = '') { const x = VG_FSK.find(l => l[0] === f); return x ? `<span class="vg-fsk ${cls}" style="--fb:${x[1]};--fc:${x[2]}" title="Freigegeben ab ${f} Jahren" aria-label="Freigegeben ab ${f} Jahren">${f}</span>` : ''; }
 const vgLbl = (list, v) => (list.find(l => l[0] === v) || ['', v])[1];
 const VG_WORD = ['Katastrophe', 'Ganz schlecht', 'Schlecht', 'Schwach', 'Geht so', 'Mittelmaß', 'Ganz okay', 'Gut', 'Sehr gut', 'Herausragend', 'Meisterwerk'];
 let vgSub = false;
@@ -6432,6 +6471,7 @@ function normVg(id, x) {
     achU:vgInt(x.achU, 0, 9999), achT:vgInt(x.achT, 0, 9999),
     r:Number.isInteger(r) && r >= 0 && r <= 10 ? r : -1, rd,
     hrs:Math.max(0, Math.min(99999, Number(x.hrs) || 0)), note:str(x.note, 300),
+    fsk:VG_FSK.some(l => l[0] === x.fsk) ? x.fsk : -1, ms:vgInt(x.ms, 0, 99), mv:vgInt(x.mv, 0, 99),
     ts:Number(x.ts) || 0, up:Number(x.up) || 0
   };
 }
@@ -6488,11 +6528,12 @@ function vgCardHTML(g, showBy) {
   const by = showBy ? ghost(g.pid) : null, ach = vgAchText(g);
   return `<article class="vg-card ${g.ach === 'all' ? 'is-100' : ''}">
     <button class="vg-hit" type="button" data-act="vg-show" data-id="${esc(g.id)}" aria-label="${esc(g.title)} ansehen">
-      <span class="vg-cv">${vgCoverHTML(g)}${vgStBadge(g)}</span>
+      <span class="vg-cv">${vgCoverHTML(g)}${vgStBadge(g)}${vgFskHTML(g.fsk, 'on-cv')}</span>
       <span class="vg-body"><b class="vg-title">${esc(g.title)}</b>
         ${g.gen.length || g.md.length ? `<span class="vg-gens">${g.md.map(p => `<span class="vg-mdi" title="${esc(vgLbl(VG_MODE, p))}">${VG_MODE.find(l => l[0] === p)[2]}</span>`).join('')}${vgGenHTML(g, 2)}${g.gen.length > 2 ? `<span class="vg-gen more">+${g.gen.length - 2}</span>` : ''}</span>` : ''}
         ${g.plat.length ? `<span class="vg-plats">${vgPlatHTML(g)}</span>` : ''}
         ${ach ? `<span class="vg-ach">${esc(ach)}</span>` : ''}
+        ${g.ms || g.mv ? `<span class="vg-mc">${g.ms ? `📷 ${g.ms}` : ''}${g.ms && g.mv ? ' · ' : ''}${g.mv ? `🎬 ${g.mv}` : ''}</span>` : ''}
         ${by ? `<span class="vg-by">${avatar(by, 20)}${esc(by.name)}</span>` : ''}</span>
     </button>
     ${g.r >= 0 ? `<button class="vg-score" type="button" data-act="vg-show" data-id="${esc(g.id)}" data-rd="1" style="--c:${vgCol(g.r)}" aria-label="Bewertung ${g.r} von 10, Einzelwertungen ansehen"><b>${g.r}</b><small>/10</small></button>` : ''}
@@ -6578,6 +6619,7 @@ function vgProfileHTML(p) {
 function vgShowModal() {
   const g = (S.vg || []).find(x => x.id === S.modal.id);
   if (!g) return `<div class="m-head"><h2 id="m-title">Spiel</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div><p class="m-text">Dieser Eintrag wurde gelöscht.</p>`;
+  vgmEnsure(g.id);
   const p = ghost(g.pid), can = vgCan(playerById(g.pid)), open = !!S.modal.rd, ach = vgAchText(g);
   const rated = VG_CAT.filter(([k]) => k in g.rd);
   const bars = rated.length ? rated.map(([k, l, i]) => `<div class="vg-bar"><span class="vg-bl">${i} ${esc(l)}</span><span class="vg-bt"><i style="width:${g.rd[k] * 10}%;--c:${vgCol(g.rd[k])}"></i></span><b style="color:${vgCol(g.rd[k])}">${g.rd[k]}</b></div>`).join('')
@@ -6588,7 +6630,7 @@ function vgShowModal() {
       <div class="vg-show-cv">${vgCoverHTML(g, 'big')}</div>
       <div class="vg-show-info">
         <button class="vg-by vg-by-btn" type="button" data-act="vg-open" data-pid="${esc(p.id)}">${avatar(p, 26)}${esc(p.name)}</button>
-        <div class="vg-show-row">${vgStBadge(g)}${vgPlatHTML(g)}</div>
+        <div class="vg-show-row">${vgStBadge(g)}${vgFskHTML(g.fsk)}${vgPlatHTML(g)}</div>
         ${g.gen.length ? `<div class="vg-show-row"><span class="vg-k">Genre</span>${vgGenHTML(g)}</div>` : ''}
         ${g.md.length ? `<div class="vg-show-row"><span class="vg-k">Spielart</span>${vgModeHTML(g)}</div>` : ''}
         ${ach ? `<div class="vg-achbox ${g.ach === 'all' ? 'is-100' : ''}"><span>${esc(ach)}</span>${pct >= 0 ? `<span class="vg-bt"><i style="width:${pct}%;--c:${g.ach === 'all' ? 'var(--coin)' : 'var(--xp)'}"></i></span>` : ''}</div>` : ''}
@@ -6599,11 +6641,12 @@ function vgShowModal() {
     ${g.r < 0 ? '<p class="m-text">Noch nicht bewertet.</p>' : rated.length ? `<button class="vg-bigscore" type="button" data-act="vg-rd" aria-expanded="${open}" style="--c:${vgCol(g.r)}"><b>${g.r}</b><small>/10</small><span>${esc(VG_WORD[g.r])}<em>${open ? 'Einzelwertungen ausblenden ▴' : 'Tippen für die Einzelwertungen ▾'}</em></span></button>
       ${open ? `<div class="vg-bars">${bars}</div>` : ''}` : `<div class="vg-bigscore is-static" style="--c:${vgCol(g.r)}"><b>${g.r}</b><small>/10</small><span>${esc(VG_WORD[g.r])}<em>Ohne Einzelwertungen</em></span></div>`}
     ${g.note ? `<blockquote class="vg-note">„${esc(g.note)}“</blockquote>` : ''}
+    ${vgmHTML(g, can)}
     ${can ? `<div class="m-foot"><button class="btn btn-ghost danger" type="button" data-act="vg-del" data-id="${esc(g.id)}">Löschen</button><button class="btn btn-gold" type="button" data-act="vg-edit" data-id="${esc(g.id)}">Bearbeiten</button></div>` : ''}`;
 }
 
 /* Formular: Spiel eintragen oder bearbeiten */
-function vgBlank(pid) { return {id:'', pid, title:'', img:'', plat:[], gen:[], md:[], st:'done', ach:'none', achU:'', achT:'', r:-1, rd:{}, hrs:'', note:''}; }
+function vgBlank(pid) { return {id:'', pid, title:'', img:'', plat:[], gen:[], md:[], fsk:-1, st:'done', ach:'none', achU:'', achT:'', r:-1, rd:{}, hrs:'', note:''}; }
 function vgFormModal() {
   const d = D.vgF; if (!d) return '';
   const chip = (act, k, v, on, lbl) => `<button class="chip" type="button" data-act="${act}" data-k="${k}" data-v="${v}" aria-pressed="${on}">${lbl}</button>`;
@@ -6616,6 +6659,7 @@ function vgFormModal() {
           <div class="vg-imgbtns"><label class="btn btn-sm" for="vg-file">${d.img ? 'Anderes Bild' : 'Bild wählen'}</label><input type="file" id="vg-file" accept="image/*" hidden>
           ${d.img ? '<button class="btn btn-sm btn-ghost" type="button" data-act="vgf-noimg">Bild entfernen</button>' : ''}<small class="muted">Am besten das Cover. Es wird auf Hochformat zugeschnitten.</small></div></div></div>
       <div class="field"><span class="lbl">Plattform (bis zu 4)</span><div class="chips">${VG_PLAT.map(([v, l]) => chip('vgf-plat', 'plat', v, d.plat.includes(v), esc(l))).join('')}</div></div>
+      <div class="field"><span class="lbl">Altersfreigabe (FSK / USK)</span><div class="chips vg-fskchips">${VG_FSK.map(([f]) => `<button class="chip" type="button" data-act="vgf-fsk" data-v="${f}" aria-pressed="${d.fsk === f}">${vgFskHTML(f)} ab ${f}</button>`).join('')}<button class="chip" type="button" data-act="vgf-fsk" data-v="-1" aria-pressed="${d.fsk < 0}">Weiß nicht</button></div></div>
       <div class="field"><span class="lbl">Spielart</span><small class="muted">Story-Spiel, online oder zusammen? Mehrere gehen.</small><div class="chips">${VG_MODE.map(([v, l, i]) => chip('vgf-plat', 'md', v, d.md.includes(v), `${i} ${esc(l)}`)).join('')}</div></div>
       <div class="field"><span class="lbl">Genre (bis zu 4)</span><small class="muted">Damit andere wissen, was für ein Spiel das ist.</small><div class="chips">${VG_GEN.map(([v, l]) => chip('vgf-plat', 'gen', v, d.gen.includes(v), esc(l))).join('')}</div></div>
       <div class="field"><span class="lbl">Status</span><div class="chips">${VG_ST.map(([v, l, i]) => chip('vgf-set', 'st', v, d.st === v, `${i} ${esc(l)}`)).join('')}</div></div>
@@ -6684,7 +6728,7 @@ async function vgSave() {
   if (d.ach === 'some' && achT && achU > achT) { toast('Freigeschaltet kann nicht mehr sein als insgesamt.'); return; }
   const hrs = Math.max(0, Math.min(99999, Math.round(parseNum(d.hrs) * 10) / 10));
   const old = d.id ? (S.vg || []).find(g => g.id === d.id) : null;
-  const doc = {pid:d.pid, title, img:d.img || '', plat:d.plat.slice(0, 4), gen:d.gen.slice(0, 4), md:d.md.slice(0, 4), st:d.st, ach:d.ach, achU, achT, r:d.r, rd:{...d.rd}, hrs, note:str(d.note, 300), ts:old ? old.ts || Date.now() : Date.now(), up:Date.now()};
+  const doc = {pid:d.pid, title, img:d.img || '', plat:d.plat.slice(0, 4), gen:d.gen.slice(0, 4), md:d.md.slice(0, 4), ...(d.fsk >= 0 ? {fsk:d.fsk} : {}), ms:old ? old.ms : 0, mv:old ? old.mv : 0, st:d.st, ach:d.ach, achU, achT, r:d.r, rd:{...d.rd}, hrs, note:str(d.note, 300), ts:old ? old.ts || Date.now() : Date.now(), up:Date.now()};
   const id = d.id || uid();
   vgBusy = true;
   try {
@@ -6705,8 +6749,8 @@ const vgActions = {
   'vg-edit': b => { const g = (S.vg || []).find(x => x.id === b.dataset.id); if (!g) return; D.vgF = {...g, plat:g.plat.slice(), gen:g.gen.slice(), md:g.md.slice(), rd:{...g.rd}, achU:g.achU ? String(g.achU) : '', achT:g.achT ? String(g.achT) : '', hrs:g.hrs ? String(g.hrs) : ''}; openModal({type:'vgform'}); },
   'vg-del': b => {
     const g = (S.vg || []).find(x => x.id === b.dataset.id); if (!g) return;
-    confirmBox('Spiel löschen?', `„${g.title}“ wird aus dem Profil entfernt.`, [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Löschen', cls:'btn-gold', fn:async () => {
-      try { await vgCommit(g.pid, bt => bt.delete(db.collection('vg').doc(g.id))); toast('Gelöscht.'); } catch (e) { vgErr(e); }
+    confirmBox('Spiel löschen?', `„${g.title}“ wird mit allen Screenshots und Clips aus dem Profil entfernt.`, [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Löschen', cls:'btn-gold', fn:async () => {
+      try { await vgDeleteGame(g); toast('Gelöscht.'); } catch (e) { vgErr(e); }
     }}]);
   },
   'vgf-plat': b => {
@@ -6718,9 +6762,304 @@ const vgActions = {
   'vgf-set': b => { const d = D.vgF; if (!d) return; d[b.dataset.k] = b.dataset.v; renderModal(); },
   'vgf-r': b => { const d = D.vgF; if (!d) return; d.r = Number(b.dataset.v); renderModal(); },
   'vgf-rd': b => { const d = D.vgF, k = b.dataset.k, v = Number(b.dataset.v); if (!d) return; if (d.rd[k] === v) delete d.rd[k]; else d.rd[k] = v; renderModal(); },
+  'vgf-fsk': b => { if (D.vgF) { D.vgF.fsk = Number(b.dataset.v); renderModal(); } },
   'vgf-noimg': () => { if (D.vgF) { D.vgF.img = ''; renderModal(); } }
 };
 /* ---------- Videogames ENDE ---------- */
+/* ---------- Videogames: Screenshots und Clips ----------
+   vgm/{id}: ein Screenshot (k:'shot', img), ein hochgeladener Clip (k:'clip', Vorschaubild img, Video in Teilen in vgp)
+   oder ein Link (k:'link', url: YouTube, Twitch, Streamable oder sonst ein Link).
+   vgp/{id}: Teilstücke eines Clips (Base64, je höchstens ca. 700 KB), werden erst beim Abspielen geladen.
+   Zähler stehen im Spiel selbst (ms Screenshots, mv Clips), damit die Karten sie ohne Laden zeigen können. */
+const VGM_SHOTS = 12, VGM_CLIPS = 4, VGM_SECS = 60, VGM_PART = 700000, VGM_MAXB = 6000000;
+let vgmSub = null, vgmGid = '', vgmBusy = '';
+const vgmBlob = {};
+function normVgm(id, x) {
+  x = x || {};
+  const img = typeof x.img === 'string' && x.img.length < 600000 && /^data:image\/(png|jpe?g|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img) ? x.img : '';
+  const url = typeof x.url === 'string' && /^https:\/\/[^\s"'<>]{4,300}$/.test(x.url) ? x.url : '';
+  return {id, gid:str(x.gid, 40), pid:str(x.pid, 40), k:['shot', 'clip', 'link'].includes(x.k) ? x.k : '', img, url,
+    cnt:vgInt(x.cnt, 0, 12), mime:str(x.mime, 40), dur:Math.max(0, Number(x.dur) || 0), ts:Number(x.ts) || 0};
+}
+function vgmEnsure(gid) {
+  if (vgmGid === gid || S.mode !== 'db' || !db) return;
+  vgmStop();
+  vgmGid = gid; S.vgm = null;
+  vgmSub = db.collection('vgm').where('gid', '==', gid).onSnapshot(sn => {
+    if (vgmGid !== gid) return;
+    S.vgm = sn.docs.map(d => normVgm(d.id, d.data())).filter(m => m.k && (m.k !== 'shot' || m.img) && (m.k !== 'link' || m.url)).sort((a, b) => a.ts - b.ts);
+    if (S.modal && S.modal.type === 'vgshow') renderModal();
+  }, () => { S.vgm = []; if (S.modal && S.modal.type === 'vgshow') renderModal(); });
+}
+function vgmStop() { if (vgmSub) { try { vgmSub(); } catch (e) {} } vgmSub = null; vgmGid = ''; S.vgm = null; vgLbClose(); }
+
+/* Links: YouTube, Twitch-Clips und Streamable werden direkt eingebettet */
+function vgmEmbed(url) {
+  let m;
+  try {
+    const u = new URL(url), h = u.hostname.replace(/^www\.|^m\./, '');
+    if (h === 'youtu.be' && (m = /^\/([\w-]{11})/.exec(u.pathname))) return {src:`https://www.youtube-nocookie.com/embed/${m[1]}`, name:'YouTube'};
+    if (h === 'youtube.com' || h === 'music.youtube.com') {
+      const v = u.searchParams.get('v') || ((m = /^\/(?:shorts|embed|live)\/([\w-]{11})/.exec(u.pathname)) && m[1]);
+      if (v && /^[\w-]{11}$/.test(v)) return {src:`https://www.youtube-nocookie.com/embed/${v}`, name:'YouTube', tall:/^\/shorts\//.test(u.pathname)};
+    }
+    const par = 'parent=' + encodeURIComponent(location.hostname || 'localhost');
+    if (h === 'clips.twitch.tv' && (m = /^\/([\w-]+)/.exec(u.pathname))) return {src:`https://clips.twitch.tv/embed?clip=${m[1]}&${par}`, name:'Twitch'};
+    if (h === 'twitch.tv' && (m = /^\/[\w]+\/clip\/([\w-]+)/.exec(u.pathname))) return {src:`https://clips.twitch.tv/embed?clip=${m[1]}&${par}`, name:'Twitch'};
+    if (h === 'streamable.com' && (m = /^\/(?:e\/)?(\w+)/.exec(u.pathname))) return {src:`https://streamable.com/e/${m[1]}`, name:'Streamable'};
+    return {src:'', name:h};
+  } catch (e) { return {src:'', name:'Link'}; }
+}
+function vgmHTML(g, can) {
+  if (!S.vgm) return `<div class="vgm-sec"><div class="vgm-head"><b>Screenshots und Clips</b></div><p class="m-text">Lädt …</p></div>`;
+  const shots = S.vgm.filter(m => m.k === 'shot'), clips = S.vgm.filter(m => m.k !== 'shot');
+  if (!shots.length && !clips.length && !can) return '';
+  const del = m => can ? `<button class="vgm-x" type="button" data-act="vgm-del" data-id="${esc(m.id)}" aria-label="Entfernen">×</button>` : '';
+  const clipHTML = m => {
+    if (m.k === 'link') {
+      const e = vgmEmbed(m.url);
+      return `<div class="vgm-clip ${e.tall ? 'tall' : ''}">${e.src ? `<iframe src="${esc(e.src)}" title="Clip" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`
+        : `<a class="vgm-link" href="${esc(m.url)}" target="_blank" rel="noopener noreferrer">🎬 Clip ansehen <small>${esc(e.name)}</small></a>`}${del(m)}</div>`;
+    }
+    const url = vgmBlob[m.id];
+    return `<div class="vgm-clip">${url ? `<video src="${url}" controls playsinline autoplay ${m.img ? `poster="${m.img}"` : ''}></video>`
+      : `<button class="vgm-play" type="button" data-act="vgm-play" data-id="${esc(m.id)}" ${vgmBusy === m.id ? 'disabled' : ''}>${m.img ? `<img src="${m.img}" alt="">` : ''}<span class="vgm-pbtn">${vgmBusy === m.id ? '…' : '▶'}</span>${m.dur ? `<span class="vgm-dur">${Math.round(m.dur)} s</span>` : ''}</button>`}${del(m)}</div>`;
+  };
+  return `<div class="vgm-sec">
+    <div class="vgm-head"><b>Screenshots und Clips</b>${shots.length + clips.length ? `<small>📷 ${shots.length} · 🎬 ${clips.length}</small>` : ''}</div>
+    ${clips.length ? `<div class="vgm-clips">${clips.map(clipHTML).join('')}</div>` : ''}
+    ${shots.length ? `<div class="vgm-shots">${shots.map((m, i) => `<div class="vgm-shot"><button type="button" data-act="vgm-open" data-i="${i}"><img src="${m.img}" alt="Screenshot ${i + 1}" loading="lazy"></button>${del(m)}</div>`).join('')}</div>` : ''}
+    ${!shots.length && !clips.length ? '<p class="m-text">Noch keine Screenshots oder Clips.</p>' : ''}
+    ${can ? `<div class="vgm-add">
+      <label class="btn btn-sm ${shots.length >= VGM_SHOTS || vgmBusy ? 'is-off' : ''}" for="vgm-shot">📷 Screenshots</label><input type="file" id="vgm-shot" accept="image/*" multiple hidden ${shots.length >= VGM_SHOTS || vgmBusy ? 'disabled' : ''}>
+      <label class="btn btn-sm ${clips.length >= VGM_CLIPS || vgmBusy ? 'is-off' : ''}" for="vgm-clip">🎬 Clip hochladen</label><input type="file" id="vgm-clip" accept="video/*" hidden ${clips.length >= VGM_CLIPS || vgmBusy ? 'disabled' : ''}>
+      <button class="btn btn-sm btn-ghost" type="button" data-act="vgm-linkopen" ${clips.length >= VGM_CLIPS || vgmBusy ? 'disabled' : ''}>🔗 Clip-Link</button>
+    </div>
+    ${D.vgmLink != null ? `<form class="vgm-linkform" data-form="vgm-link"><input class="input" id="vgm-url" data-draft="vgmLink" value="${esc(D.vgmLink)}" placeholder="YouTube-, Twitch- oder Streamable-Link" inputmode="url" autocomplete="off" data-autofocus><button class="btn btn-sm btn-gold" type="submit">Hinzufügen</button></form>` : ''}
+    ${vgmBusy === 'up' ? `<p class="vgm-prog" id="vgm-prog">${esc(D.vgmProg || 'Lädt hoch …')}</p>` : ''}
+    <small class="muted">Bis zu ${VGM_SHOTS} Screenshots und ${VGM_CLIPS} Clips. Hochgeladene Clips höchstens ${VGM_SECS} Sekunden, sie werden dafür verkleinert.</small>` : ''}
+  </div>`;
+}
+/* Selbst aufgenommene WebM-Clips kennen ihre Länge nicht: einmal ans Ende springen, dann klappt die Zeitleiste */
+document.addEventListener('loadedmetadata', e => {
+  const v = e.target;
+  if (!v || v.tagName !== 'VIDEO' || !v.closest || !v.closest('.vgm-clip') || isFinite(v.duration)) return;
+  const back = () => { v.removeEventListener('timeupdate', back); v.currentTime = 0; };
+  v.addEventListener('timeupdate', back); v.currentTime = 1e101;
+}, true);
+/* Großansicht für Screenshots */
+let vgLbI = -1;
+function vgLbOpen(i) { vgLbI = i; vgLbDraw(); }
+function vgLbClose() { vgLbI = -1; const el = document.getElementById('vg-lb'); if (el) el.remove(); }
+function vgLbDraw() {
+  const shots = (S.vgm || []).filter(m => m.k === 'shot');
+  if (vgLbI < 0 || !shots.length) { vgLbClose(); return; }
+  vgLbI = (vgLbI + shots.length) % shots.length;
+  let el = document.getElementById('vg-lb');
+  if (!el) { el = document.createElement('div'); el.id = 'vg-lb'; el.className = 'vg-lb'; el.addEventListener('click', e => { if (e.target === el) vgLbClose(); }); document.body.appendChild(el); }
+  el.innerHTML = H(`<img src="${shots[vgLbI].img}" alt="Screenshot ${vgLbI + 1}">
+    <button class="vg-lb-x" type="button" data-act="vg-lb" data-d="x" aria-label="Schließen">×</button>
+    ${shots.length > 1 ? `<button class="vg-lb-n p" type="button" data-act="vg-lb" data-d="-1" aria-label="Vorheriges Bild">‹</button><button class="vg-lb-n n" type="button" data-act="vg-lb" data-d="1" aria-label="Nächstes Bild">›</button><span class="vg-lb-c">${vgLbI + 1} / ${shots.length}</span>` : ''}`);
+}
+document.addEventListener('keydown', e => {
+  if (vgLbI < 0) return;
+  if (e.key === 'Escape') { vgLbClose(); e.stopPropagation(); }
+  else if (e.key === 'ArrowRight') { vgLbI++; vgLbDraw(); }
+  else if (e.key === 'ArrowLeft') { vgLbI--; vgLbDraw(); }
+}, true);
+
+/* Bilder und Clips vorbereiten */
+const vgmLoad = file => new Promise((res, rej) => { const u = URL.createObjectURL(file), i = new Image(); i.onload = () => res({i, u}); i.onerror = () => { URL.revokeObjectURL(u); rej(new Error('img')); }; i.src = u; });
+function vgmCanvas(src, w0, h0, max) {
+  const sc = Math.min(1, max / Math.max(w0, h0)), w = Math.max(1, Math.round(w0 * sc)), h = Math.max(1, Math.round(h0 * sc));
+  const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(src, 0, 0, w, h); return c;
+}
+function vgmEncode(c, limit, q0) {
+  for (const q of [q0, q0 - .1, q0 - .2, q0 - .3]) {
+    let out = c.toDataURL('image/webp', q);
+    if (!/^data:image\/webp/.test(out)) out = c.toDataURL('image/jpeg', q);
+    if (out.length < limit) return out;
+  }
+  return '';
+}
+async function toShot(file) {
+  const {i, u} = await vgmLoad(file);
+  try {
+    for (const max of [1600, 1280, 1000, 760]) { const out = vgmEncode(vgmCanvas(i, i.naturalWidth, i.naturalHeight, max), 560000, .82); if (out) return out; }
+    throw new Error('big');
+  } finally { URL.revokeObjectURL(u); }
+}
+const vgmB64 = blob => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = rej; r.readAsDataURL(blob); });
+function vgmProg(t) { D.vgmProg = t; const el = document.getElementById('vgm-prog'); if (el) el.textContent = tx(t); }
+async function vgmVideo(file) {
+  const v = document.createElement('video');
+  v.playsInline = true; v.preload = 'auto'; v.src = URL.createObjectURL(file);
+  // Manche Handys spielen Videos nur ab, wenn sie im Dokument hängen
+  v.style.cssText = 'position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none';
+  document.body.appendChild(v);
+  await new Promise((res, rej) => { v.onloadedmetadata = res; v.onerror = () => rej(new Error('video')); setTimeout(() => rej(new Error('video')), 15000); });
+  if (!isFinite(v.duration) || v.duration <= 0) { await new Promise(r => { v.currentTime = 1e7; v.ondurationchange = r; setTimeout(r, 1500); }); }
+  return v;
+}
+/* Vorschaubild aus der Mitte des Clips */
+async function vgmPoster(v) {
+  try {
+    await new Promise(r => { v.onseeked = r; v.currentTime = Math.min(v.duration * 0.3, 3) || 0.1; setTimeout(r, 2500); });
+    return vgmEncode(vgmCanvas(v, v.videoWidth, v.videoHeight, 480), 70000, .72);
+  } catch (e) { return ''; }
+}
+/* Zu große Clips im Browser neu aufnehmen: kleiner und mit weniger Datenrate (läuft so lange wie der Clip) */
+async function vgmShrink(v) {
+  if (typeof MediaRecorder === 'undefined' || !HTMLCanvasElement.prototype.captureStream) throw new Error('norec');
+  const types = ['video/mp4;codecs=avc1,mp4a', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'];
+  const type = types.find(t => { try { return MediaRecorder.isTypeSupported(t); } catch (e) { return false; } });
+  if (!type) throw new Error('norec');
+  const dur = v.duration, sc = Math.min(1, 640 / Math.max(v.videoWidth, v.videoHeight));
+  const c = document.createElement('canvas'); c.width = Math.round(v.videoWidth * sc / 2) * 2; c.height = Math.round(v.videoHeight * sc / 2) * 2;
+  const x = c.getContext('2d'), stream = c.captureStream(30);
+  let ac = null;
+  try {
+    ac = new (window.AudioContext || window.webkitAudioContext)();
+    const dest = ac.createMediaStreamDestination(); ac.createMediaElementSource(v).connect(dest);
+    dest.stream.getAudioTracks().forEach(t => stream.addTrack(t));
+    if (ac.state === 'suspended') await ac.resume();
+  } catch (e) { ac = null; }
+  const vbr = Math.max(250000, Math.min(900000, Math.floor((VGM_MAXB * 8 * 0.85) / dur) - 64000));
+  const rec = new MediaRecorder(stream, {mimeType:type, videoBitsPerSecond:vbr, audioBitsPerSecond:64000});
+  const parts = [];
+  rec.ondataavailable = e => { if (e.data && e.data.size) parts.push(e.data); };
+  v.currentTime = 0; v.muted = !ac; v.volume = 1;
+  await new Promise(r => { v.onseeked = r; setTimeout(r, 1500); });
+  let raf = 0;
+  const draw = () => { x.drawImage(v, 0, 0, c.width, c.height); vgmProg(`Clip wird verkleinert … ${Math.min(99, Math.round(v.currentTime / dur * 100))} %`); if (!v.ended && !v.paused) raf = requestAnimationFrame(draw); };
+  const done = new Promise(r => { rec.onstop = r; });
+  rec.start(1000);
+  try { await v.play(); } catch (e) { v.muted = true; await v.play(); }
+  draw();
+  await new Promise(r => { v.onended = r; v.onpause = () => { if (v.currentTime >= dur - 0.2) r(); }; });
+  cancelAnimationFrame(raf); rec.stop(); await done;
+  if (ac) try { ac.close(); } catch (e) {}
+  return new Blob(parts, {type:type.split(';')[0]});
+}
+async function vgmClipFile(g, file) {
+  let v = null;
+  try {
+    vgmBusy = 'up'; vgmProg('Clip wird geladen …'); renderModal();
+    v = await vgmVideo(file);
+    if (v.duration > VGM_SECS + 0.5) { toast(`Der Clip ist zu lang. Höchstens ${VGM_SECS} Sekunden.`); return; }
+    const poster = await vgmPoster(v);
+    let blob = file, mime = file.type || 'video/mp4';
+    const playable = mime && v.canPlayType(mime) !== '';
+    if (file.size > 2500000 || !playable) { blob = await vgmShrink(v); mime = blob.type || 'video/webm'; }
+    if (blob.size > VGM_MAXB) { toast('Der Clip ist auch verkleinert noch zu groß. Nimm einen kürzeren Clip.'); return; }
+    vgmProg('Clip wird hochgeladen …');
+    const b64 = await vgmB64(blob), n = Math.ceil(b64.length / (VGM_PART * 4 / 3)), size = Math.ceil(b64.length / n);
+    const mid = uid(), ts = Date.now();
+    // Erst die Teile (je Schreibvorgang höchstens 2), dann den Eintrag, damit niemand einen halben Clip sieht
+    for (let i = 0; i < n; i += 2) {
+      await vgCommit(g.pid, b => { for (let k = i; k < Math.min(n, i + 2); k++) b.set(db.collection('vgp').doc(mid + '_' + k), {mid, gid:g.id, pid:g.pid, i:k, d:b64.slice(k * size, (k + 1) * size), ts}); });
+      vgmProg(`Clip wird hochgeladen … ${Math.round(Math.min(n, i + 2) / n * 100)} %`);
+    }
+    await vgCommit(g.pid, b => {
+      b.set(db.collection('vgm').doc(mid), {gid:g.id, pid:g.pid, k:'clip', img:poster || '', cnt:n, mime:str(mime, 40), dur:Math.round(v.duration * 10) / 10, ts});
+      b.update(db.collection('vg').doc(g.id), {mv:vgmCount('clip') + 1});
+    });
+    toast('Clip hinzugefügt.');
+  } catch (e) {
+    if (e && e.message === 'video') toast('Den Clip kann dieses Gerät nicht öffnen. Versuch MP4.');
+    else if (e && e.message === 'norec') toast('Der Clip ist zu groß, und dieses Gerät kann ihn nicht verkleinern. Nimm einen kürzeren Clip oder einen Link.');
+    else vgErr(e);
+  } finally {
+    if (v) { try { v.pause(); URL.revokeObjectURL(v.src); v.remove(); } catch (e) {} }
+    vgmBusy = ''; D.vgmProg = ''; renderModal();
+  }
+}
+const vgmCount = k => (S.vgm || []).filter(m => (k === 'clip' ? m.k !== 'shot' : m.k === 'shot')).length;
+async function vgmShots(g, files) {
+  const room = VGM_SHOTS - vgmCount('shot');
+  if (room <= 0) { toast(`Höchstens ${VGM_SHOTS} Screenshots pro Spiel.`); return; }
+  if (files.length > room) toast(`Nur noch ${room} Screenshots möglich. Die ersten ${room} werden genommen.`);
+  vgmBusy = 'up'; vgmProg('Screenshots werden hochgeladen …'); renderModal();
+  let ok = 0;
+  const base = vgmCount('shot');
+  try {
+    for (const f of files.slice(0, room)) {
+      let img = '';
+      try { img = await toShot(f); } catch (e) { toast('Ein Bild ließ sich nicht öffnen. Versuch ein JPG oder PNG.'); continue; }
+      const ts = Date.now();
+      await vgCommit(g.pid, b => {
+        b.set(db.collection('vgm').doc(uid()), {gid:g.id, pid:g.pid, k:'shot', img, ts});
+        b.update(db.collection('vg').doc(g.id), {ms:base + ok + 1});
+      });
+      ok++; vgmProg(`Screenshots werden hochgeladen … ${ok} / ${Math.min(files.length, room)}`);
+    }
+    if (ok) toast(ok === 1 ? 'Screenshot hinzugefügt.' : `${ok} Screenshots hinzugefügt.`);
+  } catch (e) { vgErr(e); }
+  finally { vgmBusy = ''; D.vgmProg = ''; renderModal(); }
+}
+async function vgmPlay(id) {
+  const m = (S.vgm || []).find(x => x.id === id); if (!m || vgmBlob[id]) return;
+  vgmBusy = id; renderModal();
+  try {
+    const sn = await db.collection('vgp').where('mid', '==', id).get();
+    const parts = sn.docs.map(d => d.data()).sort((a, b) => a.i - b.i);
+    if (!parts.length || parts.length < m.cnt) throw new Error('parts');
+    const bin = atob(parts.map(p => p.d || '').join('')), u8 = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    vgmBlob[id] = URL.createObjectURL(new Blob([u8], {type:m.mime || 'video/mp4'}));
+  } catch (e) { toast('Der Clip ließ sich nicht laden.'); }
+  finally { vgmBusy = ''; renderModal(); }
+}
+/* Löschen: Eintrag, Teile und Zähler in einem Rutsch; ein ganzes Spiel nimmt seine Medien mit */
+async function vgmDeleteRefs(pid, refs, extra) {
+  const n = Math.max(1, Math.ceil(refs.length / 300));
+  for (let j = 0; j < n; j++) {
+    const chunk = refs.slice(j * 300, (j + 1) * 300);
+    await vgCommit(pid, b => { chunk.forEach(r => b.delete(r)); if (j === n - 1 && extra) extra(b); });
+  }
+}
+async function vgmDelete(m, list) {
+  const g = m && (S.vg || []).find(x => x.id === m.gid); if (!g) return;
+  const left = k => list.filter(x => x.id !== m.id && (k === 'clip' ? x.k !== 'shot' : x.k === 'shot')).length;
+  try {
+    const refs = [db.collection('vgm').doc(m.id)];
+    if (m.k === 'clip') (await db.collection('vgp').where('mid', '==', m.id).get()).docs.forEach(d => refs.push(d.ref));
+    await vgmDeleteRefs(g.pid, refs, b => b.update(db.collection('vg').doc(g.id), m.k === 'shot' ? {ms:left('shot')} : {mv:left('clip')}));
+    toast('Entfernt.');
+  } catch (e) { vgErr(e); }
+}
+async function vgDeleteGame(g) {
+  const refs = [];
+  for (const c of ['vgm', 'vgp']) { try { (await db.collection(c).where('gid', '==', g.id).get()).docs.forEach(d => refs.push(d.ref)); } catch (e) {} }
+  // Medien zuerst, das Spiel selbst zuletzt
+  await vgmDeleteRefs(g.pid, refs, b => b.delete(db.collection('vg').doc(g.id)));
+}
+const vgmActions = {
+  'vgm-open': b => vgLbOpen(Number(b.dataset.i) || 0),
+  'vg-lb': b => { if (b.dataset.d === 'x') vgLbClose(); else { vgLbI += Number(b.dataset.d); vgLbDraw(); } },
+  'vgm-play': b => vgmPlay(b.dataset.id),
+  'vgm-linkopen': () => { D.vgmLink = D.vgmLink == null ? '' : null; renderModal(); },
+  'vgm-del': b => {
+    const m = (S.vgm || []).find(x => x.id === b.dataset.id); if (!m) return;
+    const back = {...S.modal}, list = (S.vgm || []).slice();
+    confirmBox(m.k === 'shot' ? 'Screenshot entfernen?' : 'Clip entfernen?', 'Das lässt sich nicht rückgängig machen.', [
+      {label:'Abbrechen', cls:'btn-ghost', fn:() => openModal(back)},
+      {label:'Entfernen', cls:'btn-gold', fn:async () => { openModal(back); await vgmDelete(m, list); }}]);
+  }
+};
+async function vgmLinkSubmit() {
+  const g = (S.vg || []).find(x => S.modal && x.id === S.modal.id); if (!g) return;
+  let url = str(D.vgmLink, 300);
+  if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
+  url = url.replace(/^http:/i, 'https:');
+  if (!/^https:\/\/[^\s"'<>]{4,300}$/.test(url)) { toast('Füg einen gültigen Link ein, zum Beispiel von YouTube.'); return; }
+  if (vgmCount('clip') >= VGM_CLIPS) { toast(`Höchstens ${VGM_CLIPS} Clips pro Spiel.`); return; }
+  try {
+    await vgCommit(g.pid, b => { b.set(db.collection('vgm').doc(uid()), {gid:g.id, pid:g.pid, k:'link', url, ts:Date.now()}); b.update(db.collection('vg').doc(g.id), {mv:vgmCount('clip') + 1}); });
+    D.vgmLink = null; renderModal(); toast('Clip hinzugefügt.');
+  } catch (e) { vgErr(e); }
+}
+/* ---------- Videogames Medien ENDE ---------- */
 
 /* ---------- Spieleliste: welche Spiele im Turnier vorkommen können, für alle sichtbar ---------- */
 const G_STATUS = [['geplant', 'Geplant', '#ffcf3f'], ['vielleicht', 'Vielleicht', '#39d6f2'], ['vorschlag', 'Vorschlag', '#c493ff'], ['gespielt', 'Gespielt', '#4ff08f'], ['raus', 'Fällt raus', '#ff4f6d']];
@@ -7868,7 +8207,7 @@ function sfx(n) {
 /* ---------- Modals ---------- */
 let confirmFns = [];
 function openModal(m) { S.modal = m; renderModal(); setTimeout(() => { const f = $('#modal-root [data-autofocus]') || $('#modal-root .modal button'); if (f) f.focus(); }, 30); }
-function closeModal() { S.modal = null; D.ep = null; $('#modal-root').innerHTML = ''; }
+function closeModal() { S.modal = null; D.ep = null; $('#modal-root').innerHTML = ''; if (typeof vgmStop === 'function') { vgmStop(); D.vgmLink = null; } }
 function renderModal() {
   const m = S.modal; const root = $('#modal-root');
   if (!m) { root.innerHTML = ''; return; }
@@ -8169,7 +8508,7 @@ const actions = {
   'quiz-again': () => { const base = clone(S.quiz); withPending(() => quizStart(base)); },
   'quiz-new': () => withPending(() => quizDiscard())
 };
-Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions);
+Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
   if (e.target.classList && e.target.classList.contains('scrim')) { closeModal(); return; }
@@ -8197,6 +8536,13 @@ document.addEventListener('input', e => {
 document.addEventListener('change', async e => {
   const t = e.target;
   if (t.dataset && t.dataset.kopt) { const c = kNormCfg(D.kcfg || K_DEF_CFG); c[t.dataset.kopt] = t.checked; D.kcfg = c; render(); return; }
+  if (t.id === 'vgm-shot' || t.id === 'vgm-clip') {
+    const files = t.files ? Array.from(t.files) : []; t.value = '';
+    const g = S.modal && S.modal.type === 'vgshow' && (S.vg || []).find(x => x.id === S.modal.id);
+    if (!files.length || !g || vgmBusy) return;
+    if (t.id === 'vgm-shot') vgmShots(g, files); else vgmClipFile(g, files[0]);
+    return;
+  }
   if (t.id === 'vg-file') { const f = t.files && t.files[0]; t.value = ''; if (!f || !D.vgF) return; try { D.vgF.img = await toVgCover(f); renderModal(); } catch (err) { toast('Das Bild ließ sich nicht öffnen. Versuch ein JPG oder PNG.'); } return; }
   if (t.id === 'music-file') { const f = t.files && t.files[0]; t.value = ''; if (f) saveMusicFile(f); return; }
   if (t.id === 'music-auto') { music.auto = t.checked; lsSet('turnier-music-auto', music.auto ? '1' : '0'); syncMusic(); return; }
@@ -8303,6 +8649,8 @@ document.addEventListener('submit', e => {
     createGuestPlayer();
   } else if (f === 'vg-save') {
     vgSave();
+  } else if (f === 'vgm-link') {
+    vgmLinkSubmit();
   } else if (f === 'tk-add') {
     const tk = tkCopy();
     const text = str(D.tk.text, 160), img = tickImg(D.tk.img);
