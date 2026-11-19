@@ -110,6 +110,10 @@ Ganz oben in **Optionen** gibt es die Karte **„🏆 Turnier“** mit vier Stuf
 
 „Wartebildschirm ansehen“ zeigt dem Spielleiter den Bildschirm so, wie ihn die Spieler sehen. Die Laufschrift-Meldung „Heute im Studio“ gibt es nicht mehr.
 
+## Designs
+
+In **Optionen → 🎨 Design** wählt der Spielleiter das Design der Webseite für alle: **Arcade (Pixel)** oder **Neon-Glas** (Standard). Neues Design: Eintrag in `DESIGNS` (index.html) und ein CSS-Block mit `html[data-design="id"]`.
+
 ## Private Räume
 
 Der Host kann seinen Raum in der Raum-Leiste mit **„🔓 Öffentlich“ / „🔒 Privat“** umschalten. Bei „Privat“ lädt er über **„💌 Einladen“** Spieler ein (wer schon im Raum ist, ist automatisch eingeladen). Alle anderen sehen den Raum mit 🔒 und können weder beitreten noch zuschauen; Eingeladene sehen „Du bist eingeladen“. Wer rausgeworfen wird, verliert seine Einladung. Verlässt der Letzte den Raum oder ist der Host 10 Minuten weg, ist der Raum wieder offen. Die Firestore-Regeln prüfen das ebenfalls (nach dem Veröffentlichen der Regeln).

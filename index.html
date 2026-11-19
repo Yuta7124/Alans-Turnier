@@ -12,6 +12,7 @@
 <meta property="og:description" content="Turnier, Minispiele und Spieler-Profile. Klick auf den Link und du bist direkt dabei.">
 <meta property="og:image" content="https://yuta7124.github.io/Alans-Turnier/og.png">
 <meta name="twitter:card" content="summary_large_image">
+<script>try{document.documentElement.dataset.design=localStorage.getItem('turnier-design')||'neon'}catch(e){document.documentElement.dataset.design='neon'}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Unbounded:wght@600;800&family=Pixelify+Sans:wght@500;700&family=Press+Start+2P&family=Bungee&family=Orbitron:wght@700;900&family=Permanent+Marker&family=Bangers&family=Pacifico&family=Russo+One&family=Creepster&display=swap" rel="stylesheet">
@@ -1036,6 +1037,11 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .onair.off i{background:#5b5576;box-shadow:none;animation:none}
 .tv-title.is-none{font-size:clamp(40px,6vw,84px);animation:none}
 .ts-card .ts-edit{margin-top:4px}
+.design-picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.design-pick{position:relative;text-align:left;align-items:flex-start}
+.design-pick[aria-pressed="true"]{outline:2px solid var(--coin);outline-offset:2px}
+.design-sw{display:flex;gap:4px}.design-sw i{width:26px;height:26px;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+.design-pick em{font-style:normal;font-size:12px;font-weight:700;color:var(--coin)}
 .tour-tvbtns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:10px}
 @media (max-width:560px){.gate.gate-inline{min-height:calc(100vh - 170px);padding:80px 14px 96px}.gate-inline .ticker{bottom:14px}.gate-inline .tv-top{top:12px;left:12px;right:12px}.gate-inline .tv-sub{font-size:16px}}
 .tour-editbar{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;margin:0 4px 16px;padding:10px 14px;background:rgba(255,207,63,.1);box-shadow:inset 3px 0 0 var(--coin);font-weight:700;font-size:14px}
@@ -2233,54 +2239,54 @@ body.locked #bgm-root{bottom:96px}
 .est-done .est-ends{margin-top:-6px}
 .qform .est-fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
 
-/* ===== Redesign „Neon-Glas“ (Nov 2026): dunkles Glas, weiche Ecken, Neon-Verläufe. Liegt über dem Pixel-Grundstil. ===== */
-:root{--bg:#07060f;--bg-2:#100c22;--panel:rgba(24,19,48,.78);--panel-2:#2a2152;--edge:rgba(160,130,255,.26);--muted:#aaa3d4;--shadow:#04030a;
+/* ===== Redesign „Neon-Glas“ (Nov 2026): dunkles Glas, weiche Ecken, Neon-Verläufe. Liegt über dem Pixel-Grundstil, aktiv mit html[data-design="neon"]. Neue Designs: eigener Block mit html[data-design="…"] und Eintrag in DESIGNS. ===== */
+html[data-design="neon"]{--bg:#07060f;--bg-2:#100c22;--panel:rgba(24,19,48,.78);--panel-2:#2a2152;--edge:rgba(160,130,255,.26);--muted:#aaa3d4;--shadow:#04030a;
   --head:"Unbounded","Pixelify Sans",system-ui,sans-serif;--r:18px;--neon:linear-gradient(90deg,#ff4f6d,#ffcf3f 50%,#39d6f2)}
-body{background:
+html[data-design="neon"] body{background:
   radial-gradient(900px 600px at 0% -10%,rgba(124,77,255,.28),transparent 65%),
   radial-gradient(800px 520px at 100% 0%,rgba(57,214,242,.18),transparent 65%),
   radial-gradient(900px 700px at 70% 110%,rgba(255,79,109,.16),transparent 65%),
   linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px) 0 0/32px 32px,
   linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px) 0 0/32px 32px,var(--bg);background-attachment:fixed}
-header.top{background:rgba(9,7,20,.72);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 10px 30px -12px rgba(0,0,0,.8)}
-header.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--neon);opacity:.85;box-shadow:0 0 14px rgba(255,120,140,.5)}
-.brand b{font-family:var(--head);font-weight:800;letter-spacing:.01em;text-shadow:none;background:linear-gradient(180deg,#fff 30%,#c9bfff);-webkit-background-clip:text;background-clip:text;color:transparent}
-.tab{border-radius:999px;transition:color .15s,background .15s}
-.tab[aria-selected="true"]{background:rgba(255,207,63,.12);text-shadow:0 0 12px rgba(255,207,63,.55);box-shadow:inset 0 0 0 1px rgba(255,207,63,.35)}
-.tab[aria-selected="true"]::before{content:none}
-.px,.card,.stage,.board,.feed,.pcard,.qcard,.turn,.modal,.vault{border-radius:var(--r);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,0) 40%),var(--panel);
+html[data-design="neon"] header.top{background:rgba(9,7,20,.72);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 10px 30px -12px rgba(0,0,0,.8)}
+html[data-design="neon"] header.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--neon);opacity:.85;box-shadow:0 0 14px rgba(255,120,140,.5)}
+html[data-design="neon"] .brand b{font-family:var(--head);font-weight:800;letter-spacing:.01em;text-shadow:none;background:linear-gradient(180deg,#fff 30%,#c9bfff);-webkit-background-clip:text;background-clip:text;color:transparent}
+html[data-design="neon"] .tab{border-radius:999px;transition:color .15s,background .15s}
+html[data-design="neon"] .tab[aria-selected="true"]{background:rgba(255,207,63,.12);text-shadow:0 0 12px rgba(255,207,63,.55);box-shadow:inset 0 0 0 1px rgba(255,207,63,.35)}
+html[data-design="neon"] .tab[aria-selected="true"]::before{content:none}
+html[data-design="neon"] .px,html[data-design="neon"] .card,html[data-design="neon"] .stage,html[data-design="neon"] .board,html[data-design="neon"] .feed,html[data-design="neon"] .pcard,html[data-design="neon"] .qcard,html[data-design="neon"] .turn,html[data-design="neon"] .modal,html[data-design="neon"] .vault{border-radius:var(--r);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,0) 40%),var(--panel);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px var(--e),inset 0 1px 0 rgba(255,255,255,.08),0 22px 44px -22px rgba(0,0,0,.85)}
-.modal{border-radius:22px;background:#151030}
-h2.h{font-family:var(--head);font-weight:800;font-size:30px;letter-spacing:0;text-shadow:0 0 22px rgba(124,77,255,.45)}
-h2.h::before{width:6px;height:28px;border-radius:6px;background:linear-gradient(180deg,#ffcf3f,#ff4f6d);box-shadow:0 0 14px rgba(255,79,109,.6)}
-.card h3{font-family:var(--head);font-weight:800;font-size:22px;text-shadow:none}
-.btn{border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0)),var(--f);
+html[data-design="neon"] .modal{border-radius:22px;background:#151030}
+html[data-design="neon"] h2.h{font-family:var(--head);font-weight:800;font-size:30px;letter-spacing:0;text-shadow:0 0 22px rgba(124,77,255,.45)}
+html[data-design="neon"] h2.h::before{width:6px;height:28px;border-radius:6px;background:linear-gradient(180deg,#ffcf3f,#ff4f6d);box-shadow:0 0 14px rgba(255,79,109,.6)}
+html[data-design="neon"] .card h3{font-family:var(--head);font-weight:800;font-size:22px;text-shadow:none}
+html[data-design="neon"] .btn{border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0)),var(--f);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),inset 0 -3px 0 rgba(0,0,0,.28),0 8px 20px -10px rgba(0,0,0,.9)}
-.btn:active{transform:translateY(2px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.28)}
-.btn:hover{filter:brightness(1.12)}
-.btn-gold{background:linear-gradient(180deg,#ffe58a,#ffbf2e 55%,#f59e0b);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),inset 0 -3px 0 rgba(120,60,0,.35),0 8px 24px -8px rgba(255,191,46,.7)}
-.btn-ghost{background:rgba(255,255,255,.03);box-shadow:inset 0 0 0 1px var(--edge)}
-.btn-ghost:hover{box-shadow:inset 0 0 0 1px rgba(255,207,63,.6)}
-.chip{border-radius:999px;box-shadow:inset 0 0 0 1px var(--edge)}
-.chip[aria-pressed="true"]{box-shadow:inset 0 0 0 1px var(--coin),0 0 14px -4px rgba(255,207,63,.7)}
-.pill{border-radius:999px;box-shadow:inset 0 0 0 1px var(--edge)}
-.input{border-radius:12px;background:rgba(5,4,14,.7);box-shadow:inset 0 0 0 1px var(--edge)}
-.input:focus{box-shadow:inset 0 0 0 1px var(--coin),0 0 0 4px rgba(255,207,63,.15)}
-.hub-btn{border-radius:16px;background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,0)),var(--panel);box-shadow:inset 0 0 0 1px var(--edge),0 14px 30px -18px rgba(0,0,0,.9);transition:transform .15s,box-shadow .15s}
-.hub-btn:hover{transform:translateY(-2px)}
-.hub-btn[aria-pressed="true"]{box-shadow:inset 0 0 0 1px var(--coin),0 0 24px -6px rgba(255,207,63,.55)}
-.hub-txt b{font-family:var(--head);font-weight:800;font-size:19px}
-.av{border-radius:30%;box-shadow:0 0 0 2px rgba(255,255,255,.12)}
-.room-card.mine{box-shadow:inset 0 0 0 1px var(--coin),0 0 30px -10px rgba(255,207,63,.6)}
-::selection{background:rgba(255,79,109,.45)}
-*{scrollbar-color:#3a2f6e transparent}
-.start-h{font-family:var(--head);font-weight:800;font-size:22px}
-.start-h::before{width:6px;height:24px;border-radius:6px;box-shadow:0 0 14px var(--tc)}
-.start-hero{border-radius:22px}
-.toast{border-radius:14px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:inset 0 0 0 1px rgba(255,207,63,.5),0 14px 30px -10px rgba(0,0,0,.9)}
-.bgm-btn{border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,207,63,.6),0 10px 24px -10px rgba(0,0,0,.9)}
-.pv-pill{border-radius:999px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-@media (max-width:680px){h2.h{font-size:23px}.brand b{font-size:21px}.tab{border-radius:10px}}
+html[data-design="neon"] .btn:active{transform:translateY(2px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.28)}
+html[data-design="neon"] .btn:hover{filter:brightness(1.12)}
+html[data-design="neon"] .btn-gold{background:linear-gradient(180deg,#ffe58a,#ffbf2e 55%,#f59e0b);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),inset 0 -3px 0 rgba(120,60,0,.35),0 8px 24px -8px rgba(255,191,46,.7)}
+html[data-design="neon"] .btn-ghost{background:rgba(255,255,255,.03);box-shadow:inset 0 0 0 1px var(--edge)}
+html[data-design="neon"] .btn-ghost:hover{box-shadow:inset 0 0 0 1px rgba(255,207,63,.6)}
+html[data-design="neon"] .chip{border-radius:999px;box-shadow:inset 0 0 0 1px var(--edge)}
+html[data-design="neon"] .chip[aria-pressed="true"]{box-shadow:inset 0 0 0 1px var(--coin),0 0 14px -4px rgba(255,207,63,.7)}
+html[data-design="neon"] .pill{border-radius:999px;box-shadow:inset 0 0 0 1px var(--edge)}
+html[data-design="neon"] .input{border-radius:12px;background:rgba(5,4,14,.7);box-shadow:inset 0 0 0 1px var(--edge)}
+html[data-design="neon"] .input:focus{box-shadow:inset 0 0 0 1px var(--coin),0 0 0 4px rgba(255,207,63,.15)}
+html[data-design="neon"] .hub-btn{border-radius:16px;background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,0)),var(--panel);box-shadow:inset 0 0 0 1px var(--edge),0 14px 30px -18px rgba(0,0,0,.9);transition:transform .15s,box-shadow .15s}
+html[data-design="neon"] .hub-btn:hover{transform:translateY(-2px)}
+html[data-design="neon"] .hub-btn[aria-pressed="true"]{box-shadow:inset 0 0 0 1px var(--coin),0 0 24px -6px rgba(255,207,63,.55)}
+html[data-design="neon"] .hub-txt b{font-family:var(--head);font-weight:800;font-size:19px}
+html[data-design="neon"] .av{border-radius:30%;box-shadow:0 0 0 2px rgba(255,255,255,.12)}
+html[data-design="neon"] .room-card.mine{box-shadow:inset 0 0 0 1px var(--coin),0 0 30px -10px rgba(255,207,63,.6)}
+html[data-design="neon"] ::selection{background:rgba(255,79,109,.45)}
+html[data-design="neon"] *{scrollbar-color:#3a2f6e transparent}
+html[data-design="neon"] .start-h{font-family:var(--head);font-weight:800;font-size:22px}
+html[data-design="neon"] .start-h::before{width:6px;height:24px;border-radius:6px;box-shadow:0 0 14px var(--tc)}
+html[data-design="neon"] .start-hero{border-radius:22px}
+html[data-design="neon"] .toast{border-radius:14px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:inset 0 0 0 1px rgba(255,207,63,.5),0 14px 30px -10px rgba(0,0,0,.9)}
+html[data-design="neon"] .bgm-btn{border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,207,63,.6),0 10px 24px -10px rgba(0,0,0,.9)}
+html[data-design="neon"] .pv-pill{border-radius:999px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+@media (max-width:680px){html[data-design="neon"] h2.h{font-size:23px}html[data-design="neon"] .brand b{font-size:21px}html[data-design="neon"] .tab{border-radius:10px}}
 </style>
 </head>
 <body>
@@ -2299,7 +2305,7 @@ h2.h::before{width:6px;height:28px;border-radius:6px;background:linear-gradient(
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=30"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=31"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3539,6 +3545,12 @@ function toast(msg) {
 }
 
 /* ---------- Normalise untrusted shared data ---------- */
+/* Designs der Webseite. Neues Design: hier eintragen und im CSS einen Block mit html[data-design="id"] anlegen.
+   [id, Name, Beschreibung, Vorschau-Farben] */
+const DESIGNS = [
+  ['arcade', 'Arcade (Pixel)', 'Der Original-Look: Pixel-Rahmen, harte Schatten, blinkender Cursor.', ['#0f0b1e', '#1c1537', '#ffcf3f', '#ff4f6d']],
+  ['neon', 'Neon-Glas', 'Dunkles Glas, runde Ecken, Neon-Verläufe und leuchtende Knöpfe.', ['#07060f', '#7c4dff', '#ffcf3f', '#39d6f2']]
+];
 function normSettings(x) {
   x = x || {};
   const hasSplit = Array.isArray(x.split);
@@ -3552,6 +3564,7 @@ function normSettings(x) {
     time: /^\d{2}:\d{2}$/.test(x.time || '') ? x.time : '',
     status: ['none', 'soon', 'plan', 'live'].includes(x.status) ? x.status : (x.date ? 'plan' : 'none'),
     liveAt: Number(x.liveAt) || 0,
+    design: DESIGNS.some(d => d[0] === x.design) ? x.design : 'neon',
     prize, places, mode: x.mode === 'eur' ? 'eur' : 'pct', split, amounts
   };
 }
@@ -3883,7 +3896,17 @@ function patch(el, html) {
     if (n) { n.focus({preventScroll:true}); try { if (ss != null) n.setSelectionRange(ss, se); } catch (e) {} }
   }
 }
+function applyDesign() {
+  const d = (S.settings && S.settings.design) || 'neon', h = document.documentElement;
+  if (h.dataset.design !== d) { h.dataset.design = d; try { localStorage.setItem('turnier-design', d); } catch (e) {} }
+}
+function designCardHTML() {
+  const cur = S.settings.design;
+  return `<div class="card share-card"><h3>🎨 Design</h3><p class="m-text">So sieht die Webseite für alle aus. Du kannst jederzeit wechseln, neue Designs kommen hier dazu.</p>
+    <div class="design-picks">${DESIGNS.map(([id, n, d, c]) => `<button class="pick-big design-pick" type="button" data-act="design-set" data-v="${id}" aria-pressed="${id === cur}"><span class="design-sw" aria-hidden="true">${c.map(x => `<i style="background:${x}"></i>`).join('')}</span><b>${esc(n)}</b><small>${esc(d)}</small>${id === cur ? '<em>✓ Aktiv</em>' : ''}</button>`).join('')}</div></div>`;
+}
 function render() {
+  applyDesign();
   eventSync();
   renderHeader();
   const m = $('#main');
@@ -4329,6 +4352,7 @@ function viewSettings() {
     <div class="sec-head"><h2 class="h">Optionen</h2></div>
     <div class="card share-card ts-card"><h3>🏆 Turnier</h3><p class="m-text">Steht noch kein Turnier an, sehen alle im Turnier-Tab den Wartebildschirm. Hier stellst du ein, was dort steht: kein Turnier geplant, bald, oder ein fester Termin mit Countdown.</p>${tourStatusFormHTML(false)}
       <div class="chips"><button class="btn btn-sm" type="button" data-act="gate-preview">Wartebildschirm ansehen</button></div></div>
+    ${designCardHTML()}
     ${inviteCardHTML()}
     ${fsCardHTML()}
     ${langCardHTML()}
@@ -9629,6 +9653,7 @@ const actions = {
   'gate-open': () => confirmBox('Für alle öffnen?', 'Alle, die gerade warten, sehen einen Countdown und danach gleichzeitig die Seite.', [
       {label:'Abbrechen', cls:'btn-ghost'}, {label:'Jetzt öffnen', cls:'btn-gold', fn:() => ops.saveGate({open:true, openAt:Date.now() + 8000})}]),
   'gate-close': () => { ops.saveGate({open:false, openAt:0}); toast('Geschlossen. Besucher sehen wieder den Ladebildschirm.'); },
+  'design-set': b => { if (!S.admin || b.dataset.v === S.settings.design) return; ops.saveSettings(normSettings({...S.settings, design:b.dataset.v})); },
   'gate-preview': () => { D.tourPeek = true; D.tourEdit = false; setTab('turnier'); },
   'tour-peek-end': () => { D.tourPeek = false; setTab('einstellungen'); },
   'copy-link': () => copyShareLink(),
