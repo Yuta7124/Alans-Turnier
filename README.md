@@ -98,9 +98,13 @@ Das Repository ist öffentlich, aber nur der Programmcode. Die Daten stecken in 
 - **Abmelden** als Spielleiter: ganz unten auf der Seite.
 - Daten aus der alten Claude-Version werden nicht automatisch übernommen. Spieler und eigene Quizfragen trägst du einmal neu ein.
 
+## Turnier-Vorschau
+
+Solange kein Turnier läuft (Status nicht „Läuft gerade“ und kein Turnier heute), zeigt der Tab „Turnier“ allen nur eine ausgegraute **Vorschau** von Highscore, Zufallsrad und Spieleliste mit Hinweis, wann es losgeht (mit Countdown, wenn ein Termin steht). Darin lässt sich nichts anklicken. Der Spielleiter sieht dieselbe Vorschau mit zwei Knöpfen: **„Turnier bearbeiten“** (alles einrichten, die Spieler sehen weiter die Vorschau) und **„Jetzt für alle starten“** (Status „Läuft gerade“, alle können mitmachen).
+
 ## Spieler-Ansicht für den Spielleiter
 
-Unten links gibt es für den Spielleiter den Knopf **„Spieler-Ansicht“**. Damit sieht er die Seite so, wie ein normaler Spieler sie sieht (ohne Admin-Knöpfe, Support als Spieler, Sperrbildschirm vor dem Turnierstart usw.). Ein gelber Streifen oben zeigt, dass die Spieler-Ansicht an ist; „Admin-Ansicht“ schaltet zurück. Angemeldet bleibt man dabei als Spielleiter. In laufenden Spielen ist der Knopf ausgeblendet. Nach dem Neuladen ist wieder die Admin-Ansicht an.
+Unten links gibt es für den Spielleiter den Knopf **„Spieler-Ansicht“**. Damit sieht er die Seite so, wie ein normaler Spieler sie sieht (ohne Admin-Knöpfe, Support als Spieler, Sperrbildschirm vor dem Turnierstart usw.). Ein gelber Streifen oben zeigt, dass die Spieler-Ansicht an ist; „Admin-Ansicht“ schaltet zurück. Es erscheinen dabei keine Hinweis-Meldungen. Angemeldet bleibt man dabei als Spielleiter. In laufenden Spielen ist der Knopf ausgeblendet. Nach dem Neuladen ist wieder die Admin-Ansicht an.
 
 ## Support
 

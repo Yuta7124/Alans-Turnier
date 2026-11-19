@@ -1022,6 +1022,20 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .perm-box h4{margin:0;font-family:var(--display);font-size:18px;text-transform:uppercase}
 .fs-btn{display:grid;place-items:center;flex:none;width:38px;height:38px;margin-left:10px;border:0;background:var(--bg-2);color:var(--ink);cursor:pointer;box-shadow:0 -2px 0 var(--edge),0 2px 0 var(--edge),-2px 0 0 var(--edge),2px 0 0 var(--edge)}
 .fs-btn[hidden]{display:none}
+.tour-prev-head{margin-bottom:0}
+.tour-lockcard{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:18px 22px;align-items:center;padding:20px 22px;margin:0 4px;background:var(--panel);
+  box-shadow:inset 0 4px 0 var(--coin),0 -3px 0 var(--edge),0 3px 0 var(--edge),-3px 0 0 var(--edge),3px 0 0 var(--edge)}
+.tour-lockico{font-size:40px;line-height:1}
+.tour-locktxt h3{margin:4px 0 6px;font-family:var(--display);font-size:24px;text-transform:uppercase}
+.tour-locktxt p{margin:0;color:var(--muted);line-height:1.5}
+.tour-locktxt p b{color:var(--ink)}
+.tour-locktxt .cd-row{margin-top:10px}
+.tour-lockbtns{display:flex;flex-direction:column;gap:8px}
+.tour-prev{position:relative;filter:grayscale(.85) brightness(.7);opacity:.75;pointer-events:none;user-select:none;margin-top:10px}
+.tour-prev-mark{position:absolute;z-index:5;top:120px;left:50%;transform:translateX(-50%) rotate(-12deg);font-family:var(--pixel);font-size:clamp(28px,7vw,64px);color:rgba(255,255,255,.18);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;pointer-events:none}
+.tour-editbar{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;margin:0 4px 16px;padding:10px 14px;background:rgba(255,207,63,.1);box-shadow:inset 3px 0 0 var(--coin);font-weight:700;font-size:14px}
+@media (max-width:700px){.tour-lockcard{grid-template-columns:auto minmax(0,1fr)}.tour-lockbtns{grid-column:1/-1;flex-direction:row;flex-wrap:wrap}.tour-lockico{font-size:30px}.tour-locktxt h3{font-size:19px}}
+@media (max-width:560px){.tour-lockcard{grid-template-columns:minmax(0,1fr);padding:16px}.tour-lockico{font-size:26px}}
 .pv-pill{position:fixed;left:14px;bottom:14px;z-index:45;display:flex;align-items:center;gap:8px;border:0;cursor:pointer;padding:10px 14px;font-family:var(--display);font-size:14px;text-transform:uppercase;color:var(--ink);background:var(--panel);
   box-shadow:0 0 0 3px var(--edge),0 6px 0 3px rgba(0,0,0,.45)}
 .pv-pill span{font-size:18px;line-height:1}
@@ -2228,7 +2242,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=25"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=26"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3834,6 +3848,8 @@ function render() {
   else if (blocked()) html = `<div style="min-height:70vh"></div>`;
   else if (S.tab === 'spiele-pick') html = `<div class="loading">${COIN(48, 'spin')}</div>`;
   else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, support:viewSupport, einstellungen:viewSettings}[S.tab] || viewStart)();
+  if (groupOf(S.tab) === 'turnier' && tourLocked()) html = tourPreviewHTML(html);
+  else if (groupOf(S.tab) === 'turnier' && S.admin && D.tourEdit && !['live', 'today'].includes(tourState().k)) html = `<div class="tour-editbar"><span>✏️ Bearbeitungsmodus: Nur du siehst das so. Für die Spieler ist das Turnier noch gesperrt.</span><button class="btn btn-sm" type="button" data-act="tour-preview">Zur Vorschau</button></div>` + html;
   const oldStand = m.querySelector('.stand');
   const oldKey = oldStand ? oldStand.dataset.key : null;
   const before = standCapture(oldStand);
@@ -4006,6 +4022,35 @@ function tourState() {
   const date = fmtDate(st.date);
   if (!st.time) return {k:now >= at ? 'today' : 'plan', at:0, date};
   return {k:now >= at ? 'live' : 'plan', at, date};
+}
+/* Turnier-Bereich: Solange kein Turnier läuft, sehen alle nur eine ausgegraute Vorschau (nichts anklickbar).
+   Der Spielleiter kann über „Turnier bearbeiten“ trotzdem alles einrichten oder das Turnier für alle freischalten. */
+function tourLocked() {
+  if (S.mode !== 'db') return false;
+  const k = tourState().k;
+  if (k === 'live' || k === 'today') return false;
+  return !(S.admin && D.tourEdit);
+}
+function tourPreviewHTML(inner) {
+  const st = S.settings, ts = tourState();
+  const day = st.date ? new Date(st.date + 'T12:00:00').toLocaleDateString(LOC, {weekday:'long', day:'numeric', month:'long'}) : '';
+  const when = ts.k === 'plan' && day ? `Das Turnier startet am <b>${esc(day)}</b>${st.time ? ` um <b>${esc(st.time)} Uhr</b>` : ''}.` : 'Gerade ist kein Turnier geplant.';
+  return `<section class="section tour-prev-head">
+    <div class="tour-lockcard">
+      <span class="tour-lockico" aria-hidden="true">🔒</span>
+      <div class="tour-locktxt">
+        <span class="eyebrow">Vorschau · ${esc(st.title)}</span>
+        <h3>Das Turnier ist noch nicht gestartet</h3>
+        <p>${when} Bis dahin kannst du dir hier schon ansehen, wie Highscore, Zufallsrad und Spieleliste aussehen. Mitmachen geht, sobald es losgeht.</p>
+        ${ts.at ? `<div class="cd-row" data-cd="${ts.at}">${cdInner(ts.at)}</div>` : ''}
+      </div>
+      ${S.admin ? `<div class="tour-lockbtns">
+        <button class="btn btn-gold" type="button" data-act="tour-edit">✏️ Turnier bearbeiten</button>
+        <button class="btn btn-ghost" type="button" data-act="tour-golive">Jetzt für alle starten</button>
+      </div>` : ''}
+    </div>
+  </section>
+  <div class="tour-prev" inert aria-hidden="true"><span class="tour-prev-mark" aria-hidden="true">Vorschau</span>${inner}</div>`;
 }
 function tourCardHTML() {
   const st = S.settings, ts = tourState(), adm = S.admin;
@@ -9520,6 +9565,13 @@ const actions = {
     fauth.createUserWithEmailAndPassword(mail, pw).then(() => { D.alPw = ''; closeModal(); }, e => toast(authMsg(e && e.code || '', 'Konto anlegen hat nicht geklappt.')));
   },
   'pv-toggle': () => pvToggle(),
+  'tour-edit': () => { if (!S.admin) return; D.tourEdit = true; render(); },
+  'tour-preview': () => { D.tourEdit = false; render(); window.scrollTo({top:0}); },
+  'tour-golive': () => {
+    if (!S.admin) return;
+    confirmBox('Turnier jetzt starten?', 'Alle Spieler können dann Highscore, Zufallsrad und Spieleliste benutzen. Der Status steht bis morgen früh auf „Läuft gerade“.', [{label:'Abbrechen', cls:'btn-ghost'},
+      {label:'Jetzt starten', cls:'btn-gold', fn:() => { const p = berlinParts(Date.now()); ops.saveSettings(normSettings({...S.settings, status:'live', liveAt:Date.now(), date:`${p.year}-${p.month}-${p.day}`, time:''})); D.tourEdit = false; toast('Das Turnier läuft. Alle können jetzt mitmachen.'); }}]);
+  },
   'admin-logout': () => confirmBox('Abmelden?', 'Danach siehst du die Seite wie ein Gast.', [
       {label:'Abbrechen', cls:'btn-ghost'}, {label:'Abmelden', cls:'btn-gold', fn:() => { fauth && fauth.signOut(); }}]),
   'guest-cell': b => {
