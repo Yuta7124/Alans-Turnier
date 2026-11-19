@@ -191,11 +191,13 @@ service cloud.firestore {
       // Videogames: gespielte Spiele im Profil eines Spielers. Eintragen, ändern und löschen darf nur das Gerät, dem der
       // Spieler gehört: Es wechselt im selben Schreibvorgang den geheimen Spieler-Schlüssel (siehe players oben).
       function vgOk(d) {
-        return d.keys().hasOnly(['pid', 'title', 'img', 'plat', 'st', 'ach', 'achU', 'achT', 'r', 'rd', 'hrs', 'note', 'ts', 'up'])
+        return d.keys().hasOnly(['pid', 'title', 'img', 'plat', 'gen', 'md', 'st', 'ach', 'achU', 'achT', 'r', 'rd', 'hrs', 'note', 'ts', 'up'])
           && d.pid is string && d.pid.size() > 0 && d.pid.size() <= 40
           && d.title is string && d.title.size() > 0 && d.title.size() <= 80
           && (!('img' in d) || (d.img is string && d.img.size() < 60000))
           && (!('plat' in d) || (d.plat is list && d.plat.size() <= 4))
+          && (!('gen' in d) || (d.gen is list && d.gen.size() <= 4))
+          && (!('md' in d) || (d.md is list && d.md.size() <= 4))
           && (!('st' in d) || d.st in ['done', 'play', 'drop', 'endless'])
           && (!('ach' in d) || d.ach in ['all', 'some', 'none', 'na'])
           && (!('achU' in d) || (d.achU is int && d.achU >= 0 && d.achU <= 9999))

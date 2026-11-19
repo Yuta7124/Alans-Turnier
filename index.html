@@ -503,6 +503,12 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .vg-plats{display:flex;flex-wrap:wrap;gap:4px}
 .vg-plat{font-family:var(--pixel);font-size:8px;padding:4px 6px;background:var(--bg-2);color:var(--xp);text-transform:uppercase;line-height:1.2}
 .vg-ach{font-size:13px;color:var(--muted);font-weight:600}
+.vg-gens{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.vg-gen{font-size:11px;font-weight:700;padding:2px 7px;background:rgba(255,79,163,.14);color:#ff8fc8;line-height:1.4}
+.vg-gen.more{background:var(--bg-2);color:var(--muted)}
+.vg-mdi{font-size:14px;line-height:1}
+.vg-md{font-size:12px;font-weight:700;padding:3px 8px;background:var(--bg-2);color:var(--ink)}
+.vg-k{font-family:var(--pixel);font-size:8px;color:var(--muted);text-transform:uppercase;margin-right:4px}
 .vg-card.is-100 .vg-ach{color:var(--coin)}
 .vg-by{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--muted)}
 .vg-score{position:absolute;top:8px;right:8px;border:0;cursor:pointer;min-width:52px;padding:6px 8px 5px;background:rgba(7,5,15,.9);color:var(--c);display:flex;align-items:baseline;justify-content:center;gap:1px;
@@ -598,6 +604,10 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
   .vg-scale{gap:3px}
   .vg-scale button{font-size:11px;min-height:36px}
   .vg-scale.sm button{font-size:9px;min-height:30px}
+  .vg-filters{gap:8px}
+  .vg-filters .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;width:100%;padding:4px 2px}
+  .vg-filters .chips::-webkit-scrollbar{display:none}
+  .vg-filters .chip,.vg-filters .lbl{flex:none}
 }
 /* VG-CSS-END */
 .lhs{display:flex;flex-direction:column;gap:10px;margin-top:16px}
@@ -1812,7 +1822,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=15"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=16"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -6398,6 +6408,11 @@ const VG_ST = [['done', 'Durchgespielt', '✔', '#4ff08f'], ['play', 'Spiele ich
 const VG_ST_SHORT = {done:'Durchgespielt', play:'Am Spielen', drop:'Abgebrochen', endless:'Endlos'};
 const VG_ACH = [['all', 'Alle freigeschaltet', '🏆'], ['some', 'Ein paar', '🎖️'], ['none', 'Keine', '○'], ['na', 'Gibt es nicht', '–']];
 const VG_CAT = [['gp', 'Gameplay', '🎮'], ['gfx', 'Grafik', '🖼️'], ['snd', 'Sounddesign', '🎵'], ['story', 'Story', '📖'], ['atmo', 'Atmosphäre', '🌌'], ['fun', 'Spielspaß', '😄']];
+const VG_MODE = [['story', 'Story / Einzelspieler', '📖'], ['online', 'Online-Multiplayer', '🌐'], ['koop', 'Koop', '🤝'], ['couch', 'Lokal zusammen', '🛋️']];
+const VG_GEN = [['action', 'Action'], ['adventure', 'Abenteuer'], ['rpg', 'Rollenspiel'], ['openworld', 'Open World'], ['shooter', 'Shooter'], ['horror', 'Horror'], ['soulslike', 'Soulslike'],
+  ['platformer', 'Jump ’n’ Run'], ['metroidvania', 'Metroidvania'], ['fighting', 'Kampfspiel'], ['racing', 'Rennspiel'], ['sport', 'Sport'], ['strategy', 'Strategie'], ['sim', 'Simulation'],
+  ['survival', 'Survival'], ['sandbox', 'Sandbox'], ['puzzle', 'Puzzle'], ['party', 'Party'], ['br', 'Battle Royale'], ['mmo', 'MMO'], ['rhythm', 'Musik / Rhythmus'], ['vn', 'Visual Novel'], ['indie', 'Indie']];
+const vgLbl = (list, v) => (list.find(l => l[0] === v) || ['', v])[1];
 const VG_WORD = ['Katastrophe', 'Ganz schlecht', 'Schlecht', 'Schwach', 'Geht so', 'Mittelmaß', 'Ganz okay', 'Gut', 'Sehr gut', 'Herausragend', 'Meisterwerk'];
 let vgSub = false;
 const vgInt = (v, lo, hi) => { const n = Math.round(Number(String(v ?? '').replace(',', '.'))); return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : lo; };
@@ -6411,6 +6426,8 @@ function normVg(id, x) {
     id, pid:str(x.pid, 40), title:str(x.title, 80),
     img:typeof x.img === 'string' && x.img.length < 60000 && /^data:image\/(png|jpe?g|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img) ? x.img : '',
     plat:Array.isArray(x.plat) ? x.plat.filter(p => VG_PLAT.some(l => l[0] === p)).slice(0, 4) : [],
+    gen:Array.isArray(x.gen) ? x.gen.filter(p => VG_GEN.some(l => l[0] === p)).slice(0, 4) : [],
+    md:Array.isArray(x.md) ? x.md.filter(p => VG_MODE.some(l => l[0] === p)).slice(0, 4) : [],
     st:one(x.st, VG_ST, 'done'), ach:one(x.ach, VG_ACH, 'na'),
     achU:vgInt(x.achU, 0, 9999), achT:vgInt(x.achT, 0, 9999),
     r:Number.isInteger(r) && r >= 0 && r <= 10 ? r : -1, rd,
@@ -6451,6 +6468,8 @@ function vgCoverHTML(g, cls = '') {
   let h = 0; for (const c of g.title) h = (h * 31 + c.charCodeAt(0)) % 360;
   return `<span class="vg-cover vg-noimg ${cls}" style="--h:${h}" aria-hidden="true">${esc(ini)}</span>`;
 }
+const vgGenHTML = (g, max = 4) => g.gen.slice(0, max).map(p => `<span class="vg-gen">${esc(vgLbl(VG_GEN, p))}</span>`).join('');
+const vgModeHTML = g => g.md.map(p => { const m = VG_MODE.find(l => l[0] === p); return `<span class="vg-md">${m[2]} ${esc(m[1])}</span>`; }).join('');
 const vgPlatHTML = g => g.plat.map(p => `<span class="vg-plat">${esc((VG_PLAT.find(l => l[0] === p) || ['', p])[1])}</span>`).join('');
 function vgAchText(g) {
   if (g.ach === 'all') return `🏆 Alle Achievements${g.achT ? ` (${g.achT})` : ''}`;
@@ -6465,6 +6484,7 @@ function vgCardHTML(g, showBy) {
     <button class="vg-hit" type="button" data-act="vg-show" data-id="${esc(g.id)}" aria-label="${esc(g.title)} ansehen">
       <span class="vg-cv">${vgCoverHTML(g)}${vgStBadge(g)}</span>
       <span class="vg-body"><b class="vg-title">${esc(g.title)}</b>
+        ${g.gen.length || g.md.length ? `<span class="vg-gens">${g.md.map(p => `<span class="vg-mdi" title="${esc(vgLbl(VG_MODE, p))}">${VG_MODE.find(l => l[0] === p)[2]}</span>`).join('')}${vgGenHTML(g, 2)}${g.gen.length > 2 ? `<span class="vg-gen more">+${g.gen.length - 2}</span>` : ''}</span>` : ''}
         ${g.plat.length ? `<span class="vg-plats">${vgPlatHTML(g)}</span>` : ''}
         ${ach ? `<span class="vg-ach">${esc(ach)}</span>` : ''}
         ${by ? `<span class="vg-by">${avatar(by, 20)}${esc(by.name)}</span>` : ''}</span>
@@ -6506,16 +6526,19 @@ function vgOverviewHTML() {
     <div class="sec-head"><h2 class="h">Videogames <span class="count">${all.length} ${all.length === 1 ? 'Spiel' : 'Spiele'}</span></h2><span class="muted">Wer hat was gespielt und wie fand er es? Tipp auf einen Spieler, um sein Profil zu sehen.</span></div>
     ${cta}
     <div class="vg-pgrid">${cards || '<div class="empty-box"><strong>Noch keine Spieler</strong></div>'}</div>
-    ${top.length ? `<h3 class="vg-h3">🏅 Top-Spiele der Gruppe</h3><ol class="vg-top">${top.map((t, i) => `<li><button type="button" data-act="vg-show" data-id="${esc(t.g.id)}"><span class="vg-rank">${i + 1}</span>${vgCoverHTML(t.g, 'tiny')}<span class="vg-tt"><b>${esc(t.g.title)}</b><small>${t.n === 1 ? '1 Bewertung' : `${t.n} Bewertungen`}</small></span><span class="vg-avg" style="--c:${vgCol(Math.round(t.avg))}">${vgNum(t.avg)}</span></button></li>`).join('')}</ol>` : ''}
+    ${top.length ? `<h3 class="vg-h3">🏅 Top-Spiele der Gruppe</h3><ol class="vg-top">${top.map((t, i) => `<li><button type="button" data-act="vg-show" data-id="${esc(t.g.id)}"><span class="vg-rank">${i + 1}</span>${vgCoverHTML(t.g, 'tiny')}<span class="vg-tt"><b>${esc(t.g.title)}</b><small>${t.n === 1 ? '1 Bewertung' : `${t.n} Bewertungen`}${t.g.gen.length ? ' · ' + t.g.gen.slice(0, 2).map(x => `<span>${esc(vgLbl(VG_GEN, x))}</span>`).join(', ') : ''}</small></span><span class="vg-avg" style="--c:${vgCol(Math.round(t.avg))}">${vgNum(t.avg)}</span></button></li>`).join('')}</ol>` : ''}
     ${recent.length ? `<h3 class="vg-h3">🕹️ Zuletzt eingetragen</h3><div class="vg-grid">${recent.map(g => vgCardHTML(g, true)).join('')}</div>` : ''}
   </section>`;
 }
 function vgProfileHTML(p) {
-  const f = D.vgFilt || 'alle', so = D.vgSort || 'neu';
+  const f = D.vgFilt || 'alle', so = D.vgSort || 'neu', gf = D.vgGen || '';
   let l = vgOf(p.id);
+  const gens = {}; l.forEach(g => g.gen.forEach(x => { gens[x] = (gens[x] || 0) + 1; }));
+  const genList = Object.entries(gens).sort((a, b) => b[1] - a[1]);
   const st = vgStats(l), can = vgCan(p);
   const cnt = k => l.filter(g => g.st === k).length;
   if (f !== 'alle') l = l.filter(g => g.st === f);
+  if (gf) l = l.filter(g => g.gen.includes(gf));
   l.sort(so === 'top' ? (a, b) => b.r - a.r || b.ts - a.ts : so === 'az' ? (a, b) => a.title.localeCompare(b.title, 'de') : (a, b) => b.ts - a.ts);
   const plats = {}; vgOf(p.id).forEach(g => g.plat.forEach(x => { plats[x] = (plats[x] || 0) + 1; }));
   const fav = Object.entries(plats).sort((a, b) => b[1] - a[1])[0];
@@ -6525,7 +6548,7 @@ function vgProfileHTML(p) {
     <div class="vg-back"><button class="btn btn-sm btn-ghost" type="button" data-act="vg-open" data-pid="">← Alle Spieler</button></div>
     <div class="card vg-head">
       ${avatar(p, 96, 'vg-hav')}
-      <div class="vg-hname"><h2>${nameHTML(p)}</h2>${mottoHTML(p)}<span class="muted">${fav ? `Spielt am meisten auf ${esc((VG_PLAT.find(x => x[0] === fav[0]) || ['', fav[0]])[1])}` : 'Videogame-Profil'}</span></div>
+      <div class="vg-hname"><h2>${nameHTML(p)}</h2>${mottoHTML(p)}<span class="muted">${fav ? `Spielt am meisten auf ${esc((VG_PLAT.find(x => x[0] === fav[0]) || ['', fav[0]])[1])}` : 'Videogame-Profil'}</span>${genList.length ? `<span class="muted">Lieblingsgenre: ${esc(vgLbl(VG_GEN, genList[0][0]))}</span>` : ''}</div>
       ${can ? `<button class="btn btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}
     </div>
     <div class="vg-tiles">
@@ -6537,10 +6560,11 @@ function vgProfileHTML(p) {
     ${others.length ? `<div class="vg-others" role="group" aria-label="Andere Profile"><span class="lbl">Andere Profile</span>${others.map(o => `<button class="chip pchip" type="button" data-act="vg-open" data-pid="${esc(o.id)}">${avatar(o, 24)}${esc(o.name)} <small>${vgOf(o.id).length}</small></button>`).join('')}</div>` : ''}
     ${st.n ? `<div class="gfilters vg-filters">
       <div class="chips" role="group" aria-label="Nach Status filtern">${[['alle', 'Alle', st.n], ...VG_ST.map(s => [s[0], VG_ST_SHORT[s[0]], cnt(s[0])])].filter(x => x[0] === 'alle' || x[2] > 0 || f === x[0]).map(x => `<button class="chip" type="button" data-act="vg-filt" data-v="${x[0]}" aria-pressed="${f === x[0]}">${esc(x[1])} <small>${x[2]}</small></button>`).join('')}</div>
+      ${genList.length ? `<div class="chips" role="group" aria-label="Nach Genre filtern"><span class="lbl">Genre</span><button class="chip" type="button" data-act="vg-gen" data-v="" aria-pressed="${!gf}">Alle</button>${genList.map(([k, n]) => `<button class="chip" type="button" data-act="vg-gen" data-v="${k}" aria-pressed="${gf === k}">${esc(vgLbl(VG_GEN, k))} <small>${n}</small></button>`).join('')}</div>` : ''}
       <div class="chips" role="group" aria-label="Sortieren"><span class="lbl">Sortieren</span>${[['neu', 'Neueste'], ['top', 'Beste Bewertung'], ['az', 'A–Z']].map(x => `<button class="chip" type="button" data-act="vg-sort" data-v="${x[0]}" aria-pressed="${so === x[0]}">${x[1]}</button>`).join('')}</div>
     </div>` : ''}
     ${l.length ? `<div class="vg-grid">${l.map(g => vgCardHTML(g, false)).join('')}</div>`
-      : `<div class="empty-box"><strong>${st.n ? 'Kein Spiel mit diesem Status' : 'Noch keine Spiele eingetragen'}</strong>${can && !st.n ? `<p>Trag das erste Spiel ein: mit Bild, Plattform, Bewertung und Achievements.</p><button class="btn btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}</div>`}
+      : `<div class="empty-box"><strong>${st.n ? 'Kein Spiel mit diesem Filter' : 'Noch keine Spiele eingetragen'}</strong>${can && !st.n ? `<p>Trag das erste Spiel ein: mit Bild, Plattform, Bewertung und Achievements.</p><button class="btn btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}</div>`}
   </section>`;
 }
 
@@ -6559,6 +6583,8 @@ function vgShowModal() {
       <div class="vg-show-info">
         <button class="vg-by vg-by-btn" type="button" data-act="vg-open" data-pid="${esc(p.id)}">${avatar(p, 26)}${esc(p.name)}</button>
         <div class="vg-show-row">${vgStBadge(g)}${vgPlatHTML(g)}</div>
+        ${g.gen.length ? `<div class="vg-show-row"><span class="vg-k">Genre</span>${vgGenHTML(g)}</div>` : ''}
+        ${g.md.length ? `<div class="vg-show-row"><span class="vg-k">Spielart</span>${vgModeHTML(g)}</div>` : ''}
         ${ach ? `<div class="vg-achbox ${g.ach === 'all' ? 'is-100' : ''}"><span>${esc(ach)}</span>${pct >= 0 ? `<span class="vg-bt"><i style="width:${pct}%;--c:${g.ach === 'all' ? 'var(--coin)' : 'var(--xp)'}"></i></span>` : ''}</div>` : ''}
         ${g.hrs ? `<p class="vg-meta">⏱ ${g.hrs.toLocaleString(LOC)} ${g.hrs === 1 ? 'Stunde' : 'Stunden'} gespielt</p>` : ''}
         ${g.ts ? `<p class="vg-meta">Eingetragen am ${esc(new Date(g.ts).toLocaleDateString(LOC, {day:'numeric', month:'long', year:'numeric'}))}</p>` : ''}
@@ -6571,7 +6597,7 @@ function vgShowModal() {
 }
 
 /* Formular: Spiel eintragen oder bearbeiten */
-function vgBlank(pid) { return {id:'', pid, title:'', img:'', plat:[], st:'done', ach:'none', achU:'', achT:'', r:-1, rd:{}, hrs:'', note:''}; }
+function vgBlank(pid) { return {id:'', pid, title:'', img:'', plat:[], gen:[], md:[], st:'done', ach:'none', achU:'', achT:'', r:-1, rd:{}, hrs:'', note:''}; }
 function vgFormModal() {
   const d = D.vgF; if (!d) return '';
   const chip = (act, k, v, on, lbl) => `<button class="chip" type="button" data-act="${act}" data-k="${k}" data-v="${v}" aria-pressed="${on}">${lbl}</button>`;
@@ -6584,6 +6610,8 @@ function vgFormModal() {
           <div class="vg-imgbtns"><label class="btn btn-sm" for="vg-file">${d.img ? 'Anderes Bild' : 'Bild wählen'}</label><input type="file" id="vg-file" accept="image/*" hidden>
           ${d.img ? '<button class="btn btn-sm btn-ghost" type="button" data-act="vgf-noimg">Bild entfernen</button>' : ''}<small class="muted">Am besten das Cover. Es wird auf Hochformat zugeschnitten.</small></div></div></div>
       <div class="field"><span class="lbl">Plattform (bis zu 4)</span><div class="chips">${VG_PLAT.map(([v, l]) => chip('vgf-plat', 'plat', v, d.plat.includes(v), esc(l))).join('')}</div></div>
+      <div class="field"><span class="lbl">Spielart</span><small class="muted">Story-Spiel, online oder zusammen? Mehrere gehen.</small><div class="chips">${VG_MODE.map(([v, l, i]) => chip('vgf-plat', 'md', v, d.md.includes(v), `${i} ${esc(l)}`)).join('')}</div></div>
+      <div class="field"><span class="lbl">Genre (bis zu 4)</span><small class="muted">Damit andere wissen, was für ein Spiel das ist.</small><div class="chips">${VG_GEN.map(([v, l]) => chip('vgf-plat', 'gen', v, d.gen.includes(v), esc(l))).join('')}</div></div>
       <div class="field"><span class="lbl">Status</span><div class="chips">${VG_ST.map(([v, l, i]) => chip('vgf-set', 'st', v, d.st === v, `${i} ${esc(l)}`)).join('')}</div></div>
       <div class="field"><span class="lbl">Achievements / Trophäen</span><div class="chips">${VG_ACH.map(([v, l, i]) => chip('vgf-set', 'ach', v, d.ach === v, `${i} ${esc(l)}`)).join('')}</div>
         ${d.ach === 'some' ? `<div class="vg-achin"><input class="input mini" type="number" min="0" max="9999" inputmode="numeric" id="vg-achu" data-draft="vgF.achU" value="${esc(d.achU)}" aria-label="Freigeschaltet" placeholder="12"><span>von</span><input class="input mini" type="number" min="0" max="9999" inputmode="numeric" id="vg-acht" data-draft="vgF.achT" value="${esc(d.achT)}" aria-label="Achievements insgesamt" placeholder="50"><span class="muted">freigeschaltet</span></div>` : ''}
@@ -6651,7 +6679,7 @@ async function vgSave() {
   if (d.ach === 'some' && achT && achU > achT) { toast('Freigeschaltet kann nicht mehr sein als insgesamt.'); return; }
   const hrs = Math.max(0, Math.min(99999, Math.round(parseNum(d.hrs) * 10) / 10));
   const old = d.id ? (S.vg || []).find(g => g.id === d.id) : null;
-  const doc = {pid:d.pid, title, img:d.img || '', plat:d.plat.slice(0, 4), st:d.st, ach:d.ach, achU, achT, r:d.r, rd:{...d.rd}, hrs, note:str(d.note, 300), ts:old ? old.ts || Date.now() : Date.now(), up:Date.now()};
+  const doc = {pid:d.pid, title, img:d.img || '', plat:d.plat.slice(0, 4), gen:d.gen.slice(0, 4), md:d.md.slice(0, 4), st:d.st, ach:d.ach, achU, achT, r:d.r, rd:{...d.rd}, hrs, note:str(d.note, 300), ts:old ? old.ts || Date.now() : Date.now(), up:Date.now()};
   const id = d.id || uid();
   vgBusy = true;
   try {
@@ -6662,20 +6690,26 @@ async function vgSave() {
   finally { vgBusy = false; }
 }
 const vgActions = {
-  'vg-open': b => { D.vgP = b.dataset.pid || ''; D.vgFilt = 'alle'; if (S.modal) closeModal(); if (S.tab !== 'vg') setTab('vg'); else { render(); window.scrollTo({top:0}); } },
+  'vg-open': b => { D.vgP = b.dataset.pid || ''; D.vgFilt = 'alle'; D.vgGen = ''; if (S.modal) closeModal(); if (S.tab !== 'vg') setTab('vg'); else { render(); window.scrollTo({top:0}); } },
   'vg-show': b => { openModal({type:'vgshow', id:b.dataset.id, rd:b.dataset.rd === '1'}); },
   'vg-rd': () => { if (S.modal) { S.modal.rd = !S.modal.rd; renderModal(); } },
   'vg-filt': b => { D.vgFilt = b.dataset.v; render(); },
   'vg-sort': b => { D.vgSort = b.dataset.v; render(); },
+  'vg-gen': b => { D.vgGen = b.dataset.v; render(); },
   'vg-new': b => { const p = playerById(b.dataset.pid); if (!vgCan(p)) { toast('Spiele eintragen kann nur der Spieler selbst.'); return; } D.vgF = vgBlank(p.id); openModal({type:'vgform'}); },
-  'vg-edit': b => { const g = (S.vg || []).find(x => x.id === b.dataset.id); if (!g) return; D.vgF = {...g, plat:g.plat.slice(), rd:{...g.rd}, achU:g.achU ? String(g.achU) : '', achT:g.achT ? String(g.achT) : '', hrs:g.hrs ? String(g.hrs) : ''}; openModal({type:'vgform'}); },
+  'vg-edit': b => { const g = (S.vg || []).find(x => x.id === b.dataset.id); if (!g) return; D.vgF = {...g, plat:g.plat.slice(), gen:g.gen.slice(), md:g.md.slice(), rd:{...g.rd}, achU:g.achU ? String(g.achU) : '', achT:g.achT ? String(g.achT) : '', hrs:g.hrs ? String(g.hrs) : ''}; openModal({type:'vgform'}); },
   'vg-del': b => {
     const g = (S.vg || []).find(x => x.id === b.dataset.id); if (!g) return;
     confirmBox('Spiel löschen?', `„${g.title}“ wird aus dem Profil entfernt.`, [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Löschen', cls:'btn-gold', fn:async () => {
       try { await vgCommit(g.pid, bt => bt.delete(db.collection('vg').doc(g.id))); toast('Gelöscht.'); } catch (e) { vgErr(e); }
     }}]);
   },
-  'vgf-plat': b => { const d = D.vgF, v = b.dataset.v; if (!d) return; if (d.plat.includes(v)) d.plat = d.plat.filter(x => x !== v); else if (d.plat.length < 4) d.plat.push(v); else { toast('Höchstens 4 Plattformen.'); return; } renderModal(); },
+  'vgf-plat': b => {
+    const d = D.vgF, v = b.dataset.v, k = b.dataset.k; if (!d || !Array.isArray(d[k])) return;
+    if (d[k].includes(v)) d[k] = d[k].filter(x => x !== v); else if (d[k].length < 4) d[k].push(v);
+    else { toast(k === 'gen' ? 'Höchstens 4 Genres.' : 'Höchstens 4 Plattformen.'); return; }
+    renderModal();
+  },
   'vgf-set': b => { const d = D.vgF; if (!d) return; d[b.dataset.k] = b.dataset.v; renderModal(); },
   'vgf-r': b => { const d = D.vgF; if (!d) return; d.r = Number(b.dataset.v); renderModal(); },
   'vgf-rd': b => { const d = D.vgF, k = b.dataset.k, v = Number(b.dataset.v); if (!d) return; if (d.rd[k] === v) delete d.rd[k]; else d.rd[k] = v; renderModal(); },
