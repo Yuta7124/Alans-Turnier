@@ -868,7 +868,6 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .tk-quick span{font-size:30px;line-height:1}
 .tk-quick b{font-family:var(--display);font-size:19px;text-transform:uppercase;color:var(--tc)}
 .tk-quick small{color:var(--muted);font-size:13px;line-height:1.35}
-.tk-ctxhint{margin:0 4px 16px;padding:10px 14px;background:rgba(57,214,242,.08);box-shadow:inset 3px 0 0 var(--xp);font-size:14px}
 .tk-upd{margin:0 4px 16px;padding:10px 14px;background:rgba(255,207,63,.1);box-shadow:inset 3px 0 0 var(--coin);font-weight:700}
 .tk-seg{display:flex;gap:4px;margin:0 4px 14px;border-bottom:3px solid var(--edge);overflow-x:auto;scrollbar-width:none}
 .tk-seg::-webkit-scrollbar{display:none}
@@ -3924,7 +3923,6 @@ function pvToggle() {
   D.vgF = null; D.tkSt = ''; D.tkReply = '';
   if (!S.pv) permLoad();
   render(); window.scrollTo({top:0});
-  toast(S.pv ? 'Spieler-Ansicht: So sehen deine Spieler die Seite. Du bleibst als Spielleiter angemeldet.' : 'Zurück in der Admin-Ansicht.');
 }
 function renderFoot() {
   const el = $('#foot'); if (!el) return;
@@ -7883,14 +7881,13 @@ function tkPlayerHTML() {
   const seg = D.tkSeg || (mine.length ? 'mine' : 'ideas'), so = D.tkSo || (seg === 'ideas' ? 'votes' : 'new');
   const lists = {mine, ideas, bugs, all};
   const list = tkSortList(tkSearch(lists[seg] || mine), so);
-  const ctx = D.tkCtx && Date.now() - D.tkCtx.at < 15 * 60000 ? D.tkCtx : null;
   const upd = mine.filter(tkUnseen).length;
   return `<section class="section tk">
     <div class="sec-head"><h2 class="h">Support</h2><span class="muted">Fehler gefunden? Eine Idee? Hier schreibst du direkt an den Spielleiter. Du siehst immer, was aus deinem Ticket geworden ist.</span></div>
     ${can ? `<div class="tk-hero">
       ${TK_TYPES.slice(0, 4).map(ty => `<button class="tk-quick" type="button" data-act="tk-new" data-type="${ty[0]}" style="--tc:${ty[4]}"><span>${ty[2]}</span><b>${esc({bug:'Fehler melden', idea:'Idee teilen', improve:'Verbesserung vorschlagen', question:'Frage stellen'}[ty[0]])}</b><small>${esc(ty[3])}</small></button>`).join('')}
     </div>
-    ${ctx ? `<p class="tk-ctxhint">📍 Du kommst gerade aus <b>${esc((tkL(TK_AREAS, ctx.area) || ['', ctx.area])[1])}${ctx.hole ? ` (Bahn ${ctx.hole})` : ''}</b>. Das wird beim neuen Ticket schon eingetragen.</p>` : ''}`
+`
     : `<div class="card vg-cta"><div><b>Erst mitspielen</b><span>Um Tickets zu schreiben, brauchst du deinen eigenen Spieler.</span></div><button class="btn btn-gold" type="button" data-act="tab" data-tab="spieler">Zu den Spielern</button></div>`}
     ${upd ? `<p class="tk-upd">🔔 ${upd === 1 ? 'Eins deiner Tickets hat eine neue Antwort.' : `${upd} deiner Tickets haben neue Antworten.`}</p>` : ''}
     <div class="tk-seg" role="tablist">
@@ -8017,8 +8014,7 @@ function tkNewModal() {
     body = `<p class="m-text">Was möchtest du melden?</p><div class="tk-types">${TK_TYPES.map(t => `<button class="tk-type" type="button" data-act="tkf-type" data-v="${t[0]}" aria-pressed="${d.type === t[0]}" style="--tc:${t[4]}"><span>${t[2]}</span><b>${esc(t[1])}</b><small>${esc(t[3])}</small></button>`).join('')}</div>` + nav(false);
   } else if (d.step === 2) {
     const subs = TK_SUB[d.area] || [];
-    body = `${d.ctx && d.area ? `<p class="tk-ctxhint">📍 Vorschlag: Du warst gerade in <b>${esc((tkL(TK_AREAS, d.area) || ['', d.area])[1])}</b>. Passt das nicht, wähl einfach etwas anderes.</p>` : ''}
-      <p class="m-text">In welchem Bereich?</p>
+    body = `<p class="m-text">In welchem Bereich?</p>
       <div class="tk-areas">${TK_AREAS.map(a => `<button class="tk-area" type="button" data-act="tkf-area" data-v="${a[0]}" aria-pressed="${d.area === a[0]}"><span>${a[2]}</span>${esc(a[1])}</button>`).join('')}</div>
       ${d.area === 'golf' ? `<div class="field"><span class="lbl">Welche Bahn? (optional)</span><div class="tk-holes">${Array.from({length:30}, (_, i) => `<button type="button" data-act="tkf-hole" data-v="${i + 1}" aria-pressed="${d.hole === i + 1}">${i + 1}</button>`).join('')}</div></div>` : ''}
       ${subs.length ? `<div class="field"><span class="lbl">Was genau? (optional)</span><div class="chips">${subs.map(s => `<button class="chip" type="button" data-act="tkf-sub" data-v="${esc(s)}" aria-pressed="${d.sub === s}">${esc(s)}</button>`).join('')}</div></div>` : ''}
@@ -10324,7 +10320,7 @@ async function adminEnter(u) {
   }
   S.admin = true; S.realAdmin = true; S.pv = false;
   const x = c.exists ? c.data() : null;
-  if (x && x.room) { S.secret = {password:String(x.password || '')}; storePass(S.secret.password); connectRoom(x.room); toast('Du bist als Spielleiter angemeldet.'); return; }
+  if (x && x.room) { S.secret = {password:String(x.password || '')}; storePass(S.secret.password); connectRoom(x.room); return; }
   S.mode = 'firstrun'; S.loaded = true; render();
 }
 async function createTournament(pw) {
