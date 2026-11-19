@@ -1825,6 +1825,9 @@ button.bcell[disabled]{cursor:default}
 .rc-host b{color:var(--ink)}
 .rc-acts{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:auto}
 .rooms-hint{margin-bottom:18px}
+.rc-priv,.rb-priv{font-family:var(--pixel);font-size:9px;text-transform:uppercase;color:var(--coin);border:1px solid var(--coin);padding:3px 6px;margin-left:8px;white-space:nowrap}
+.rc-inv{margin:6px 0 0;color:var(--coin);font-weight:600}
+.inv-chips{margin:10px 0;max-height:46vh;overflow:auto}
 .rooms-how{max-width:760px}
 @media (max-width:1000px){.rooms{grid-template-columns:1fr}}
 .roombar{display:flex;flex-direction:column;gap:10px;background:var(--panel);padding:12px 14px;margin:4px;box-shadow:0 -3px 0 var(--edge),0 3px 0 var(--edge),-3px 0 0 var(--edge),3px 0 0 var(--edge),0 7px 0 3px var(--shadow)}
@@ -2247,7 +2250,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=29"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=30"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -5863,7 +5866,8 @@ function normLobby(id, x) {
   const m = x.members && typeof x.members === 'object' && !Array.isArray(x.members) ? x.members : {};
   for (const [pid, v] of Object.entries(m)) if (pid && pid.length <= 40 && v && typeof v === 'object') members[pid] = {at:Number(v.at) || 0, dev:str(v.dev, 60)};
   const host = x.host && typeof x.host === 'object' && x.host.dev ? {pid:str(x.host.pid, 40), dev:str(x.host.dev, 60)} : null;
-  return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, kind:['quiz', 'malen', 'golf', 'karten'].includes(x.kind) ? x.kind : '',
+  const inv = Object.fromEntries(Object.keys(x.inv && typeof x.inv === 'object' && !Array.isArray(x.inv) ? x.inv : {}).filter(k => k && k.length <= 40).slice(0, 40).map(k => [k, true]));
+  return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true, inv, kind:['quiz', 'malen', 'golf', 'karten'].includes(x.kind) ? x.kind : '',
     quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null, uno:x.uno && typeof x.uno === 'object' ? x.uno : null,
     hs:Object.fromEntries(Object.entries(x.hs && typeof x.hs === 'object' && !Array.isArray(x.hs) ? x.hs : {}).filter(([pid, v]) => pid.length <= 40 && Number.isFinite(Number(v))).map(([pid, v]) => [pid, Math.round(Number(v))])),
     bots:Object.fromEntries(Object.entries(x.bots && typeof x.bots === 'object' && !Array.isArray(x.bots) ? x.bots : {}).filter(([id, b]) => id.startsWith('bot_') && id.length <= 40 && b && typeof b === 'object').slice(0, ROOM_MAX)
@@ -5900,6 +5904,36 @@ function myPid() { const me = lsGet('turnier-me', ''); return me && playerById(m
 function roomMembers(L) { return L ? Object.entries(L.members).sort((a, b) => a[1].at - b[1].at).map(e => e[0]).filter(id => playerById(id)) : []; }
 function myRoom() { const me = myPid(); return me ? ROOMS.find(r => S.lobbies[r] && S.lobbies[r].members[me]) || '' : ''; }
 function ctl() { const L = S.room && S.lobbies[S.room]; return !!(L && L.host && L.host.dev === devId); }
+/* Privater Raum: Nur wer eingeladen ist, kann beitreten oder zuschauen. Ist der Host 10 Minuten weg, ist der Raum wieder offen. */
+const PRIV_MS = 600000;
+function roomPriv(L) { return !!(L && L.priv && Date.now() - (L.hostSeen || 0) <= PRIV_MS); }
+function roomInvited(L, pid = myPid()) { return !!(pid && L && (L.inv[pid] || L.members[pid])); }
+function roomPrivToggle() {
+  const L = lobby(); if (!L || !ctl()) return;
+  const on = !L.priv, inv = {...L.inv};
+  if (on) roomHumans(L).forEach(id => { inv[id] = true; });
+  S.lobbies[S.room] = {...L, priv:on, inv};
+  roomWrite({priv:on, inv});
+  render();
+}
+function roomInvite(pid) {
+  const L = lobby(); if (!L || !ctl() || !pid) return;
+  const inv = {...L.inv};
+  if (inv[pid]) delete inv[pid]; else inv[pid] = true;
+  S.lobbies[S.room] = {...L, inv};
+  roomWrite({inv});
+  renderModal();
+}
+function roomInviteModalHTML() {
+  const L = lobby(); if (!L) return '';
+  const me = myPid(), list = S.players.filter(p => p.id !== me && !isBot(p.id) && !L.members[p.id]);
+  const n = list.filter(p => L.inv[p.id]).length;
+  return `<div class="m-head"><h2 id="m-title">🔒 Freunde einladen</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
+    <p class="m-text">${esc(L.name)} ist privat. Nur wen du hier antippst, kann beitreten. Die Eingeladenen sehen den Raum unter Spiele mit „Du bist eingeladen“.</p>
+    ${list.length ? `<div class="chips inv-chips">${list.map(p => `<button class="chip pchip" type="button" data-act="room-invite" data-pid="${esc(p.id)}" aria-pressed="${L.inv[p.id] ? 'true' : 'false'}">${avatar(p, 28)}${esc(p.name)}${L.inv[p.id] ? ' ✓' : ''}</button>`).join('')}</div>` : '<p class="muted">Es gibt noch keine anderen Spieler.</p>'}
+    <p class="muted">${n === 1 ? '1 Spieler eingeladen' : `${n} Spieler eingeladen`}</p>
+    <div class="m-foot"><button class="btn btn-gold" type="button" data-act="modal-close">Fertig</button></div>`;
+}
 function hostStale(L) { return !L || !L.host || Date.now() - (L.hostSeen || 0) > HOST_STALE_MS; }
 function roomState(L) {
   if (!L) return 'free';
@@ -5969,19 +6003,20 @@ async function roomJoin(r) {
   if (!me) { toast('Erstell zuerst deinen eigenen Spieler im Tab Spieler.'); setTab('spieler'); return; }
   const L = lobby(r);
   if (L.members[me]) { roomSet(r); setTab('raum'); return; }
+  if (roomPriv(L) && !L.inv[me]) { toast(`${L.name} ist privat. Nur eingeladene Spieler können beitreten.`); return; }
   if (roomMembers(L).length >= ROOM_MAX) { toast(`${L.name} ist voll. Höchstens ${ROOM_MAX} Spieler.`); return; }
   const old = myRoom();
   if (old && old !== r) await roomLeave(old, true);
   const patch = {members:{[me]:{at:Date.now(), dev:devId}}};
   if (!roomHumans(L).length) {
     // Leerer Raum (höchstens übrig gebliebene Bots): frisch anfangen
-    patch.kind = ''; patch.quiz = null; patch.draw = null; patch.golf = null; patch.uno = null; patch.bots = {};
+    patch.kind = ''; patch.quiz = null; patch.draw = null; patch.golf = null; patch.uno = null; patch.bots = {}; patch.priv = false; patch.inv = {};
     for (const id of Object.keys(L.members)) if (id !== me) patch.members[id] = FV().delete();
   }
   if (hostStale(L) && (!L.host || !roomMembers(L).length || Date.now() - (L.hostSeen || 0) > HOST_AUTO_MS)) { patch.host = {pid:me, dev:devId}; patch.hostSeen = Date.now(); }
   try {
     await roomRef(r).set(patch, {merge:true});
-  } catch (e) { toast(e && e.code === 'permission-denied' ? `${L.name} ist voll.` : 'Beitreten hat nicht geklappt. Prüf dein Internet.'); return; }
+  } catch (e) { toast(e && e.code === 'permission-denied' ? (roomPriv(L) ? `${L.name} ist privat.` : `${L.name} ist voll.`) : 'Beitreten hat nicht geklappt. Prüf dein Internet.'); return; }
   S.lobbies[r] = normLobby(r, {...L, members:{...L.members, ...patch.members}, host:patch.host || L.host, hostSeen:patch.hostSeen || L.hostSeen});
   roomSet(r);
   setTab('raum');
@@ -5997,7 +6032,7 @@ async function roomLeave(r = S.room, silent = false) {
     patch.hostSeen = next ? Date.now() : 0;
   }
   // Geht der letzte Mensch, gehen auch die Bots
-  if (!rest.length) patch = {members:{}, bots:{}, kind:'', quiz:null, draw:null, golf:null, uno:null, host:null, hostSeen:0};
+  if (!rest.length) patch = {members:{}, bots:{}, kind:'', quiz:null, draw:null, golf:null, uno:null, host:null, hostSeen:0, priv:false, inv:{}};
   try { await roomRef(r).update(patch); } catch (e) {}
   if (r === S.room) roomSet('');
   if (!silent) { setTab('spiele'); toast(`Du hast ${L.name} verlassen.`); }
@@ -6006,6 +6041,7 @@ function roomKick(pid) {
   const L = lobby(); if (!L || !L.members[pid] || !(ctl() || S.admin)) return;
   const patch = {['members.' + pid]:FV().delete()};
   if (isBot(pid)) patch['bots.' + pid] = FV().delete();
+  if (L.inv[pid]) patch['inv.' + pid] = FV().delete();
   if (L.host && L.host.pid === pid) patch.host = null;
   roomRef().update(patch).catch(() => {});
 }
@@ -6027,17 +6063,19 @@ function roomCardHTML(r) {
   const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : L.kind === 'karten' ? ['🃏', 'Kartenwahn'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
   const hostP = L.host && playerById(L.host.pid);
   const slots = Array.from({length:ROOM_MAX}, (_, i) => mem[i] ? `<span class="rc-slot" title="${esc(ghost(mem[i]).name)}">${avatar(ghost(mem[i]), 34)}</span>` : '<span class="rc-slot empty"></span>').join('');
+  const priv = roomPriv(L), invd = !mine && priv && !!(me && L.inv[me]);
   let btns = '';
   if (mine) btns = `<button class="btn btn-gold" type="button" data-act="room-open" data-room="${r}">Öffnen</button><button class="btn btn-ghost" type="button" data-act="room-leave" data-room="${r}">Verlassen</button>`;
   else {
-    btns = n >= ROOM_MAX ? `<button class="btn" type="button" disabled>Voll</button>` : `<button class="btn btn-gold" type="button" data-act="room-join" data-room="${r}">Beitreten</button>`;
-    if (n && !myRoom()) btns += `<button class="btn btn-ghost" type="button" data-act="room-view" data-room="${r}">Zuschauen</button>`;
+    btns = n >= ROOM_MAX ? `<button class="btn" type="button" disabled>Voll</button>` : priv && !invd ? `<button class="btn" type="button" disabled>🔒 Privat</button>` : `<button class="btn btn-gold" type="button" data-act="room-join" data-room="${r}">Beitreten</button>`;
+    if (n && !myRoom() && (!priv || invd || S.admin)) btns += `<button class="btn btn-ghost" type="button" data-act="room-view" data-room="${r}">Zuschauen</button>`;
   }
   if (S.admin && (Object.keys(L.members).length || L.kind || L.host)) btns += `<button class="link" type="button" data-act="room-reset" data-room="${r}">Zurücksetzen</button>`;
-  return `<article class="card room-card ${mine ? 'mine' : ''}" style="--sc:${sl[1]}">
-    <div class="rc-head"><b class="rc-name">${esc(L.name)}</b><span class="rc-state">${st === 'running' ? '■ ' : ''}${sl[0]}</span></div>
+  return `<article class="card room-card ${mine || invd ? 'mine' : ''}" style="--sc:${sl[1]}">
+    <div class="rc-head"><b class="rc-name">${esc(L.name)}${priv ? '<span class="rc-priv">🔒 Privat</span>' : ''}</b><span class="rc-state">${st === 'running' ? '■ ' : ''}${sl[0]}</span></div>
     <div class="rc-game"><span class="rc-ico" aria-hidden="true">${kindTxt[0]}</span><span>${kindTxt[1]}</span><span class="rc-count">${n}/${ROOM_MAX}</span></div>
     <div class="rc-slots">${slots}</div>
+    ${invd ? `<p class="rc-inv">💌 Du bist eingeladen${hostP ? ` von <b>${esc(hostP.name)}</b>` : ''}!</p>` : ''}
     <p class="rc-host">${hostP ? `👑 Host: <b>${esc(hostP.name)}</b>${hostStale(L) && n ? ' <small>(nicht da)</small>' : ''}` : n ? 'Kein Host' : 'Wer zuerst beitritt, wird Host.'}</p>
     <div class="rc-acts">${btns}</div>
   </article>`;
@@ -6048,7 +6086,7 @@ function viewRooms() {
     <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf und Kartenwahn könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
     ${me ? '' : `<div class="card rooms-hint"><p class="m-text">Damit du mitspielen kannst, brauchst du einen eigenen Spieler. Den erstellst du unter <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button>.</p></div>`}
     <div class="rooms">${ROOMS.map(roomCardHTML).join('')}</div>
-    <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz, Malen, Golf oder Kartenwahn, stellt alles ein und startet.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
+    <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz, Malen, Golf oder Kartenwahn, stellt alles ein und startet.</li><li><b>Privat:</b> Wollt ihr unter euch bleiben, stellt der Host den Raum auf privat und lädt seine Freunde ein. Andere können dann nicht beitreten.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
   </section>`;
 }
 function viewRoom() {
@@ -6078,10 +6116,12 @@ function roomBarHTML() {
   return `<div class="roombar">
     <div class="rb-top">
       <b class="rb-name">${esc(L.name)}</b><span class="rb-kind">${kind}</span><span class="rb-count">${mem.length}/${ROOM_MAX}</span>
-      ${host ? '<span class="rb-host">Du bist Host</span>' : ''}
+      ${host ? '<span class="rb-host">Du bist Host</span>' : ''}${roomPriv(L) || (host && L.priv) ? '<span class="rb-priv">🔒 Privat</span>' : ''}
       <span class="rb-acts">
         ${host && L.kind && st !== 'running' ? `<button class="btn btn-sm" type="button" data-act="room-kind" data-v="">Anderes Spiel</button>` : ''}
         ${host && st !== 'running' && mem.length < ROOM_MAX ? `<button class="btn btn-sm" type="button" data-act="bot-open">🤖 Bot dazu</button>` : ''}
+        ${host ? `<button class="btn btn-sm ${L.priv ? 'btn-gold' : ''}" type="button" data-act="room-priv" aria-pressed="${L.priv}">${L.priv ? '🔒 Privat' : '🔓 Öffentlich'}</button>` : ''}
+        ${host && L.priv ? `<button class="btn btn-sm" type="button" data-act="room-invite-open">💌 Einladen</button>` : ''}
         ${!host && (member || S.admin) && hostStale(L) ? `<button class="btn btn-sm btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}
         <button class="btn btn-sm" type="button" data-act="lhs-open">🏆 Highscore</button>
         <button class="btn btn-sm" type="button" data-act="rooms">Alle Räume</button>
@@ -6095,7 +6135,7 @@ const roomActions = {
   'rooms': () => { S.tab = 'spiele'; try { location.hash = 'spiele'; } catch (e) {} render(); window.scrollTo({top:0}); },
   'room-join': b => roomJoin(b.dataset.room),
   'room-open': b => { roomSet(b.dataset.room); setTab('raum'); },
-  'room-view': b => { if (myRoom()) return; roomSet(b.dataset.room, true); setTab('raum'); },
+  'room-view': b => { if (myRoom()) return; const L = lobby(b.dataset.room); if (roomPriv(L) && !roomInvited(L) && !S.admin) return; roomSet(b.dataset.room, true); setTab('raum'); },
   'room-unview': () => { roomSet(''); setTab('spiele'); },
   'room-leave': b => {
     const r = b.dataset.room || S.room, L = lobby(r);
@@ -6106,7 +6146,10 @@ const roomActions = {
   'room-kind': b => roomKind(b.dataset.v),
   'room-kick': b => roomKick(b.dataset.pid),
   'room-take': () => roomTake(),
-  'room-reset': b => roomReset(b.dataset.room)
+  'room-reset': b => roomReset(b.dataset.room),
+  'room-priv': () => roomPrivToggle(),
+  'room-invite-open': () => { if (ctl()) openModal({type:'roominv'}); },
+  'room-invite': b => roomInvite(b.dataset.pid)
 };
 
 /* ---------- Kartenwahn: Regeln (Ablegespiel nach den klassischen Regeln) ----------
@@ -9389,6 +9432,7 @@ function renderModal() {
   else if (m.type === 'adminlogin') inner = adminLoginModal();
   else if (m.type === 'player') inner = modalPlayer();
   else if (m.type === 'botadd') inner = botAddModalHTML();
+  else if (m.type === 'roominv') inner = roomInviteModalHTML();
   else if (m.type === 'vgshow') inner = vgShowModal();
   else if (m.type === 'vgform') inner = vgFormModal();
   else if (m.type === 'tkshow') inner = tkShowModal();

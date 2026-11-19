@@ -110,6 +110,10 @@ Ganz oben in **Optionen** gibt es die Karte **„🏆 Turnier“** mit vier Stuf
 
 „Wartebildschirm ansehen“ zeigt dem Spielleiter den Bildschirm so, wie ihn die Spieler sehen. Die Laufschrift-Meldung „Heute im Studio“ gibt es nicht mehr.
 
+## Private Räume
+
+Der Host kann seinen Raum in der Raum-Leiste mit **„🔓 Öffentlich“ / „🔒 Privat“** umschalten. Bei „Privat“ lädt er über **„💌 Einladen“** Spieler ein (wer schon im Raum ist, ist automatisch eingeladen). Alle anderen sehen den Raum mit 🔒 und können weder beitreten noch zuschauen; Eingeladene sehen „Du bist eingeladen“. Wer rausgeworfen wird, verliert seine Einladung. Verlässt der Letzte den Raum oder ist der Host 10 Minuten weg, ist der Raum wieder offen. Die Firestore-Regeln prüfen das ebenfalls (nach dem Veröffentlichen der Regeln).
+
 ## Spieler-Ansicht für den Spielleiter
 
 Unten links gibt es für den Spielleiter den Knopf **„Spieler-Ansicht“**. Damit sieht er die Seite so, wie ein normaler Spieler sie sieht (ohne Admin-Knöpfe, Support als Spieler, Sperrbildschirm vor dem Turnierstart usw.). Ein gelber Streifen oben zeigt, dass die Spieler-Ansicht an ist; „Admin-Ansicht“ schaltet zurück. Es erscheinen dabei keine Hinweis-Meldungen. Angemeldet bleibt man dabei als Spielleiter. In laufenden Spielen ist der Knopf ausgeblendet. Nach dem Neuladen ist wieder die Admin-Ansicht an.
