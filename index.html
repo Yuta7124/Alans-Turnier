@@ -1460,6 +1460,7 @@ button.bcell[disabled]{cursor:default}
 @keyframes tvpulse{50%{transform:scale(1.025)}}
 .tv-sub{color:var(--muted);font-size:18px;max-width:40ch;margin:10px 0 0}
 .ticker{position:fixed;left:0;right:0;bottom:28px;display:flex;align-items:stretch;height:50px;z-index:2;background:rgba(10,7,22,.94);box-shadow:0 -3px 0 var(--coin),0 3px 0 var(--coin)}
+.ticker-status{background:var(--hp);justify-content:center;align-items:center;padding:0 14px;color:#fff;font-family:var(--pixel);font-size:13px;text-transform:uppercase;letter-spacing:.06em;text-align:center;line-height:1.3}
 .ticker-tag{flex:none;display:flex;align-items:center;padding:0 16px;background:var(--hp);color:#fff;font-family:var(--pixel);font-size:11px;text-transform:uppercase;white-space:nowrap}
 .ticker-track{flex:1;overflow:hidden;display:flex;align-items:center}
 .ticker-move{display:inline-flex;white-space:nowrap;gap:22px;align-items:center;padding-left:22px;font-weight:600;font-size:17px;animation:ticker 40s linear infinite}
@@ -1471,6 +1472,7 @@ button.bcell[disabled]{cursor:default}
   .onair{font-size:9px;padding:7px 9px}
   .ticker{height:44px;bottom:16px}
   .ticker-tag{font-size:9px;padding:0 10px}
+  .ticker-status{font-size:10px;padding:0 62px}
   .ticker-move{font-size:15px}
   .gate.tv .preview-end{bottom:80px}
 }
@@ -2245,7 +2247,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=28"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=29"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3726,26 +3728,11 @@ function gateState() {
 function blocked() { const g = gateState(); return g === 'lobby' || g === 'countdown'; }
 function wantedGate() { return LOBBY && S.preview && S.admin ? 'lobby' : gateState(); }
 function tickerHTML() {
-  const tk = S.ticker || DEFAULT_TICKER, k = tourState().k;
-  const parts = [];
-  let len = 0;
-  const txt = t => { parts.push(`<span>${esc(t)}</span>`); len += t.length; };
-  if (tk.date) {
-    const st = S.settings, d = st.date ? new Date(st.date + 'T12:00:00').toLocaleDateString(LOC, {weekday:'long', day:'numeric', month:'long'}) : '';
-    txt(k === 'none' ? 'Aktuell ist kein Turnier geplant' : k === 'plan' && d ? `Nächstes Turnier: ${d}${st.time ? `, ${st.time} Uhr` : ''}` : 'Das nächste Turnier kommt bald');
-  }
-  tk.items.forEach(it => {
-    // Ohne geplantes Turnier keine „gleich geht’s los“-Sprüche
-    if (k === 'none' && /gleich geht|gleich live|bleib dran/i.test(it.text || '')) return;
-    const im = tickImg(it.img);
-    parts.push(`<span class="tk-it">${im ? `<img src="${im}" alt="">` : ''}${it.text ? `<span>${esc(it.text)}</span>` : ''}</span>`);
-    len += (it.text || '').length + (im ? 16 : 0);
-  });
-  if (!parts.length) return '';
-  const one = parts.map(t => t + '<i>+++</i>').join('');
-  const secs = Math.max(24, Math.round(len * .22));
-  const tag = k === 'none' ? (tk.tag ? 'Kein Turnier' : '') : tk.tag;
-  return `<div class="ticker" aria-hidden="true">${tag ? `<span class="ticker-tag">${esc(tag)}</span>` : ''}<div class="ticker-track"><div class="ticker-move" style="animation-duration:${secs}s">${one}${one}</div></div></div>`;
+  // Roter Status-Balken: zeigt nur, was in Optionen → Turnier eingestellt ist
+  const k = tourState().k, st = S.settings;
+  const d = st.date ? new Date(st.date + 'T12:00:00').toLocaleDateString(LOC, {weekday:'short', day:'numeric', month:'short'}) : '';
+  const t = k === 'none' ? 'Kein Turnier geplant' : k === 'soon' ? 'Demnächst live' : k === 'plan' ? (d ? `Live am ${d}${st.time ? ` · ${st.time} Uhr` : ''}` : 'Demnächst live') : 'Jetzt live';
+  return `<div class="ticker ticker-status" aria-hidden="true"><span>${esc(t)}</span></div>`;
 }
 function tvTop(on) {
   return `<div class="tv-top"><span class="onair ${on ? 'on' : ''}"><i></i>${on ? 'Gleich live' : 'Live in Kürze'}</span><span class="tv-bug">${COIN(18)}<span class="tv-name">${esc(S.settings.title)}</span><b id="tv-clock"></b></span></div>`;
@@ -4315,7 +4302,6 @@ function viewSettings() {
       <div class="wadd"><input class="input" id="share-link" readonly value="${SHARE_URL}" aria-label="Link zur Seite"><button class="btn btn-gold" type="button" data-act="copy-link">Kopieren</button></div>
       <p class="m-text">Schick deinen Freunden den Link und das Turnier-Passwort. Sie brauchen kein Konto. ${LOBBY ? 'Sie landen auf dem Wartebildschirm, ' : 'Nach einem kurzen Intro sind sie direkt auf der Seite, '}können eigene Spieler anlegen und im Quiz selbst antworten.</p>
     </div>
-    ${tickerCardHTML()}
     ${picsCardHTML()}
     ${bgmCardHTML()}
     ${musicCardHTML()}
@@ -10612,7 +10598,7 @@ function renderFlySite() {
   el.innerHTML = show ? flyHTML('site') : '';
 }
 function lobbyKey() {
-  return JSON.stringify([S.ticker, (S.pics || []).map(p => p.id), S.deco && S.deco.flyLobby, S.players.map(p => p.name), S.settings.date]);
+  return JSON.stringify([S.ticker, (S.pics || []).map(p => p.id), S.deco && S.deco.flyLobby, S.players.map(p => p.name), S.settings.date, S.settings.time, S.settings.status]);
 }
 function picsCardHTML() {
   const d = S.deco || DEFAULT_DECO, pics = S.pics || [];
