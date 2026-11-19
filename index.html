@@ -629,9 +629,9 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .vgm-link small{font-family:var(--body);font-size:13px;color:var(--muted)}
 .vgm-shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
 .vgm-shot{position:relative}
-.vgm-shot button{display:block;width:100%;border:0;padding:0;cursor:zoom-in;background:var(--bg-2);aspect-ratio:16/9;overflow:hidden;box-shadow:0 0 0 3px var(--shadow)}
+.vgm-shot button:not(.vgm-x){display:block;width:100%;border:0;padding:0;cursor:zoom-in;background:var(--bg-2);aspect-ratio:16/9;overflow:hidden;box-shadow:0 0 0 3px var(--shadow)}
 .vgm-shot img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .15s}
-.vgm-shot button:hover img{transform:scale(1.05)}
+.vgm-shot button:not(.vgm-x):hover img{transform:scale(1.05)}
 .vgm-x{position:absolute;top:-8px;right:-8px;z-index:2;width:28px;height:28px;border:0;cursor:pointer;background:var(--hp);color:#fff;font-size:18px;font-weight:700;line-height:1;box-shadow:0 0 0 2px var(--shadow)}
 .vgm-add{display:flex;flex-wrap:wrap;gap:8px}
 .vgm-add label.btn{cursor:pointer}
@@ -762,6 +762,21 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
   .sp-cardline{font-size:12px;gap:6px}
   .sp-pcard .pc-actions{flex-direction:column;align-items:stretch}
 }
+.vg-hrsrow{display:flex;gap:8px;align-items:center}
+.vg-hrsrow .input{flex:1;min-width:0}
+.vg-hrsrow .chip{flex:none}
+.vg-favpick{display:flex;flex-direction:column;gap:8px}
+.sp-top3{display:flex;flex-direction:column;gap:5px;width:100%;margin-top:4px;text-align:left}
+.sp-t3{display:grid;grid-template-columns:16px 24px minmax(0,1fr);gap:7px;align-items:center;font-size:13px;font-weight:700;color:var(--ink)}
+.sp-t3n{font-family:var(--pixel);font-size:9px;color:var(--coin);text-align:center}
+.vg-cover.t3{width:24px;height:32px;box-shadow:0 0 0 2px var(--shadow)}
+.vg-noimg.t3{font-size:7px}
+.sp-t3t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-pcard .sp-top3{padding:8px 4px 0;border-top:2px solid var(--edge);margin-top:6px}
+.sp-t3h{font-family:var(--pixel);font-size:8px;color:var(--muted);text-transform:uppercase;margin-top:6px}
+.sp-id .sp-top3{max-width:340px}
+.sp-id .sp-t3{font-size:14px}
+@media (max-width:560px){.sp-id .sp-top3{margin:0 auto}.sp-t3{font-size:12px;grid-template-columns:12px 22px minmax(0,1fr);gap:5px}.vg-cover.t3{width:22px;height:29px}}
 /* VG-CSS-END */
 .lhs{display:flex;flex-direction:column;gap:10px;margin-top:16px}
 .lhs-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -1973,7 +1988,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=18"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=19"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -6559,8 +6574,8 @@ function normVg(id, x) {
     st:one(x.st, VG_ST, 'done'), ach:one(x.ach, VG_ACH, 'na'),
     achU:vgInt(x.achU, 0, 9999), achT:vgInt(x.achT, 0, 9999),
     r:Number.isInteger(r) && r >= 0 && r <= 10 ? r : -1, rd,
-    hrs:Math.max(0, Math.min(99999, Number(x.hrs) || 0)), note:str(x.note, 300),
-    fav:x.fav === true, fsk:VG_FSK.some(l => l[0] === x.fsk) ? x.fsk : -1, ms:vgInt(x.ms, 0, 99), mv:vgInt(x.mv, 0, 99),
+    hrs:Math.max(0, Math.min(99999, Number(x.hrs) || 0)), hrsp:x.hrsp === true, note:str(x.note, 300),
+    fav:x.fav === true ? 1 : vgInt(x.fav, 0, 3), fsk:VG_FSK.some(l => l[0] === x.fsk) ? x.fsk : -1, ms:vgInt(x.ms, 0, 99), mv:vgInt(x.mv, 0, 99),
     ts:Number(x.ts) || 0, up:Number(x.up) || 0
   };
 }
@@ -6582,6 +6597,8 @@ function vgHow(p) {
   return lsGet('turnier-me', '') === p.id && (p.byGuest || S.admin) ? 'claim' : '';
 }
 const vgCan = p => !!vgHow(p);
+/* Spielzeit mit „+“, wenn es mindestens so viele Stunden sind (z. B. 5.000+) */
+const vgHrs = (h, plus) => `${h.toLocaleString(LOC)}${plus ? '+' : ''}`;
 const vgNum = n => EN ? n.toFixed(1) : n.toFixed(1).replace('.', ',');
 const vgCol = r => r < 0 ? '#6b5d86' : r <= 3 ? '#ff4f6d' : r <= 5 ? '#ff9a3c' : r <= 7 ? '#ffcf3f' : r <= 9 ? '#4ff08f' : '#39d6f2';
 function vgStats(list) {
@@ -6589,7 +6606,7 @@ function vgStats(list) {
   return {
     n:list.length, done:list.filter(g => g.st === 'done').length, all:list.filter(g => g.ach === 'all').length,
     avg:rated.length ? rated.reduce((t, g) => t + g.r, 0) / rated.length : -1,
-    hrs:Math.round(list.reduce((t, g) => t + g.hrs, 0))
+    hrs:Math.round(list.reduce((t, g) => t + g.hrs, 0)), hrsp:list.some(g => g.hrsp && g.hrs > 0)
   };
 }
 function vgCoverHTML(g, cls = '') {
@@ -6642,7 +6659,7 @@ function vgShowModal() {
         ${g.gen.length ? `<div class="vg-show-row"><span class="vg-k">Genre</span>${vgGenHTML(g)}</div>` : ''}
         ${g.md.length ? `<div class="vg-show-row"><span class="vg-k">Spielart</span>${vgModeHTML(g)}</div>` : ''}
         ${ach ? `<div class="vg-achbox ${g.ach === 'all' ? 'is-100' : ''}"><span>${esc(ach)}</span>${pct >= 0 ? `<span class="vg-bt"><i style="width:${pct}%;--c:${g.ach === 'all' ? 'var(--coin)' : 'var(--xp)'}"></i></span>` : ''}</div>` : ''}
-        ${g.hrs ? `<p class="vg-meta">⏱ ${g.hrs.toLocaleString(LOC)} ${g.hrs === 1 ? 'Stunde' : 'Stunden'} gespielt</p>` : ''}
+        ${g.hrs ? `<p class="vg-meta">⏱ ${vgHrs(g.hrs, g.hrsp)} ${g.hrs === 1 && !g.hrsp ? 'Stunde' : 'Stunden'} gespielt</p>` : ''}
         ${g.ts ? `<p class="vg-meta">Eingetragen am ${esc(new Date(g.ts).toLocaleDateString(LOC, {day:'numeric', month:'long', year:'numeric'}))}</p>` : ''}
       </div>
     </div>
@@ -6650,11 +6667,12 @@ function vgShowModal() {
       ${open ? `<div class="vg-bars">${bars}</div>` : ''}` : `<div class="vg-bigscore is-static" style="--c:${vgCol(g.r)}"><b>${g.r}</b><small>/10</small><span>${esc(VG_WORD[g.r])}<em>Ohne Einzelwertungen</em></span></div>`}
     ${g.note ? `<blockquote class="vg-note">„${esc(g.note)}“</blockquote>` : ''}
     ${vgmHTML(g, can)}
-    ${can ? `<div class="m-foot vg-foot"><button class="btn btn-ghost danger" type="button" data-act="vg-del" data-id="${esc(g.id)}">Löschen</button><button class="btn btn-ghost" type="button" data-act="vg-fav" data-id="${esc(g.id)}" aria-pressed="${g.fav}">${g.fav ? '★ Lieblingsspiel' : '☆ Als Lieblingsspiel zeigen'}</button><button class="btn btn-gold" type="button" data-act="vg-edit" data-id="${esc(g.id)}">Bearbeiten</button></div>` : ''}`;
+    ${can ? `<div class="vg-favpick"><span class="lbl">In deinen Top 3</span><div class="chips">${[1, 2, 3].map(n => `<button class="chip" type="button" data-act="vg-fav" data-id="${esc(g.id)}" data-v="${n}" aria-pressed="${g.fav === n}">Platz ${n}</button>`).join('')}<button class="chip" type="button" data-act="vg-fav" data-id="${esc(g.id)}" data-v="0" aria-pressed="${!g.fav}">Nicht dabei</button></div></div>` : ''}
+    ${can ? `<div class="m-foot vg-foot"><button class="btn btn-ghost danger" type="button" data-act="vg-del" data-id="${esc(g.id)}">Löschen</button><button class="btn btn-gold" type="button" data-act="vg-edit" data-id="${esc(g.id)}">Bearbeiten</button></div>` : ''}`;
 }
 
 /* Formular: Spiel eintragen oder bearbeiten */
-function vgBlank(pid) { return {id:'', pid, title:'', img:'', plat:[], gen:[], md:[], fsk:-1, st:'done', ach:'none', achU:'', achT:'', r:-1, rd:{}, hrs:'', note:''}; }
+function vgBlank(pid) { return {id:'', pid, title:'', img:'', plat:[], gen:[], md:[], fsk:-1, st:'done', ach:'none', achU:'', achT:'', r:-1, rd:{}, hrs:'', hrsp:false, note:''}; }
 function vgFormModal() {
   const d = D.vgF; if (!d) return '';
   const chip = (act, k, v, on, lbl) => `<button class="chip" type="button" data-act="${act}" data-k="${k}" data-v="${v}" aria-pressed="${on}">${lbl}</button>`;
@@ -6678,7 +6696,9 @@ function vgFormModal() {
       <div class="field"><span class="lbl">Im Detail (optional)</span><small class="muted">Tipp eine Zahl nochmal an, um sie zu entfernen.</small>
         <div class="vg-cats">${VG_CAT.map(([k, l, i]) => `<div class="vg-cat"><span class="vg-catl">${i} ${esc(l)}${k in d.rd ? ` <b style="color:${vgCol(d.rd[k])}">${d.rd[k]}</b>` : ''}</span>${scale('vgf-rd', k, k in d.rd ? d.rd[k] : -1, true)}</div>`).join('')}</div></div>
       <div class="vg-two">
-        <div class="field"><label for="vg-hrs">Spielzeit in Stunden (optional)</label><input class="input" type="number" min="0" max="99999" step="any" inputmode="decimal" id="vg-hrs" data-draft="vgF.hrs" value="${esc(d.hrs)}" placeholder="z. B. 40"></div>
+        <div class="field"><label for="vg-hrs">Spielzeit in Stunden (optional)</label>
+          <div class="vg-hrsrow"><input class="input" type="text" inputmode="decimal" id="vg-hrs" data-draft="vgF.hrs" value="${esc(d.hrs)}" placeholder="z. B. 40" autocomplete="off" maxlength="9"><button class="chip" type="button" data-act="vgf-hrsp" aria-pressed="${!!d.hrsp}">+ oder mehr</button></div>
+          <small class="muted">Weißt du es nicht genau (z. B. auf mehreren Plattformen), tippe „+ oder mehr“. Dann steht da etwa „5.000+ Std.“.</small></div>
       </div>
       <div class="field"><label for="vg-note">Fazit (optional)</label><textarea class="input" id="vg-note" rows="3" maxlength="300" data-draft="vgF.note" placeholder="Was war super, was nicht?">${esc(d.note)}</textarea></div>
       <div class="m-foot"><button class="btn btn-ghost" type="button" data-act="modal-close">Abbrechen</button><button class="btn btn-gold" type="submit">${d.id ? 'Speichern' : 'Eintragen'}</button></div>
@@ -6734,9 +6754,13 @@ async function vgSave() {
   const achT = d.ach === 'some' || d.ach === 'all' ? vgInt(d.achT, 0, 9999) : 0;
   let achU = d.ach === 'some' ? vgInt(d.achU, 0, 9999) : d.ach === 'all' ? achT : 0;
   if (d.ach === 'some' && achT && achU > achT) { toast('Freigeschaltet kann nicht mehr sein als insgesamt.'); return; }
-  const hrs = Math.max(0, Math.min(99999, Math.round(parseNum(d.hrs) * 10) / 10));
+  let hraw = String(d.hrs ?? '').trim();
+  const hrsp = !!d.hrsp || /\+\s*$/.test(hraw);
+  hraw = hraw.replace(/[+\s]/g, '');
+  if (/^\d{1,3}(\.\d{3})+$/.test(hraw)) hraw = hraw.replace(/\./g, '');
+  const hrs = Math.max(0, Math.min(99999, Math.round(parseNum(hraw) * 10) / 10));
   const old = d.id ? (S.vg || []).find(g => g.id === d.id) : null;
-  const doc = {pid:d.pid, title, img:d.img || '', plat:d.plat.slice(0, 4), gen:d.gen.slice(0, 4), md:d.md.slice(0, 4), ...(d.fsk >= 0 ? {fsk:d.fsk} : {}), fav:old ? old.fav : false, ms:old ? old.ms : 0, mv:old ? old.mv : 0, st:d.st, ach:d.ach, achU, achT, r:d.r, rd:{...d.rd}, hrs, note:str(d.note, 300), ts:old ? old.ts || Date.now() : Date.now(), up:Date.now()};
+  const doc = {pid:d.pid, title, img:d.img || '', plat:d.plat.slice(0, 4), gen:d.gen.slice(0, 4), md:d.md.slice(0, 4), ...(d.fsk >= 0 ? {fsk:d.fsk} : {}), fav:old ? old.fav : 0, ...(hrsp && hrs ? {hrsp:true} : {}), ms:old ? old.ms : 0, mv:old ? old.mv : 0, st:d.st, ach:d.ach, achU, achT, r:d.r, rd:{...d.rd}, hrs, note:str(d.note, 300), ts:old ? old.ts || Date.now() : Date.now(), up:Date.now()};
   const id = d.id || uid();
   vgBusy = true;
   try {
@@ -6754,7 +6778,7 @@ const vgActions = {
   'vg-sort': b => { D.vgSort = b.dataset.v; render(); },
   'vg-gen': b => { D.vgGen = b.dataset.v; render(); },
   'vg-new': b => { const p = playerById(b.dataset.pid); if (!vgCan(p)) { toast('Spiele eintragen kann nur der Spieler selbst.'); return; } D.vgF = vgBlank(p.id); openModal({type:'vgform'}); },
-  'vg-edit': b => { const g = (S.vg || []).find(x => x.id === b.dataset.id); if (!g) return; D.vgF = {...g, plat:g.plat.slice(), gen:g.gen.slice(), md:g.md.slice(), rd:{...g.rd}, achU:g.achU ? String(g.achU) : '', achT:g.achT ? String(g.achT) : '', hrs:g.hrs ? String(g.hrs) : ''}; openModal({type:'vgform'}); },
+  'vg-edit': b => { const g = (S.vg || []).find(x => x.id === b.dataset.id); if (!g) return; D.vgF = {...g, plat:g.plat.slice(), gen:g.gen.slice(), md:g.md.slice(), rd:{...g.rd}, hrsp:g.hrsp, achU:g.achU ? String(g.achU) : '', achT:g.achT ? String(g.achT) : '', hrs:g.hrs ? String(g.hrs) : ''}; openModal({type:'vgform'}); },
   'vg-del': b => {
     const g = (S.vg || []).find(x => x.id === b.dataset.id); if (!g) return;
     confirmBox('Spiel löschen?', `„${g.title}“ wird mit allen Screenshots und Clips aus dem Profil entfernt.`, [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Löschen', cls:'btn-gold', fn:async () => {
@@ -6771,6 +6795,7 @@ const vgActions = {
   'vgf-r': b => { const d = D.vgF; if (!d) return; d.r = Number(b.dataset.v); renderModal(); },
   'vgf-rd': b => { const d = D.vgF, k = b.dataset.k, v = Number(b.dataset.v); if (!d) return; if (d.rd[k] === v) delete d.rd[k]; else d.rd[k] = v; renderModal(); },
   'vgf-fsk': b => { if (D.vgF) { D.vgF.fsk = Number(b.dataset.v); renderModal(); } },
+  'vgf-hrsp': () => { if (D.vgF) { D.vgF.hrsp = !D.vgF.hrsp; renderModal(); } },
   'vgf-noimg': () => { if (D.vgF) { D.vgF.img = ''; renderModal(); } }
 };
 /* ---------- Videogames ENDE ---------- */
@@ -7122,7 +7147,20 @@ function spBadges(p, list) {
   ].map(([i, n, d, got]) => ({i, n, d, got}));
 }
 const spSince = p => p.createdAt ? new Date(p.createdAt).toLocaleDateString(LOC, {month:'long', year:'numeric'}) : '';
-function spFav(list) { return list.find(g => g.fav) || list.filter(g => g.r >= 0).sort((a, b) => b.r - a.r || b.hrs - a.hrs || b.ts - a.ts)[0] || null; }
+/* Top 3: erst die selbst gewählten Plätze 1 bis 3, Lücken füllen die bestbewerteten Spiele */
+function vgTop3(list) {
+  const out = [null, null, null];
+  list.filter(g => g.fav > 0).sort((a, b) => a.fav - b.fav || b.up - a.up).forEach(g => { if (!out[g.fav - 1]) out[g.fav - 1] = g; });
+  const rest = list.filter(g => !out.includes(g) && g.r >= 0).sort((a, b) => b.r - a.r || b.hrs - a.hrs || b.ts - a.ts);
+  for (let i = 0; i < 3; i++) if (!out[i]) out[i] = rest.shift() || null;
+  return out.filter(Boolean);
+}
+const spFav = list => vgTop3(list)[0] || null;
+function spTop3HTML(list) {
+  const t = vgTop3(list);
+  if (!t.length) return '';
+  return `<span class="sp-top3" aria-label="Top 3 Lieblingsspiele">${t.map((g, i) => `<span class="sp-t3"><b class="sp-t3n">${i + 1}</b>${vgCoverHTML(g, 't3')}<span class="sp-t3t">${esc(g.title)}</span></span>`).join('')}</span>`;
+}
 
 /* Screenshot-Showcase: die neuesten Screenshots eines Spielers, einmal pro Profilaufruf geladen */
 const spShots = {};
@@ -7158,6 +7196,7 @@ function spCardsHTML() {
         <span class="pc-name">${nameHTML(p)}</span>${mottoHTML(p)}
         <span class="sp-cardline">${spLvHTML(lv.l, 'sm')}<span class="sp-st ${s.k}">${esc(s.t)}</span></span>
         <span class="sp-cardline muted">${l.length ? `${l.length} ${l.length === 1 ? 'Spiel' : 'Spiele'}` : 'Noch keine Spiele'}${p.wins > 0 ? ` · 🏆 ${p.wins}` : ''}</span>
+        ${spTop3HTML(l)}
       </button>
       ${adm ? `<div class="pc-wins sp-wins"><span class="pw-edit"><button class="x" type="button" data-act="win-add" data-pid="${esc(p.id)}" data-d="-1" ${p.wins > 0 ? '' : 'disabled'} aria-label="Einen Turniersieg weniger für ${esc(p.name)}">−</button><b>${p.wins}</b> 🏆<button class="x" type="button" data-act="win-add" data-pid="${esc(p.id)}" data-d="1" aria-label="Einen Turniersieg mehr für ${esc(p.name)}">+</button></span></div>` : ''}
       ${adm ? `<div class="pc-actions"><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Bearbeiten</button><button class="btn btn-sm btn-ghost danger" type="button" data-act="delete-player" data-pid="${esc(p.id)}">Löschen</button></div>`
@@ -7224,6 +7263,7 @@ function spProfileHTML(p) {
           ${mottoHTML(p)}
           <span class="sp-st ${s.k}">${esc(s.t)}</span>
           ${spSince(p) ? `<span class="sp-since">Dabei seit ${esc(spSince(p))}</span>` : ''}
+          ${all.length ? `<span class="sp-t3h">Top 3 Lieblingsspiele</span>${spTop3HTML(all)}` : ''}
         </div>
         <div class="sp-lvbox">
           <div class="sp-lvrow"><span class="sp-lvlbl">Level</span>${spLvHTML(lv.l, 'big')}</div>
@@ -7235,23 +7275,23 @@ function spProfileHTML(p) {
     </div>
     <div class="sp-cols">
       <div class="sp-main">
-        ${fav ? `<div class="sp-box sp-favbox"><h3 class="sp-h">${fav.fav ? 'Lieblingsspiel' : 'Bestes Spiel'}</h3>
+        ${fav ? `<div class="sp-box sp-favbox"><h3 class="sp-h">${fav.fav === 1 ? 'Lieblingsspiel' : 'Bestes Spiel'}</h3>
           <button class="sp-fav" type="button" data-act="vg-show" data-id="${esc(fav.id)}">
             ${vgCoverHTML(fav, 'sp-favcv')}
             <span class="sp-favinfo"><b>${esc(fav.title)}</b>
               <span class="vg-show-row">${vgStBadge(fav)}${vgFskHTML(fav.fsk)}${vgPlatHTML(fav)}</span>
               ${fav.gen.length ? `<span class="vg-gens">${vgGenHTML(fav)}</span>` : ''}
-              <span class="sp-favnums">${fav.r >= 0 ? `<span class="sp-big" style="color:${vgCol(fav.r)}">${fav.r}<small>/10</small></span>` : ''}${fav.hrs ? `<span class="sp-big">${fav.hrs.toLocaleString(LOC)}<small> Std.</small></span>` : ''}</span>
+              <span class="sp-favnums">${fav.r >= 0 ? `<span class="sp-big" style="color:${vgCol(fav.r)}">${fav.r}<small>/10</small></span>` : ''}${fav.hrs ? `<span class="sp-big">${vgHrs(fav.hrs, fav.hrsp)}<small> Std.</small></span>` : ''}</span>
               ${pct(fav) >= 0 ? `<span class="sp-achline"><span>${esc(vgAchText(fav))}</span><span class="vg-bt"><i style="width:${pct(fav)}%;--c:${fav.ach === 'all' ? 'var(--coin)' : 'var(--xp)'}"></i></span></span>` : ''}
               ${fav.note ? `<span class="sp-quote">„${esc(fav.note)}“</span>` : ''}
             </span>
           </button></div>` : ''}
         ${shots ? `<div class="sp-box"><h3 class="sp-h">Screenshots <small>${shots}</small></h3>
           ${sh ? `<div class="sp-shots">${sh.map((m, i) => `<button type="button" data-act="sp-shot" data-pid="${esc(p.id)}" data-i="${i}" class="${i === 0 ? 'first' : ''}"><img src="${m.img}" alt="Screenshot" loading="lazy"></button>`).join('')}</div>` : '<p class="m-text">Lädt …</p>'}</div>` : ''}
-        <div class="sp-box"><h3 class="sp-h">Kürzliche Aktivität ${st.hrs ? `<small>${st.hrs.toLocaleString(LOC)} Std. insgesamt</small>` : ''}</h3>
+        <div class="sp-box"><h3 class="sp-h">Kürzliche Aktivität ${st.hrs ? `<small>${vgHrs(st.hrs, st.hrsp)} Std. insgesamt</small>` : ''}</h3>
           ${recent.length ? recent.map(g => `<button class="sp-act" type="button" data-act="vg-show" data-id="${esc(g.id)}">
             ${vgCoverHTML(g, 'sp-actcv')}
-            <span class="sp-actin"><span class="sp-acttop"><b>${esc(g.title)}</b><small>${g.hrs ? `${g.hrs.toLocaleString(LOC)} Std. gespielt` : esc(VG_ST_SHORT[g.st])}</small></span>
+            <span class="sp-actin"><span class="sp-acttop"><b>${esc(g.title)}</b><small>${g.hrs ? `${vgHrs(g.hrs, g.hrsp)} Std. gespielt` : esc(VG_ST_SHORT[g.st])}</small></span>
               <span class="sp-actsub">${g.r >= 0 ? `<span class="sp-r" style="--c:${vgCol(g.r)}">${g.r}/10</span>` : ''}<span class="muted">${esc(new Date(Math.max(g.ts, g.up)).toLocaleDateString(LOC, {day:'numeric', month:'short', year:'numeric'}))}</span></span>
               ${pct(g) >= 0 ? `<span class="sp-achline"><span>${esc(vgAchText(g))}</span><span class="vg-bt"><i style="width:${pct(g)}%;--c:${g.ach === 'all' ? 'var(--coin)' : 'var(--xp)'}"></i></span></span>` : ''}
             </span></button>`).join('') : `<p class="m-text">${can ? 'Trag dein erstes Spiel ein, dann steht es hier.' : 'Noch keine Spiele eingetragen.'}</p>${can ? `<button class="btn btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}`}
@@ -7267,7 +7307,7 @@ function spProfileHTML(p) {
       </div>
       <aside class="sp-side">
         <div class="sp-box sp-nums">
-          ${stat(st.n, st.n === 1 ? 'Spiel' : 'Spiele')}${stat(st.done, 'Durchgespielt')}${stat(st.all, 'Auf 100 %')}${stat(st.avg >= 0 ? vgNum(st.avg) : '–', 'Ø Bewertung')}${stat(shots, 'Screenshots')}${stat(clips, 'Clips')}${stat(st.hrs.toLocaleString(LOC), 'Stunden')}${stat(p.wins || 0, p.wins === 1 ? 'Turniersieg' : 'Turniersiege')}
+          ${stat(st.n, st.n === 1 ? 'Spiel' : 'Spiele')}${stat(st.done, 'Durchgespielt')}${stat(st.all, 'Auf 100 %')}${stat(st.avg >= 0 ? vgNum(st.avg) : '–', 'Ø Bewertung')}${stat(shots, 'Screenshots')}${stat(clips, 'Clips')}${stat(vgHrs(st.hrs, st.hrsp), 'Stunden')}${stat(p.wins || 0, p.wins === 1 ? 'Turniersieg' : 'Turniersiege')}
           ${favPlat || favGen ? `<div class="sp-favs">${favPlat ? `<span><small>Lieblingsplattform</small><b>${esc(vgLbl(VG_PLAT, favPlat[0]))}</b></span>` : ''}${favGen ? `<span><small>Lieblingsgenre</small><b>${esc(vgLbl(VG_GEN, favGen[0]))}</b></span>` : ''}</div>` : ''}
         </div>
         <div class="sp-box"><h3 class="sp-h">Abzeichen <small>${got.length} von ${badges.length}</small></h3>
@@ -7283,14 +7323,13 @@ function spProfileHTML(p) {
 const spActions = {
   'sp-shot': b => spShotOpen(b.dataset.pid, Number(b.dataset.i) || 0),
   'vg-fav': async b => {
-    const g = (S.vg || []).find(x => x.id === b.dataset.id); if (!g) return;
-    const on = !g.fav, olds = vgOf(g.pid).filter(x => x.fav && x.id !== g.id);
+    const g = (S.vg || []).find(x => x.id === b.dataset.id), v = Number(b.dataset.v) || 0; if (!g || g.fav === v) return;
+    const olds = v ? vgOf(g.pid).filter(x => x.fav === v && x.id !== g.id) : [];
     try {
-      await vgCommit(g.pid, bt => { bt.update(db.collection('vg').doc(g.id), {fav:on}); olds.forEach(o => bt.update(db.collection('vg').doc(o.id), {fav:false})); });
-      toast(on ? 'Steht jetzt als Lieblingsspiel im Profil.' : 'Kein Lieblingsspiel mehr.');
+      await vgCommit(g.pid, bt => { bt.update(db.collection('vg').doc(g.id), {fav:v}); olds.forEach(o => bt.update(db.collection('vg').doc(o.id), {fav:0})); });
+      toast(v ? `${g.title} ist jetzt auf Platz ${v} deiner Lieblingsspiele.` : `${g.title} ist nicht mehr in deinen Top 3.`);
     } catch (e) { vgErr(e); }
-  }
-};
+  }};
 /* ---------- Spieler-Profile ENDE ---------- */
 
 /* ---------- Spieleliste: welche Spiele im Turnier vorkommen können, für alle sichtbar ---------- */
