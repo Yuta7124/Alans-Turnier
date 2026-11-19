@@ -3659,7 +3659,12 @@ function render() {
   m.classList.toggle('wide', /class="section (qsec|dsec|gsec|ksec)"/.test(html));
   renderSubnav();
   if (S.tab === 'malen' && !blocked() && S.mode === 'db' && S.loaded && dPartsOk(m)) dPatchParts();
-  else { patch(m, html); dPrev = dParts ? {...dParts} : {}; }
+  else {
+    const vk = S.tab + ':' + (D.vgP || ''), sy = window.scrollY;
+    patch(m, html); dPrev = dParts ? {...dParts} : {};
+    if (render.vk === vk && Math.abs(window.scrollY - sy) > 2) window.scrollTo(0, sy);
+    render.vk = vk;
+  }
   dcMount();
   golfMount();
   kMount();
@@ -8648,7 +8653,7 @@ function sfx(n) {
 /* ---------- Modals ---------- */
 let confirmFns = [];
 function openModal(m) { S.modal = m; renderModal(); setTimeout(() => { const f = $('#modal-root [data-autofocus]') || $('#modal-root .modal button'); if (f) f.focus(); }, 30); }
-function closeModal() { S.modal = null; D.ep = null; $('#modal-root').innerHTML = ''; if (typeof vgmStop === 'function') { vgmStop(); D.vgmLink = null; } }
+function closeModal() { S.modal = null; D.ep = null; $('#modal-root').innerHTML = ''; $('#modal-root').dataset.mk = ''; if (typeof vgmStop === 'function') { vgmStop(); D.vgmLink = null; } }
 function renderModal() {
   const m = S.modal; const root = $('#modal-root');
   if (!m) { root.innerHTML = ''; return; }
@@ -8681,7 +8686,12 @@ function renderModal() {
     <div class="m-head"><h2 id="m-title">${esc(m.title)}</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
     <p class="m-text">${esc(m.text)}</p>
     <div class="m-foot">${m.actions.map((a, i) => `<button class="btn ${a.cls || ''}" type="button" data-act="confirm-do" data-i="${i}" ${i === m.actions.length - 1 ? 'data-autofocus' : ''}>${esc(a.label)}</button>`).join('')}</div>`;
+  // Beim Neuzeichnen (z. B. nach einem Tipp auf eine Bewertung) an derselben Stelle bleiben statt nach oben zu springen
+  const key = m.type + ':' + (m.id || ''), om = root.querySelector('.modal'), os = root.querySelector('.scrim');
+  const keep = root.dataset.mk === key ? [om ? om.scrollTop : 0, os ? os.scrollTop : 0] : null;
   patch(root, `<div class="scrim"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">${inner}</div></div>`);
+  root.dataset.mk = key;
+  if (keep) { const nm = root.querySelector('.modal'), ns = root.querySelector('.scrim'); if (nm) nm.scrollTop = keep[0]; if (ns) ns.scrollTop = keep[1]; }
 }
 function confirmBox(title, text, actions) {
   confirmFns = actions.map(a => a.fn);
