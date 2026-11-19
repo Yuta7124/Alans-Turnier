@@ -188,6 +188,37 @@ service cloud.firestore {
         allow delete: if true;
       }
 
+      // Videogames: gespielte Spiele im Profil eines Spielers. Eintragen, ändern und löschen darf nur das Gerät, dem der
+      // Spieler gehört: Es wechselt im selben Schreibvorgang den geheimen Spieler-Schlüssel (siehe players oben).
+      function vgOk(d) {
+        return d.keys().hasOnly(['pid', 'title', 'img', 'plat', 'st', 'ach', 'achU', 'achT', 'r', 'rd', 'hrs', 'note', 'ts', 'up'])
+          && d.pid is string && d.pid.size() > 0 && d.pid.size() <= 40
+          && d.title is string && d.title.size() > 0 && d.title.size() <= 80
+          && (!('img' in d) || (d.img is string && d.img.size() < 60000))
+          && (!('plat' in d) || (d.plat is list && d.plat.size() <= 4))
+          && (!('st' in d) || d.st in ['done', 'play', 'drop', 'endless'])
+          && (!('ach' in d) || d.ach in ['all', 'some', 'none', 'na'])
+          && (!('achU' in d) || (d.achU is int && d.achU >= 0 && d.achU <= 9999))
+          && (!('achT' in d) || (d.achT is int && d.achT >= 0 && d.achT <= 9999))
+          && d.r is int && d.r >= 0 && d.r <= 10
+          && (!('rd' in d) || (d.rd is map && d.rd.keys().hasOnly(['gp', 'gfx', 'snd', 'story', 'atmo', 'fun'])))
+          && (!('hrs' in d) || (d.hrs is number && d.hrs >= 0 && d.hrs <= 99999))
+          && (!('note' in d) || (d.note is string && d.note.size() <= 300));
+      }
+      function vgOwner(pid) {
+        return isAdmin() || (
+          exists(/databases/$(database)/documents/rooms/$(room)/players/$(pid))
+          && getAfter(/databases/$(database)/documents/rooms/$(room)/players/$(pid)).data.get('kh', '')
+             != get(/databases/$(database)/documents/rooms/$(room)/players/$(pid)).data.get('kh', '')
+        );
+      }
+      match /vg/{id} {
+        allow read: if true;
+        allow create: if vgOk(request.resource.data) && vgOwner(request.resource.data.pid);
+        allow update: if vgOk(request.resource.data) && request.resource.data.pid == resource.data.pid && vgOwner(resource.data.pid);
+        allow delete: if vgOwner(resource.data.pid);
+      }
+
       // Alles andere (Punkte, Einstellungen, Quiz, Rad, Ankündigungen): lesen alle, ändern nur der Spielleiter.
       match /{coll}/{id} {
         allow read: if true;

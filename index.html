@@ -462,6 +462,144 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .k-rest-cards{grid-column:3 / -1;grid-row:3;display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
 .k-rest-cards:empty{display:none}
 /* KARTEN-CSS-END */
+/* VG-CSS-START: Videogames */
+.vg-panel,.vg-pcard,.vg-card{--e:var(--edge);background:var(--panel);box-shadow:0 -4px 0 0 var(--e),0 4px 0 0 var(--e),-4px 0 0 0 var(--e),4px 0 0 0 var(--e),0 12px 0 0 rgba(0,0,0,.42)}
+.vg-cta{display:flex;align-items:center;justify-content:space-between;gap:14px 20px;flex-wrap:wrap;padding:16px 20px;margin:0 4px 30px;--e:var(--coin)}
+.vg-cta b{display:block;font-family:var(--display);font-size:20px;text-transform:uppercase}
+.vg-cta span{color:var(--muted)}
+.vg-pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:24px 20px;margin:0 4px}
+.vg-pcard{position:relative;border:0;color:var(--ink);font:inherit;cursor:pointer;padding:22px 14px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:transform .12s}
+.vg-pcard:hover,.vg-pcard:focus-visible{transform:translateY(-3px);--e:var(--xp)}
+.vg-pcard.is-me{--e:var(--coin)}
+.vg-pcard .vg-pav{box-shadow:0 0 0 4px var(--shadow),0 0 0 7px var(--edge);margin:4px 0}
+.vg-pname{font-family:var(--display);font-size:20px;font-weight:700;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vg-pline{color:var(--muted);font-size:14px;font-weight:600}
+.vg-strip{display:flex;gap:6px;justify-content:center;min-height:56px;align-items:center}
+.vg-strip-empty{font-size:28px;opacity:.35}
+.vg-pbadges{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;min-height:22px}
+.vg-pbadges span{font-size:12px;font-weight:700;padding:2px 8px;background:var(--bg-2);color:var(--coin)}
+.vg-pbadges span:first-child{color:var(--ok)}
+/* Cover */
+.vg-cover{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:var(--bg-2)}
+.vg-noimg{display:grid;place-items:center;font-family:var(--pixel);font-size:26px;color:rgba(255,255,255,.9);text-shadow:3px 3px 0 rgba(0,0,0,.5);
+  background:linear-gradient(160deg,hsl(var(--h) 70% 42%),hsl(calc(var(--h) + 50) 65% 18%));background-size:cover}
+.vg-cover.mini{width:42px;height:56px;box-shadow:0 0 0 2px var(--shadow)}
+.vg-noimg.mini{font-size:10px}
+.vg-cover.tiny{width:36px;height:48px;flex:none;box-shadow:0 0 0 2px var(--shadow)}
+.vg-noimg.tiny{font-size:9px}
+.vg-cover.big{box-shadow:0 0 0 3px var(--shadow),0 0 0 6px var(--edge)}
+.vg-cover.form{width:96px;height:128px;flex:none;box-shadow:0 0 0 3px var(--shadow),0 0 0 6px var(--edge)}
+.vg-noimg.form{font-size:18px}
+/* Spiel-Karten */
+.vg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:24px 20px;margin:0 4px}
+.vg-card{position:relative;display:flex;flex-direction:column;transition:transform .12s}
+.vg-card:hover{transform:translateY(-3px);--e:var(--xp)}
+.vg-card.is-100{--e:var(--coin)}
+.vg-hit{display:flex;flex-direction:column;border:0;padding:0;margin:0;background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer;flex:1}
+.vg-cv{position:relative;display:block}
+.vg-st{position:absolute;left:8px;bottom:8px;font-size:12px;font-weight:700;padding:3px 8px;background:rgba(7,5,15,.88);color:var(--c);box-shadow:inset 3px 0 0 var(--c)}
+.vg-body{display:flex;flex-direction:column;gap:6px;padding:12px 12px 14px}
+.vg-title{font-family:var(--display);font-size:18px;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vg-plats{display:flex;flex-wrap:wrap;gap:4px}
+.vg-plat{font-family:var(--pixel);font-size:8px;padding:4px 6px;background:var(--bg-2);color:var(--xp);text-transform:uppercase;line-height:1.2}
+.vg-ach{font-size:13px;color:var(--muted);font-weight:600}
+.vg-card.is-100 .vg-ach{color:var(--coin)}
+.vg-by{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--muted)}
+.vg-score{position:absolute;top:8px;right:8px;border:0;cursor:pointer;min-width:52px;padding:6px 8px 5px;background:rgba(7,5,15,.9);color:var(--c);display:flex;align-items:baseline;justify-content:center;gap:1px;
+  box-shadow:0 0 0 3px var(--c),0 4px 0 3px rgba(0,0,0,.5);font:inherit;transition:transform .1s}
+.vg-score:hover,.vg-score:focus-visible{transform:scale(1.08)}
+.vg-score b{font-family:var(--pixel);font-size:18px;line-height:1}
+.vg-score small{font-size:11px;font-weight:700;opacity:.8}
+.vg-h3{font-family:var(--display);font-size:24px;text-transform:uppercase;margin:42px 4px 16px;text-shadow:2px 2px 0 var(--shadow)}
+.vg-top{list-style:none;margin:0 4px;padding:0;display:flex;flex-direction:column;gap:10px;max-width:640px}
+.vg-top button{width:100%;display:flex;align-items:center;gap:12px;border:0;cursor:pointer;color:var(--ink);font:inherit;text-align:left;padding:8px 14px 8px 10px;background:var(--panel);
+  box-shadow:0 -3px 0 var(--edge),0 3px 0 var(--edge),-3px 0 0 var(--edge),3px 0 0 var(--edge)}
+.vg-top button:hover{background:var(--panel-2)}
+.vg-rank{font-family:var(--pixel);font-size:14px;color:var(--coin);width:24px;text-align:center;flex:none}
+.vg-tt{flex:1;min-width:0;display:flex;flex-direction:column}
+.vg-tt b{font-family:var(--display);font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vg-tt small{color:var(--muted);font-size:12px}
+.vg-avg{font-family:var(--pixel);font-size:16px;color:var(--c);flex:none}
+/* Profil */
+.vg-back{margin:0 4px 16px}
+.vg-head{display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding:20px 22px;margin:4px 4px 26px}
+.vg-head .vg-hav{box-shadow:0 0 0 4px var(--shadow),0 0 0 7px var(--edge)}
+.vg-hname{flex:1;min-width:180px;display:flex;flex-direction:column;gap:4px}
+.vg-hname h2{margin:0;font-family:var(--display);font-size:32px;line-height:1.05;text-transform:uppercase}
+.vg-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:0 0 22px}
+.vg-tile{padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.vg-tile b{font-family:var(--pixel);font-size:24px;color:var(--coin);text-shadow:2px 2px 0 var(--shadow);line-height:1.2}
+.vg-tile small{color:var(--muted);font-size:13px}
+.vg-others{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0 4px 20px}
+.vg-others .lbl{margin-right:6px}
+.vg-others .chip small{opacity:.7}
+/* Detail */
+.vg-show{display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px;align-items:start}
+.vg-show-info{display:flex;flex-direction:column;gap:12px;min-width:0}
+.vg-by-btn{border:0;background:none;padding:0;cursor:pointer;font:inherit;color:var(--ink);font-weight:700;font-size:15px;text-align:left}
+.vg-by-btn:hover{color:var(--xp)}
+.vg-show-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.vg-show-row .vg-st{position:static}
+.vg-achbox{display:flex;flex-direction:column;gap:6px;font-weight:700;color:var(--muted)}
+.vg-achbox.is-100{color:var(--coin)}
+.vg-bt{display:block;height:12px;background:var(--bg-2);box-shadow:0 0 0 2px var(--shadow);position:relative;overflow:hidden}
+.vg-bt i{position:absolute;inset:0 auto 0 0;background:repeating-linear-gradient(90deg,var(--c) 0 6px,color-mix(in srgb,var(--c) 70%,#000) 6px 8px)}
+.vg-meta{margin:0;color:var(--muted);font-size:14px}
+.vg-bigscore{display:flex;align-items:center;gap:14px;width:100%;border:0;cursor:pointer;font:inherit;color:var(--ink);text-align:left;padding:14px 18px;background:var(--bg-2);
+  box-shadow:0 0 0 3px var(--c),0 6px 0 3px rgba(0,0,0,.4)}
+.vg-bigscore:hover{background:var(--panel-2)}
+.vg-bigscore.is-static{cursor:default}.vg-bigscore.is-static:hover{background:var(--bg-2)}.vg-bigscore.is-static em{color:var(--muted)}
+.vg-bigscore b{font-family:var(--pixel);font-size:40px;color:var(--c);line-height:1;text-shadow:3px 3px 0 var(--shadow)}
+.vg-bigscore small{font-weight:700;color:var(--muted);align-self:flex-end;margin:0 4px 4px -8px}
+.vg-bigscore span{display:flex;flex-direction:column;font-family:var(--display);font-size:22px;text-transform:uppercase;line-height:1.1}
+.vg-bigscore em{font-style:normal;font-family:var(--body);font-size:13px;color:var(--xp);text-transform:none;margin-top:4px}
+.vg-bars{display:flex;flex-direction:column;gap:12px;padding:4px 2px}
+.vg-bar{display:grid;grid-template-columns:150px minmax(0,1fr) 32px;align-items:center;gap:12px}
+.vg-bl{font-weight:700;white-space:nowrap}
+.vg-bar b{font-family:var(--pixel);font-size:14px;text-align:right}
+.vg-note{margin:0;padding:12px 16px;background:var(--bg-2);box-shadow:inset 4px 0 0 var(--xp);font-style:italic;color:var(--ink)}
+/* Formular */
+.vg-imgrow{display:flex;gap:18px;align-items:center}
+.vg-imgbtns{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.vg-imgbtns label.btn{cursor:pointer}
+.vg-achin{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+.vg-achin .input.mini{width:90px}
+.vg-word{margin-left:8px;font-weight:700}
+.vg-scale{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:4px}
+.vg-scale button{border:0;cursor:pointer;font-family:var(--pixel);font-size:13px;color:var(--ink);background:var(--bg-2);min-height:40px;padding:0;box-shadow:inset 0 -3px 0 color-mix(in srgb,var(--c) 45%,transparent)}
+.vg-scale button:hover{background:var(--panel-2)}
+.vg-scale button[aria-pressed="true"]{background:var(--c);color:#120c24;box-shadow:0 0 0 2px var(--shadow),0 0 14px color-mix(in srgb,var(--c) 60%,transparent)}
+.vg-scale.sm button{min-height:32px;font-size:10px}
+.vg-cats{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.vg-cat{display:flex;flex-direction:column;gap:6px}
+.vg-catl{font-weight:700;font-size:14px}
+@media (max-width:820px){.vg-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){
+  .vg-pgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 14px}
+  .vg-pcard{padding:18px 8px 12px}
+  .vg-pcard .vg-pav{width:60px!important;height:60px!important}
+  .vg-pname{font-size:17px}
+  .vg-pline{font-size:12px}
+  .vg-cover.mini{width:32px;height:43px}
+  .vg-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 14px}
+  .vg-title{font-size:16px}
+  .vg-body{padding:10px 10px 12px}
+  .vg-score{min-width:44px;padding:5px 6px 4px}
+  .vg-score b{font-size:15px}
+  .vg-head{gap:14px;padding:16px}
+  .vg-head .vg-hav{width:72px!important;height:72px!important}
+  .vg-hname h2{font-size:24px}
+  .vg-tile b{font-size:20px}
+  .vg-show{grid-template-columns:110px minmax(0,1fr);gap:14px}
+  .vg-bar{grid-template-columns:118px minmax(0,1fr) 26px;gap:8px}
+  .vg-bl{font-size:13px}
+  .vg-bigscore b{font-size:32px}
+  .vg-bigscore span{font-size:18px}
+  .vg-scale{gap:3px}
+  .vg-scale button{font-size:11px;min-height:36px}
+  .vg-scale.sm button{font-size:9px;min-height:30px}
+}
+/* VG-CSS-END */
 .lhs{display:flex;flex-direction:column;gap:10px;margin-top:16px}
 .lhs-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .lhs-head h3{margin:0}
@@ -936,6 +1074,8 @@ button.bcell[disabled]{cursor:default}
 .toggle input{width:20px;height:20px;accent-color:var(--coin);flex:none}
 .tab .t-short{display:none}
 @media (max-width:680px){.tab .t-long{display:none}.tab .t-short{display:inline}}
+@media (max-width:440px){.tab{font-size:12.5px;padding:10px 3px}}
+@media (max-width:370px){.tab{font-size:11px;padding:10px 2px}}
 .foot{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;padding:30px 16px 44px;color:var(--muted,#a99bc4);font-size:13px;text-align:center}
 .foot .link{font-size:13px}
 .tv-admin{display:block;margin:16px auto 0;font-size:12px;opacity:.6}
@@ -1672,7 +1812,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=13"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=14"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -2693,8 +2833,8 @@ const DEFAULT_SETTINGS = {title:'Darkime Turnier', date:'', prize:100, places:3,
 const LS_KEY = 'spieleturnier-v1';
 const SHARE_URL = location.href.split('#')[0].split('?')[0];
 const RING = 2 * Math.PI * 44;
-const TABS = [['start', 'Main-Menü'], ['turnier', 'Turnier'], ['spiele', 'Spiele'], ['spieler', 'Spieler'], ['einstellungen', 'Optionen']];
-const TAB_SHORT = {start:'Menü'};
+const TABS = [['start', 'Main-Menü'], ['turnier', 'Turnier'], ['spiele', 'Spiele'], ['vg', 'Videogames'], ['spieler', 'Spieler'], ['einstellungen', 'Optionen']];
+const TAB_SHORT = {start:'Menü', vg:EN ? 'Gaming' : 'Games'};
 /* Ober-Tabs mit Unterseiten */
 const GROUPS = {
   turnier:[['rangliste', '🏆', 'Highscore'], ['rad', '🎡', 'Zufallsrad'], ['liste', '📋', 'Spieleliste']]
@@ -2705,7 +2845,7 @@ function groupPick(g) {
   return GROUPS[g].some(x => x[0] === last) ? last : GROUPS[g][0][0];
 }
 /* Ansichten: "Spiele" ist der Ober-Tab für Quiz und Malen */
-const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'einstellungen'];
+const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'vg', 'einstellungen'];
 const HUB = ['quiz', 'malen'];
 const viewOk = t => VIEWS.includes(t);
 function viewFor(t) {
@@ -3276,7 +3416,7 @@ function render() {
   else if (S.mode === 'lock') html = lockHTML();
   else if (blocked()) html = `<div style="min-height:70vh"></div>`;
   else if (S.tab === 'spiele-pick') html = `<div class="loading">${COIN(48, 'spin')}</div>`;
-  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, einstellungen:viewSettings}[S.tab] || viewStart)();
+  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, vg:viewVg, einstellungen:viewSettings}[S.tab] || viewStart)();
   const oldStand = m.querySelector('.stand');
   const oldKey = oldStand ? oldStand.dataset.key : null;
   const before = standCapture(oldStand);
@@ -6249,6 +6389,299 @@ const botActions = {
   'bot-del': b => botRemove(b.dataset.pid)
 };
 /* ---------- Bots ENDE ---------- */
+/* ---------- Videogames: Profile mit gespielten Spielen ----------
+   Jeder Spieler trägt seine Spiele ein (Bild, Plattform, Status, Achievements, Bewertung 0 bis 10 mit Einzelwertungen).
+   Daten: rooms/{raum}/vg/{id}. Schreiben darf der Spielleiter oder das Gerät, dem der Spieler gehört. Dafür wird im selben
+   Schreibvorgang der geheime Spieler-Schlüssel gewechselt (wie beim Bearbeiten des Spielers), das prüfen die Regeln. */
+const VG_PLAT = [['ps5', 'PS5'], ['ps4', 'PS4'], ['xsx', 'Xbox Series'], ['xone', 'Xbox One'], ['sw2', 'Switch 2'], ['sw', 'Switch'], ['pc', 'PC'], ['mob', 'Handy'], ['retro', 'Retro'], ['other', 'Andere']];
+const VG_ST = [['done', 'Durchgespielt', '✔', '#4ff08f'], ['play', 'Spiele ich gerade', '▶', '#39d6f2'], ['drop', 'Abgebrochen', '✖', '#ff4f6d'], ['endless', 'Hat kein Ende', '∞', '#c493ff']];
+const VG_ST_SHORT = {done:'Durchgespielt', play:'Am Spielen', drop:'Abgebrochen', endless:'Endlos'};
+const VG_ACH = [['all', 'Alle freigeschaltet', '🏆'], ['some', 'Ein paar', '🎖️'], ['none', 'Keine', '○'], ['na', 'Gibt es nicht', '–']];
+const VG_CAT = [['gp', 'Gameplay', '🎮'], ['gfx', 'Grafik', '🖼️'], ['snd', 'Sounddesign', '🎵'], ['story', 'Story', '📖'], ['atmo', 'Atmosphäre', '🌌'], ['fun', 'Spielspaß', '😄']];
+const VG_WORD = ['Katastrophe', 'Ganz schlecht', 'Schlecht', 'Schwach', 'Geht so', 'Mittelmaß', 'Ganz okay', 'Gut', 'Sehr gut', 'Herausragend', 'Meisterwerk'];
+let vgSub = false;
+const vgInt = (v, lo, hi) => { const n = Math.round(Number(String(v ?? '').replace(',', '.'))); return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : lo; };
+function normVg(id, x) {
+  x = x || {};
+  const one = (v, list, d) => list.some(l => l[0] === v) ? v : d;
+  const rd = {};
+  if (x.rd && typeof x.rd === 'object') VG_CAT.forEach(([k]) => { const v = Number(x.rd[k]); if (Number.isInteger(v) && v >= 0 && v <= 10) rd[k] = v; });
+  const r = Number(x.r);
+  return {
+    id, pid:str(x.pid, 40), title:str(x.title, 80),
+    img:typeof x.img === 'string' && x.img.length < 60000 && /^data:image\/(png|jpe?g|webp);base64,[A-Za-z0-9+/=]+$/.test(x.img) ? x.img : '',
+    plat:Array.isArray(x.plat) ? x.plat.filter(p => VG_PLAT.some(l => l[0] === p)).slice(0, 4) : [],
+    st:one(x.st, VG_ST, 'done'), ach:one(x.ach, VG_ACH, 'na'),
+    achU:vgInt(x.achU, 0, 9999), achT:vgInt(x.achT, 0, 9999),
+    r:Number.isInteger(r) && r >= 0 && r <= 10 ? r : -1, rd,
+    hrs:Math.max(0, Math.min(99999, Number(x.hrs) || 0)), note:str(x.note, 300),
+    ts:Number(x.ts) || 0, up:Number(x.up) || 0
+  };
+}
+function vgEnsure() {
+  if (vgSub || S.mode !== 'db' || !db) return;
+  vgSub = true;
+  unsubs.push(db.collection('vg').onSnapshot(sn => {
+    S.vgErr = false; S.vg = sn.docs.map(d => normVg(d.id, d.data())).filter(g => g.title && g.pid);
+    if (S.tab === 'vg') render(); else if (S.modal && /^vg/.test(S.modal.type)) renderModal();
+  }, () => { S.vgErr = true; if (S.tab === 'vg') render(); }));
+  // Beim Neu-Verbinden werden alle Abos beendet. Dann hier wieder neu anmelden.
+  unsubs.push(() => { vgSub = false; S.vgErr = false; });
+}
+const vgOf = pid => (S.vg || []).filter(g => g.pid === pid);
+const vgCan = p => !!p && S.mode === 'db' && !(typeof isBot === 'function' && isBot(p.id)) && (S.admin || !!ownEdit(p));
+const vgNum = n => EN ? n.toFixed(1) : n.toFixed(1).replace('.', ',');
+const vgCol = r => r < 0 ? '#6b5d86' : r <= 3 ? '#ff4f6d' : r <= 5 ? '#ff9a3c' : r <= 7 ? '#ffcf3f' : r <= 9 ? '#4ff08f' : '#39d6f2';
+function vgStats(list) {
+  const rated = list.filter(g => g.r >= 0);
+  return {
+    n:list.length, done:list.filter(g => g.st === 'done').length, all:list.filter(g => g.ach === 'all').length,
+    avg:rated.length ? rated.reduce((t, g) => t + g.r, 0) / rated.length : -1,
+    hrs:Math.round(list.reduce((t, g) => t + g.hrs, 0))
+  };
+}
+function vgPlayers() {
+  const real = S.players.filter(p => !(typeof isBot === 'function' && isBot(p.id)));
+  const me = myPid();
+  return real.slice().sort((a, b) => (b.id === me) - (a.id === me) || vgOf(b.id).length - vgOf(a.id).length || a.createdAt - b.createdAt);
+}
+function vgCoverHTML(g, cls = '') {
+  if (g.img) return `<img class="vg-cover ${cls}" src="${g.img}" alt="">`;
+  const w = g.title.split(/\s+/).filter(Boolean), ini = (w.length > 1 ? w[0][0] + w[1][0] : g.title.slice(0, 2)).toUpperCase();
+  let h = 0; for (const c of g.title) h = (h * 31 + c.charCodeAt(0)) % 360;
+  return `<span class="vg-cover vg-noimg ${cls}" style="--h:${h}" aria-hidden="true">${esc(ini)}</span>`;
+}
+const vgPlatHTML = g => g.plat.map(p => `<span class="vg-plat">${esc((VG_PLAT.find(l => l[0] === p) || ['', p])[1])}</span>`).join('');
+function vgAchText(g) {
+  if (g.ach === 'all') return `🏆 Alle Achievements${g.achT ? ` (${g.achT})` : ''}`;
+  if (g.ach === 'some') return g.achT ? `🎖️ ${g.achU} von ${g.achT} Achievements` : `🎖️ ${g.achU} Achievements`;
+  if (g.ach === 'none') return 'Noch keine Achievements';
+  return '';
+}
+function vgStBadge(g) { const s = VG_ST.find(x => x[0] === g.st); return `<span class="vg-st" style="--c:${s[3]}">${s[2]} ${esc(VG_ST_SHORT[g.st])}</span>`; }
+function vgCardHTML(g, showBy) {
+  const by = showBy ? ghost(g.pid) : null, ach = vgAchText(g);
+  return `<article class="vg-card ${g.ach === 'all' ? 'is-100' : ''}">
+    <button class="vg-hit" type="button" data-act="vg-show" data-id="${esc(g.id)}" aria-label="${esc(g.title)} ansehen">
+      <span class="vg-cv">${vgCoverHTML(g)}${vgStBadge(g)}</span>
+      <span class="vg-body"><b class="vg-title">${esc(g.title)}</b>
+        ${g.plat.length ? `<span class="vg-plats">${vgPlatHTML(g)}</span>` : ''}
+        ${ach ? `<span class="vg-ach">${esc(ach)}</span>` : ''}
+        ${by ? `<span class="vg-by">${avatar(by, 20)}${esc(by.name)}</span>` : ''}</span>
+    </button>
+    ${g.r >= 0 ? `<button class="vg-score" type="button" data-act="vg-show" data-id="${esc(g.id)}" data-rd="1" style="--c:${vgCol(g.r)}" aria-label="Bewertung ${g.r} von 10, Einzelwertungen ansehen"><b>${g.r}</b><small>/10</small></button>` : ''}
+  </article>`;
+}
+function viewVg() {
+  if (S.mode !== 'db') return `<section class="section"><div class="sec-head"><h2 class="h">Videogames</h2></div><div class="empty-box"><strong>Nur mit Verbindung</strong><p>Die Videogame-Profile gibt es nur, wenn die Seite mit der Datenbank verbunden ist.</p></div></section>`;
+  vgEnsure();
+  if (S.vgErr && !S.vg) return `<section class="section"><div class="sec-head"><h2 class="h">Videogames</h2></div><div class="empty-box"><strong>Gleich geht's los</strong><p>Die Videogame-Profile sind noch nicht freigeschaltet. Der Spielleiter muss dafür einmal die neuen Datenbank-Regeln veröffentlichen.</p></div></section>`;
+  if (!S.vg) return `<div class="loading">${COIN(48, 'spin')}<p>Lade Videogames …</p></div>`;
+  const p = D.vgP && playerById(D.vgP);
+  return p ? vgProfileHTML(p) : vgOverviewHTML();
+}
+function vgOverviewHTML() {
+  const ps = vgPlayers(), me = playerById(myPid()), all = (S.vg || []).filter(g => playerById(g.pid));
+  const mine = me && vgCan(me);
+  const cta = mine ? `<div class="card vg-cta"><div><b>Dein Profil</b><span>${vgOf(me.id).length ? `${vgOf(me.id).length} ${vgOf(me.id).length === 1 ? 'Spiel' : 'Spiele'} eingetragen` : 'Noch leer. Trag dein erstes Spiel ein!'}</span></div><button class="btn btn-gold" type="button" data-act="vg-new" data-pid="${esc(me.id)}">+ Spiel eintragen</button></div>`
+    : S.admin ? '' : `<div class="card vg-cta"><div><b>Mitmachen</b><span>Erstell unter „Spieler“ deinen eigenen Spieler. Dann kannst du hier deine Spiele eintragen.</span></div><button class="btn" type="button" data-act="tab" data-tab="spieler">Zu den Spielern</button></div>`;
+  const cards = ps.map(p => {
+    const l = vgOf(p.id).sort((a, b) => b.ts - a.ts), st = vgStats(l);
+    return `<button class="vg-pcard ${p.id === myPid() ? 'is-me' : ''}" type="button" data-act="vg-open" data-pid="${esc(p.id)}">
+      ${p.id === myPid() ? '<span class="ptag">Du</span>' : ''}
+      ${avatar(p, 76, 'vg-pav')}
+      <span class="vg-pname">${nameHTML(p)}</span>
+      <span class="vg-pline">${st.n ? `${st.n} ${st.n === 1 ? 'Spiel' : 'Spiele'}${st.avg >= 0 ? ` · Ø ${vgNum(st.avg)}` : ''}` : 'Noch keine Spiele'}</span>
+      <span class="vg-strip">${l.slice(0, 4).map(g => vgCoverHTML(g, 'mini')).join('') || '<span class="vg-strip-empty">🎮</span>'}</span>
+      <span class="vg-pbadges">${st.done ? `<span>✔ ${st.done} durch</span>` : ''}${st.all ? `<span>🏆 ${st.all} × 100 %</span>` : ''}</span>
+    </button>`;
+  }).join('');
+  // Top-Spiele der Gruppe: gleiche Titel zusammen, Durchschnitt aller Bewertungen
+  const grp = {};
+  all.filter(g => g.r >= 0).forEach(g => { const k = g.title.toLowerCase().replace(/[^a-z0-9äöüß]+/g, ''); (grp[k] = grp[k] || []).push(g); });
+  const top = Object.values(grp).map(l => ({g:l.slice().sort((a, b) => !!b.img - !!a.img)[0], avg:l.reduce((t, x) => t + x.r, 0) / l.length, n:l.length}))
+    .sort((a, b) => b.avg - a.avg || b.n - a.n).slice(0, 5);
+  const recent = all.slice().sort((a, b) => b.ts - a.ts).slice(0, 8);
+  return `<section class="section vgsec">
+    <div class="sec-head"><h2 class="h">Videogames <span class="count">${all.length} ${all.length === 1 ? 'Spiel' : 'Spiele'}</span></h2><span class="muted">Wer hat was gespielt und wie fand er es? Tipp auf einen Spieler, um sein Profil zu sehen.</span></div>
+    ${cta}
+    <div class="vg-pgrid">${cards || '<div class="empty-box"><strong>Noch keine Spieler</strong></div>'}</div>
+    ${top.length ? `<h3 class="vg-h3">🏅 Top-Spiele der Gruppe</h3><ol class="vg-top">${top.map((t, i) => `<li><button type="button" data-act="vg-show" data-id="${esc(t.g.id)}"><span class="vg-rank">${i + 1}</span>${vgCoverHTML(t.g, 'tiny')}<span class="vg-tt"><b>${esc(t.g.title)}</b><small>${t.n === 1 ? '1 Bewertung' : `${t.n} Bewertungen`}</small></span><span class="vg-avg" style="--c:${vgCol(Math.round(t.avg))}">${vgNum(t.avg)}</span></button></li>`).join('')}</ol>` : ''}
+    ${recent.length ? `<h3 class="vg-h3">🕹️ Zuletzt eingetragen</h3><div class="vg-grid">${recent.map(g => vgCardHTML(g, true)).join('')}</div>` : ''}
+  </section>`;
+}
+function vgProfileHTML(p) {
+  const f = D.vgFilt || 'alle', so = D.vgSort || 'neu';
+  let l = vgOf(p.id);
+  const st = vgStats(l), can = vgCan(p);
+  const cnt = k => l.filter(g => g.st === k).length;
+  if (f !== 'alle') l = l.filter(g => g.st === f);
+  l.sort(so === 'top' ? (a, b) => b.r - a.r || b.ts - a.ts : so === 'az' ? (a, b) => a.title.localeCompare(b.title, 'de') : (a, b) => b.ts - a.ts);
+  const plats = {}; vgOf(p.id).forEach(g => g.plat.forEach(x => { plats[x] = (plats[x] || 0) + 1; }));
+  const fav = Object.entries(plats).sort((a, b) => b[1] - a[1])[0];
+  const others = vgPlayers().filter(x => x.id !== p.id);
+  const tile = (lbl, val, sub, c) => `<div class="card vg-tile" ${c ? `style="--e:${c}"` : ''}><span class="eyebrow">${lbl}</span><b>${val}</b>${sub ? `<small>${sub}</small>` : ''}</div>`;
+  return `<section class="section vgsec">
+    <div class="vg-back"><button class="btn btn-sm btn-ghost" type="button" data-act="vg-open" data-pid="">← Alle Spieler</button></div>
+    <div class="card vg-head">
+      ${avatar(p, 96, 'vg-hav')}
+      <div class="vg-hname"><h2>${nameHTML(p)}</h2>${mottoHTML(p)}<span class="muted">${fav ? `Spielt am meisten auf ${esc((VG_PLAT.find(x => x[0] === fav[0]) || ['', fav[0]])[1])}` : 'Videogame-Profil'}</span></div>
+      ${can ? `<button class="btn btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}
+    </div>
+    <div class="vg-tiles">
+      ${tile('Spiele', st.n, '', '')}
+      ${tile('Durchgespielt', st.done, st.n ? Math.round(st.done / st.n * 100) + ' %' : '', 'var(--ok)')}
+      ${tile('Alle Achievements', st.all, st.all === 1 ? 'Spiel auf 100 %' : 'Spiele auf 100 %', 'var(--coin)')}
+      ${tile('Ø Bewertung', st.avg >= 0 ? vgNum(st.avg) : '–', st.hrs ? `${st.hrs} Std. gespielt` : '', 'var(--xp)')}
+    </div>
+    ${others.length ? `<div class="vg-others" role="group" aria-label="Andere Profile"><span class="lbl">Andere Profile</span>${others.map(o => `<button class="chip pchip" type="button" data-act="vg-open" data-pid="${esc(o.id)}">${avatar(o, 24)}${esc(o.name)} <small>${vgOf(o.id).length}</small></button>`).join('')}</div>` : ''}
+    ${st.n ? `<div class="gfilters vg-filters">
+      <div class="chips" role="group" aria-label="Nach Status filtern">${[['alle', 'Alle', st.n], ...VG_ST.map(s => [s[0], VG_ST_SHORT[s[0]], cnt(s[0])])].filter(x => x[0] === 'alle' || x[2] > 0 || f === x[0]).map(x => `<button class="chip" type="button" data-act="vg-filt" data-v="${x[0]}" aria-pressed="${f === x[0]}">${esc(x[1])} <small>${x[2]}</small></button>`).join('')}</div>
+      <div class="chips" role="group" aria-label="Sortieren"><span class="lbl">Sortieren</span>${[['neu', 'Neueste'], ['top', 'Beste Bewertung'], ['az', 'A–Z']].map(x => `<button class="chip" type="button" data-act="vg-sort" data-v="${x[0]}" aria-pressed="${so === x[0]}">${x[1]}</button>`).join('')}</div>
+    </div>` : ''}
+    ${l.length ? `<div class="vg-grid">${l.map(g => vgCardHTML(g, false)).join('')}</div>`
+      : `<div class="empty-box"><strong>${st.n ? 'Kein Spiel mit diesem Status' : 'Noch keine Spiele eingetragen'}</strong>${can && !st.n ? `<p>Trag das erste Spiel ein: mit Bild, Plattform, Bewertung und Achievements.</p><button class="btn btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}</div>`}
+  </section>`;
+}
+
+/* Detailansicht eines Eintrags */
+function vgShowModal() {
+  const g = (S.vg || []).find(x => x.id === S.modal.id);
+  if (!g) return `<div class="m-head"><h2 id="m-title">Spiel</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div><p class="m-text">Dieser Eintrag wurde gelöscht.</p>`;
+  const p = ghost(g.pid), can = vgCan(playerById(g.pid)), open = !!S.modal.rd, ach = vgAchText(g);
+  const rated = VG_CAT.filter(([k]) => k in g.rd);
+  const bars = rated.length ? rated.map(([k, l, i]) => `<div class="vg-bar"><span class="vg-bl">${i} ${esc(l)}</span><span class="vg-bt"><i style="width:${g.rd[k] * 10}%;--c:${vgCol(g.rd[k])}"></i></span><b style="color:${vgCol(g.rd[k])}">${g.rd[k]}</b></div>`).join('')
+    : '<p class="m-text">Keine Einzelwertungen eingetragen.</p>';
+  const pct = g.ach === 'all' ? 100 : g.ach === 'some' && g.achT ? Math.min(100, Math.round(g.achU / g.achT * 100)) : -1;
+  return `<div class="m-head"><h2 id="m-title">${esc(g.title)}</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
+    <div class="vg-show">
+      <div class="vg-show-cv">${vgCoverHTML(g, 'big')}</div>
+      <div class="vg-show-info">
+        <button class="vg-by vg-by-btn" type="button" data-act="vg-open" data-pid="${esc(p.id)}">${avatar(p, 26)}${esc(p.name)}</button>
+        <div class="vg-show-row">${vgStBadge(g)}${vgPlatHTML(g)}</div>
+        ${ach ? `<div class="vg-achbox ${g.ach === 'all' ? 'is-100' : ''}"><span>${esc(ach)}</span>${pct >= 0 ? `<span class="vg-bt"><i style="width:${pct}%;--c:${g.ach === 'all' ? 'var(--coin)' : 'var(--xp)'}"></i></span>` : ''}</div>` : ''}
+        ${g.hrs ? `<p class="vg-meta">⏱ ${g.hrs.toLocaleString(LOC)} ${g.hrs === 1 ? 'Stunde' : 'Stunden'} gespielt</p>` : ''}
+        ${g.ts ? `<p class="vg-meta">Eingetragen am ${esc(new Date(g.ts).toLocaleDateString(LOC, {day:'numeric', month:'long', year:'numeric'}))}</p>` : ''}
+      </div>
+    </div>
+    ${g.r < 0 ? '<p class="m-text">Noch nicht bewertet.</p>' : rated.length ? `<button class="vg-bigscore" type="button" data-act="vg-rd" aria-expanded="${open}" style="--c:${vgCol(g.r)}"><b>${g.r}</b><small>/10</small><span>${esc(VG_WORD[g.r])}<em>${open ? 'Einzelwertungen ausblenden ▴' : 'Tippen für die Einzelwertungen ▾'}</em></span></button>
+      ${open ? `<div class="vg-bars">${bars}</div>` : ''}` : `<div class="vg-bigscore is-static" style="--c:${vgCol(g.r)}"><b>${g.r}</b><small>/10</small><span>${esc(VG_WORD[g.r])}<em>Ohne Einzelwertungen</em></span></div>`}
+    ${g.note ? `<blockquote class="vg-note">„${esc(g.note)}“</blockquote>` : ''}
+    ${can ? `<div class="m-foot"><button class="btn btn-ghost danger" type="button" data-act="vg-del" data-id="${esc(g.id)}">Löschen</button><button class="btn btn-gold" type="button" data-act="vg-edit" data-id="${esc(g.id)}">Bearbeiten</button></div>` : ''}`;
+}
+
+/* Formular: Spiel eintragen oder bearbeiten */
+function vgBlank(pid) { return {id:'', pid, title:'', img:'', plat:[], st:'done', ach:'none', achU:'', achT:'', r:-1, rd:{}, hrs:'', note:''}; }
+function vgFormModal() {
+  const d = D.vgF; if (!d) return '';
+  const chip = (act, k, v, on, lbl) => `<button class="chip" type="button" data-act="${act}" data-k="${k}" data-v="${v}" aria-pressed="${on}">${lbl}</button>`;
+  const scale = (act, k, cur, small) => `<div class="vg-scale ${small ? 'sm' : ''}" role="group">${Array.from({length:11}, (_, i) => `<button type="button" data-act="${act}" data-k="${k}" data-v="${i}" aria-pressed="${cur === i}" style="--c:${vgCol(i)}">${i}</button>`).join('')}</div>`;
+  return `<div class="m-head"><h2 id="m-title">${d.id ? 'Spiel bearbeiten' : 'Spiel eintragen'}</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
+    <form class="stack vg-form" data-form="vg-save">
+      <div class="field"><label for="vg-title">Spiel</label><input class="input" id="vg-title" data-draft="vgF.title" value="${esc(d.title)}" maxlength="80" placeholder="z. B. Elden Ring" autocomplete="off" ${d.id ? '' : 'data-autofocus'}></div>
+      <div class="field vg-imgfield"><span class="lbl">Bild</span>
+        <div class="vg-imgrow">${vgCoverHTML({title:d.title || '?', img:d.img}, 'form')}
+          <div class="vg-imgbtns"><label class="btn btn-sm" for="vg-file">${d.img ? 'Anderes Bild' : 'Bild wählen'}</label><input type="file" id="vg-file" accept="image/*" hidden>
+          ${d.img ? '<button class="btn btn-sm btn-ghost" type="button" data-act="vgf-noimg">Bild entfernen</button>' : ''}<small class="muted">Am besten das Cover. Es wird auf Hochformat zugeschnitten.</small></div></div></div>
+      <div class="field"><span class="lbl">Plattform (bis zu 4)</span><div class="chips">${VG_PLAT.map(([v, l]) => chip('vgf-plat', 'plat', v, d.plat.includes(v), esc(l))).join('')}</div></div>
+      <div class="field"><span class="lbl">Status</span><div class="chips">${VG_ST.map(([v, l, i]) => chip('vgf-set', 'st', v, d.st === v, `${i} ${esc(l)}`)).join('')}</div></div>
+      <div class="field"><span class="lbl">Achievements / Trophäen</span><div class="chips">${VG_ACH.map(([v, l, i]) => chip('vgf-set', 'ach', v, d.ach === v, `${i} ${esc(l)}`)).join('')}</div>
+        ${d.ach === 'some' ? `<div class="vg-achin"><input class="input mini" type="number" min="0" max="9999" inputmode="numeric" id="vg-achu" data-draft="vgF.achU" value="${esc(d.achU)}" aria-label="Freigeschaltet" placeholder="12"><span>von</span><input class="input mini" type="number" min="0" max="9999" inputmode="numeric" id="vg-acht" data-draft="vgF.achT" value="${esc(d.achT)}" aria-label="Achievements insgesamt" placeholder="50"><span class="muted">freigeschaltet</span></div>` : ''}
+        ${d.ach === 'all' ? `<div class="vg-achin"><span class="muted">Wie viele sind es? (optional)</span><input class="input mini" type="number" min="0" max="9999" inputmode="numeric" id="vg-acht" data-draft="vgF.achT" value="${esc(d.achT)}" aria-label="Achievements insgesamt" placeholder="50"></div>` : ''}</div>
+      <div class="field"><span class="lbl">Gesamtbewertung ${d.r >= 0 ? `<b class="vg-word" style="color:${vgCol(d.r)}">${d.r}/10 · ${esc(VG_WORD[d.r])}</b>` : ''}</span>${scale('vgf-r', 'r', d.r, false)}</div>
+      <div class="field"><span class="lbl">Im Detail (optional)</span><small class="muted">Tipp eine Zahl nochmal an, um sie zu entfernen.</small>
+        <div class="vg-cats">${VG_CAT.map(([k, l, i]) => `<div class="vg-cat"><span class="vg-catl">${i} ${esc(l)}${k in d.rd ? ` <b style="color:${vgCol(d.rd[k])}">${d.rd[k]}</b>` : ''}</span>${scale('vgf-rd', k, k in d.rd ? d.rd[k] : -1, true)}</div>`).join('')}</div></div>
+      <div class="vg-two">
+        <div class="field"><label for="vg-hrs">Spielzeit in Stunden (optional)</label><input class="input" type="number" min="0" max="99999" step="any" inputmode="decimal" id="vg-hrs" data-draft="vgF.hrs" value="${esc(d.hrs)}" placeholder="z. B. 40"></div>
+      </div>
+      <div class="field"><label for="vg-note">Fazit (optional)</label><textarea class="input" id="vg-note" rows="3" maxlength="300" data-draft="vgF.note" placeholder="Was war super, was nicht?">${esc(d.note)}</textarea></div>
+      <div class="m-foot"><button class="btn btn-ghost" type="button" data-act="modal-close">Abbrechen</button><button class="btn btn-gold" type="submit">${d.id ? 'Speichern' : 'Eintragen'}</button></div>
+    </form>`;
+}
+async function toVgCover(file) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+    const w0 = img.naturalWidth, h0 = img.naturalHeight;
+    if (!w0 || !h0) throw new Error('empty');
+    // Auf 3:4 zuschneiden (Mitte), oben etwas mehr behalten: dort sind bei Covern meist Gesichter und Titel
+    let sw = w0, sh = w0 * 4 / 3;
+    if (sh > h0) { sh = h0; sw = h0 * 3 / 4; }
+    const sx = (w0 - sw) / 2, sy = Math.max(0, (h0 - sh) * 0.4);
+    for (const [w, q] of [[270, .8], [240, .74], [200, .7], [160, .66]]) {
+      const h = Math.round(w * 4 / 3), c = document.createElement('canvas'); c.width = w; c.height = h;
+      const x = c.getContext('2d'); x.fillStyle = '#150f2b'; x.fillRect(0, 0, w, h);
+      x.drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
+      let out = c.toDataURL('image/webp', q);
+      if (!/^data:image\/webp/.test(out)) out = c.toDataURL('image/jpeg', q);
+      if (out.length < 55000) return out;
+    }
+    throw new Error('big');
+  } finally { URL.revokeObjectURL(url); }
+}
+/* Schreiben mit Schlüsselwechsel des Spielers im selben Vorgang */
+async function vgCommit(pid, fn) {
+  const p = playerById(pid);
+  if (!fs || !db || !p) throw Object.assign(new Error('x'), {code:'permission-denied'});
+  if (S.admin) { const b = fs.batch(); fn(b); await b.commit(); return; }
+  const how = ownEdit(p), ref = db.collection('players').doc(pid);
+  if (!how) throw Object.assign(new Error('x'), {code:'permission-denied'});
+  if (how === 'claim') {
+    const k = newKey(); pkeyPut(pid, [k]);
+    const b = fs.batch(); b.update(ref, {kh:await sha256hex(k)}); fn(b); await b.commit(); return;
+  }
+  const keys = pkeyOf(pid), next = newKey(), nh = await sha256hex(next);
+  for (const k of keys) {
+    pkeyPut(pid, [k, next]);
+    try { const b = fs.batch(); b.update(ref, {kp:k, kh:nh}); fn(b); await b.commit(); pkeyPut(pid, [next]); return; }
+    catch (e) { if (!e || e.code !== 'permission-denied') throw e; }
+  }
+  pkeyPut(pid, keys);
+  throw Object.assign(new Error('x'), {code:'permission-denied'});
+}
+const vgErr = e => toast(e && e.code === 'permission-denied' ? 'Das darf nur der Spieler selbst (auf seinem Gerät) oder der Spielleiter.' : 'Speichern hat nicht geklappt. Prüfe die Verbindung und versuch es nochmal.');
+let vgBusy = false;
+async function vgSave() {
+  const d = D.vgF; if (!d || vgBusy) return;
+  const title = str(d.title, 80);
+  if (!title) { toast('Wie heißt das Spiel?'); const n = $('#vg-title'); if (n) n.focus(); return; }
+  if (d.r < 0) { toast('Gib eine Gesamtbewertung von 0 bis 10.'); return; }
+  const achT = d.ach === 'some' || d.ach === 'all' ? vgInt(d.achT, 0, 9999) : 0;
+  let achU = d.ach === 'some' ? vgInt(d.achU, 0, 9999) : d.ach === 'all' ? achT : 0;
+  if (d.ach === 'some' && achT && achU > achT) { toast('Freigeschaltet kann nicht mehr sein als insgesamt.'); return; }
+  const hrs = Math.max(0, Math.min(99999, Math.round(parseNum(d.hrs) * 10) / 10));
+  const old = d.id ? (S.vg || []).find(g => g.id === d.id) : null;
+  const doc = {pid:d.pid, title, img:d.img || '', plat:d.plat.slice(0, 4), st:d.st, ach:d.ach, achU, achT, r:d.r, rd:{...d.rd}, hrs, note:str(d.note, 300), ts:old ? old.ts || Date.now() : Date.now(), up:Date.now()};
+  const id = d.id || uid();
+  vgBusy = true;
+  try {
+    await vgCommit(d.pid, b => b.set(db.collection('vg').doc(id), doc));
+    D.vgF = null; closeModal(); toast(old ? 'Gespeichert.' : `${title} ist eingetragen!`);
+    if (!old && S.tab === 'vg') { D.vgP = d.pid; render(); }
+  } catch (e) { vgErr(e); }
+  finally { vgBusy = false; }
+}
+const vgActions = {
+  'vg-open': b => { D.vgP = b.dataset.pid || ''; D.vgFilt = 'alle'; if (S.modal) closeModal(); if (S.tab !== 'vg') setTab('vg'); else { render(); window.scrollTo({top:0}); } },
+  'vg-show': b => { openModal({type:'vgshow', id:b.dataset.id, rd:b.dataset.rd === '1'}); },
+  'vg-rd': () => { if (S.modal) { S.modal.rd = !S.modal.rd; renderModal(); } },
+  'vg-filt': b => { D.vgFilt = b.dataset.v; render(); },
+  'vg-sort': b => { D.vgSort = b.dataset.v; render(); },
+  'vg-new': b => { const p = playerById(b.dataset.pid); if (!vgCan(p)) { toast('Spiele eintragen kann nur der Spieler selbst.'); return; } D.vgF = vgBlank(p.id); openModal({type:'vgform'}); },
+  'vg-edit': b => { const g = (S.vg || []).find(x => x.id === b.dataset.id); if (!g) return; D.vgF = {...g, plat:g.plat.slice(), rd:{...g.rd}, achU:g.achU ? String(g.achU) : '', achT:g.achT ? String(g.achT) : '', hrs:g.hrs ? String(g.hrs) : ''}; openModal({type:'vgform'}); },
+  'vg-del': b => {
+    const g = (S.vg || []).find(x => x.id === b.dataset.id); if (!g) return;
+    confirmBox('Spiel löschen?', `„${g.title}“ wird aus dem Profil entfernt.`, [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Löschen', cls:'btn-gold', fn:async () => {
+      try { await vgCommit(g.pid, bt => bt.delete(db.collection('vg').doc(g.id))); toast('Gelöscht.'); } catch (e) { vgErr(e); }
+    }}]);
+  },
+  'vgf-plat': b => { const d = D.vgF, v = b.dataset.v; if (!d) return; if (d.plat.includes(v)) d.plat = d.plat.filter(x => x !== v); else if (d.plat.length < 4) d.plat.push(v); else { toast('Höchstens 4 Plattformen.'); return; } renderModal(); },
+  'vgf-set': b => { const d = D.vgF; if (!d) return; d[b.dataset.k] = b.dataset.v; renderModal(); },
+  'vgf-r': b => { const d = D.vgF; if (!d) return; d.r = Number(b.dataset.v); renderModal(); },
+  'vgf-rd': b => { const d = D.vgF, k = b.dataset.k, v = Number(b.dataset.v); if (!d) return; if (d.rd[k] === v) delete d.rd[k]; else d.rd[k] = v; renderModal(); },
+  'vgf-noimg': () => { if (D.vgF) { D.vgF.img = ''; renderModal(); } }
+};
+/* ---------- Videogames ENDE ---------- */
 
 /* ---------- Spieleliste: welche Spiele im Turnier vorkommen können, für alle sichtbar ---------- */
 const G_STATUS = [['geplant', 'Geplant', '#ffcf3f'], ['vielleicht', 'Vielleicht', '#39d6f2'], ['vorschlag', 'Vorschlag', '#c493ff'], ['gespielt', 'Gespielt', '#4ff08f'], ['raus', 'Fällt raus', '#ff4f6d']];
@@ -7406,6 +7839,8 @@ function renderModal() {
   else if (m.type === 'adminlogin') inner = adminLoginModal();
   else if (m.type === 'player') inner = modalPlayer();
   else if (m.type === 'botadd') inner = botAddModalHTML();
+  else if (m.type === 'vgshow') inner = vgShowModal();
+  else if (m.type === 'vgform') inner = vgFormModal();
   else if (m.type === 'lhs') inner = `<div class="m-head"><h2 id="m-title">🏆 Highscore · ${esc((lobby() || {}).name || '')}</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>${lobbyHsHTML(lobby(), 50, true)}`;
   else if (m.type === 'gplayer') inner = `
     <div class="m-head"><h2 id="m-title">Dein Spieler</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
@@ -7535,7 +7970,7 @@ const actions = {
     const hd = document.querySelector('header.top'); if (hd) bs.setProperty('--navh', hd.offsetHeight + 'px');
   },
   'fullscreen': () => toggleFull(),
-  'tab': b => setTab(b.dataset.tab),
+  'tab': b => { if (b.dataset.tab === 'vg') D.vgP = ''; setTab(b.dataset.tab); },
   'modal-close': () => closeModal(),
   'confirm-do': b => { const fn = confirmFns[Number(b.dataset.i)]; closeModal(); if (fn) fn(); },
   'gate-open': () => confirmBox('Für alle öffnen?', 'Alle, die gerade warten, sehen einen Countdown und danach gleichzeitig die Seite.', [
@@ -7695,7 +8130,7 @@ const actions = {
   'quiz-again': () => { const base = clone(S.quiz); withPending(() => quizStart(base)); },
   'quiz-new': () => withPending(() => quizDiscard())
 };
-Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions);
+Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
   if (e.target.classList && e.target.classList.contains('scrim')) { closeModal(); return; }
@@ -7723,6 +8158,7 @@ document.addEventListener('input', e => {
 document.addEventListener('change', async e => {
   const t = e.target;
   if (t.dataset && t.dataset.kopt) { const c = kNormCfg(D.kcfg || K_DEF_CFG); c[t.dataset.kopt] = t.checked; D.kcfg = c; render(); return; }
+  if (t.id === 'vg-file') { const f = t.files && t.files[0]; t.value = ''; if (!f || !D.vgF) return; try { D.vgF.img = await toVgCover(f); renderModal(); } catch (err) { toast('Das Bild ließ sich nicht öffnen. Versuch ein JPG oder PNG.'); } return; }
   if (t.id === 'music-file') { const f = t.files && t.files[0]; t.value = ''; if (f) saveMusicFile(f); return; }
   if (t.id === 'music-auto') { music.auto = t.checked; lsSet('turnier-music-auto', music.auto ? '1' : '0'); syncMusic(); return; }
   if (t.id === 'gm-file') {
@@ -7826,6 +8262,8 @@ document.addEventListener('submit', e => {
     drawGuessSubmit();
   } else if (f === 'guest-player') {
     createGuestPlayer();
+  } else if (f === 'vg-save') {
+    vgSave();
   } else if (f === 'tk-add') {
     const tk = tkCopy();
     const text = str(D.tk.text, 160), img = tickImg(D.tk.img);
