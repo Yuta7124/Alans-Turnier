@@ -2298,6 +2298,16 @@ html[data-design="neon"] .start-news .news-card{border-radius:24px;box-shadow:in
 html[data-design="neon"] .start-news .news-img{border-radius:14px;box-shadow:none}
 html[data-design="neon"] .start-news .news-title{font-family:var(--head);font-size:clamp(22px,3.4vw,38px);line-height:1.05}
 @media (max-width:680px){.start-news .start-h{font-size:23px}}
+.nt-card{--e:var(--coin);margin-bottom:22px;display:flex;flex-direction:column;gap:12px}
+.nt-card summary{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;cursor:pointer;list-style:none;font-size:18px}
+.nt-card summary::-webkit-details-marker{display:none}
+.nt-card summary .muted{font-size:13px;font-weight:400}
+.nt-card summary::after{content:"▾";margin-left:auto;color:var(--coin);transition:transform .2s}
+.nt-card:not([open]) summary::after{transform:rotate(-90deg)}
+.nt-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.nt-st{margin-left:auto;font-size:13px}
+textarea.input.nt-text{height:300px;width:100%;min-height:200px;resize:vertical;font-size:16px;line-height:1.6;white-space:pre-wrap;margin-top:10px}
+.nt-at{margin:6px 0 0;font-size:12px}
 </style>
 </head>
 <body>
@@ -2316,7 +2326,7 @@ html[data-design="neon"] .start-news .news-title{font-family:var(--head);font-si
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=31"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=32"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -8062,6 +8072,75 @@ function tkPlayerHTML() {
     ${list.length ? `<div class="tk-list">${list.map(tkCardHTML).join('')}</div>` : `<div class="empty-box"><strong>${seg === 'mine' ? 'Du hast noch keine Tickets geschrieben' : 'Hier ist noch nichts'}</strong>${D.tkQ ? '<p>Mit dieser Suche gibt es keinen Treffer.</p>' : ''}</div>`}
   </section>`;
 }
+/* Notizen nur für den Spielleiter (admin/notes, nur er kann sie lesen). Speichert automatisch beim Tippen. */
+let ntSub = false, ntT = 0;
+const NT_MAX = 20000, NT_BUL = ['• ', '☐ ', '☑ ', '- '];
+function ntEnsure() {
+  if (ntSub || !S.admin || !fs) return;
+  ntSub = true;
+  unsubs.push(fs.doc('admin/notes').onSnapshot(d => {
+    const x = d.exists ? d.data() || {} : {};
+    S.notes = {text:str(x.text, NT_MAX), at:Number(x.at) || 0};
+    if (D.notes == null || D.ntState !== 'dirty') { D.notes = S.notes.text; if (S.tab === 'support') render(); }
+  }, () => { ntSub = false; }));
+}
+function ntSaveSoon() {
+  D.ntState = 'dirty'; ntStatus();
+  clearTimeout(ntT); ntT = setTimeout(ntSave, 900);
+}
+async function ntSave() {
+  clearTimeout(ntT);
+  if (D.ntState !== 'dirty') return;
+  const text = String(D.notes || '').slice(0, NT_MAX);
+  D.ntState = 'saving'; ntStatus();
+  try { await fs.doc('admin/notes').set({text, at:Date.now()}); if (D.ntState === 'saving') D.ntState = 'saved'; }
+  catch (e) { D.ntState = 'dirty'; toast('Notizen konnten nicht gespeichert werden. Versuch es gleich nochmal.'); }
+  ntStatus();
+}
+function ntStatus() {
+  const el = $('#nt-st'); if (!el) return;
+  el.textContent = tx(D.ntState === 'dirty' ? 'Ungespeichert …' : D.ntState === 'saving' ? 'Speichert …' : 'Gespeichert ✓');
+}
+function ntLine(ta) {
+  const v = ta.value, p = ta.selectionStart, a = v.lastIndexOf('\n', p - 1) + 1, e = v.indexOf('\n', p);
+  return {v, a, e:e < 0 ? v.length : e};
+}
+function ntSet(ta, v, caret) {
+  ta.value = v; ta.setSelectionRange(caret, caret); ta.focus();
+  D.notes = v; ntSaveSoon();
+}
+function ntPrefix(kind) {
+  const ta = $('#nt-text'); if (!ta) return;
+  const {v, a} = ntLine(ta), cur = NT_BUL.find(b => v.startsWith(b, a)) || '';
+  let pre = kind === 'bul' ? '• ' : '☐ ';
+  if (kind === 'check') { if (cur !== '☐ ' && cur !== '☑ ') return ntPrefix('task'); pre = cur === '☐ ' ? '☑ ' : '☐ '; }
+  else if (cur === pre) pre = '';
+  ntSet(ta, v.slice(0, a) + pre + v.slice(a + cur.length), ta.selectionStart - cur.length + pre.length);
+}
+function ntKey(ev) {
+  const ta = ev.target;
+  if (ev.key !== 'Enter' || ev.shiftKey || ta.selectionStart !== ta.selectionEnd) return;
+  const {v, a, e} = ntLine(ta), cur = NT_BUL.find(b => v.startsWith(b, a));
+  if (!cur) return;
+  ev.preventDefault();
+  const p = ta.selectionStart;
+  if (v.slice(a, e).trim() === cur.trim()) return ntSet(ta, v.slice(0, a) + v.slice(e), a);
+  const next = cur === '☑ ' ? '☐ ' : cur;
+  ntSet(ta, v.slice(0, p) + '\n' + next + v.slice(p), p + 1 + next.length);
+}
+function ntCardHTML() {
+  ntEnsure();
+  const open = lsGet('turnier-nt-open', '1') === '1';
+  const at = S.notes && S.notes.at ? `Zuletzt geändert: ${fmtBerlin(S.notes.at)}` : 'Noch keine Notizen';
+  return `<details class="card nt-card" ${open ? 'open' : ''} id="nt-box">
+    <summary><b>📝 Meine Notizen</b><span class="muted">Nur für dich sichtbar</span></summary>
+    ${S.notes == null ? `<p class="muted">Lade Notizen …</p>` : `
+    <div class="nt-tools"><button class="btn btn-sm" type="button" data-act="nt-bul">• Stichpunkt</button><button class="btn btn-sm" type="button" data-act="nt-task">☐ Aufgabe</button><button class="btn btn-sm" type="button" data-act="nt-check">☑ Abhaken</button><span class="nt-st muted" id="nt-st">${D.ntState === 'dirty' ? 'Ungespeichert …' : D.ntState === 'saving' ? 'Speichert …' : 'Gespeichert ✓'}</span></div>
+    <textarea class="input nt-text" id="nt-text" data-draft="notes" maxlength="${NT_MAX}" placeholder="Hier kannst du dir alles merken: Ideen, To-dos, Termine …
+Tipp: Mit „• Stichpunkt“ oder „☐ Aufgabe“ anfangen. Bei Enter geht die Liste automatisch weiter." spellcheck="true">${esc(D.notes ?? S.notes.text)}</textarea>
+    <p class="muted nt-at">${esc(at)}</p>`}
+  </details>`;
+}
 function tkAdminHTML() {
   const all = S.tk, f = D.tkAf || 'active', ty = D.tkAt || '', ar = D.tkAa || '', so = D.tkSo || 'urgent';
   const cnt = st => all.filter(t => t.status === st).length;
@@ -8072,6 +8151,7 @@ function tkAdminHTML() {
   const areasUsed = TK_AREAS.filter(a => all.some(t => t.area === a[0]));
   return `<section class="section tk">
     <div class="sec-head"><h2 class="h">Support <span class="count">${all.length} Tickets</span></h2><span class="muted">Alles, was die Spieler gemeldet haben. Öffne ein Ticket, um zu antworten und den Status zu setzen.</span></div>
+    ${ntCardHTML()}
     <div class="tk-stats">${TK_ST.map(s => `<button class="tk-stat" type="button" data-act="tk-af" data-v="${s[0]}" aria-pressed="${f === s[0]}" style="--c:${s[3]}"><b>${cnt(s[0])}</b><span>${s[2]} ${esc(s[1])}</span></button>`).join('')}</div>
     <div class="tk-tools">
       <input class="input tk-q" id="tk-q" type="search" data-draft="tkQ" value="${esc(D.tkQ || '')}" placeholder="Suchen: Titel, Spieler, Bereich, Nummer …" autocomplete="off">
@@ -8299,6 +8379,9 @@ const tkActions = {
   'tk-open': b => { D.tkReply = ''; D.tkSt = ''; openModal({type:'tkshow', id:b.dataset.id}); },
   'tk-seg': b => { D.tkSeg = b.dataset.v; D.tkSo = ''; render(); },
   'tk-so': b => { D.tkSo = b.dataset.v; render(); },
+  'nt-bul': () => ntPrefix('bul'),
+  'nt-task': () => ntPrefix('task'),
+  'nt-check': () => ntPrefix('check'),
   'tk-af': b => { D.tkAf = b.dataset.v; render(); },
   'tk-at': b => { D.tkAt = b.dataset.v; render(); },
   'tk-aa': b => { D.tkAa = b.dataset.v; render(); },
@@ -9826,11 +9909,15 @@ document.addEventListener('input', e => {
   }
   if (t.dataset && t.dataset.draft) {
     setPath(D, t.dataset.draft, t.value);
+    if (t.id === 'nt-text') ntSaveSoon();
     if (t.dataset.draft.startsWith('tkF.')) { tkDraftSave(); if (t.id === 'tk-title') { const c = $('#tk-tcnt'); if (c) c.textContent = t.value.length + '/100'; } }
     if (t.id === 'tk-q') render();
     if (t.dataset.live && live[t.dataset.live]) live[t.dataset.live](t);
   }
 });
+document.addEventListener('keydown', e => { if (e.target && e.target.id === 'nt-text') ntKey(e); });
+document.addEventListener('toggle', e => { if (e.target && e.target.id === 'nt-box') lsSet('turnier-nt-open', e.target.open ? '1' : '0'); }, true);
+document.addEventListener('visibilitychange', () => { if (document.hidden && D.ntState === 'dirty') ntSave(); });
 document.addEventListener('change', async e => {
   const t = e.target;
   if (t.dataset && t.dataset.kopt) { const c = kNormCfg(D.kcfg || K_DEF_CFG); c[t.dataset.kopt] = t.checked; D.kcfg = c; render(); return; }

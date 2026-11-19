@@ -28,6 +28,12 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
     // Code des Dauerlinks. Nur für den Spielleiter.
+    // Notizen des Spielleiters (nur er kann sie lesen und schreiben)
+    match /admin/notes {
+      allow read, delete: if isAdmin();
+      allow create, update: if isAdmin() && request.resource.data.keys().hasOnly(['text', 'at'])
+        && request.resource.data.text is string && request.resource.data.text.size() <= 20000;
+    }
     match /admin/invite {
       allow read, write: if isAdmin();
     }
