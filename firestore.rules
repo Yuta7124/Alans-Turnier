@@ -73,12 +73,16 @@ service cloud.firestore {
           && (!('font' in d) || (d.font is string && d.font.size() <= 20))
           && (!('grad' in d) || (d.grad is string && d.grad.size() <= 20))
           && (!('frame' in d) || (d.frame is string && d.frame.size() <= 20))
-          && (!('motto' in d) || (d.motto is string && d.motto.size() <= 40));
+          && (!('motto' in d) || (d.motto is string && d.motto.size() <= 40))
+          && (!('shape' in d) || (d.shape is string && d.shape.size() <= 20))
+          && (!('pbg' in d) || (d.pbg is string && d.pbg.size() <= 40))
+          && (!('pblur' in d) || (d.pblur is number && d.pblur >= 0 && d.pblur <= 40))
+          && (!('pdim' in d) || (d.pdim is number && d.pdim >= 10 && d.pdim <= 100));
       }
       match /players/{id} {
         allow read: if true;
         allow create: if isAdmin() || (
-          request.resource.data.keys().hasOnly(['name', 'color', 'avatar', 'createdAt', 'byGuest', 'font', 'grad', 'frame', 'motto', 'kh'])
+          request.resource.data.keys().hasOnly(['name', 'color', 'avatar', 'createdAt', 'byGuest', 'font', 'grad', 'frame', 'motto', 'shape', 'pbg', 'pblur', 'pdim', 'kh'])
           && playerOk(request.resource.data)
           && request.resource.data.createdAt is number
           && request.resource.data.byGuest == true
@@ -87,7 +91,7 @@ service cloud.firestore {
         // Der Spielleiter darf alles ändern, nur einen vorhandenen Schlüssel (kh) nicht austauschen.
         allow update: if (isAdmin() && (resource.data.get('kh', '') == '' || request.resource.data.get('kh', '') == resource.data.get('kh', ''))) || (
           'kh' in resource.data
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'color', 'avatar', 'font', 'grad', 'frame', 'motto', 'kh', 'kp'])
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'color', 'avatar', 'font', 'grad', 'frame', 'motto', 'shape', 'pbg', 'pblur', 'pdim', 'kh', 'kp'])
           && request.resource.data.kp is string && request.resource.data.kp.size() <= 100
           && hashing.sha256(request.resource.data.kp).toHexString().lower() == resource.data.kh
           && request.resource.data.kh is string && request.resource.data.kh.size() == 64

@@ -748,7 +748,7 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .sp-cta>div{flex:1;min-width:160px}
 .sp-hero{position:relative;overflow:hidden;margin:0 4px 26px;background:linear-gradient(120deg,color-mix(in srgb,var(--pc) 55%,#0b0716) 0%,#120c24 70%);
   box-shadow:0 -4px 0 0 var(--edge),0 4px 0 0 var(--edge),-4px 0 0 0 var(--edge),4px 0 0 0 var(--edge),0 12px 0 0 rgba(0,0,0,.42)}
-.sp-hero.has-bg::before{content:"";position:absolute;inset:-30px;background:var(--bgimg) center/cover;filter:blur(18px) saturate(1.2);opacity:.45}
+.sp-hero.has-bg::before{content:"";position:absolute;inset:-30px;background:var(--bgimg) center/cover;filter:blur(var(--bgblur,18px)) saturate(1.2);opacity:var(--bgop,.45)}
 .sp-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,7,20,.2),rgba(10,7,20,.75))}
 .sp-hero-in{position:relative;z-index:1;display:grid;grid-template-columns:auto minmax(0,1fr) minmax(220px,300px);gap:26px;align-items:center;padding:28px}
 .sp-avw.big{padding:5px;background:linear-gradient(135deg,var(--lc),color-mix(in srgb,var(--lc) 40%,#000));box-shadow:0 0 22px color-mix(in srgb,var(--lc) 40%,transparent)}
@@ -2308,6 +2308,29 @@ html[data-design="neon"] .start-news .news-title{font-family:var(--head);font-si
 .nt-st{margin-left:auto;font-size:13px}
 textarea.input.nt-text{height:300px;width:100%;min-height:200px;resize:vertical;font-size:16px;line-height:1.6;white-space:pre-wrap;margin-top:10px}
 .nt-at{margin:6px 0 0;font-size:12px}
+.pf-bgprev{position:relative;overflow:hidden;height:96px;border-radius:12px;margin:4px 0 10px;background:linear-gradient(120deg,color-mix(in srgb,var(--pc) 55%,#0b0716) 0%,#120c24 70%);display:flex;align-items:flex-end;padding:8px 12px}
+.pf-bgprev span.has{position:absolute;inset:-30px;background:var(--bgimg) center/cover;filter:blur(var(--bgblur,18px)) saturate(1.2);opacity:var(--bgop,.45)}
+.pf-bgprev b{position:relative;font-size:12px;color:#fff;text-shadow:0 1px 3px #000}
+.pbg-chip{display:inline-flex;align-items:center;gap:6px}
+.pbg-cov{width:22px;height:22px;object-fit:cover;border-radius:4px}
+.pf-range{display:flex;flex-direction:column;gap:4px;margin-top:10px;font-size:14px}
+.pf-range span{display:flex;justify-content:space-between}
+.pf-range input{width:100%;accent-color:var(--coin)}
+.pf-hint{font-size:13px;margin:6px 0 0}
+/* Formen vom Profilbild (gewinnen gegen das Design) */
+html body .av.sh-circle,html body .av.sh-oval{border-radius:50%}
+html body .av.sh-round{border-radius:24%}
+html body .av.sh-square{border-radius:0}
+html body .av.sh-circle img,html body .av.sh-oval img,html body .av.sh-round img{border-radius:inherit}
+html body .av.sh-hex{border-radius:0;clip-path:polygon(25% 3%,75% 3%,100% 50%,75% 97%,25% 97%,0 50%)}
+html body .av.sh-diamond{border-radius:0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+html body .av.sh-shield{border-radius:0;clip-path:polygon(0 0,100% 0,100% 62%,50% 100%,0 62%)}
+html body .av.sh-star{border-radius:0;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+html body .sp-avw.big.sh-circle,html body .sp-avw.big.sh-oval{border-radius:50%}
+html body .sp-avw.big.sh-round{border-radius:26%}
+html body .sp-avw.big.sh-square{border-radius:0}
+html[data-design="neon"] .sp-avw.big.sh-std{border-radius:32%}
+html body .sp-avw.big:is(.sh-hex,.sh-diamond,.sh-shield,.sh-star){background:none;box-shadow:none;padding:0;filter:drop-shadow(0 0 3px var(--lc)) drop-shadow(0 0 14px color-mix(in srgb,var(--lc) 60%,transparent))}
 </style>
 </head>
 <body>
@@ -2326,7 +2349,7 @@ textarea.input.nt-text{height:300px;width:100%;min-height:200px;resize:vertical;
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=32"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=33"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3383,6 +3406,9 @@ const GRADS = [
   ['regenbogen', 'Regenbogen', 'linear-gradient(90deg,#ff4f6d,#ffcf3f,#4ff08f,#39d6f2,#c493ff,#ff4f6d)']
 ];
 const FRAMES = [['std', 'Normal'], ['gold', 'Gold'], ['neon', 'Neon'], ['feuer', 'Feuer'], ['regenbogen', 'Regenbogen'], ['pixel', 'Pixel']];
+// Form vom Profilbild. 'std' folgt dem Design (Arcade eckig, Neon-Glas abgerundet).
+const SHAPES = [['std', 'Standard'], ['circle', 'Kreis'], ['oval', 'Oval'], ['round', 'Abgerundet'], ['square', 'Viereck'], ['hex', 'Sechseck'], ['diamond', 'Raute'], ['shield', 'Wappen'], ['star', 'Stern']];
+const SHAPE_CLIP = ['hex', 'diamond', 'shield', 'star'];
 const pickOpt = (list, v) => list.some(x => x[0] === v) ? v : list[0][0];
 function gradCss(p) { const g = GRADS.find(x => x[0] === (p && p.grad)); return g ? g[2] : ''; }
 function nameHTML(p) {
@@ -3391,8 +3417,10 @@ function nameHTML(p) {
   return `<span class="pn f-${f} g-${g}${gradCss(p) ? ' is-g' : ''}"${css ? ` style="${css}"` : ''}>${esc(p ? p.name : '')}</span>`;
 }
 function mottoHTML(p) { return p && p.motto ? `<span class="motto">„${esc(p.motto)}“</span>` : ''; }
-function styleFields(d) { return {font:pickOpt(FONTS, d.font), grad:pickOpt(GRADS, d.grad), frame:pickOpt(FRAMES, d.frame), motto:str(d.motto, 40)}; }
-const blankPlayer = color => ({name:'', avatar:'', color:color || '', font:'std', grad:'none', frame:'std', motto:'', crop:null});
+function pbgNorm(v) { v = String(v || ''); return v === 'none' || /^g:[A-Za-z0-9_-]{1,36}$/.test(v) ? v : 'auto'; }
+function styleFields(d) { return {font:pickOpt(FONTS, d.font), grad:pickOpt(GRADS, d.grad), frame:pickOpt(FRAMES, d.frame), motto:str(d.motto, 40),
+  shape:pickOpt(SHAPES, d.shape), pbg:pbgNorm(d.pbg), pblur:Math.round(num(d.pblur, 0, 40, 18)), pdim:Math.round(num(d.pdim, 10, 100, 45))}; }
+const blankPlayer = color => ({name:'', avatar:'', color:color || '', font:'std', grad:'none', frame:'std', motto:'', shape:'std', pbg:'auto', pblur:18, pdim:45, crop:null});
 
 const CROP_V = 220;
 function cropGeom(c) {
@@ -3538,8 +3566,8 @@ function safeImg(s) { s = String(s || ''); return (/^data:image\/(png|jpe?g|webp
 function avatar(p, size, cls = '') {
   const c = p && p.color || '#6b5d86';
   const img = p && safeImg(p.avatar);
-  const fr = pickOpt(FRAMES, p && p.frame), g = img ? '' : gradCss(p);
-  return `<span class="av ${cls} fr-${fr}" style="--c:${esc(c)};${g ? `background:${g};` : ''}width:${size}px;height:${size}px;font-size:${Math.max(8, Math.round(size * .28))}px">${img ? `<img src="${img}" alt="">` : esc(initials(p ? p.name : '?'))}</span>`;
+  const fr = pickOpt(FRAMES, p && p.frame), g = img ? '' : gradCss(p), sh = pickOpt(SHAPES, p && p.shape);
+  return `<span class="av ${cls} fr-${fr} sh-${sh}" style="--c:${esc(c)};${g ? `background:${g};` : ''}width:${sh === 'oval' ? Math.round(size * .8) : size}px;height:${size}px;font-size:${Math.max(8, Math.round(size * .28))}px">${img ? `<img src="${img}" alt="">` : esc(initials(p ? p.name : '?'))}</span>`;
 }
 function playerById(id) { return S.players.find(p => p.id === id) || (typeof isBot === 'function' && isBot(id) ? botById(id) : null); }
 function ghost(id) { return playerById(id) || {id, name:'Gelöschter Spieler', color:'#5b5070', avatar:''}; }
@@ -4272,6 +4300,21 @@ function viewBoard() {
 }
 
 /* Spieler */
+/* Profil-Hintergrund: automatisch (Lieblingsspiel), ein eigenes Spiel oder kein Bild; dazu Unschärfe und Helligkeit */
+function pfBgHTML(prefix, d) {
+  const games = d.id && typeof vgOf === 'function' ? vgOf(d.id).filter(g => g.img) : [];
+  const cur = pbgNorm(d.pbg), blur = num(d.pblur, 0, 40, 18), dim = num(d.pdim, 10, 100, 45);
+  const img = cur === 'none' ? '' : cur.startsWith('g:') ? (games.find(g => g.id === cur.slice(2)) || {}).img || '' : (spFav(games) || games[0] || {}).img || '';
+  const chip = (v, inner) => `<button type="button" class="chip pbg-chip" data-act="pf-set" data-target="${prefix}" data-k="pbg" data-v="${esc(v)}" aria-pressed="${cur === v}">${inner}</button>`;
+  return `<div class="pf-sec"><span class="lbl">Profil-Hintergrund</span>
+      <div class="pf-bgprev" id="${prefix}-bgprev" style="--pc:${esc(d.color || COLORS[0])};--bgblur:${blur}px;--bgop:${dim / 100};${img ? `--bgimg:url('${img}')` : ''}"><span class="${img ? 'has' : ''}"></span><b>Vorschau</b></div>
+      <div class="chips">${chip('auto', '✨ Automatisch (Lieblingsspiel)')}${chip('none', '⬛ Kein Bild, nur Farbe')}
+        ${games.map(g => chip('g:' + g.id, `<img class="pbg-cov" src="${esc(g.img)}" alt="">${esc(g.title)}`)).join('')}</div>
+      ${d.id ? (games.length ? '' : '<p class="muted pf-hint">Trag unter Spieler → dein Profil Spiele mit Bild ein, dann kannst du eins als Hintergrund wählen.</p>') : '<p class="muted pf-hint">Sobald du Spiele mit Bild in deinem Profil hast, kannst du eins davon als Hintergrund wählen.</p>'}
+      <label class="pf-range"><span>Unschärfe <b id="${prefix}-blurv">${blur === 0 ? 'scharf' : blur}</b></span><input type="range" min="0" max="40" step="1" value="${blur}" data-draft="${prefix}.pblur" data-live="pbg" data-prefix="${prefix}"></label>
+      <label class="pf-range"><span>Sichtbarkeit <b id="${prefix}-dimv">${dim} %</b></span><input type="range" min="10" max="100" step="5" value="${dim}" data-draft="${prefix}.pdim" data-live="pbg" data-prefix="${prefix}"></label>
+    </div>`;
+}
 function playerForm(prefix, d) {
   const prev = {...d, name: d.name || 'Dein Name'};
   const photo = d.crop ? cropHTML(prefix, d.crop) : `
@@ -4293,6 +4336,9 @@ function playerForm(prefix, d) {
       <div class="chips">${FONTS.map(f => `<button type="button" class="chip fchip" style="font-family:${f[2]}" data-act="pf-set" data-target="${prefix}" data-k="font" data-v="${f[0]}" aria-pressed="${pickOpt(FONTS, d.font) === f[0]}">${f[1]}</button>`).join('')}</div></div>
     <div class="pf-sec"><span class="lbl">Farbverlauf</span>
       <div class="swatches">${GRADS.map(g => `<button type="button" class="gsw" style="--g:${g[2] || (g[0] === 'farbe' ? (d.color || COLORS[0]) : '#f2eeff')}" title="${g[1]}" aria-label="Farbverlauf ${g[1]}" data-act="pf-set" data-target="${prefix}" data-k="grad" data-v="${g[0]}" aria-pressed="${pickOpt(GRADS, d.grad) === g[0]}"></button>`).join('')}</div></div>
+    <div class="pf-sec"><span class="lbl">Form vom Profilbild</span>
+      <div class="chips">${SHAPES.map(f => `<button type="button" class="chip frchip" data-act="pf-set" data-target="${prefix}" data-k="shape" data-v="${f[0]}" aria-pressed="${pickOpt(SHAPES, d.shape) === f[0]}">${avatar({...prev, shape:f[0]}, 22)}${f[1]}</button>`).join('')}</div></div>
+    ${pfBgHTML(prefix, d)}
     <div class="pf-sec"><span class="lbl">Rahmen ums Bild</span>
       <div class="chips">${FRAMES.map(f => `<button type="button" class="chip frchip" data-act="pf-set" data-target="${prefix}" data-k="frame" data-v="${f[0]}" aria-pressed="${pickOpt(FRAMES, d.frame) === f[0]}">${avatar({...prev, frame:f[0]}, 22)}${f[1]}</button>`).join('')}</div></div>`;
 }
@@ -4449,6 +4495,13 @@ function suggestSplit() {
   s.amounts = pad10(amts).map(String);
 }
 const live = {
+  pbg(t) {
+    const pre = t.dataset.prefix, d = D[pre]; if (!d) return;
+    const el = $('#' + pre + '-bgprev'), blur = num(d.pblur, 0, 40, 18), dim = num(d.pdim, 10, 100, 45);
+    if (el) { el.style.setProperty('--bgblur', blur + 'px'); el.style.setProperty('--bgop', dim / 100); }
+    const bv = $('#' + pre + '-blurv'), dv = $('#' + pre + '-dimv');
+    if (bv) bv.textContent = blur === 0 ? tx('scharf') : blur; if (dv) dv.textContent = dim + ' %';
+  },
   gsearch() { const el = $('#glist'); if (el) el.innerHTML = H(gamesListHTML()); },
   pname(t) {
     const pre = t.dataset.prefix, d = D[pre]; if (!d) return;
@@ -7827,12 +7880,15 @@ function spProfileHTML(p) {
   const sh = spShots[p.id] && spShots[p.id].list;
   const pct = g => g.ach === 'all' ? 100 : g.ach === 'some' && g.achT ? Math.min(100, Math.round(g.achU / g.achT * 100)) : -1;
   const stat = (n, l) => `<div class="sp-stat"><b>${n}</b><span>${l}</span></div>`;
-  const bg = fav && fav.img ? `style="--pc:${p.color};--bgimg:url('${fav.img}')"` : `style="--pc:${p.color}"`;
+  const pbg = pbgNorm(p.pbg), pick = pbg.startsWith('g:') ? all.find(g => g.id === pbg.slice(2) && g.img) : null;
+  const bgG = pbg === 'none' ? null : pick || (fav && fav.img ? fav : null);
+  const bgV = `--pc:${p.color};--bgblur:${num(p.pblur, 0, 40, 18)}px;--bgop:${num(p.pdim, 10, 100, 45) / 100}`;
+  const bg = bgG ? `style="${bgV};--bgimg:url('${bgG.img}')"` : `style="${bgV}"`;
   return `<section class="section sp">
     <div class="vg-back"><button class="btn btn-sm btn-ghost" type="button" data-act="vg-open" data-pid="">← Alle Spieler</button></div>
-    <div class="sp-hero ${fav && fav.img ? 'has-bg' : ''}" ${bg}>
+    <div class="sp-hero ${bgG ? 'has-bg' : ''}" ${bg}>
       <div class="sp-hero-in">
-        <span class="sp-avw big" style="--lc:${spLvCol(lv.l)}">${avatar(p, 164, 'sp-av')}<i class="sp-dot ${s.k}" aria-hidden="true"></i></span>
+        <span class="sp-avw big sh-${pickOpt(SHAPES, p.shape)}" style="--lc:${spLvCol(lv.l)}">${avatar(p, 164, 'sp-av')}<i class="sp-dot ${s.k}" aria-hidden="true"></i></span>
         <div class="sp-id">
           <h2 class="sp-name">${nameHTML(p)}</h2>
           ${mottoHTML(p)}
