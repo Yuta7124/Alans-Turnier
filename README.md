@@ -102,6 +102,14 @@ Das Repository ist öffentlich, aber nur der Programmcode. Die Daten stecken in 
 
 Solange kein Turnier läuft (Status nicht „Läuft gerade“ und kein Turnier heute), zeigt der Tab „Turnier“ allen den **Wartebildschirm im TV-Look** („Gleich geht’s los!“ mit Scheinwerfern, „Live in Kürze“, Uhr, Laufschrift und fliegenden Bildern aus den Optionen), mit Termin und Countdown, wenn einer eingetragen ist. Highscore, Zufallsrad und Spieleliste sind so lange nicht erreichbar. Der Spielleiter sieht denselben Bildschirm mit **„Turnier bearbeiten“** (alles einrichten, die Spieler sehen weiter den Wartebildschirm) und **„Jetzt für alle starten“**.
 
+Ganz oben in **Optionen** gibt es die Karte **„🏆 Turnier“** mit vier Stufen:
+- **Kein Turnier geplant:** Wartebildschirm „Aktuell kein Turnier“, Laufschrift „Aktuell ist kein Turnier geplant“ (Standard).
+- **Bald (noch ohne Termin):** „Gleich geht’s los!“ und „Live in Kürze“, ohne Countdown.
+- **Termin mit Countdown:** Datum und Uhrzeit; überall läuft ein Countdown bis zum Start.
+- **Läuft gerade:** Turnier-Tab für alle offen.
+
+„Wartebildschirm ansehen“ zeigt dem Spielleiter den Bildschirm so, wie ihn die Spieler sehen. Die Laufschrift-Meldung „Heute im Studio“ gibt es nicht mehr.
+
 ## Spieler-Ansicht für den Spielleiter
 
 Unten links gibt es für den Spielleiter den Knopf **„Spieler-Ansicht“**. Damit sieht er die Seite so, wie ein normaler Spieler sie sieht (ohne Admin-Knöpfe, Support als Spieler, Sperrbildschirm vor dem Turnierstart usw.). Ein gelber Streifen oben zeigt, dass die Spieler-Ansicht an ist; „Admin-Ansicht“ schaltet zurück. Es erscheinen dabei keine Hinweis-Meldungen. Angemeldet bleibt man dabei als Spielleiter. In laufenden Spielen ist der Knopf ausgeblendet. Nach dem Neuladen ist wieder die Admin-Ansicht an.
