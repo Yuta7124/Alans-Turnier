@@ -1023,6 +1023,16 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .perm-box h4{margin:0;font-family:var(--display);font-size:18px;text-transform:uppercase}
 .fs-btn{display:grid;place-items:center;flex:none;width:38px;height:38px;margin-left:10px;border:0;background:var(--bg-2);color:var(--ink);cursor:pointer;box-shadow:0 -2px 0 var(--edge),0 2px 0 var(--edge),-2px 0 0 var(--edge),2px 0 0 var(--edge)}
 .fs-btn[hidden]{display:none}
+.pv-pill{position:fixed;left:14px;bottom:14px;z-index:45;display:flex;align-items:center;gap:8px;border:0;cursor:pointer;padding:10px 14px;font-family:var(--display);font-size:14px;text-transform:uppercase;color:var(--ink);background:var(--panel);
+  box-shadow:0 0 0 3px var(--edge),0 6px 0 3px rgba(0,0,0,.45)}
+.pv-pill span{font-size:18px;line-height:1}
+.pv-pill:hover{box-shadow:0 0 0 3px var(--xp),0 6px 0 3px rgba(0,0,0,.45)}
+.pv-pill.on{background:var(--coin);color:#120c24;box-shadow:0 0 0 3px #120c24,0 0 20px rgba(255,207,63,.55),0 6px 0 3px rgba(0,0,0,.45)}
+.pv-ribbon{position:fixed;top:0;left:0;right:0;z-index:44;padding:4px 10px;text-align:center;font-size:12px;font-weight:800;color:#120c24;background:repeating-linear-gradient(135deg,#ffcf3f 0 16px,#ffd95f 16px 32px);pointer-events:none}
+body.pv-on{padding-top:22px}
+body.ingame .pv-pill,body.ingame .pv-ribbon{display:none}
+body.ingame.pv-on{padding-top:0}
+@media (max-width:560px){.pv-pill{left:10px;bottom:10px;padding:8px 10px;font-size:11px}.pv-pill span{font-size:16px}.pv-ribbon{font-size:11px}}
 .fs-btn:hover{color:var(--coin)}
 .fs-btn[aria-pressed="true"]{background:var(--coin);color:#1a1200}
 .fs-card{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
@@ -2219,7 +2229,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=24"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=25"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3894,10 +3904,34 @@ function renderSubnav() {
   h = H(h);
   if (el.innerHTML !== h) el.innerHTML = h;
 }
+/* Ansicht wechseln (nur Spielleiter): Admin-Ansicht oder so, wie ein normaler Spieler die Seite sieht.
+   Angemeldet bleibt man als Spielleiter; nur die Oberfläche tut so, als wäre man keiner. */
+function renderPv() {
+  let el = document.getElementById('pv-root');
+  const show = S.mode === 'db' && S.realAdmin;
+  if (!show) { if (el) el.remove(); document.body.classList.remove('pv-on'); return; }
+  if (!el) { el = document.createElement('div'); el.id = 'pv-root'; document.body.appendChild(el); }
+  document.body.classList.toggle('pv-on', !!S.pv);
+  const h = H(S.pv
+    ? `<div class="pv-ribbon" role="status">👤 Spieler-Ansicht: So sehen deine Spieler die Seite.</div><button class="pv-pill on" type="button" data-act="pv-toggle" title="Zurück zur Admin-Ansicht"><span aria-hidden="true">🛡️</span><b>Admin-Ansicht</b></button>`
+    : `<button class="pv-pill" type="button" data-act="pv-toggle" title="Seite so ansehen, wie ein normaler Spieler sie sieht"><span aria-hidden="true">👤</span><b>Spieler-Ansicht</b></button>`);
+  if (el.innerHTML !== h) el.innerHTML = h;
+}
+function pvToggle() {
+  if (!S.realAdmin) return;
+  S.pv = !S.pv; S.admin = !S.pv;
+  if (S.modal) closeModal();
+  D.vgF = null; D.tkSt = ''; D.tkReply = '';
+  if (!S.pv) permLoad();
+  render(); window.scrollTo({top:0});
+  toast(S.pv ? 'Spieler-Ansicht: So sehen deine Spieler die Seite. Du bleibst als Spielleiter angemeldet.' : 'Zurück in der Admin-Ansicht.');
+}
 function renderFoot() {
   const el = $('#foot'); if (!el) return;
-  const h = H(S.mode !== 'db' ? '' : S.admin
-    ? `<span>Du bist als Spielleiter angemeldet.</span> <button class="link" type="button" data-act="admin-logout">Abmelden</button>`
+  const h = H(S.mode !== 'db' ? '' : S.realAdmin && S.pv
+    ? `<span>Du siehst die Seite gerade als Spieler.</span> <button class="link" type="button" data-act="pv-toggle">Zurück zur Admin-Ansicht</button>`
+    : S.admin
+    ? `<span>Du bist als Spielleiter angemeldet.</span> <button class="link" type="button" data-act="pv-toggle">Als Spieler ansehen</button> · <button class="link" type="button" data-act="admin-logout">Abmelden</button>`
     : `<button class="link" type="button" data-act="admin-login">Spielleiter-Login</button>`);
   if (el.innerHTML !== h) el.innerHTML = h;
 }
@@ -3929,6 +3963,7 @@ function fsCardHTML() {
   </div>`;
 }
 function renderHeader() {
+  renderPv();
   renderFsBtn();
   if (S.tab === 'spiele-pick' && (S.mode !== 'db' || S.loaded)) S.tab = S.room ? roomView() : 'spiele';
   if ($('#brand-title').textContent !== SITE_NAME) $('#brand-title').textContent = SITE_NAME;
@@ -9488,6 +9523,7 @@ const actions = {
     if (pw.length < 6) { toast('Das Passwort braucht mindestens 6 Zeichen.'); return; }
     fauth.createUserWithEmailAndPassword(mail, pw).then(() => { D.alPw = ''; closeModal(); }, e => toast(authMsg(e && e.code || '', 'Konto anlegen hat nicht geklappt.')));
   },
+  'pv-toggle': () => pvToggle(),
   'admin-logout': () => confirmBox('Abmelden?', 'Danach siehst du die Seite wie ein Gast.', [
       {label:'Abbrechen', cls:'btn-ghost'}, {label:'Abmelden', cls:'btn-gold', fn:() => { fauth && fauth.signOut(); }}]),
   'guest-cell': b => {
@@ -10243,7 +10279,7 @@ async function tryUnlock(pw) {
   else { S.mode = 'lock'; render(); setTimeout(() => { const i = $('#pw-in'); if (i) i.focus(); }, 30); }
 }
 async function guestEnter() {
-  S.admin = false; S.secret = null;
+  S.admin = false; S.realAdmin = false; S.pv = false; S.secret = null;
   const jc = joinCode();
   if (jc) {
     dropJoinParam();
@@ -10286,7 +10322,7 @@ async function adminEnter(u) {
       S.mode = 'lock'; S.loaded = true; S.lockMsg = 'Keine Verbindung zur Datenbank. Prüf dein Internet und lade neu.'; render(); return;
     }
   }
-  S.admin = true;
+  S.admin = true; S.realAdmin = true; S.pv = false;
   const x = c.exists ? c.data() : null;
   if (x && x.room) { S.secret = {password:String(x.password || '')}; storePass(S.secret.password); connectRoom(x.room); toast('Du bist als Spielleiter angemeldet.'); return; }
   S.mode = 'firstrun'; S.loaded = true; render();

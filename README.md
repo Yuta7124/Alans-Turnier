@@ -98,6 +98,10 @@ Das Repository ist öffentlich, aber nur der Programmcode. Die Daten stecken in 
 - **Abmelden** als Spielleiter: ganz unten auf der Seite.
 - Daten aus der alten Claude-Version werden nicht automatisch übernommen. Spieler und eigene Quizfragen trägst du einmal neu ein.
 
+## Spieler-Ansicht für den Spielleiter
+
+Unten links gibt es für den Spielleiter den Knopf **„Spieler-Ansicht“**. Damit sieht er die Seite so, wie ein normaler Spieler sie sieht (ohne Admin-Knöpfe, Support als Spieler, Sperrbildschirm vor dem Turnierstart usw.). Ein gelber Streifen oben zeigt, dass die Spieler-Ansicht an ist; „Admin-Ansicht“ schaltet zurück. Angemeldet bleibt man dabei als Spielleiter. In laufenden Spielen ist der Knopf ausgeblendet. Nach dem Neuladen ist wieder die Admin-Ansicht an.
+
 ## Support
 
 Eigener Tab „Support“ (links neben „Optionen“). Spieler schreiben dort Tickets in einem Assistenten mit 4 Schritten:
