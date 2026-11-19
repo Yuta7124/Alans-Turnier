@@ -6446,7 +6446,13 @@ function vgEnsure() {
   unsubs.push(() => { vgSub = false; S.vgErr = false; });
 }
 const vgOf = pid => (S.vg || []).filter(g => g.pid === pid);
-const vgCan = p => !!p && S.mode === 'db' && !(typeof isBot === 'function' && isBot(p.id)) && (S.admin || !!ownEdit(p));
+/* Eigene Spiele ändert nur der Spieler selbst, auch der Spielleiter nicht fremde. */
+function vgHow(p) {
+  if (!p || S.mode !== 'db' || (typeof isBot === 'function' && isBot(p.id))) return '';
+  if (p.kh) return pkeyOf(p.id).length ? 'own' : '';
+  return lsGet('turnier-me', '') === p.id && (p.byGuest || S.admin) ? 'claim' : '';
+}
+const vgCan = p => !!vgHow(p);
 const vgNum = n => EN ? n.toFixed(1) : n.toFixed(1).replace('.', ',');
 const vgCol = r => r < 0 ? '#6b5d86' : r <= 3 ? '#ff4f6d' : r <= 5 ? '#ff9a3c' : r <= 7 ? '#ffcf3f' : r <= 9 ? '#4ff08f' : '#39d6f2';
 function vgStats(list) {
@@ -6651,8 +6657,7 @@ async function toVgCover(file) {
 async function vgCommit(pid, fn) {
   const p = playerById(pid);
   if (!fs || !db || !p) throw Object.assign(new Error('x'), {code:'permission-denied'});
-  if (S.admin) { const b = fs.batch(); fn(b); await b.commit(); return; }
-  const how = ownEdit(p), ref = db.collection('players').doc(pid);
+  const how = vgHow(p), ref = db.collection('players').doc(pid);
   if (!how) throw Object.assign(new Error('x'), {code:'permission-denied'});
   if (how === 'claim') {
     const k = newKey(); pkeyPut(pid, [k]);

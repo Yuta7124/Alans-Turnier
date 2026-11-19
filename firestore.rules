@@ -70,7 +70,8 @@ service cloud.firestore {
           && request.resource.data.byGuest == true
           && (!('kh' in request.resource.data) || (request.resource.data.kh is string && request.resource.data.kh.size() == 64))
         );
-        allow update: if isAdmin() || (
+        // Der Spielleiter darf alles ändern, nur einen vorhandenen Schlüssel (kh) nicht austauschen.
+        allow update: if (isAdmin() && (resource.data.get('kh', '') == '' || request.resource.data.get('kh', '') == resource.data.get('kh', ''))) || (
           'kh' in resource.data
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'color', 'avatar', 'font', 'grad', 'frame', 'motto', 'kh', 'kp'])
           && request.resource.data.kp is string && request.resource.data.kp.size() <= 100
@@ -207,12 +208,21 @@ service cloud.firestore {
           && (!('hrs' in d) || (d.hrs is number && d.hrs >= 0 && d.hrs <= 99999))
           && (!('note' in d) || (d.note is string && d.note.size() <= 300));
       }
+      // Nur der Spieler selbst, auch nicht der Spielleiter: Im selben Schreibvorgang muss der Spieler-Schlüssel gewechselt
+      // werden, und der vorgezeigte alte Schlüssel (kp) muss zum gespeicherten kh passen. Den kennt nur das Gerät des Spielers.
+      // Hat ein Spieler noch keinen Schlüssel, darf er (bzw. bei selbst angelegten Spielern der Spielleiter) ihn dabei festlegen.
+      function vgPl(pid) { return /databases/$(database)/documents/rooms/$(room)/players/$(pid); }
       function vgOwner(pid) {
-        return isAdmin() || (
-          exists(/databases/$(database)/documents/rooms/$(room)/players/$(pid))
-          && getAfter(/databases/$(database)/documents/rooms/$(room)/players/$(pid)).data.get('kh', '')
-             != get(/databases/$(database)/documents/rooms/$(room)/players/$(pid)).data.get('kh', '')
-        );
+        return exists(vgPl(pid)) && ((
+            get(vgPl(pid)).data.get('kh', '') != ''
+            && getAfter(vgPl(pid)).data.get('kh', '') != get(vgPl(pid)).data.get('kh', '')
+            && getAfter(vgPl(pid)).data.get('kp', '') is string
+            && hashing.sha256(getAfter(vgPl(pid)).data.get('kp', '')).toHexString().lower() == get(vgPl(pid)).data.get('kh', '')
+          ) || (
+            get(vgPl(pid)).data.get('kh', '') == ''
+            && getAfter(vgPl(pid)).data.get('kh', '') != ''
+            && (get(vgPl(pid)).data.get('byGuest', false) == true || isAdmin())
+          ));
       }
       match /vg/{id} {
         allow read: if true;
@@ -222,9 +232,10 @@ service cloud.firestore {
       }
 
       // Alles andere (Punkte, Einstellungen, Quiz, Rad, Ankündigungen): lesen alle, ändern nur der Spielleiter.
+      // Ausnahme Videogames: die ändert nur der Spieler selbst (siehe vg oben).
       match /{coll}/{id} {
         allow read: if true;
-        allow write: if isAdmin();
+        allow write: if isAdmin() && coll != 'vg';
       }
     }
   }
