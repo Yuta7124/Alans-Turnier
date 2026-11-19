@@ -15,7 +15,7 @@
 <script>try{document.documentElement.dataset.design=localStorage.getItem('turnier-design')||'neon'}catch(e){document.documentElement.dataset.design='neon'}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Unbounded:wght@600;800&family=Pixelify+Sans:wght@500;700&family=Press+Start+2P&family=Bungee&family=Orbitron:wght@700;900&family=Permanent+Marker&family=Bangers&family=Pacifico&family=Russo+One&family=Creepster&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Unbounded:wght@400;500;600;700;800&family=Pixelify+Sans:wght@500;700&family=Press+Start+2P&family=Bungee&family=Orbitron:wght@700;900&family=Permanent+Marker&family=Bangers&family=Pacifico&family=Russo+One&family=Creepster&display=swap" rel="stylesheet">
 <style id="app-style">
 :root{
   /* Layout: retro arcade cabinet at night. Coin "jackpot" + pixel podium on top, highscore table and log below; tabs work like a game menu with a blinking cursor. Pixel-notched panels everywhere. One dark world on purpose. */
@@ -306,7 +306,7 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 /* ---------- Kartenwahn: Karten im Pixel-Look der Seite (feste Farben, unabhängig vom Event-Look) ---------- */
 .ksec{--edge:#463a80;--panel:#1c1537;--panel-2:#2a1f4f;--muted:#aaa1d2;--coin:#ffcf3f}
 .kcard{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--w,72px);height:calc(var(--w,72px) * 1.5);
-  background:var(--kc);color:#07050f;font-family:"Press Start 2P","Courier New",monospace;line-height:1;user-select:none;-webkit-user-select:none;
+  background:var(--kc);color:#07050f;font-family:var(--pixel);line-height:1;user-select:none;-webkit-user-select:none;
   background-image:linear-gradient(135deg,rgba(255,255,255,.24) 0 16%,transparent 16% 100%);
   box-shadow:0 -3px 0 #07050f,0 3px 0 #07050f,-3px 0 0 #07050f,3px 0 0 #07050f,inset 0 0 0 3px rgba(255,255,255,.32),inset 0 -6px 0 rgba(0,0,0,.2)}
 .kc-mid{position:relative;width:70%;height:62%;display:grid;place-items:center;background:#0b0817;color:var(--kc);font-size:calc(var(--w,72px) * .34);
@@ -1104,7 +1104,7 @@ body.ingame.pv-on{padding-top:0}
 .g-pn{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .g-now{font-family:var(--pixel);font-size:10px;color:var(--xp)}
 .g-tot{font-family:var(--pixel);font-size:12px;text-align:right}
-.g-tot small{display:block;font-family:Inter,system-ui,sans-serif;font-size:11px;color:var(--muted)}
+.g-tot small{display:block;font-family:var(--body);font-size:11px;color:var(--muted)}
 .g-host{display:flex;flex-direction:column;gap:8px}
 .g-host .okline{margin:0}
 .g-help{color:var(--muted);font-size:14px;margin:12px 0 0}
@@ -2241,7 +2241,7 @@ body.locked #bgm-root{bottom:96px}
 
 /* ===== Redesign „Neon-Glas“ (Nov 2026): dunkles Glas, weiche Ecken, Neon-Verläufe. Liegt über dem Pixel-Grundstil, aktiv mit html[data-design="neon"]. Neue Designs: eigener Block mit html[data-design="…"] und Eintrag in DESIGNS. ===== */
 html[data-design="neon"]{--bg:#07060f;--bg-2:#100c22;--panel:rgba(24,19,48,.78);--panel-2:#2a2152;--edge:rgba(160,130,255,.26);--muted:#aaa3d4;--shadow:#04030a;
-  --head:"Unbounded","Pixelify Sans",system-ui,sans-serif;--r:18px;--neon:linear-gradient(90deg,#ff4f6d,#ffcf3f 50%,#39d6f2)}
+  --head:"Unbounded","Pixelify Sans",system-ui,sans-serif;--display:var(--head);--body:"Unbounded",system-ui,sans-serif;--pixel:"Unbounded",system-ui,sans-serif;--r:18px;--neon:linear-gradient(90deg,#ff4f6d,#ffcf3f 50%,#39d6f2)}
 html[data-design="neon"] body{background:
   radial-gradient(900px 600px at 0% -10%,rgba(124,77,255,.28),transparent 65%),
   radial-gradient(800px 520px at 100% 0%,rgba(57,214,242,.18),transparent 65%),
@@ -2278,6 +2278,8 @@ html[data-design="neon"] .hub-btn[aria-pressed="true"]{box-shadow:inset 0 0 0 1p
 html[data-design="neon"] .hub-txt b{font-family:var(--head);font-weight:800;font-size:19px}
 html[data-design="neon"] .av{border-radius:30%;box-shadow:0 0 0 2px rgba(255,255,255,.12)}
 html[data-design="neon"] .room-card.mine{box-shadow:inset 0 0 0 1px var(--coin),0 0 30px -10px rgba(255,207,63,.6)}
+html[data-design="neon"] body{font-size:15px;letter-spacing:-.01em}
+html[data-design="neon"] .tab{letter-spacing:-.02em}
 html[data-design="neon"] ::selection{background:rgba(255,79,109,.45)}
 html[data-design="neon"] *{scrollbar-color:#3a2f6e transparent}
 html[data-design="neon"] .start-h{font-family:var(--head);font-weight:800;font-size:22px}
