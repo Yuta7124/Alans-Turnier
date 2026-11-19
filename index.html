@@ -1812,7 +1812,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=14"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=15"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -6639,7 +6639,7 @@ async function vgCommit(pid, fn) {
   pkeyPut(pid, keys);
   throw Object.assign(new Error('x'), {code:'permission-denied'});
 }
-const vgErr = e => toast(e && e.code === 'permission-denied' ? 'Das darf nur der Spieler selbst (auf seinem Gerät) oder der Spielleiter.' : 'Speichern hat nicht geklappt. Prüfe die Verbindung und versuch es nochmal.');
+const vgErr = e => toast(e && e.code === 'permission-denied' ? 'Das Eintragen ist noch nicht freigeschaltet. Der Spielleiter muss dafür einmal die neuen Datenbank-Regeln veröffentlichen.' : 'Speichern hat nicht geklappt. Prüfe die Verbindung und versuch es nochmal.');
 let vgBusy = false;
 async function vgSave() {
   const d = D.vgF; if (!d || vgBusy) return;
