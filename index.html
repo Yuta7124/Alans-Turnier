@@ -2279,6 +2279,7 @@ html[data-design="neon"] .hub-txt b{font-family:var(--head);font-weight:800;font
 html[data-design="neon"] .av{border-radius:30%;box-shadow:0 0 0 2px rgba(255,255,255,.12)}
 html[data-design="neon"] .room-card.mine{box-shadow:inset 0 0 0 1px var(--coin),0 0 30px -10px rgba(255,207,63,.6)}
 html[data-design="neon"] body{font-size:15px;letter-spacing:-.01em}
+html[data-design="neon"] :is(button,select,input,textarea,option){font-family:var(--body)}
 html[data-design="neon"] .tab{letter-spacing:-.02em}
 html[data-design="neon"] ::selection{background:rgba(255,79,109,.45)}
 html[data-design="neon"] *{scrollbar-color:#3a2f6e transparent}
@@ -3898,6 +3899,8 @@ function patch(el, html) {
     if (n) { n.focus({preventScroll:true}); try { if (ss != null) n.setSelectionRange(ss, se); } catch (e) {} }
   }
 }
+/* Schrift des aktuellen Designs für Canvas-Texte (z. B. Minigolf) */
+function cssFont(v) { return getComputedStyle(document.documentElement).getPropertyValue('--' + v).trim() || 'sans-serif'; }
 function applyDesign() {
   const d = (S.settings && S.settings.design) || 'neon', h = document.documentElement;
   if (h.dataset.design !== d) { h.dataset.design = d; try { localStorage.setItem('turnier-design', d); } catch (e) {} }
@@ -5565,7 +5568,7 @@ function gBall(c, V, x, y, color, alpha, label, now) {
   const g = c.createRadialGradient(s[0] - rr * 0.35, s[1] - rr * 0.4, rr * 0.1, s[0], s[1], rr);
   g.addColorStop(0, '#ffffff'); g.addColorStop(0.55, color); g.addColorStop(1, gShade(color.length === 7 ? color : '#dddddd', 0.55));
   c.beginPath(); c.arc(s[0], s[1], rr, 0, Math.PI * 2); c.fillStyle = g; c.fill();
-  if (label) { c.font = `600 ${Math.max(10, Math.round(rr * 1.2))}px Inter, system-ui, sans-serif`; c.textAlign = 'center'; c.fillStyle = '#fff'; c.strokeStyle = 'rgba(0,0,0,.6)'; c.lineWidth = 3; c.strokeText(label, s[0], s[1] - rr - 6); c.fillText(label, s[0], s[1] - rr - 6); }
+  if (label) { c.font = `600 ${Math.max(10, Math.round(rr * 1.2))}px ${cssFont('body')}`; c.textAlign = 'center'; c.fillStyle = '#fff'; c.strokeStyle = 'rgba(0,0,0,.6)'; c.lineWidth = 3; c.strokeText(label, s[0], s[1] - rr - 6); c.fillText(label, s[0], s[1] - rr - 6); }
   c.restore();
 }
 const G_STARS = Array.from({length:60}, (_, i) => [(i * 9301 + 49297) % 233280 / 233280, (i * 4513 + 1931) % 12347 / 12347, 0.4 + (i % 5) / 6]);
@@ -5684,15 +5687,15 @@ function gDraw(now) {
     c.fillStyle = `hsl(${Math.round(120 - gl.aim.p * 120)},90%,58%)`;
     for (let d = 16; d < len; d += 13) { const s = V.P(b.x + ux * d, b.y + uy * d, 1); c.beginPath(); c.arc(s[0], s[1], Math.max(1.5, 2.6 * V.S(b.x, b.y, 1) * (1 - d / len * 0.5)), 0, Math.PI * 2); c.fill(); }
     const s = V.P(b.x, b.y, G_R * 2.4);
-    c.font = '700 13px "Press Start 2P", monospace'; c.textAlign = 'center'; c.strokeStyle = 'rgba(0,0,0,.7)'; c.lineWidth = 4;
+    c.font = `700 13px ${cssFont('pixel')}`; c.textAlign = 'center'; c.strokeStyle = 'rgba(0,0,0,.7)'; c.lineWidth = 4;
     const txt = Math.round(gl.aim.p * 100) + '%'; c.strokeText(txt, s[0], s[1] - 8); c.fillText(txt, s[0], s[1] - 8);
   }
   // Einblendungen
   const banner = (txt, sub, a, col) => {
     c.save(); c.globalAlpha = a; c.textAlign = 'center';
     c.fillStyle = 'rgba(11,6,32,.72)'; c.fillRect(0, h / 2 - 46, w, sub ? 92 : 70);
-    c.font = `700 ${Math.min(34, Math.round(w / 20))}px "Bungee", "Press Start 2P", sans-serif`; c.fillStyle = col; c.fillText(txt, w / 2, h / 2 + (sub ? -4 : 10));
-    if (sub) { c.font = '600 16px Inter, system-ui, sans-serif'; c.fillStyle = '#fff'; c.fillText(sub, w / 2, h / 2 + 28); }
+    c.font = `700 ${Math.min(34, Math.round(w / 20))}px ${cssFont('display')}`; c.fillStyle = col; c.fillText(txt, w / 2, h / 2 + (sub ? -4 : 10));
+    if (sub) { c.font = `600 16px ${cssFont('body')}`; c.fillStyle = '#fff'; c.fillText(sub, w / 2, h / 2 + 28); }
     c.restore();
   };
   // Alle fertig: 3 Sekunden runterzählen, dann schaltet der Host weiter
@@ -5702,7 +5705,7 @@ function gDraw(now) {
   if (all && now - gl.allAt > 600) {
     const left = Math.max(1, Math.ceil(3 - (now - gl.allAt) / 1000)), last = G.hi + 1 >= G.holes.length;
     const txt = tx(last ? `Ergebnis in ${left}` : `Nächste Bahn in ${left}`);
-    c.save(); c.font = `700 ${Math.min(26, Math.round(w / 24))}px "Bungee", "Press Start 2P", sans-serif`; c.textAlign = 'center';
+    c.save(); c.font = `700 ${Math.min(26, Math.round(w / 24))}px ${cssFont('display')}`; c.textAlign = 'center';
     const tw = c.measureText(txt).width + 36, y0 = h * 0.16;
     c.fillStyle = 'rgba(11,6,32,.82)'; c.fillRect(w / 2 - tw / 2, y0 - 30, tw, 46); c.strokeStyle = '#ffcf3f'; c.lineWidth = 2; c.strokeRect(w / 2 - tw / 2, y0 - 30, tw, 46);
     c.fillStyle = '#ffcf3f'; c.fillText(txt, w / 2, y0 + 3); c.restore();
