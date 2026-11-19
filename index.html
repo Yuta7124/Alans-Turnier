@@ -333,7 +333,7 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .k-head{display:flex;flex-direction:column;min-width:0;flex:0 1 auto}
 .k-head b{font-family:var(--display);font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .k-head small{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.k-timer{margin-left:auto;position:relative;flex:none;width:min(200px,30vw);height:26px;background:#0b0817;box-shadow:0 0 0 2px var(--edge);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.k-timer{margin-left:auto;position:relative;flex:none;width:86px;height:20px;background:#0b0817;box-shadow:0 0 0 2px var(--edge);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .k-timer i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#39d6f2,#4ff08f);transition:width 1s linear}
 .k-timer span{position:relative;font-family:var(--pixel);font-size:10px;color:#fff;text-shadow:1px 1px 0 #000}
 .k-timer.low i{background:#ff4f6d}
@@ -363,8 +363,8 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .k-deck .k-deck2{transform:translate(-4px,4px)}
 .k-deck .k-deck3{transform:translate(-8px,8px)}
 .k-deck:disabled{cursor:default}
-.k-deck:not(:disabled):hover > .kcard:last-of-type{transform:translateY(-6px)}
-.kplay.mine .k-deck:not(:disabled) > .kcard:last-of-type{animation:kGlow 1s steps(2) infinite}
+.k-deck:not(:disabled):hover > .kcard:not(.k-deck2):not(.k-deck3){transform:translateY(-6px)}
+.kplay.mine .k-deck:not(:disabled) > .kcard:not(.k-deck2):not(.k-deck3){animation:kGlow 1s steps(2) infinite}
 .k-deckn{position:absolute;left:50%;bottom:-26px;transform:translateX(-50%);font-family:var(--pixel);font-size:10px;color:var(--muted)}
 .k-pile{position:relative;display:grid}
 .k-pile > .kcard{grid-area:1/1}
@@ -374,8 +374,9 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .k-topcard.drop{animation:kDrop .35s ease-out}
 .k-ghost{opacity:.5}
 .k-pend{position:absolute;right:-22px;top:-16px;z-index:2;background:#ff4f6d;color:#fff;font-family:var(--pixel);font-size:15px;padding:7px 8px;box-shadow:0 0 0 3px #07050f;animation:kPulse .6s steps(2) infinite}
-.k-colorbadge{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;font-family:var(--pixel);font-size:10px;color:#f5f2ff;background:rgba(11,8,23,.85);padding:6px 10px;box-shadow:0 0 0 2px var(--cc);white-space:nowrap}
+.k-colorbadge{align-self:center;display:flex;align-items:center;gap:8px;font-family:var(--pixel);font-size:10px;color:#f5f2ff;background:rgba(11,8,23,.85);padding:6px 10px;box-shadow:0 0 0 2px var(--cc);white-space:nowrap}
 .k-colorbadge i{width:12px;height:12px;background:var(--cc)}
+.k-side{flex:none;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
 .k-status{flex:none;text-align:center;font-size:15px;min-height:22px}
 .k-status.mine b{color:#ffcf3f;font-family:var(--display);font-size:18px;margin-right:4px}
 .k-log{flex:none;display:flex;flex-direction:column;align-items:center;gap:1px;min-height:36px;font-size:13px;color:#d6d0f2;text-align:center}
@@ -399,18 +400,31 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .k-pick-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
 .k-pick-grid button{height:76px;border:0;background:var(--kc);color:#07050f;font-family:var(--pixel);font-size:12px;cursor:pointer;box-shadow:0 0 0 3px #07050f,inset 0 -7px 0 rgba(0,0,0,.22)}
 .k-pick-grid button:hover{filter:brightness(1.12)}
+/* Fliegende Karten (liegen über allem, außerhalb des Spieltischs) */
+.k-fx{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden}
+.k-fly{position:fixed;will-change:transform;filter:drop-shadow(0 10px 14px rgba(0,0,0,.55))}
+.k-fly .kcard{display:flex}
+.k-wait{opacity:0!important}
+.kc-btn.k-flip .kcard{animation:kFlip .32s ease-out}
+.k-opp.k-got{animation:kBump .35s ease-out}
+.k-opp.k-played{animation:kBump .35s ease-out}
+.k-shout{position:absolute;left:50%;top:-6px;transform:translate(-50%,-100%);z-index:5;white-space:nowrap;font-family:var(--pixel);font-size:10px;color:#07050f;background:#ffcf3f;padding:6px 8px;box-shadow:0 0 0 2px #07050f;animation:kShout 1.6s ease-out forwards;pointer-events:none}
+.k-opp,.k-actions{position:relative}
+@keyframes kFlip{0%{transform:scaleX(0)}100%{transform:scaleX(1)}}
+@keyframes kBump{40%{transform:scale(1.08)}}
+@keyframes kShout{0%{opacity:0;transform:translate(-50%,-60%) scale(.6)}15%{opacity:1;transform:translate(-50%,-110%) scale(1.05)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-150%)}}
 @keyframes kPulse{50%{opacity:.4}}
 @keyframes kSpin{to{transform:rotate(360deg)}}
 @keyframes kDrop{from{transform:translateY(-46px) rotate(-16deg) scale(1.18);opacity:.2}}
 @keyframes kWiggle{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 @keyframes kAlarm{50%{background:#ffcf3f;color:#07050f}}
 @keyframes kGlow{50%{filter:drop-shadow(0 0 12px #ffcf3f)}}
-@media (prefers-reduced-motion:reduce){.k-ring::before,.k-topcard.drop,.k-catch,.kc-btn.shake{animation:none}}
+@media (prefers-reduced-motion:reduce){.k-ring::before,.k-topcard.drop,.k-catch,.kc-btn.shake,.kc-btn.k-flip .kcard,.k-opp.k-got,.k-opp.k-played,.k-shout{animation:none}}
 @media (max-width:760px){
   .ksec.kplay{padding:8px 8px 6px;gap:4px}
   .k-head small{display:none}
   .k-head b{font-size:16px}
-  .k-timer{width:34vw}
+  .k-timer{width:64px;height:18px}
   .k-opps{justify-content:flex-start;gap:8px}
   .k-opp{gap:6px;padding:4px 8px 4px 4px}
   .k-opp-info b{max-width:72px;font-size:13px}
@@ -434,6 +448,50 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
   .k-table{--w:clamp(50px,20vh,90px)}
   .k-hand{--w:clamp(48px,19vh,78px);padding-top:16px}
   .k-log .old{display:none}
+}
+/* Querformat (Handy quer, Tablet, PC): Gegner links, Tisch in der Mitte, Status und Knöpfe rechts, Hand unten */
+@media (orientation:landscape) and (min-width:640px){
+  .ksec.kplay{display:grid;grid-template-columns:minmax(150px,20%) minmax(0,1fr) minmax(170px,24%);grid-template-rows:auto minmax(0,1fr) auto;
+    grid-template-areas:"top top top" "opps table side" "hand hand hand";column-gap:14px;row-gap:6px}
+  .kplay > .k-top{grid-area:top}
+  .kplay > .k-opps{grid-area:opps;flex-direction:column;justify-content:safe center;align-items:stretch;overflow-x:hidden;overflow-y:auto;padding:6px 6px 6px 4px;gap:8px;min-height:0}
+  .kplay > .k-opps .k-opp{width:100%;min-width:0}
+  .kplay > .k-opps .k-opp-info{flex:1}
+  .kplay > .k-opps.many .k-opp{flex-direction:row;width:100%;gap:6px;padding:4px 8px 4px 4px;align-items:center}
+  .kplay > .k-opps.many .k-opp-info{align-items:flex-start}
+  .kplay > .k-opps.many .k-opp-info b{max-width:none;font-size:12px}
+  .kplay > .k-opps.many .k-minis{display:none}
+  .kplay > .k-opps.many .k-cw{display:inline}
+  .kplay > .k-opps.many .k-catch{position:static;transform:none}
+  .kplay > .k-opps.many .k-one{position:static}
+  .kplay > .k-table{grid-area:table;min-height:0}
+  .kplay > .k-side{grid-area:side;justify-content:center;gap:10px;padding:6px 0;min-height:0;overflow:hidden}
+  .kplay > .k-side .k-status,.kplay > .k-side .k-log{text-align:center}
+  .kplay > .k-side .k-actions{flex-direction:column;align-items:stretch;width:100%;max-width:240px;min-height:0}
+  .kplay > .k-hand{grid-area:hand}
+  .kplay > .k-pick{grid-area:1 / 1 / -1 / -1}
+  .k-ring{width:min(90%,62vh,440px)}
+}
+@media (orientation:landscape) and (min-width:640px) and (max-height:540px){
+  .ksec.kplay{grid-template-columns:minmax(130px,19%) minmax(0,1fr) minmax(150px,23%);padding:6px 10px 4px;row-gap:2px}
+  .k-top{gap:8px}
+  .k-top .gmenu{width:34px;height:34px}
+  .k-head b{font-size:15px}
+  .k-head small{display:block;font-size:11px}
+  .k-top .k-endbtn{padding:4px 10px;min-height:0;font-size:11px}
+  .kplay > .k-opps .k-opp{padding:3px 6px 3px 3px;gap:6px}
+  .kplay > .k-opps .k-opp-info b{font-size:12px;max-width:none}
+  .kplay > .k-opps .k-opp-n{font-size:11px}
+  .kplay > .k-opps .k-minis{display:none}
+  .k-table{--w:clamp(46px,19vh,84px)}
+  .kplay > .k-side{gap:6px}
+  .k-status{font-size:13px}
+  .k-status.mine b{display:block;font-size:15px;margin:0 0 2px}
+  .k-log{min-height:0;font-size:11px}
+  .kplay > .k-side .k-actions .btn{padding:7px 10px;font-size:12px;min-height:0}
+  .k-colorbadge{font-size:9px;padding:4px 8px}
+  .k-hand{--w:clamp(44px,18vh,72px);padding:14px 8px 4px}
+  .k-deckn{bottom:-20px}
 }
 /* Vorbereitung und Ergebnis */
 .k-setup{display:flex;flex-direction:column;gap:12px}
@@ -765,6 +823,7 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .vg-hrsrow{display:flex;gap:8px;align-items:center}
 .vg-hrsrow .input{flex:1;min-width:0}
 .vg-hrsrow .chip{flex:none}
+.vg-plus[aria-pressed="true"]{background:var(--coin);color:#120c24}
 .vg-favpick{display:flex;flex-direction:column;gap:8px}
 .sp-top3{display:flex;flex-direction:column;gap:5px;width:100%;margin-top:4px;text-align:left}
 .sp-t3{display:grid;grid-template-columns:16px 24px minmax(0,1fr);gap:7px;align-items:center;font-size:13px;font-weight:700;color:var(--ink)}
@@ -1988,7 +2047,7 @@ body.locked #bgm-root{bottom:96px}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=19"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=20"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -6177,7 +6236,7 @@ function kOppsHTML(U, many) {
   return seats.map(pid => {
     const p = ghost(pid), h = s.hands[pid] || [], turn = kTurnPid(s) === pid, unc = !!s.unc[pid];
     const backs = Math.min(h.length, 7);
-    return `<div class="k-opp ${turn ? 'kturn' : ''} ${h.length === 1 ? 'kone' : ''}">
+    return `<div class="k-opp ${turn ? 'kturn' : ''} ${h.length === 1 ? 'kone' : ''}" data-pid="${esc(pid)}">
       <div class="k-opp-av">${avatar(p, many && isTouch() ? 28 : 34)}${turn ? '<span class="k-turn-dot" aria-hidden="true"></span>' : ''}</div>
       <div class="k-opp-info"><b>${esc(p.name)}</b><span class="k-opp-n"><span class="k-minis" aria-hidden="true">${'<i></i>'.repeat(backs)}</span><span class="k-cnt">${h.length}</span><span class="k-cw">${h.length === 1 ? 'Karte' : 'Karten'}</span></span></div>
       ${unc && canCatch ? `<button class="btn btn-sm k-catch" type="button" data-act="k-catch" data-pid="${esc(pid)}">Erwischt!</button>` : h.length === 1 ? '<span class="k-one">1!</span>' : ''}
@@ -6193,18 +6252,20 @@ function kPlayHTML(U) {
   const lastE = s.log[s.log.length - 1];
   const newMine = lastE && lastE.p === me && ['draw', 'take'].includes(lastE.a) && kl.animSeq !== s.seq ? lastE.n : 0;
   const drewIdx = s.drewN && s.drew && mine ? hand.lastIndexOf(s.drew) : -1;
+  const wait = kfx.wait.slice();
   const cards = hand.map((c, i) => {
     const ok = playable.includes(c) && (!s.drewN || i === drewIdx);
-    return `<button class="kc-btn ${ok ? 'ok' : mine ? 'no' : ''} ${i === drewIdx ? 'drawn' : ''}" type="button" data-act="k-play" data-c="${c}" ${ok ? '' : 'aria-disabled="true"'} aria-label="${esc(kCardName(c))}${ok ? '' : ' (passt nicht)'}">${kCardHTML(c)}</button>`;
+    const wi = wait.indexOf(c), hid = wi >= 0; if (hid) wait.splice(wi, 1);
+    return `<button class="kc-btn ${ok ? 'ok' : mine ? 'no' : ''} ${i === drewIdx ? 'drawn' : ''} ${hid ? 'k-wait' : ''}" type="button" data-act="k-play" data-c="${c}" ${ok ? '' : 'aria-disabled="true"'} aria-label="${esc(kCardName(c))}${ok ? '' : ' (passt nicht)'}">${kCardHTML(c)}</button>`;
   }).join('');
   if (newMine) kl.animSeq = s.seq;
   const pileShow = s.pile.slice(-3);
-  const pileHTML = pileShow.map((c, i) => kCardHTML(c, i === pileShow.length - 1 ? 'k-topcard' + (kl.lastTopSeq !== s.seq ? ' drop' : '') : 'k-under u' + (pileShow.length - 1 - i))).join('')
-    + (pend && pend.a === 'play' && pend.c ? kCardHTML(pend.c, 'k-topcard k-ghost') : '');
-  kl.lastTopSeq = s.seq;
+  const ghostTop = pend && pend.a === 'play' && pend.c;
+  const pileHTML = pileShow.map((c, i) => kCardHTML(c, i === pileShow.length - 1 ? 'k-topcard' + (kfx.hideTop && !ghostTop ? ' k-wait' : '') : 'k-under u' + (pileShow.length - 1 - i))).join('')
+    + (ghostTop ? kCardHTML(pend.c, 'k-topcard k-ghost' + (kfx.hideTop ? ' k-wait' : '')) : '');
   const myN = (s.hands[me] || []).length;
   const status = !inG ? (S.spectate || !s.order.includes(me) ? '👀 Du schaust zu' : '')
-    : mine ? (s.pend ? `<b>Du bist dran!</b> ${U.cfg.stack ? `Leg +${s.pendT === 'F' ? '4' : '2 oder +4'} drauf oder nimm ${s.pend} Karten.` : ''}` : s.drewN ? '<b>Du bist dran!</b> Leg die gezogene Karte oder behalte sie.' : playable.length ? '<b>Du bist dran!</b> Tipp auf eine Karte.' : '<b>Du bist dran!</b> Nichts passt: Zieh eine Karte.')
+    : mine ? (s.pend ? `<b>Du bist dran!</b> ${U.cfg.stack ? `Leg +${s.pendT === 'F' ? '4' : '2 oder +4'} drauf oder nimm ${s.pend} Karten.` : ''}` : s.drewN ? '<b>Du bist dran!</b> Leg die gezogene Karte oder behalte sie.' : playable.length ? '<b>Du bist dran!</b> Leg eine passende Karte.' : '<b>Du bist dran!</b> Nichts passt: Zieh eine Karte.')
     : `${kName(tp)} ist dran …`;
   const callBtn = inG && ((mine && myN === 2 && playable.length) || (myN === 1 && s.unc[me]))
     ? `<button class="btn k-call ${kl.armed ? 'armed' : ''}" type="button" data-act="k-call" aria-pressed="${kl.armed}">${kl.armed ? '✓ Letzte Karte!' : '📣 Letzte Karte!'}</button>` : '';
@@ -6225,12 +6286,14 @@ function kPlayHTML(U) {
       <div class="k-ring ${s.dir < 0 ? 'ccw' : ''}" aria-label="${s.dir < 0 ? 'Gegen den Uhrzeigersinn' : 'Im Uhrzeigersinn'}"><span>${s.dir < 0 ? '↺' : '↻'}</span></div>
       <button class="k-deck" type="button" data-act="k-draw" ${canDraw ? '' : 'disabled'} aria-label="Karte ziehen, ${s.deck.length} im Stapel">${kBackHTML('k-deck3')}${kBackHTML('k-deck2')}${kBackHTML()}<span class="k-deckn">${s.deck.length}</span></button>
       <div class="k-pile">${pileHTML}${s.pend ? `<span class="k-pend">+${s.pend}</span>` : ''}</div>
-      <div class="k-colorbadge"><i></i>${K_CNAME[s.color]}</div>
     </div>
-    <div class="k-status ${mine ? 'mine' : ''}">${status}</div>
-    <div class="k-log" aria-live="polite">${s.log.slice(-2).reverse().map((e, i) => `<span class="${i ? 'old' : ''}">${kLogText(e)}</span>`).join('')}</div>
-    ${inG ? `<div class="k-actions">${callBtn}${acts}</div>
-    <div class="k-hand ${hand.length > 9 ? 'many' : ''}" id="k-hand" style="--n:${Math.max(1, hand.length)}">${cards}</div>` : ''}
+    <div class="k-side">
+      <div class="k-colorbadge" style="--cc:${K_HEX[s.color]}"><i></i>${K_CNAME[s.color]}</div>
+      <div class="k-status ${mine ? 'mine' : ''}">${status}</div>
+      <div class="k-log" aria-live="polite">${s.log.slice(-2).reverse().map((e, i) => `<span class="${i ? 'old' : ''}">${kLogText(e)}</span>`).join('')}</div>
+      ${inG ? `<div class="k-actions">${callBtn}${acts}</div>` : ''}
+    </div>
+    ${inG ? `<div class="k-hand ${hand.length > 9 ? 'many' : ''}" id="k-hand" style="--n:${Math.max(1, hand.length)}">${cards}</div>` : ''}
     ${kl.pick ? `<div class="k-pick" role="dialog" aria-label="Farbe wählen"><div class="k-pick-box"><b>Welche Farbe?</b>
       <div class="k-pick-grid">${K_COLORS.map(c => `<button type="button" data-act="k-color" data-v="${c}" style="--kc:${K_HEX[c]}">${K_CNAME[c]}</button>`).join('')}</div>
       <button class="btn btn-sm btn-ghost" type="button" data-act="k-color" data-v="">Abbrechen</button></div></div>` : ''}
@@ -6254,6 +6317,7 @@ function kEndHTML(U) {
 function kMount() {
   const h = document.getElementById('k-hand');
   if (h) { h.scrollLeft = kl.handScroll; h.onscroll = () => { kl.handScroll = h.scrollLeft; }; }
+  kFxRun();
 }
 function kTimerTick() {
   const el = document.querySelector('[data-ktimer]'), U = S.uno; if (!el || !U || U.status !== 'running') return;
@@ -6272,15 +6336,16 @@ const kActions = {
   'k-play': b => {
     const U = S.uno, c = b.dataset.c; if (!U || !kMyTurn() || kl.pend) return;
     if (!kPlayable(U.s, U.cfg, myPid()).includes(c) || (U.s.drewN && c !== U.s.drew)) { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); tone(180, .08, 'square', .03); return; }
-    if (kWild(c)) { kl.pick = c; render(); return; }
+    const from = kRect(b.querySelector('.kcard'));
+    if (kWild(c)) { kl.pick = c; kl.pickRect = from; render(); return; }
     tone(520, .05, 'square', .05);
-    kSend('play', {c, call:kl.armed}); kl.armed = false;
+    kOwnPlay(c, from, () => kSend('play', {c, call:kl.armed})); kl.armed = false;
   },
   'k-color': b => {
     const c = kl.pick, col = b.dataset.v; kl.pick = '';
     if (!c || !col) { render(); return; }
     tone(520, .05, 'square', .05);
-    kSend('play', {c, col, call:kl.armed}); kl.armed = false;
+    kOwnPlay(c, kl.pickRect, () => kSend('play', {c, col, call:kl.armed})); kl.armed = false;
   },
   'k-draw': () => { if (!kMyTurn() || kl.pend) return; tone(300, .06, 'triangle', .05); kSend('draw'); },
   'k-take': () => { if (!kMyTurn() || kl.pend) return; kSend('take'); },
@@ -6293,6 +6358,111 @@ const kActions = {
   },
   'k-catch': b => { if (!kIn()) return; tone(240, .12, 'sawtooth', .05); kSend('catch', {t:b.dataset.pid}); }
 };
+
+/* ----- Animationen: Karten fliegen von der Hand, von den Gegnern und vom Stapel ----- */
+const kfx = {gid:'', seen:new Set(), hand:[], wait:[], hideTop:0, own:'', busy:0};
+const kKey = e => [e.k, e.a, e.p, e.c || '', e.n || '', e.x || ''].join(':');
+const kRect = el => { if (!el) return null; const r = el.getBoundingClientRect(); return r.width ? {left:r.left, top:r.top, width:r.width, height:r.height} : null; };
+const kCalm = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
+function kFxLayer() { let l = document.getElementById('k-fx'); if (!l) { l = document.createElement('div'); l.id = 'k-fx'; l.className = 'k-fx'; l.setAttribute('aria-hidden', 'true'); document.body.appendChild(l); } return l; }
+/* Eine Karte (oder Rückseite) von a nach b fliegen lassen; b bestimmt die Größe */
+function kFly(html, a, b, o = {}) {
+  if (!a || !b || kCalm() || document.hidden) { if (o.done) o.done(); return; }
+  const el = document.createElement('div');
+  el.className = 'k-fly'; el.innerHTML = html;
+  el.style.cssText = `left:${b.left}px;top:${b.top}px;--w:${b.width}px`;
+  kFxLayer().appendChild(el); kfx.busy++;
+  const dx = a.left + a.width / 2 - (b.left + b.width / 2), dy = a.top + a.height / 2 - (b.top + b.height / 2), sc = Math.max(.2, a.width / b.width);
+  const mid = `translate(${dx * .45}px,${dy * .45 - 40}px) scale(${(sc + 1) / 2 * 1.08}) rotate(${(o.r || 0) / 2}deg)`;
+  let fin = false;
+  const end = () => { if (fin) return; fin = true; el.remove(); kfx.busy--; if (o.done) o.done(); };
+  try {
+    const an = el.animate([
+      {transform:`translate(${dx}px,${dy}px) scale(${sc}) rotate(${o.r0 || 0}deg)`, opacity:o.o0 == null ? 1 : o.o0},
+      {transform:mid, opacity:1, offset:.55},
+      {transform:`translate(0,0) scale(1) rotate(${o.r || 0}deg)`, opacity:1}
+    ], {duration:o.ms || 420, delay:o.delay || 0, easing:'cubic-bezier(.25,.75,.3,1)', fill:'backwards'});
+    an.onfinish = end; an.oncancel = end;
+    setTimeout(end, (o.ms || 420) + (o.delay || 0) + 600);
+  } catch (e) { end(); }
+}
+function kOppRect(pid) { return kRect(document.querySelector(`.k-opp[data-pid="${CSS.escape(pid)}"] .k-opp-av`)); }
+const kLast = q => { const l = document.querySelectorAll(q); return l[l.length - 1] || null; };
+const kTopRect = () => kRect(kLast('.k-pile .k-topcard'));
+const kDeckRect = () => kRect(kLast('.k-deck > .kcard'));
+function kUnhideTop() { kfx.hideTop = Math.max(0, kfx.hideTop - 1); if (!kfx.hideTop) document.querySelectorAll('.k-pile .k-wait').forEach(x => x.classList.remove('k-wait')); }
+/* Neue Karten in der Hand: erst unsichtbar, dann fliegt je eine Rückseite hin und dreht sich um */
+function kToHand(cards, delay0) {
+  const btns = [...document.querySelectorAll('#k-hand .kc-btn.k-wait')];
+  cards.forEach((c, i) => {
+    const btn = btns.find(x => x.dataset.c === c && !x.dataset.fxBusy);
+    const to = kRect(btn && btn.querySelector('.kcard')) || kRect(document.getElementById('k-hand'));
+    if (btn) btn.dataset.fxBusy = '1';
+    kFly(kBackHTML(), kDeckRect(), to, {delay:delay0 + i * 110, ms:430, r0:-8, done:() => {
+      const k = kfx.wait.indexOf(c); if (k >= 0) kfx.wait.splice(k, 1);
+      const live = [...document.querySelectorAll('#k-hand .kc-btn.k-wait')].find(x => x.dataset.c === c);
+      if (live) { live.classList.remove('k-wait'); live.classList.add('k-flip'); }
+    }});
+  });
+}
+function kToOpp(pid, n, delay0) {
+  const to = kOppRect(pid); if (!to) return;
+  const box = {left:to.left - to.width * .1, top:to.top - to.height * .2, width:to.width * .8, height:to.width * 1.2};
+  for (let i = 0; i < Math.min(n, 5); i++) kFly(kBackHTML(), kDeckRect(), box, {delay:delay0 + i * 100, ms:420, r:12, done:() => {
+    const o = document.querySelector(`.k-opp[data-pid="${CSS.escape(pid)}"]`); if (o) { o.classList.remove('k-got'); void o.offsetWidth; o.classList.add('k-got'); }
+  }});
+}
+/* Eigener Zug: Karte fliegt sofort, ohne auf den Host zu warten */
+function kOwnPlay(c, from, send) {
+  kfx.own = c; kfx.hideTop++;
+  setTimeout(() => { if (kfx.own === c) kfx.own = ''; }, 8000);
+  send();
+  requestAnimationFrame(() => kFly(kCardHTML(c), from, kTopRect(), {ms:380, r0:-14, done:kUnhideTop}));
+}
+/* Nach jedem Neuzeichnen: neue Einträge im Verlauf als Animation zeigen */
+function kFxRun() {
+  const U = S.uno; if (!U || !U.s || S.tab !== 'karten' || !document.querySelector('.kplay')) return;
+  const s = U.s, me = myPid(), hand = (s.hands[me] || []).slice();
+  if (kfx.gid !== U.id) {
+    kfx.gid = U.id; kfx.seen = new Set(s.log.map(kKey)); kfx.hand = hand; kfx.wait = []; kfx.hideTop = 0; kfx.own = '';
+    // Frisch ausgeteilt: Karten an alle verteilen
+    if (U.status === 'running' && !s.log.length && hand.length && !kCalm()) {
+      kfx.wait = hand.slice(); render();
+      kToHand(kSort(hand), 150);
+      s.order.filter(p => p !== me).forEach((p, i) => kToOpp(p, Math.min(4, (s.hands[p] || []).length), 150 + i * 60));
+    }
+    return;
+  }
+  const fresh = s.log.filter(e => !kfx.seen.has(kKey(e)));
+  fresh.forEach(e => kfx.seen.add(kKey(e)));
+  // Was ist neu in meiner Hand?
+  const prev = kfx.hand.slice(), added = [];
+  for (const c of hand) { const i = prev.indexOf(c); if (i >= 0) prev.splice(i, 1); else added.push(c); }
+  kfx.hand = hand;
+  if (!fresh.length && !added.length) return;
+  let d = 0, mineAdded = added.slice(), rerender = false;
+  for (const e of fresh) {
+    if (e.a === 'play') {
+      if (e.p === me && kfx.own === e.c) { kfx.own = ''; continue; }
+      const from = e.p === me ? kRect(document.getElementById('k-hand')) : kOppRect(e.p);
+      kfx.hideTop++; rerender = true;
+      const delay = d;
+      setTimeout(() => kFly(kCardHTML(e.c), from || kDeckRect(), kTopRect(), {delay, ms:400, r0:e.p === me ? -14 : 18, done:kUnhideTop}), 0);
+      d += 260;
+      if (e.p !== me) { const o = document.querySelector(`.k-opp[data-pid="${CSS.escape(e.p)}"]`); if (o) { o.classList.remove('k-played'); void o.offsetWidth; o.classList.add('k-played'); } }
+    } else if (['draw', 'take', 'catch'].includes(e.a)) {
+      const who = e.a === 'catch' ? e.x : e.p, n = e.a === 'catch' ? 2 : Math.max(1, Number(e.n) || 1);
+      if (who === me) continue;
+      kToOpp(who, n, d); d += 120;
+    } else if (e.a === 'call') {
+      const o = e.p === me ? document.querySelector('.k-actions') : document.querySelector(`.k-opp[data-pid="${CSS.escape(e.p)}"]`);
+      if (o) { const t = document.createElement('span'); t.className = 'k-shout'; t.textContent = tx('Letzte Karte!'); o.appendChild(t); setTimeout(() => t.remove(), 1600); }
+    }
+  }
+  if (mineAdded.length) { kfx.wait = kfx.wait.concat(mineAdded); rerender = true; }
+  if (rerender) render();
+  if (mineAdded.length) kToHand(mineAdded, d);
+}
 
 /* ---------- Kartenwahn ENDE ---------- */
 
@@ -6697,8 +6867,8 @@ function vgFormModal() {
         <div class="vg-cats">${VG_CAT.map(([k, l, i]) => `<div class="vg-cat"><span class="vg-catl">${i} ${esc(l)}${k in d.rd ? ` <b style="color:${vgCol(d.rd[k])}">${d.rd[k]}</b>` : ''}</span>${scale('vgf-rd', k, k in d.rd ? d.rd[k] : -1, true)}</div>`).join('')}</div></div>
       <div class="vg-two">
         <div class="field"><label for="vg-hrs">Spielzeit in Stunden (optional)</label>
-          <div class="vg-hrsrow"><input class="input" type="text" inputmode="decimal" id="vg-hrs" data-draft="vgF.hrs" value="${esc(d.hrs)}" placeholder="z. B. 40" autocomplete="off" maxlength="9"><button class="chip" type="button" data-act="vgf-hrsp" aria-pressed="${!!d.hrsp}">+ oder mehr</button></div>
-          <small class="muted">Weißt du es nicht genau (z. B. auf mehreren Plattformen), tippe „+ oder mehr“. Dann steht da etwa „5.000+ Std.“.</small></div>
+          <div class="vg-hrsrow"><input class="input" type="text" inputmode="tel" id="vg-hrs" data-draft="vgF.hrs" value="${esc(d.hrs)}" placeholder="z. B. 40 oder 5000+" autocomplete="off" maxlength="9"><button class="chip vg-plus" type="button" data-act="vgf-hrsp" aria-pressed="${!!d.hrsp}">${d.hrsp ? '✓ ' : ''}+ oder mehr</button></div>
+          <small class="muted">Weißt du es nicht genau (z. B. auf mehreren Plattformen)? Tipp „+ oder mehr“ oder schreib ein + hinter die Zahl. Dann steht da etwa „5.000+ Std.“.</small></div>
       </div>
       <div class="field"><label for="vg-note">Fazit (optional)</label><textarea class="input" id="vg-note" rows="3" maxlength="300" data-draft="vgF.note" placeholder="Was war super, was nicht?">${esc(d.note)}</textarea></div>
       <div class="m-foot"><button class="btn btn-ghost" type="button" data-act="modal-close">Abbrechen</button><button class="btn btn-gold" type="submit">${d.id ? 'Speichern' : 'Eintragen'}</button></div>
