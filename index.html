@@ -2384,22 +2384,19 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
   background:conic-gradient(from -45deg,var(--c1) 0 25%,var(--c2) 0 50%,var(--c3) 0 75%,var(--c0) 0);border:2px solid #2b1d10;box-shadow:inset 0 3px 5px rgba(0,0,0,.3)}
 .mb-mid b{font-size:clamp(10px,2.4vw,22px);filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
 .mb-pcs{position:absolute;inset:2.6%;transform-style:preserve-3d}
-/* Spielfiguren: Kegel mit Kugelkopf, stehen aufrecht auf dem gekippten Brett */
-.mp{position:absolute;width:6.4%;aspect-ratio:1;transform:translate(-50%,-50%);border:0;padding:0;margin:0;background:none;transform-style:preserve-3d;z-index:2;color:inherit}
-.mp::before{content:"";position:absolute;inset:6%;border-radius:50%;background:radial-gradient(rgba(40,20,5,.55),transparent 70%);transform:translate(14%,10%)}
-.mp-3d{position:absolute;left:6%;right:6%;bottom:50%;height:180%;transform-origin:50% 100%;transform:rotateX(-24deg);transform-style:preserve-3d}
-.mp-3d::after{content:"";position:absolute;left:-6%;right:-6%;bottom:-9%;height:22%;border-radius:50%;background:radial-gradient(ellipse at 40% 30%,color-mix(in srgb,var(--mc) 70%,#fff),color-mix(in srgb,var(--mc) 70%,#000) 90%);box-shadow:0 1px 0 rgba(0,0,0,.4)}
-.mp-body{position:absolute;left:4%;right:4%;bottom:0;height:70%;z-index:1;
-  background:linear-gradient(90deg,color-mix(in srgb,var(--mc) 55%,#000) 0%,var(--mc) 30%,color-mix(in srgb,var(--mc) 45%,#fff) 46%,var(--mc) 62%,color-mix(in srgb,var(--mc) 50%,#000) 100%);
-  clip-path:polygon(34% 0,66% 0,96% 90%,100% 100%,0 100%,4% 90%)}
-.mp-head{position:absolute;left:19%;right:19%;top:0;aspect-ratio:1;border-radius:50%;z-index:2;
-  background:radial-gradient(circle at 34% 30%,#fff 0 9%,color-mix(in srgb,var(--mc) 55%,#fff) 22%,var(--mc) 55%,color-mix(in srgb,var(--mc) 50%,#000) 100%);box-shadow:0 2px 2px rgba(0,0,0,.25)}
+/* Spielfiguren: flache runde Spielsteine (2D), liegen auf dem Brett */
+.mp{position:absolute;width:7%;aspect-ratio:1;transform:translate(-50%,-50%);border:0;padding:0;margin:0;background:none;transform-style:preserve-3d;z-index:2;color:inherit}
+.mp::before{content:"";position:absolute;inset:4%;border-radius:50%;background:rgba(40,20,5,.45);filter:blur(2px);transform:translate(10%,14%)}
+.mp-3d{position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,transparent 0 38%,rgba(0,0,0,.18) 39% 43%,transparent 44%),radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--mc) 45%,#fff) 0%,var(--mc) 45%,color-mix(in srgb,var(--mc) 65%,#000) 100%);
+  box-shadow:0 0 0 2px #fff,0 0 0 4px #2b1d10,inset 0 -3px 0 rgba(0,0,0,.25),inset 0 2px 0 rgba(255,255,255,.45)}
+.mp-body,.mp-head{display:none}
 .mp.mp-on{z-index:3}
 .mp.moving{z-index:6}
 .mp.can{cursor:pointer;z-index:5}
 .mp.can::after{content:"";position:absolute;inset:-34%;border-radius:50%;border:3px solid #fff;box-shadow:0 0 14px var(--mc),inset 0 0 10px var(--mc);animation:mpRing 1s ease-in-out infinite}
 .mp.can .mp-3d{animation:mpBob .9s ease-in-out infinite}
-@keyframes mpBob{50%{transform:rotateX(-24deg) translateY(-22%)}}
+@keyframes mpBob{50%{transform:scale(1.18)}}
 @keyframes mpRing{50%{transform:scale(1.15);opacity:.55}}
 .mp-hit .mp-3d{animation:mpHit .45s}
 @keyframes mpHit{30%{filter:brightness(2.2)}}
