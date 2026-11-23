@@ -143,6 +143,12 @@ Teams stehen in `meta/settings` (`fmt`, `teams`), Team-Punkte als Punkte-Einträ
 Ins Zufallsrad können auch die Server-Spiele (Quiz, Minigolf, Blackjack usw.) aufgenommen werden. Jedes Spiel im Rad
 ist im Team-Modus als „Team“ oder „Solo“ markiert. Punkte vergibt der Spielleiter wie gewohnt mit +/−.
 
+## Pause in Raum-Spielen
+In jedem laufenden Raum-Spiel gibt es rechts unten einen Pause-Knopf (für alle Mitspieler). Die Pause steht im Spiel-Objekt
+als `pz = {at, by, auto}`. Während der Pause laufen keine Zeiten, Host-Abläufe oder Bots; beim Weiterspielen werden die
+gespeicherten Zeitpunkte und die Zähler auf jedem Gerät um die Pausenlänge verschoben.
+Spielt man allein (nur Bots oder Solo), pausiert das Spiel automatisch, sobald man die Seite verlässt (z. B. für WhatsApp).
+
 ## Tischtennis
 Raum-Spiel 🏓 für 1 gegen 1 (auch gegen einen Bot), bis 5, 11 oder 21 Punkte. Gespeichert im Raum-Feld `uno` mit `g:'tt'`.
 Jeder Schlag ist ein einziger Schreibvorgang. Der Ball startet auf jedem Gerät, sobald es den Schlag sieht; ob er zurückkommt,

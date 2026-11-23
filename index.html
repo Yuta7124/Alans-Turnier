@@ -271,6 +271,21 @@ button.wmode{cursor:pointer}
 .bd-row{display:grid;grid-template-columns:0.8fr 1.4fr 1fr;gap:8px}
 .bd-row select{min-width:0;padding-right:6px}
 .bd-field .req{font-size:10px;background:var(--coin);color:#1a1030;padding:2px 6px;border-radius:6px;margin-left:6px;vertical-align:middle}
+#pz-btn{position:fixed;right:16px;bottom:96px;z-index:120;width:52px;height:52px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;
+  background:rgba(20,14,40,.88);color:#fff;font-size:22px;box-shadow:0 0 0 2px rgba(255,255,255,.18),0 6px 0 rgba(0,0,0,.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#pz-btn{grid-auto-flow:column;gap:6px;place-content:center}
+#pz-btn i,.pz-ic i{display:block;width:6px;height:20px;border-radius:2px;background:currentColor}
+.pz-ic{display:flex;gap:10px;color:var(--coin)}
+.pz-ic i{width:12px;height:44px;border-radius:4px}
+#pz-btn:hover{box-shadow:0 0 0 2px var(--coin),0 6px 0 rgba(0,0,0,.4)}
+#pz-layer{position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:20px;background:rgba(6,4,14,.72);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);animation:pzIn .2s ease-out}
+.pz-card{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;max-width:380px;width:100%;padding:28px 22px;border-radius:22px;background:var(--panel);box-shadow:0 0 0 2px rgba(255,255,255,.1),0 10px 0 var(--shadow)}
+.pz-card h2{margin:0;font-family:var(--display);font-size:34px;text-transform:uppercase}
+.pz-card p{margin:0}
+.pz-ic{font-size:46px;line-height:1;animation:pzPulse 1.6s ease-in-out infinite}
+@keyframes pzIn{from{opacity:0}}
+@keyframes pzPulse{50%{transform:scale(1.12);opacity:.7}}
+@media (max-width:560px){#pz-btn{right:12px;bottom:86px;width:46px;height:46px;font-size:19px}}
 #bd-banner{display:none}
 body.is-bday #bd-banner{display:flex;align-items:center;justify-content:center;gap:12px;position:relative;z-index:6;padding:10px 14px;text-align:center;font-weight:800;color:#fff;
   background:linear-gradient(90deg,#ff4f9a,#ff9f5a,#ffcf3f,#4ff08f,#39d6f2,#c493ff,#ff4f9a);background-size:300% 100%;animation:bdSlide 8s linear infinite;text-shadow:0 2px 0 rgba(0,0,0,.35);box-shadow:0 4px 0 rgba(0,0,0,.35)}
@@ -2839,7 +2854,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=60"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=61"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4615,6 +4630,7 @@ function render() {
   applyDesign();
   eventSync();
   try { bdaySync(); } catch (e) {}
+  try { pzSync(); } catch (e) {}
   renderHeader();
   const m = $('#main');
   let html;
@@ -6918,6 +6934,73 @@ function roomSet(r, spectate = false) {
   S.quiz = null; S.draw = null; S.golf = null; S.uno = null; S.mad = null; ml.pend = null; ml.n = 0; S.bj = null; bjl.pend = null; bjl.n = 0; S.dt = null; S.tt = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false; kl.pend = null; kl.n = 0;
   roomApply();
 }
+/* ---------- Pause für alle Raum-Spiele ----------
+   Die Pause steht im Spiel-Objekt des Raums als pz = {at, by} (quiz, draw, golf oder uno, je nach Spiel).
+   Während der Pause laufen keine Zeiten, Host-Abläufe und Bots. Beim Weiterspielen schiebt der, der „Weiter“ drückt,
+   die gespeicherten Zeitpunkte um die Pausenlänge nach hinten; jedes Gerät verschiebt seine eigenen Zähler genauso.
+   Spielt man allein (nur Bots oder niemand sonst), pausiert das Spiel automatisch, wenn man die Seite verlässt. */
+const PZ_FIELD = {quiz:'quiz', malen:'draw', golf:'golf', karten:'uno', mad:'uno', bj:'uno', dt:'uno', tt:'uno'};
+function pzField(L = lobby()) { return (L && PZ_FIELD[L.kind]) || ''; }
+function pzGame(L = lobby()) { const f = pzField(L), g = f && L[f]; return g && g.status === 'running' && (L.kind !== 'karten' || !g.g) ? g : null; }
+function roomPaused(L = lobby()) { const g = pzGame(L); return g && g.pz && g.pz.at ? g.pz : null; }
+function pzPlayers(g) { return (Array.isArray(g.players) ? g.players : Array.isArray(g.p) ? g.p : g.s && Array.isArray(g.s.order) ? g.s.order : []).filter(id => typeof id === 'string'); }
+function pzCanUse() { const g = pzGame(), me = myPid(), L = lobby(); return !!(g && me && !S.spectate && L && L.members[me] && pzPlayers(g).includes(me)); }
+function pzSet(on, auto = false) {
+  const L = lobby(), f = pzField(L), g = pzGame(L); if (!g || !pzCanUse()) return;
+  if (on) {
+    if (g.pz && g.pz.at) return;
+    const pz = {at:Date.now(), by:myPid(), auto};
+    L[f] = {...g, pz}; roomWrite({[f + '.pz']:pz}); pzSync(); render();
+    return;
+  }
+  if (!g.pz || !g.pz.at) return;
+  const d = Math.max(0, Date.now() - g.pz.at), patch = {[f + '.pz']:null}, sh = (k, v) => { if (Number(v) > 0) patch[f + '.' + k] = Number(v) + d; };
+  if (L.kind === 'quiz') { sh('startedAt', g.startedAt); sh('pickAt', g.pickAt); sh('revealedAt', g.revealedAt); }
+  else if (L.kind === 'malen') sh('phaseAt', g.phaseAt);
+  else if (L.kind === 'karten' || L.kind === 'mad') { sh('s.turnAt', g.s && g.s.turnAt); if (L.kind === 'karten' && g.s && g.s.unc) for (const [pid, v] of Object.entries(g.s.unc)) sh('s.unc.' + pid, v); }
+  else if (L.kind === 'bj') sh('s.at', g.s && g.s.at);
+  else if (L.kind === 'dt' || L.kind === 'tt') sh('startAt', g.startAt);
+  else if (L.kind === 'golf') sh('holeAt', g.holeAt);
+  const ng = clone(g); delete ng.pz;
+  for (const [k, v] of Object.entries(patch)) { const path = k.split('.').slice(1); if (!path.length || path[0] === 'pz') continue; let o = ng; for (const q of path.slice(0, -1)) o = o[q] = o[q] && typeof o[q] === 'object' ? o[q] : {}; o[path[path.length - 1]] = v; }
+  L[f] = ng;
+  pzSync(); roomWrite(patch); roomApply(); render();
+}
+let pzLoc = 0, pzLocKey = '';
+function pzShiftLocal(d) {
+  for (const [o, ks] of [[kl, ['seqAt', 'hTurnAt', 'uncAt']], [ml, ['seqAt', 'hTurnAt']], [bjl, ['seqAt', 'hAt', 'dAt']], [gl, ['advAt']], [tl, ['bStart', 'serveAt', 'ptAt', 'mineAt']]])
+    for (const k of ks) if (o && Number(o[k]) > 0) o[k] += d;
+  for (const o of [bk, bq, bmad, bbj]) if (o && o.at) o.at += d;
+  for (const m of [bm, bg]) for (const b of Object.values(m)) if (b && typeof b === 'object') { if (b.hitAt) b.hitAt += d; if (b.nextAt) b.nextAt += d; }
+}
+function pzSync() {
+  const pz = roomPaused(), g = pzGame(), key = g ? (S.room + ':' + (g.id || '')) : '';
+  if (pz) { if (!pzLoc || pzLocKey !== key) { pzLoc = Date.now(); pzLocKey = key; } }
+  else if (pzLoc) { if (pzLocKey === key) pzShiftLocal(Date.now() - pzLoc); pzLoc = 0; pzLocKey = ''; }
+  pzUI(pz, g);
+  return !!pz;
+}
+function pzUI(pz, g) {
+  const show = !!(g && roomTabs.includes(S.tab) && S.tab !== 'raum'), mine = pzCanUse();
+  let btn = document.getElementById('pz-btn'), lay = document.getElementById('pz-layer');
+  if (show && mine && !pz) {
+    if (!btn) { btn = document.createElement('button'); btn.id = 'pz-btn'; btn.type = 'button'; btn.dataset.act = 'pz-on'; btn.setAttribute('aria-label', 'Spiel pausieren'); btn.title = 'Pause'; btn.innerHTML = '<i></i><i></i>'; document.body.appendChild(btn); }
+  } else if (btn) btn.remove();
+  if (show && pz) {
+    const who = ghost(pz.by).name, html = `<div class="pz-card"><span class="pz-ic" aria-hidden="true"><i></i><i></i></span><h2>Pause</h2>
+      <p>${pz.auto ? `${esc(who)} hat die Seite kurz verlassen. Das Spiel wartet.` : `${esc(who)} hat das Spiel pausiert.`}</p>
+      ${mine ? `<button class="btn btn-gold btn-big" type="button" data-act="pz-off">▶ Weiterspielen</button>` : '<p class="muted">Gleich geht es weiter. Jeder Mitspieler kann fortsetzen.</p>'}
+      <button class="btn btn-sm btn-ghost" type="button" data-act="gmenu">☰ Menü</button></div>`;
+    if (!lay) { lay = document.createElement('div'); lay.id = 'pz-layer'; lay.setAttribute('role', 'dialog'); lay.setAttribute('aria-label', 'Pause'); document.body.appendChild(lay); }
+    if (lay.dataset.h !== html) { lay.innerHTML = html; lay.dataset.h = html; }
+  } else if (lay) lay.remove();
+}
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) return;
+  const g = pzGame(); if (!g || !pzCanUse() || roomPaused()) return;
+  const humans = pzPlayers(g).filter(id => !isBot(id));
+  if (humans.length === 1 && humans[0] === myPid()) pzSet(true, true);
+});
 function roomApply() {
   const L = S.room ? S.lobbies[S.room] : null;
   const q = L && L.quiz ? migrateQuiz(clone(L.quiz)) : null;
@@ -8968,6 +9051,7 @@ function dtLoop(t) {
   if (!M || M.status !== 'running' || S.tab !== 'dt' || !dtIn()) return;
   if (dtg.gid !== M.id) dtNewGame(M);
   const now = Date.now(), dt = Math.min(100, t - (dtg.last || t)); dtg.last = t;
+  if (roomPaused()) { dtDraw(); return; }
   if (now < M.startAt) { dtDraw(); return; }
   if (M.cfg.time && now > M.startAt + M.cfg.time * 1000) { dtDraw(); return; }
   if (!dtg.dead && !document.hidden) {
@@ -9015,7 +9099,7 @@ function dtDraw() {
   const st = document.getElementById('dt-stats');
   if (st) { const k = `${dtg.sc}|${dtg.ln}|${dtg.lv}`; if (st.dataset.k !== k) { st.dataset.k = k; st.innerHTML = `<span><small>${tx('Punkte')}</small><b>${dtg.sc.toLocaleString('de-DE')}</b></span><span><small>${tx('Reihen')}</small><b>${dtg.ln}</b></span><span><small>${tx('Level')}</small><b>${dtg.lv}</b></span>`; } }
   const tm = document.getElementById('dt-time');
-  if (tm && M) { const left = M.cfg.time ? Math.max(0, Math.ceil((M.startAt + M.cfg.time * 1000 - Math.max(Date.now(), M.startAt)) / 1000)) : 0; const txt = M.cfg.time ? `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}` : '∞'; if (tm.textContent !== txt) tm.textContent = txt; tm.classList.toggle('low', !!M.cfg.time && left <= 15); }
+  if (tm && M) { const left = M.cfg.time ? Math.max(0, Math.ceil((M.startAt + M.cfg.time * 1000 - Math.max(roomPaused() ? roomPaused().at : Date.now(), M.startAt)) / 1000)) : 0; const txt = M.cfg.time ? `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}` : '∞'; if (tm.textContent !== txt) tm.textContent = txt; tm.classList.toggle('low', !!M.cfg.time && left <= 15); }
   const inc = document.getElementById('dt-inc');
   if (inc && M && M.cfg.mode === 'battle') { const n = Math.max(0, dtIncoming(M) - dtg.got); inc.style.height = Math.min(100, n * 5) + '%'; }
 }
@@ -9301,7 +9385,7 @@ function ttLoop(t) {
   const dt = Math.min(.05, (t - (tl.lastT || t)) / 1000); tl.lastT = t;
   if (tl.keys.l || tl.keys.r) ttMovePad(tl.pvx + (tl.keys.r - tl.keys.l) * 1.5 * dt, dt);
   else tl.pvel *= .85;
-  ttLogic();
+  if (!roomPaused()) ttLogic();
   ttDraw(M);
 }
 function ttMovePad(v, dt) {
@@ -12239,23 +12323,27 @@ function selCats() { const c = (D.qc.cats || []).filter(i => i >= 0 && i < CATS.
 /* Timer tick */
 function tick() {
   bgmSync();
-  drawTick();
+  if (!roomPaused()) drawTick();
   if (eventSync()) render();
   if (S.tab === 'start') { updateCountdowns(); const tk = tourState().k; if (tk !== lastTourK) { lastTourK = tk; render(); } }
   renderGate();
   renderGatebar();
   roomBeat();
-  golfHostTick();
-  kHostTick();
-  kTimerTick();
-  madHostTick();
-  madTimerTick();
-  bjHostTick();
-  bjTimerTick();
-  dtHostTick();
-  try { ttLogic(); } catch (e) {}
-  botTick();
+  const paused = pzSync();
+  if (!paused) {
+    golfHostTick();
+    kHostTick();
+    kTimerTick();
+    madHostTick();
+    madTimerTick();
+    bjHostTick();
+    bjTimerTick();
+    dtHostTick();
+    try { ttLogic(); } catch (e) {}
+    botTick();
+  }
   lobbyAutoAward();
+  if (paused) return;
   if (ctl() && S.quiz && S.quiz.status === 'running' && S.answers && S.answers.length) handleAnswers();
   const q = S.quiz;
   if (!q || q.status !== 'running' || !q.cfg || q.phase === 'ready') return;
@@ -12488,6 +12576,8 @@ const actions = {
   'fs-toggle': () => fsToggle(),
   'lhs-open': () => openModal({type:'lhs'}),
   'lhs-reset': () => { const L = lobby(); if (!L || !S.admin) return; confirmBox(`Highscore von ${L.name} zurücksetzen?`, 'Alle Punkte in diesem Raum werden gelöscht. Der Turnier-Highscore bleibt.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Zurücksetzen', cls:'btn-gold', fn:() => roomWrite({hs:{}})}]); },
+  'pz-on': () => { ensureAudio(); pzSet(true); },
+  'pz-off': () => { ensureAudio(); pzSet(false); },
   'gmenu': () => {
     // Das ☰ zum Schließen sitzt genau dort, wo das ☰ im Spiel ist
     const gb = [...document.querySelectorAll('#main .gmenu')].find(e => e.offsetParent), bs = document.body.style;
