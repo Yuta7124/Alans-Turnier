@@ -748,7 +748,7 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .sp-cta>div{flex:1;min-width:160px}
 .sp-hero{position:relative;overflow:hidden;margin:0 4px 26px;background:linear-gradient(120deg,color-mix(in srgb,var(--pc) 55%,#0b0716) 0%,#120c24 70%);
   box-shadow:0 -4px 0 0 var(--edge),0 4px 0 0 var(--edge),-4px 0 0 0 var(--edge),4px 0 0 0 var(--edge),0 12px 0 0 rgba(0,0,0,.42)}
-.sp-hero.has-bg::before{content:"";position:absolute;inset:-30px;background:var(--bgimg) center/cover;filter:blur(var(--bgblur,18px)) saturate(1.2);opacity:var(--bgop,.45)}
+.sp-hero.has-bg::before{content:"";position:absolute;inset:-30px;background:var(--bgimg) var(--bgx,50%) var(--bgy,50%)/cover no-repeat;transform:scale(var(--bgz,1));transform-origin:var(--bgx,50%) var(--bgy,50%);filter:blur(var(--bgblur,18px)) saturate(1.2);opacity:var(--bgop,.45)}
 .sp-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,7,20,.2),rgba(10,7,20,.75))}
 .sp-hero-in{position:relative;z-index:1;display:grid;grid-template-columns:auto minmax(0,1fr) minmax(220px,300px);gap:26px;align-items:center;padding:28px}
 .sp-avw.big{padding:5px;background:linear-gradient(135deg,var(--lc),color-mix(in srgb,var(--lc) 40%,#000));box-shadow:0 0 22px color-mix(in srgb,var(--lc) 40%,transparent)}
@@ -2310,7 +2310,7 @@ html[data-design="neon"] .start-news .news-title{font-family:var(--head);font-si
 textarea.input.nt-text{height:300px;width:100%;min-height:200px;resize:vertical;font-size:16px;line-height:1.6;white-space:pre-wrap;margin-top:10px}
 .nt-at{margin:6px 0 0;font-size:12px}
 .pf-bgprev{position:relative;overflow:hidden;height:96px;border-radius:12px;margin:4px 0 10px;background:linear-gradient(120deg,color-mix(in srgb,var(--pc) 55%,#0b0716) 0%,#120c24 70%);display:flex;align-items:flex-end;padding:8px 12px}
-.pf-bgprev span.has{position:absolute;inset:-30px;background:var(--bgimg) center/cover;filter:blur(var(--bgblur,18px)) saturate(1.2);opacity:var(--bgop,.45)}
+.pf-bgprev span.has{position:absolute;inset:-30px;background:var(--bgimg) var(--bgx,50%) var(--bgy,50%)/cover no-repeat;transform:scale(var(--bgz,1));transform-origin:var(--bgx,50%) var(--bgy,50%);filter:blur(var(--bgblur,18px)) saturate(1.2);opacity:var(--bgop,.45)}
 .pf-bgprev b{position:relative;font-size:12px;color:#fff;text-shadow:0 1px 3px #000}
 .pbg-chip{display:inline-flex;align-items:center;gap:6px}
 .pbg-cov{width:22px;height:22px;object-fit:cover;border-radius:4px}
@@ -2512,7 +2512,7 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
 }
 html:has(body.has-sitebg){background:var(--bg)}
 body.has-sitebg{background:transparent!important}
-#site-bg{position:fixed;inset:-60px;z-index:-1;pointer-events:none;background:var(--sbg) center/cover no-repeat;filter:blur(var(--sblur,18px)) saturate(1.15);opacity:var(--sop,.45)}
+#site-bg{position:fixed;inset:-60px;z-index:-1;pointer-events:none;background:var(--sbg) var(--bgx,50%) var(--bgy,50%)/cover no-repeat;transform:scale(var(--bgz,1));transform-origin:var(--bgx,50%) var(--bgy,50%);filter:blur(var(--sblur,18px)) saturate(1.15);opacity:var(--sop,.45)}
 .pf-site{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px;padding:12px;border-radius:12px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--edge)}
 .pf-site span{display:flex;flex-direction:column;gap:3px;flex:1 1 220px}.pf-site small{color:var(--muted);font-size:13px}
 .ck-gate .gate-in{gap:14px}
@@ -2604,6 +2604,26 @@ body:has(.tour-tvsec) #main{padding-bottom:0}
 .deco-fxb[aria-pressed="true"]{outline:2px solid var(--coin);outline-offset:2px;background:rgba(255,207,63,.1)}
 .sp-topsel{margin:6px 4px 12px}.sp-topsel small{color:var(--muted)}
 .sp-tophint{margin:8px 4px 0}
+/* Bild-Zuschnitt */
+body.icrop-open{overflow:hidden}
+.icrop{position:fixed;inset:0;z-index:12000;display:grid;place-items:center;padding:12px;background:rgba(5,3,14,.88);backdrop-filter:blur(6px);overflow:auto}
+.icrop-box{width:min(620px,100%);display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px;border-radius:20px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--edge),0 30px 60px -20px #000}
+.icrop-head{display:flex;flex-direction:column;gap:4px;text-align:center}.icrop-head b{font-size:18px}.icrop-head small{color:var(--muted)}
+.icrop-stage{display:grid;place-items:center;width:100%}
+.icrop-frame{position:relative;overflow:hidden;touch-action:none;cursor:grab;background:#0b0817;border-radius:8px;box-shadow:0 0 0 3px var(--coin),0 0 0 9999px rgba(0,0,0,.0)}
+.icrop-frame:active{cursor:grabbing}
+.icrop-frame img{position:absolute;left:50%;top:50%;max-width:none;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.icrop-grid{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 33.2%,rgba(255,255,255,.35) 33.3% 33.5%,transparent 33.6% 66.5%,rgba(255,255,255,.35) 66.6% 66.8%,transparent 66.9%),linear-gradient(transparent 33.2%,rgba(255,255,255,.35) 33.3% 33.5%,transparent 33.6% 66.5%,rgba(255,255,255,.35) 66.6% 66.8%,transparent 66.9%)}
+.icrop-zoom{width:min(320px,100%)}
+.icrop-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ifoc-pick{position:relative;max-width:100%;touch-action:none;cursor:crosshair;line-height:0;border-radius:8px;overflow:hidden;box-shadow:0 0 0 2px var(--edge)}
+.ifoc-pick img{max-width:min(560px,86vw);max-height:42vh;display:block;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.ifoc-dot{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #000,0 0 18px var(--coin);background:rgba(255,207,63,.25);pointer-events:none}
+.ifoc-prev{display:flex;gap:16px;align-items:flex-end;justify-content:center;flex-wrap:wrap}
+.ifoc-prev div{display:flex;flex-direction:column;align-items:center;gap:4px}.ifoc-prev small{color:var(--muted)}
+.ifoc-pc,.ifoc-ph{display:block;overflow:hidden;border-radius:8px;background-size:cover;background-repeat:no-repeat;box-shadow:0 0 0 2px var(--edge);position:relative}
+.ifoc-pc{width:220px;height:68px}.ifoc-ph{width:72px;height:120px}
+.ifoc-pc i,.ifoc-ph i{position:absolute;inset:0;background-size:cover;background-repeat:no-repeat}
 </style>
 </head>
 <body>
@@ -2622,7 +2642,7 @@ body:has(.tour-tvsec) #main{padding-bottom:0}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=47"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=48"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3702,9 +3722,10 @@ function mottoHTML(p) { return p && p.motto ? `<span class="motto">„${esc(p.mo
 const pbgFlags = v => (String(v || '').match(/\+([a-z]+)$/) || [, ''])[1];
 const pbgSite = v => pbgFlags(v).includes('s');
 const pbgTop10 = v => pbgFlags(v).includes('t');
-function pbgNorm(v) { v = String(v || '').replace(/\+[a-z]+$/, ''); return v === 'none' || v === 'img' || /^g:[A-Za-z0-9_-]{1,36}$/.test(v) ? v : 'auto'; }
+const pbgFocus = v => focusParse(v);
+function pbgNorm(v) { v = String(v || '').replace(/\+[a-z]+$/, '').replace(/@[\d.,]+/, ''); return v === 'none' || v === 'img' || /^g:[A-Za-z0-9_-]{1,36}$/.test(v) ? v : 'auto'; }
 function styleFields(d) { return {font:pickOpt(FONTS, d.font), grad:pickOpt(GRADS, d.grad), frame:pickOpt(FRAMES, d.frame), motto:str(d.motto, 40),
-  shape:pickOpt(SHAPES, d.shape), pbg:(() => { const f = ((d.psite != null ? d.psite : pbgSite(d.pbg)) ? 's' : '') + ((d.ptop != null ? d.ptop : pbgTop10(d.pbg)) ? 't' : ''); return pbgNorm(d.pbg) + (f ? '+' + f : ''); })(), pblur:Math.round(num(d.pblur, 0, 40, 18)), pdim:Math.round(num(d.pdim, 10, 100, 45))}; }
+  shape:pickOpt(SHAPES, d.shape), pbg:(() => { const f = ((d.psite != null ? d.psite : pbgSite(d.pbg)) ? 's' : '') + ((d.ptop != null ? d.ptop : pbgTop10(d.pbg)) ? 't' : ''); const fo = d.pfoc != null ? d.pfoc : (String(d.pbg || '').match(/@[\d.,]+/) || [''])[0]; return pbgNorm(d.pbg) + (fo && fo !== '@50,50,1' ? fo : '') + (f ? '+' + f : ''); })(), pblur:Math.round(num(d.pblur, 0, 40, 18)), pdim:Math.round(num(d.pdim, 10, 100, 45))}; }
 const blankPlayer = color => ({name:'', avatar:'', color:color || '', font:'std', grad:'none', frame:'std', motto:'', shape:'std', pbg:'auto', pblur:18, pdim:45, crop:null});
 
 const CROP_V = 220;
@@ -4238,19 +4259,19 @@ function cssFont(v) { return getComputedStyle(document.documentElement).getPrope
 let siteBgKey = '';
 function applySiteBg() {
   const me = myPid(), p = me && playerById(me);
-  let img = '', blur = 18, op = .45;
+  let img = '', blur = 18, op = .45, fo = {x:50, y:50, z:1};
   if (p && pbgSite(p.pbg)) {
     const all = typeof vgOf === 'function' ? vgOf(me) : [];
     img = pbgImgOf({...p, pbnImg:undefined}, all);
-    blur = num(p.pblur, 0, 40, 18); op = num(p.pdim, 10, 100, 45) / 100;
+    blur = num(p.pblur, 0, 40, 18); op = num(p.pdim, 10, 100, 45) / 100; fo = focusParse(p.pbg);
   }
-  const key = img ? img.length + ':' + img.slice(-40) + ':' + blur + ':' + op : '';
+  const key = img ? img.length + ':' + img.slice(-40) + ':' + blur + ':' + op + focusStr(fo) : '';
   if (key === siteBgKey) return;
   siteBgKey = key;
   let el = document.getElementById('site-bg');
   if (!img) { if (el) el.remove(); document.body.classList.remove('has-sitebg'); return; }
   if (!el) { el = document.createElement('div'); el.id = 'site-bg'; el.setAttribute('aria-hidden', 'true'); document.body.prepend(el); }
-  el.style.cssText = `--sbg:url('${img}');--sblur:${blur}px;--sop:${op}`;
+  el.style.cssText = `--sbg:url('${img}');--sblur:${blur}px;--sop:${op};${focusCss(fo)}`;
   document.body.classList.add('has-sitebg');
 }
 window.addEventListener('resize', () => { try { setHeaderVar(); } catch (e) {} });
@@ -4724,8 +4745,9 @@ function pfBgHTML(prefix, d) {
   const img = pbgImgOf(d, games), own = !!d.id;
   const chip = (v, inner) => `<button type="button" class="chip pbg-chip" data-act="pf-set" data-target="${prefix}" data-k="pbg" data-v="${esc(v)}" aria-pressed="${cur === v}">${inner}</button>`;
   return `<div class="pf-sec"><span class="lbl">Profil-Hintergrund</span>
-      <div class="pf-bgprev" id="${prefix}-bgprev" style="--pc:${esc(d.color || COLORS[0])};--bgblur:${blur}px;--bgop:${dim / 100};${img ? `--bgimg:url('${img}')` : ''}"><span class="${img ? 'has' : ''}"></span><b>Vorschau</b></div>
+      <div class="pf-bgprev" id="${prefix}-bgprev" style="--pc:${esc(d.color || COLORS[0])};--bgblur:${blur}px;--bgop:${dim / 100};${focusCss(focusParse(d.pfoc != null ? d.pfoc : d.pbg))};${img ? `--bgimg:url('${img}')` : ''}"><span class="${img ? 'has' : ''}"></span><b>Vorschau</b></div>
       ${own ? `<div class="pbn-row"><label class="btn btn-gold" for="${prefix}-pbn">🖼️ ${cur === 'img' && img ? 'Anderes Bild hochladen' : 'Eigenes Bild hochladen'}</label><input class="vh" type="file" id="${prefix}-pbn" accept="image/*" data-pbn="${prefix}">${cur === 'img' && img ? `<button class="link" type="button" data-act="pbn-clear" data-target="${prefix}">Bild entfernen</button>` : ''}</div>` : ''}
+      ${img ? `<div class="chips"><button class="btn btn-sm" type="button" data-act="pbg-focus" data-target="${prefix}">✂️ Ausschnitt anpassen</button></div>` : ''}
       <div class="chips">${img && cur === 'img' ? chip('img', '🖼️ Eigenes Bild') : ''}${chip('auto', '✨ Automatisch (Lieblingsspiel)')}${chip('none', '⬛ Kein Bild, nur Farbe')}
         ${games.map(g => chip('g:' + g.id, `<img class="pbg-cov" src="${esc(g.img)}" alt="">${esc(g.title)}`)).join('')}</div>
       ${d.id ? (games.length ? '' : '<p class="muted pf-hint">Trag unter Spieler → dein Profil Spiele mit Bild ein, dann kannst du eins als Hintergrund wählen.</p>') : '<p class="muted pf-hint">Sobald du Spiele mit Bild in deinem Profil hast, kannst du eins davon als Hintergrund wählen.</p>'}
@@ -8852,7 +8874,10 @@ async function vgCsPick(i) {
   const btn = document.querySelectorAll('.vg-csi')[i]; if (btn) btn.classList.add('busy');
   try {
     const blob = await fetch(r.src).then(x => { if (!x.ok) throw new Error('http'); return x.blob(); });
-    d.img = await toVgCover(blob);
+    if (btn) btn.classList.remove('busy');
+    const cut = await cropToBlob(blob, {title:'Cover zuschneiden', aspects:[['Cover (3:4)', 3 / 4]], max:900});
+    if (!cut) return;
+    d.img = await toVgCover(cut);
     vgCs.q = ''; renderModal(); toast('Cover übernommen.');
   } catch (e) { if (btn) btn.classList.remove('busy'); toast('Das Bild ließ sich nicht laden. Nimm ein anderes.'); }
 }
@@ -9445,7 +9470,7 @@ function spProfileHTML(p) {
   const stat = (n, l) => `<div class="sp-stat"><b>${n}</b><span>${l}</span></div>`;
   const pbg = pbgNorm(p.pbg), pick = pbg.startsWith('g:') ? all.find(g => g.id === pbg.slice(2) && g.img) : null, own = pbg === 'img' ? pbnGet(p.id) : '';
   const bgG = pbg === 'none' ? null : own ? {img:own} : pick || (fav && fav.img ? fav : null);
-  const bgV = `--pc:${p.color};--bgblur:${num(p.pblur, 0, 40, 18)}px;--bgop:${num(p.pdim, 10, 100, 45) / 100}`;
+  const bgV = `--pc:${p.color};--bgblur:${num(p.pblur, 0, 40, 18)}px;--bgop:${num(p.pdim, 10, 100, 45) / 100};${focusCss(focusParse(p.pbg))}`;
   const bg = bgG ? `style="${bgV};--bgimg:url('${bgG.img}')"` : `style="${bgV}"`;
   return `<section class="section sp">
     <div class="vg-back"><button class="btn btn-sm btn-ghost" type="button" data-act="vg-open" data-pid="">← Alle Spieler</button></div>
@@ -11541,6 +11566,12 @@ const actions = {
   'photo-clear': b => { const t = D[b.dataset.target]; if (!t) return; t.avatar = ''; S.modal ? renderModal() : render(); },
   'pbg-edit': b => { const p = playerById(b.dataset.pid); if (!p) return; D.ep = {...p, crop:null}; openModal({type:'pbg'}); },
   'edit-player': b => { const p = playerById(b.dataset.pid); if (!p) return; D.ep = {...p, crop:null}; openModal({type:'player'}); },
+  'pbg-focus': async b => {
+    const pre = b.dataset.target, d = D[pre]; if (!d) return;
+    const games = d.id && typeof vgOf === 'function' ? vgOf(d.id).filter(g => g.img) : [], img = pbgImgOf(d, games); if (!img) return;
+    const fo = await imgFocus(img, focusParse(d.pfoc != null ? d.pfoc : d.pbg));
+    if (fo) { d.pfoc = focusStr(fo); renderModal(); }
+  },
   'pbn-clear': b => { const d = D[b.dataset.target]; if (!d) return; d.pbnImg = ''; d.pbg = 'auto'; renderModal(); },
   'pf-set': b => { const t = D[b.dataset.target]; if (!t) return; t[b.dataset.k] = b.dataset.v; S.modal ? renderModal() : render(); },
   'crop-apply': b => { applyCrop(b.dataset.target).catch(() => toast('Das Foto ließ sich nicht zuschneiden.')); },
@@ -11661,7 +11692,7 @@ document.addEventListener('change', async e => {
     if (t.id === 'vgm-shot') vgmShots(g, files); else vgmClipFile(g, files[0]);
     return;
   }
-  if (t.id === 'vg-file') { const f = t.files && t.files[0]; t.value = ''; if (!f || !D.vgF) return; try { D.vgF.img = await toVgCover(f); renderModal(); } catch (err) { toast('Das Bild ließ sich nicht öffnen. Versuch ein JPG oder PNG.'); } return; }
+  if (t.id === 'vg-file') { const f = t.files && t.files[0]; t.value = ''; if (!f || !D.vgF) return; try { const b = await cropToBlob(f, {title:'Cover zuschneiden', aspects:[['Cover (3:4)', 3 / 4]], max:900}); if (!b) return; D.vgF.img = await toVgCover(b); renderModal(); } catch (err) { toast('Das Bild ließ sich nicht öffnen. Versuch ein JPG oder PNG.'); } return; }
   if (t.id === 'music-file') { const f = t.files && t.files[0]; t.value = ''; if (f) saveMusicFile(f); return; }
   if (t.id === 'music-auto') { music.auto = t.checked; lsSet('turnier-music-auto', music.auto ? '1' : '0'); syncMusic(); return; }
   if (t.id === 'gm-file') {
@@ -11698,7 +11729,7 @@ document.addEventListener('change', async e => {
   if (t.matches && t.matches('input[type=file][data-pbn]')) {
     const f = t.files && t.files[0], d = D[t.dataset.pbn]; t.value = '';
     if (!f || !d) return;
-    try { d.pbnImg = await bannerFromFile(f); d.pbg = 'img'; S.modal ? renderModal() : render(); }
+    try { d.pbnImg = await bannerFromFile(f); d.pbg = 'img'; S.modal ? renderModal() : render(); const fo = await imgFocus(d.pbnImg, focusParse(d.pfoc != null ? d.pfoc : d.pbg)); if (fo) { d.pfoc = focusStr(fo); S.modal ? renderModal() : render(); } }
     catch (err) { toast('Das Bild ließ sich nicht öffnen. Versuch ein JPG oder PNG.'); }
     return;
   }
@@ -12481,6 +12512,124 @@ async function saveOwnPlayer(d) {
     await pbnSave(d);
     closeModal(); toast('Gespeichert.');
   } catch (e) { toast('Speichern hat nicht geklappt. Prüfe die Verbindung und versuch es nochmal.'); }
+}
+
+/* ---------- Bild-Zuschnitt für die ganze Seite ----------
+   imgCrop(src, opts): Fenster über allem, man sieht genau den Ausschnitt, verschiebt das Bild mit Finger oder Maus und zoomt.
+   Gibt ein Canvas mit dem Ausschnitt zurück (oder null bei Abbrechen). opts.aspects: [[Name, Verhältnis oder 0 für Original], …].
+   imgFocus(src, start): wählt für Hintergründe den wichtigsten Punkt und den Zoom. Zeigt dazu, wie es am PC und am Handy aussieht.
+   Gibt {x, y, z} zurück (x/y in Prozent, z = Zoom). */
+function imgLoad(src) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
+function cropOverlay(html) {
+  const el = document.createElement('div');
+  el.className = 'icrop'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true');
+  el.innerHTML = H(html);
+  document.body.appendChild(el);
+  document.body.classList.add('icrop-open');
+  return el;
+}
+function cropClose(el) { el.remove(); if (!document.querySelector('.icrop')) document.body.classList.remove('icrop-open'); }
+async function imgCrop(src, opts = {}) {
+  let img; try { img = await imgLoad(src); } catch (e) { return null; }
+  const W0 = img.naturalWidth, H0 = img.naturalHeight; if (!W0 || !H0) return null;
+  const aspects = opts.aspects || [['Original', 0]];
+  let ai = Math.max(0, Math.min(aspects.length - 1, opts.aspect || 0));
+  return new Promise(resolve => {
+    const el = cropOverlay(`<div class="icrop-box">
+      <div class="icrop-head"><b>✂️ ${esc(opts.title || 'Ausschnitt wählen')}</b><small>Zieh das Bild an die richtige Stelle. Mit dem Regler oder zwei Fingern zoomst du.</small></div>
+      ${aspects.length > 1 ? `<div class="chips icrop-asp">${aspects.map(([l], i) => `<button class="chip" type="button" data-i="${i}" aria-pressed="${i === ai}">${esc(l)}</button>`).join('')}</div>` : ''}
+      <div class="icrop-stage"><div class="icrop-frame"><img alt="" draggable="false" src="${src}"><i class="icrop-grid"></i></div></div>
+      <label class="crop-zoom icrop-zoom">🔍 <input type="range" min="1" max="4" step="0.01" value="1" aria-label="Zoom"></label>
+      <div class="icrop-btns"><button class="btn btn-ghost" type="button" data-x="cancel">Abbrechen</button><button class="btn" type="button" data-x="reset">Zurücksetzen</button><button class="btn btn-gold" type="button" data-x="ok">Übernehmen</button></div>
+    </div>`);
+    const frame = el.querySelector('.icrop-frame'), im = frame.querySelector('img'), zoom = el.querySelector('.icrop-zoom input');
+    let fw = 0, fh = 0, base = 1, z = 1, cx = 0, cy = 0; // cx/cy: Bildmitte relativ zur Rahmenmitte in Rahmen-Pixeln
+    const ratio = () => aspects[ai][1] || W0 / H0;
+    const layout = () => {
+      const maxW = Math.min(window.innerWidth * .9, 560), maxH = window.innerHeight * .52, r = ratio();
+      fw = maxW; fh = fw / r; if (fh > maxH) { fh = maxH; fw = fh * r; }
+      frame.style.width = fw + 'px'; frame.style.height = fh + 'px';
+      base = Math.max(fw / W0, fh / H0); clamp(); paint();
+    };
+    const clamp = () => {
+      const s = base * z, iw = W0 * s, ih = H0 * s;
+      const mx = Math.max(0, (iw - fw) / 2), my = Math.max(0, (ih - fh) / 2);
+      cx = Math.max(-mx, Math.min(mx, cx)); cy = Math.max(-my, Math.min(my, cy));
+    };
+    const paint = () => { const s = base * z; im.style.width = W0 * s + 'px'; im.style.height = H0 * s + 'px'; im.style.transform = `translate(calc(-50% + ${cx}px), calc(-50% + ${cy}px))`; };
+    const pts = new Map(); let last = null, pinch = 0, pinchZ = 1;
+    frame.addEventListener('pointerdown', e => { frame.setPointerCapture(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]); last = [e.clientX, e.clientY]; if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = Math.hypot(a[0] - b[0], a[1] - b[1]); pinchZ = z; } });
+    frame.addEventListener('pointermove', e => {
+      if (!pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, [e.clientX, e.clientY]);
+      if (pts.size === 2 && pinch) { const [a, b] = [...pts.values()]; z = Math.max(1, Math.min(4, pinchZ * Math.hypot(a[0] - b[0], a[1] - b[1]) / pinch)); zoom.value = z; clamp(); paint(); return; }
+      if (pts.size === 1 && last) { cx += e.clientX - last[0]; cy += e.clientY - last[1]; last = [e.clientX, e.clientY]; clamp(); paint(); }
+    });
+    const up = e => { pts.delete(e.pointerId); pinch = 0; last = pts.size ? [...pts.values()][0] : null; };
+    frame.addEventListener('pointerup', up); frame.addEventListener('pointercancel', up);
+    frame.addEventListener('wheel', e => { e.preventDefault(); z = Math.max(1, Math.min(4, z * (e.deltaY < 0 ? 1.08 : .93))); zoom.value = z; clamp(); paint(); }, {passive:false});
+    zoom.addEventListener('input', () => { z = Number(zoom.value); clamp(); paint(); });
+    el.querySelectorAll('.icrop-asp .chip').forEach(b => b.addEventListener('click', () => { ai = Number(b.dataset.i); el.querySelectorAll('.icrop-asp .chip').forEach(x => x.setAttribute('aria-pressed', String(x === b))); cx = cy = 0; z = 1; zoom.value = 1; layout(); }));
+    const done = v => { window.removeEventListener('resize', layout); document.removeEventListener('keydown', key); cropClose(el); resolve(v); };
+    const key = e => { if (e.key === 'Escape') done(null); };
+    document.addEventListener('keydown', key);
+    window.addEventListener('resize', layout);
+    el.addEventListener('click', e => {
+      const x = e.target.closest('[data-x]'); if (!x) return;
+      if (x.dataset.x === 'cancel') return done(null);
+      if (x.dataset.x === 'reset') { cx = cy = 0; z = 1; zoom.value = 1; clamp(); paint(); return; }
+      // Ausschnitt in Bild-Pixeln berechnen und in hoher Auflösung ausgeben
+      const s = base * z, sw = fw / s, sh = fh / s, sx = W0 / 2 - cx / s - sw / 2, sy = H0 / 2 - cy / s - sh / 2;
+      const maxOut = opts.max || 1400, k = Math.min(1, maxOut / Math.max(sw, sh));
+      const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(sw * k)); c.height = Math.max(1, Math.round(sh * k));
+      c.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
+      done(c);
+    });
+    requestAnimationFrame(layout);
+  });
+}
+const canvasBlob = (c, type = 'image/png', q) => new Promise(res => c.toBlob(b => res(b), type, q));
+// Ausschnitt wählen und als Datei (Blob) zurückgeben, oder null
+async function cropToBlob(file, opts) {
+  const url = file instanceof Blob ? URL.createObjectURL(file) : file;
+  try { const c = await imgCrop(url, opts); return c ? await canvasBlob(c, 'image/png') : null; }
+  finally { if (file instanceof Blob) URL.revokeObjectURL(url); }
+}
+/* Fokus-Punkt für Hintergründe */
+const focusParse = v => { const m = String(v || '').match(/@(\d{1,3}),(\d{1,3}),(\d(?:\.\d{1,2})?)/); return m ? {x:Math.min(100, +m[1]), y:Math.min(100, +m[2]), z:Math.max(1, Math.min(3, +m[3]))} : {x:50, y:50, z:1}; };
+const focusStr = f => `@${Math.round(f.x)},${Math.round(f.y)},${(+f.z).toFixed(2).replace(/\.?0+$/, '')}`;
+const focusCss = f => `--bgx:${f.x}%;--bgy:${f.y}%;--bgz:${f.z}`;
+async function imgFocus(src, start) {
+  let img; try { img = await imgLoad(src); } catch (e) { return null; }
+  let f = {...(start || {x:50, y:50, z:1})};
+  return new Promise(resolve => {
+    const el = cropOverlay(`<div class="icrop-box">
+      <div class="icrop-head"><b>✂️ Ausschnitt für den Hintergrund</b><small>Tipp auf die wichtigste Stelle im Bild (z. B. ein Gesicht) oder zieh den Kreis dorthin. Dieser Punkt bleibt immer sichtbar, am PC und am Handy.</small></div>
+      <div class="ifoc-pick"><img alt="" draggable="false" src="${src}"><i class="ifoc-dot"></i></div>
+      <label class="crop-zoom icrop-zoom">🔍 Zoom <input type="range" min="1" max="3" step="0.05" value="${f.z}" aria-label="Zoom"></label>
+      <div class="ifoc-prev"><div><span class="ifoc-pc"><i style="background-image:url('${src}')"></i></span><small>💻 PC</small></div><div><span class="ifoc-ph"><i style="background-image:url('${src}')"></i></span><small>📱 Handy</small></div></div>
+      <div class="icrop-btns"><button class="btn btn-ghost" type="button" data-x="cancel">Abbrechen</button><button class="btn" type="button" data-x="reset">Mitte</button><button class="btn btn-gold" type="button" data-x="ok">Übernehmen</button></div>
+    </div>`);
+    const pick = el.querySelector('.ifoc-pick'), dot = el.querySelector('.ifoc-dot'), zoom = el.querySelector('input[type=range]');
+    const paint = () => {
+      dot.style.left = f.x + '%'; dot.style.top = f.y + '%';
+      el.querySelectorAll('.ifoc-pc i,.ifoc-ph i').forEach(p => { p.style.backgroundPosition = `${f.x}% ${f.y}%`; p.style.transform = `scale(${f.z})`; p.style.transformOrigin = `${f.x}% ${f.y}%`; });
+    };
+    let drag = false;
+    const at = e => { const r = pick.getBoundingClientRect(); f.x = Math.max(0, Math.min(100, (e.clientX - r.left) / r.width * 100)); f.y = Math.max(0, Math.min(100, (e.clientY - r.top) / r.height * 100)); paint(); };
+    pick.addEventListener('pointerdown', e => { drag = true; pick.setPointerCapture(e.pointerId); at(e); });
+    pick.addEventListener('pointermove', e => { if (drag) at(e); });
+    pick.addEventListener('pointerup', () => { drag = false; });
+    zoom.addEventListener('input', () => { f.z = Number(zoom.value); paint(); });
+    const done = v => { cropClose(el); resolve(v); };
+    el.addEventListener('click', e => {
+      const x = e.target.closest('[data-x]'); if (!x) return;
+      if (x.dataset.x === 'cancel') return done(null);
+      if (x.dataset.x === 'reset') { f = {x:50, y:50, z:1}; zoom.value = 1; paint(); return; }
+      done(f);
+    });
+    paint();
+  });
 }
 
 /* ---------- Hintergrund-Studio: fliegende Bilder, Effekte und Extras (meta/deco, nur der Spielleiter ändert) ---------- */
