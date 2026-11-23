@@ -2410,10 +2410,10 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
 .md-roll b{font-family:var(--display);font-size:18px;text-transform:uppercase;color:var(--coin)}
 .md-roll:not(.off) .md-die{animation:mdWobble 1.2s ease-in-out infinite}
 @keyframes mdWobble{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg) scale(1.05)}}
-.md-die{display:inline-grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:8%;padding:14%;width:56px;aspect-ratio:1;border-radius:22%;
+.md-die{--ds:56px;display:inline-grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:calc(var(--ds) * .06);padding:calc(var(--ds) * .14);width:var(--ds);height:var(--ds);box-sizing:border-box;flex:none;border-radius:22%;
   background:linear-gradient(145deg,#fff,#dcd6f5);box-shadow:inset 0 -5px 0 rgba(0,0,0,.18),0 6px 14px rgba(0,0,0,.5)}
-.md-die.big{width:88px}
-.md-die i{border-radius:50%}
+.md-die.big{--ds:88px}
+.md-die i{display:block;width:100%;height:100%;border-radius:50%}
 .md-die i.on{background:#1b1236}
 .md-die[data-d="6"] i.on{background:#e0284f}
 .md-die.rolling{animation:mdRoll .12s linear infinite}
@@ -2421,7 +2421,7 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
 @keyframes mdRoll{0%{transform:rotate(0) translateY(-4px)}50%{transform:rotate(180deg) translateY(4px)}100%{transform:rotate(360deg) translateY(-4px)}}
 @keyframes mdLand{0%{transform:scale(1.35)}60%{transform:scale(.92)}100%{transform:scale(1)}}
 .md-fan{display:flex;gap:16px;justify-content:center;margin:14px 0 6px}
-.md-fan .md-die{width:64px}
+.md-fan .md-die{--ds:64px}
 .md-fan .fan0{transform:rotate(-12deg)}.md-fan .fan2{transform:rotate(10deg)}
 .md-pls{display:flex;flex-direction:column;gap:8px}
 .md-pl{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:4px 10px;padding:8px 12px;border-radius:14px;background:var(--panel);box-shadow:inset 4px 0 0 var(--mc)}
@@ -2435,7 +2435,7 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
 @media (max-width:860px){
   .md-side{display:grid;grid-template-columns:auto 1fr;gap:10px}
   .md-diebox{grid-row:span 2;padding:10px}
-  .md-die.big{width:70px}
+  .md-die.big{--ds:70px}
   .md-pls{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}
   .md-pl{padding:6px 8px}
 }
