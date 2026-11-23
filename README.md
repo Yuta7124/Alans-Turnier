@@ -143,6 +143,11 @@ Teams stehen in `meta/settings` (`fmt`, `teams`), Team-Punkte als Punkte-Einträ
 Ins Zufallsrad können auch die Server-Spiele (Quiz, Minigolf, Blackjack usw.) aufgenommen werden. Jedes Spiel im Rad
 ist im Team-Modus als „Team“ oder „Solo“ markiert. Punkte vergibt der Spielleiter wie gewohnt mit +/−.
 
+## Tischtennis
+Raum-Spiel 🏓 für 1 gegen 1 (auch gegen einen Bot), bis 5, 11 oder 21 Punkte. Gespeichert im Raum-Feld `uno` mit `g:'tt'`.
+Jeder Schlag ist ein einziger Schreibvorgang. Der Ball startet auf jedem Gerät, sobald es den Schlag sieht; ob er zurückkommt,
+entscheidet das Gerät des Annehmenden (bei Bots der Host). Sieger +3, Verlierer +1 im Raum-Highscore.
+
 ## Geburtstage
 Jedes neue Konto muss seinen Geburtstag (Tag, Monat, Jahr) angeben; bestehende Spieler werden beim nächsten Besuch einmal danach gefragt.
 Hat jemand Geburtstag (deutsche Zeit, 29.2. in normalen Jahren am 28.2.), feiert die ganze Seite: bunter Banner, Ballons, Konfetti, Partyfarben.
