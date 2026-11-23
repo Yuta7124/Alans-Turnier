@@ -6889,6 +6889,58 @@ const kActions = {
   'k-catch': b => { if (!kIn()) return; tone(240, .12, 'sawtooth', .05); kSend('catch', {t:b.dataset.pid}); }
 };
 
+/* ----- Soundeffekte für Kartenwahn (alles synthetisch, keine Dateien) ----- */
+let kNoiseBuf = null;
+function kNoise(d, f0, f1, v, w, q) {
+  if (!actx || muted) return;
+  try {
+    if (!kNoiseBuf) { kNoiseBuf = actx.createBuffer(1, actx.sampleRate, actx.sampleRate); const a = kNoiseBuf.getChannelData(0); for (let i = 0; i < a.length; i++) a[i] = Math.random() * 2 - 1; }
+    const t = actx.currentTime + (w || 0), src = actx.createBufferSource(), bp = actx.createBiquadFilter(), g = actx.createGain();
+    src.buffer = kNoiseBuf; bp.type = 'bandpass'; bp.Q.value = q || 1.2;
+    bp.frequency.setValueAtTime(f0, t); bp.frequency.exponentialRampToValueAtTime(f1, t + d);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + d * .25); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    src.connect(bp); bp.connect(g); g.connect(actx.destination); src.start(t, Math.random() * .5); src.stop(t + d + .05);
+  } catch (e) {}
+}
+function kGlide(f0, f1, d, type, v, w) {
+  if (!actx || muted) return;
+  try {
+    const t = actx.currentTime + (w || 0), o = actx.createOscillator(), g = actx.createGain();
+    o.type = type || 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + d);
+    g.gain.setValueAtTime(v || .1, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + d + .05);
+  } catch (e) {}
+}
+function kSnd(n, w = 0) {
+  if (!actx || muted) return;
+  const W = x => w + x;
+  switch (n) {
+    case 'swish': kNoise(.18, 900, 4200, .09, W(0), 1.4); break;
+    case 'swishSoft': kNoise(.15, 800, 3000, .045, W(0), 1.4); break;
+    case 'land': kNoise(.06, 600, 300, .12, W(0), .9); tone(150, .09, 'sine', .14, W(0)); tone(2400, .02, 'square', .015, W(0)); break;
+    case 'flip': kNoise(.05, 3000, 5000, .05, W(0), 2); tone(700 + Math.random() * 120, .04, 'triangle', .03, W(.02)); break;
+    case 'shuffle': for (let i = 0; i < 9; i++) kNoise(.05, 2200, 3600, .05, W(i * .055), 2.5); kNoise(.22, 600, 3000, .06, W(.52), 1.2); break;
+    case 'skip': tone(523, .1, 'square', .06, W(.05)); tone(392, .16, 'square', .06, W(.17)); kNoise(.1, 400, 200, .08, W(.05), 1); break;
+    case 'rev': kGlide(330, 990, .16, 'triangle', .09, W(.04)); kGlide(990, 330, .2, 'triangle', .09, W(.2)); break;
+    case 'draw2': [523, 659, 784].forEach((f, i) => tone(f, .1, 'sawtooth', .045, W(.04 + i * .08))); tone(110, .3, 'sine', .14, W(.04)); break;
+    case 'wild': [784, 988, 1175, 1568].forEach((f, i) => tone(f, .22, 'triangle', .06, W(.04 + i * .06))); kNoise(.4, 5000, 9000, .025, W(.04), 3); break;
+    case 'draw4': kGlide(90, 45, .5, 'sawtooth', .12, W(.02)); [392, 523, 659, 784, 1047].forEach((f, i) => tone(f, .12, 'square', .04, W(.08 + i * .07))); kNoise(.5, 4000, 9000, .03, W(.1), 3); break;
+    case 'turn': tone(880, .12, 'sine', .09, W(0)); tone(1318, .26, 'sine', .09, W(.11)); break;
+    case 'call': [523, 659, 784, 1047].forEach((f, i) => tone(f, i === 3 ? .35 : .1, 'square', .05, W(i * .08))); break;
+    case 'forgot': tone(140, .35, 'sawtooth', .08, W(0)); tone(147, .35, 'sawtooth', .08, W(0)); kNoise(.25, 300, 150, .07, W(0), .8); break;
+    case 'pass': tone(330, .07, 'triangle', .05, W(0)); tone(262, .1, 'triangle', .05, W(.07)); break;
+    case 'win': [523, 659, 784, 1047, 784, 1047].forEach((f, i) => tone(f, i === 5 ? .7 : .13, 'square', .05, W(i * .11))); [523, 659, 784].forEach(f => tone(f, .9, 'triangle', .05, W(.66))); break;
+    case 'lose': [392, 370, 349, 330].forEach((f, i) => tone(f, i === 3 ? .6 : .2, 'triangle', .07, W(i * .22))); break;
+  }
+}
+/* Sound zur gespielten Karte: Sonderkarten haben eigene Effekte */
+function kPlaySnd(c, w = 0) {
+  const v = typeof c === 'string' ? c.slice(1) : '';
+  if (c === 'wF') kSnd('draw4', w); else if (c === 'wW') kSnd('wild', w);
+  else if (v === 'S') kSnd('skip', w); else if (v === 'R') kSnd('rev', w); else if (v === 'D') kSnd('draw2', w);
+}
+document.addEventListener('pointerdown', () => ensureAudio(), {passive:true});
+
 /* ----- Animationen: Karten fliegen von der Hand, von den Gegnern und vom Stapel ----- */
 const kfx = {gid:'', seen:new Set(), hand:[], wait:[], hideTop:0, own:'', busy:0};
 const kKey = e => [e.k, e.a, e.p, e.c || '', e.n || '', e.x || ''].join(':');
@@ -6905,6 +6957,7 @@ function kFly(html, a, b, o = {}) {
   el.innerHTML = o.flip ? `<div class="k-f3"><div class="k-f3b">${kBackHTML()}</div><div class="k-f3f">${html}</div></div>` : html;
   el.style.cssText = `left:${b.left}px;top:${b.top}px;--w:${b.width}px`;
   kFxLayer().appendChild(el); kfx.busy++;
+  setTimeout(() => kSnd(o.soft ? 'swishSoft' : 'swish'), o.delay || 0);
   const dx = a.left + a.width / 2 - (b.left + b.width / 2), dy = a.top + a.height / 2 - (b.top + b.height / 2), sc = Math.max(.2, a.width / b.width);
   const lift = Math.min(90, 30 + Math.hypot(dx, dy) * .18), r0 = o.r0 || 0, r = o.r || 0;
   let fin = false;
@@ -6925,7 +6978,7 @@ function kFly(html, a, b, o = {}) {
 function kLand() {
   const p = document.querySelector('.k-pile'); if (!p) return;
   p.classList.remove('k-land'); void p.offsetWidth; p.classList.add('k-land');
-  try { tone(170, .07, 'square', .05); } catch (e) {}
+  kSnd('land');
 }
 function kOppRect(pid) { return kRect(document.querySelector(`.k-opp[data-pid="${CSS.escape(pid)}"] .k-opp-av`)); }
 const kLast = q => { const l = document.querySelectorAll(q); return l[l.length - 1] || null; };
@@ -6943,14 +6996,14 @@ function kToHand(cards, delay0) {
       const k = kfx.wait.indexOf(c); if (k >= 0) kfx.wait.splice(k, 1);
       const live = [...document.querySelectorAll('#k-hand .kc-btn.k-wait')].find(x => x.dataset.c === c);
       if (live) { live.classList.remove('k-wait'); live.classList.add('k-pop'); }
-      try { tone(620, .04, 'triangle', .03); } catch (e) {}
+      kSnd('flip');
     }});
   });
 }
 function kToOpp(pid, n, delay0) {
   const to = kOppRect(pid); if (!to) return;
   const box = {left:to.left - to.width * .1, top:to.top - to.height * .2, width:to.width * .8, height:to.width * 1.2};
-  for (let i = 0; i < Math.min(n, 5); i++) kFly(kBackHTML(), kDeckRect(), box, {delay:delay0 + i * 130, ms:520, r:14, spin:-20, done:() => {
+  for (let i = 0; i < Math.min(n, 5); i++) kFly(kBackHTML(), kDeckRect(), box, {soft:true, delay:delay0 + i * 130, ms:520, r:14, spin:-20, done:() => {
     const o = document.querySelector(`.k-opp[data-pid="${CSS.escape(pid)}"]`); if (o) { o.classList.remove('k-got'); void o.offsetWidth; o.classList.add('k-got'); }
   }});
 }
@@ -6959,16 +7012,20 @@ function kOwnPlay(c, from, send) {
   kfx.own = c; kfx.hideTop++;
   setTimeout(() => { if (kfx.own === c) kfx.own = ''; }, 8000);
   send();
-  requestAnimationFrame(() => kFly(kCardHTML(c), from, kTopRect(), {ms:540, r0:0, r:(Math.random() * 10 - 5), spin:14, done:kUnhideTop}));
+  requestAnimationFrame(() => kFly(kCardHTML(c), from, kTopRect(), {ms:540, r0:0, r:(Math.random() * 10 - 5), spin:14, done:() => { kUnhideTop(); kPlaySnd(c); }}));
 }
 /* Nach jedem Neuzeichnen: neue Einträge im Verlauf als Animation zeigen */
 function kFxRun() {
-  const U = S.uno; if (!U || !U.s || S.tab !== 'karten' || !document.querySelector('.kplay')) return;
+  const U = S.uno;
+  if (U && U.s && U.s.win && kfx.gid === U.id && !kfx.end && S.tab === 'karten') { kfx.end = true; kSnd(U.s.win === myPid() ? 'win' : 'lose', .5); }
+  if (!U || !U.s || S.tab !== 'karten' || !document.querySelector('.kplay')) return;
   const s = U.s, me = myPid(), hand = (s.hands[me] || []).slice();
   if (kfx.gid !== U.id) {
     kfx.gid = U.id; kfx.seen = new Set(s.log.map(kKey)); kfx.hand = hand; kfx.wait = []; kfx.hideTop = 0; kfx.own = '';
     // Frisch ausgeteilt: Karten an alle verteilen
+    kfx.turn = kMyTurn(); kfx.end = !!s.win;
     if (U.status === 'running' && !s.log.length && hand.length) {
+      kSnd('shuffle');
       kfx.wait = hand.slice(); render();
       kToHand(kSort(hand), 200);
       s.order.filter(p => p !== me).forEach((p, i) => kToOpp(p, Math.min(4, (s.hands[p] || []).length), 150 + i * 60));
@@ -6981,6 +7038,9 @@ function kFxRun() {
   const prev = kfx.hand.slice(), added = [];
   for (const c of hand) { const i = prev.indexOf(c); if (i >= 0) prev.splice(i, 1); else added.push(c); }
   kfx.hand = hand;
+  const myT = kMyTurn();
+  if (myT && !kfx.turn) kSnd('turn', fresh.some(e => e.a === 'play') ? .55 : .05);
+  kfx.turn = myT;
   if (!fresh.length && !added.length) return;
   let d = 0, mineAdded = added.slice(), rerender = false;
   for (const e of fresh) {
@@ -6989,18 +7049,23 @@ function kFxRun() {
       const from = e.p === me ? kRect(document.getElementById('k-hand')) : kOppRect(e.p);
       kfx.hideTop++; rerender = true;
       const delay = d;
-      setTimeout(() => kFly(kCardHTML(e.c), from || kDeckRect(), kTopRect(), {delay, ms:620, flip:e.p !== me, r0:e.p === me ? -14 : 24, r:(Math.random() * 10 - 5), spin:e.p === me ? 0 : -25, done:kUnhideTop}), 0);
+      setTimeout(() => kFly(kCardHTML(e.c), from || kDeckRect(), kTopRect(), {delay, ms:620, flip:e.p !== me, r0:e.p === me ? -14 : 24, r:(Math.random() * 10 - 5), spin:e.p === me ? 0 : -25, done:() => { kUnhideTop(); kPlaySnd(e.c); }}), 0);
       d += 260;
       if (e.p !== me) { const o = document.querySelector(`.k-opp[data-pid="${CSS.escape(e.p)}"]`); if (o) { o.classList.remove('k-played'); void o.offsetWidth; o.classList.add('k-played'); } }
     } else if (['draw', 'take', 'catch'].includes(e.a)) {
       const who = e.a === 'catch' ? e.x : e.p, n = e.a === 'catch' ? 2 : Math.max(1, Number(e.n) || 1);
+      if (e.a === 'catch') kSnd('forgot', d / 1000);
       if (who === me) continue;
       kToOpp(who, n, d); d += 120;
+    } else if (e.a === 'pass') {
+      kSnd('pass', d / 1000);
     } else if (e.a === 'forgot') {
+      kSnd('forgot', d / 1000);
       if (e.p !== me) kToOpp(e.p, 2, d);
       const o = e.p === me ? document.querySelector('.k-actions') : document.querySelector(`.k-opp[data-pid="${CSS.escape(e.p)}"]`);
       if (o) { const t = document.createElement('span'); t.className = 'k-shout bad'; t.textContent = tx('Vergessen! +2'); o.appendChild(t); setTimeout(() => t.remove(), 1600); }
     } else if (e.a === 'call') {
+      kSnd('call', d / 1000);
       const o = e.p === me ? document.querySelector('.k-actions') : document.querySelector(`.k-opp[data-pid="${CSS.escape(e.p)}"]`);
       if (o) { const t = document.createElement('span'); t.className = 'k-shout'; t.textContent = tx('Letzte Karte!'); o.appendChild(t); setTimeout(() => t.remove(), 1600); }
     }
