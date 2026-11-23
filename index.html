@@ -2642,7 +2642,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=48"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=49"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4732,6 +4732,17 @@ function pbgImgOf(d, games) {
   if (cur === 'img') return d.pbnImg != null ? d.pbnImg : pbnGet(d.id);
   if (cur.startsWith('g:')) { const g = games.find(x => x.id === cur.slice(2) && x.img); if (g) return g.img; }
   return ((typeof spFav === 'function' && spFav(games.filter(x => x.img))) || games.find(x => x.img) || {}).img || '';
+}
+function savePlayerEdit(d) {
+  if (!d) return;
+  const name = str(d.name, 40);
+  if (!name) { toast('Gib einen Namen ein.'); return; }
+  if (d.crop) { toast('Tipp erst auf „Zuschnitt übernehmen“.'); return; }
+  if (!S.admin) { saveOwnPlayer(d); return; }
+  const old = playerById(d.id) || {};
+  const p = {id:d.id, name, avatar:d.avatar || '', color:d.color, createdAt:d.createdAt || Date.now(), wins:old.wins || 0, ...styleFields(d), ...(old.byGuest ? {byGuest:true} : {}), ...(old.kh ? {kh:old.kh} : {})};
+  if (S.modal) closeModal();
+  Promise.resolve(ops.savePlayer(p)).then(() => pbnSave(d)).then(() => toast('Gespeichert.'));
 }
 async function pbnSave(d) {
   if (d.pbnImg == null || !db) return;
@@ -9488,7 +9499,7 @@ function spProfileHTML(p) {
           <div class="sp-lvrow"><span class="sp-lvlbl">Level</span>${spLvHTML(lv.l, 'big')}</div>
           <div class="sp-xp"><span class="vg-bt"><i style="width:${Math.round(lv.into / lv.span * 100)}%;--c:${spLvCol(lv.l)}"></i></span><small>${lv.xp} XP · noch ${lv.next - lv.xp} bis Level ${lv.l + 1}</small></div>
           ${got.length ? `<div class="sp-feat" title="${esc(got[got.length - 1].d)}"><span>${got[got.length - 1].i}</span><div><b>${esc(got[got.length - 1].n)}</b><small>${esc(got[got.length - 1].d)}</small></div></div>` : ''}
-          <div class="sp-btns">${editable ? `<button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Profil bearbeiten</button><button class="btn btn-sm" type="button" data-act="pbg-edit" data-pid="${esc(p.id)}">🖼️ Hintergrund</button>` : ''}${can ? `<button class="btn btn-sm btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}</div>
+          <div class="sp-btns">${editable ? `<button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Profil bearbeiten</button><button class="btn btn-sm" type="button" data-act="pbg-edit" data-pid="${esc(p.id)}">🖼️ Hintergrund</button>${pbgNorm(p.pbg) !== 'none' && (bgG || pbgNorm(p.pbg) === 'img') ? `<button class="btn btn-sm" type="button" data-act="pbg-quick" data-pid="${esc(p.id)}">✂️ Ausschnitt</button>` : ''}` : ''}${can ? `<button class="btn btn-sm btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}</div>
         </div>
       </div>
     </div>
@@ -11564,6 +11575,15 @@ const actions = {
   },
   'pick-color': b => { const t = D[b.dataset.target]; if (!t) return; t.color = b.dataset.c; S.modal ? renderModal() : render(); },
   'photo-clear': b => { const t = D[b.dataset.target]; if (!t) return; t.avatar = ''; S.modal ? renderModal() : render(); },
+  'pbg-quick': async b => {
+    const p = playerById(b.dataset.pid); if (!p) return;
+    const d = {...p, crop:null}, img = pbgImgOf(d, vgOf(p.id).filter(g => g.img));
+    if (!img) { toast('Wähl zuerst unter „🖼️ Hintergrund“ ein Bild.'); return; }
+    const hero = document.querySelector('.sp-hero'), r = hero ? hero.offsetWidth / Math.max(1, hero.offsetHeight) : 3;
+    const fo = await imgFocus(img, focusParse(p.pbg), {ratio:r, blur:num(p.pblur, 0, 40, 18), op:num(p.pdim, 10, 100, 45) / 100});
+    if (!fo) return;
+    d.pfoc = focusStr(fo); D.ep = d; savePlayerEdit(d);
+  },
   'pbg-edit': b => { const p = playerById(b.dataset.pid); if (!p) return; D.ep = {...p, crop:null}; openModal({type:'pbg'}); },
   'edit-player': b => { const p = playerById(b.dataset.pid); if (!p) return; D.ep = {...p, crop:null}; openModal({type:'player'}); },
   'pbg-focus': async b => {
@@ -11756,15 +11776,7 @@ document.addEventListener('submit', e => {
     toast(`${name} ist dabei.`);
     setTimeout(() => { const n = $('#np-name'); if (n) n.focus(); }, 30);
   } else if (f === 'edit-player') {
-    const d = D.ep; if (!d) return;
-    const name = str(d.name, 40);
-    if (!name) { toast('Gib einen Namen ein.'); return; }
-    if (d.crop) { toast('Tipp erst auf „Zuschnitt übernehmen“.'); return; }
-    if (!S.admin) { saveOwnPlayer(d); return; }
-    const old = playerById(d.id) || {};
-    const p = {id:d.id, name, avatar:d.avatar || '', color:d.color, createdAt:d.createdAt || Date.now(), wins:old.wins || 0, ...styleFields(d), ...(old.byGuest ? {byGuest:true} : {}), ...(old.kh ? {kh:old.kh} : {})};
-    closeModal();
-    Promise.resolve(ops.savePlayer(p)).then(() => pbnSave(d)).then(() => toast('Gespeichert.'));
+    savePlayerEdit(D.ep);
   } else if (f === 'settings') {
     const s = D.set; if (!splitValid()) return;
     const cur = S.settings;
@@ -12599,7 +12611,7 @@ async function cropToBlob(file, opts) {
 const focusParse = v => { const m = String(v || '').match(/@(\d{1,3}),(\d{1,3}),(\d(?:\.\d{1,2})?)/); return m ? {x:Math.min(100, +m[1]), y:Math.min(100, +m[2]), z:Math.max(1, Math.min(3, +m[3]))} : {x:50, y:50, z:1}; };
 const focusStr = f => `@${Math.round(f.x)},${Math.round(f.y)},${(+f.z).toFixed(2).replace(/\.?0+$/, '')}`;
 const focusCss = f => `--bgx:${f.x}%;--bgy:${f.y}%;--bgz:${f.z}`;
-async function imgFocus(src, start) {
+async function imgFocus(src, start, o = {}) {
   let img; try { img = await imgLoad(src); } catch (e) { return null; }
   let f = {...(start || {x:50, y:50, z:1})};
   return new Promise(resolve => {
@@ -12607,7 +12619,7 @@ async function imgFocus(src, start) {
       <div class="icrop-head"><b>✂️ Ausschnitt für den Hintergrund</b><small>Tipp auf die wichtigste Stelle im Bild (z. B. ein Gesicht) oder zieh den Kreis dorthin. Dieser Punkt bleibt immer sichtbar, am PC und am Handy.</small></div>
       <div class="ifoc-pick"><img alt="" draggable="false" src="${src}"><i class="ifoc-dot"></i></div>
       <label class="crop-zoom icrop-zoom">🔍 Zoom <input type="range" min="1" max="3" step="0.05" value="${f.z}" aria-label="Zoom"></label>
-      <div class="ifoc-prev"><div><span class="ifoc-pc"><i style="background-image:url('${src}')"></i></span><small>💻 PC</small></div><div><span class="ifoc-ph"><i style="background-image:url('${src}')"></i></span><small>📱 Handy</small></div></div>
+      <div class="ifoc-prev"><div><span class="ifoc-pc" style="${o.ratio ? `width:${Math.round(Math.min(300, 110 * Math.max(.6, o.ratio)))}px;height:${Math.round(Math.min(300, 110 * Math.max(.6, o.ratio)) / o.ratio)}px` : ''}"><i style="background-image:url('${src}')"></i></span><small>${o.ratio ? '👀 So wie jetzt auf diesem Bildschirm' : '💻 PC'}</small></div><div><span class="ifoc-ph"><i style="background-image:url('${src}')"></i></span><small>📱 Handy</small></div></div>
       <div class="icrop-btns"><button class="btn btn-ghost" type="button" data-x="cancel">Abbrechen</button><button class="btn" type="button" data-x="reset">Mitte</button><button class="btn btn-gold" type="button" data-x="ok">Übernehmen</button></div>
     </div>`);
     const pick = el.querySelector('.ifoc-pick'), dot = el.querySelector('.ifoc-dot'), zoom = el.querySelector('input[type=range]');
