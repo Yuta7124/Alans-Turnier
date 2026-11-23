@@ -1947,7 +1947,11 @@ button.bcell[disabled]{cursor:default}
 .pick-big span{font-size:52px;line-height:1}
 .pick-big b{font-family:var(--display);font-size:32px;text-transform:uppercase;color:var(--tc)}
 .pick-big small{color:var(--muted);font-size:14px;line-height:1.4}
-@media (max-width:560px){.rc-pick{grid-template-columns:1fr}}
+.rc-pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pick-big{min-width:0;box-sizing:border-box}
+.pick-big b{max-width:100%;overflow-wrap:anywhere;hyphens:auto;line-height:1.1}
+.pick-big small{max-width:100%;overflow-wrap:anywhere}
+@media (max-width:560px){.rc-pick{grid-template-columns:minmax(0,1fr);gap:14px;width:100%}.room-choose{padding:22px 12px}.pick-big{margin:4px 6px;padding:18px 12px}.pick-big b{font-size:clamp(20px,7vw,28px)}.pick-big span{font-size:42px}.pick-big small{font-size:13px}}
 
 /* Wortwahl-Fenster */
 #dpick-root:empty{display:none}
