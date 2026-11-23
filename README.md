@@ -114,6 +114,10 @@ Ganz oben in **Optionen** gibt es die Karte **„🏆 Turnier“** mit vier Stuf
 
 Brettspiel für 2 bis 4 Spieler in den Spiele-Räumen (Regeln wie beim bekannten Klassiker: mit 6 raus, nach 6 nochmal, Startfeld räumen, rauswerfen, exakt ins Ziel). Host-Einstellungen: Zeit pro Zug, Schnellstart, Schlagzwang. Bots spielen mit (leicht, mittel, schwer). Platz 1 bis 3 bekommen 3, 2 und 1 Punkt im Raum-Highscore. Der Spielstand liegt im Raum-Feld `uno` mit `g:'mad'`, deshalb braucht es keine neuen Firebase-Regeln.
 
+## Blackjack
+
+Raum-Spiel für 1 bis 8 Spieler gegen die Bank (das Gerät des Hosts ist die Bank). Jeder startet mit 1000 Chips, 5, 10 oder 20 Runden. Karte, Bleiben, Verdoppeln, Teilen (einmal, geteilte Asse bekommen eine Karte). Bank zieht bis 16, bleibt ab 17. Blackjack zahlt 3:2. Bots spielen mit (schwer = Grundstrategie). Platz 1 bis 3 nach Chips bekommen ab 2 Spielern 3, 2 und 1 Punkt. Spielstand im Raum-Feld `uno` mit `g:'bj'`.
+
 ## Designs
 
 In **Optionen → 🎨 Design** wählt der Spielleiter das Design der Webseite für alle: **Arcade (Pixel)** oder **Neon-Glas** (Standard). Neues Design: Eintrag in `DESIGNS` (index.html) und ein CSS-Block mit `html[data-design="id"]`.
