@@ -2509,6 +2509,11 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
   .bj-shoe{width:40px;height:54px}.bj-shoe i{height:38px}
   .bj-dealer{min-height:120px}
 }
+html:has(body.has-sitebg){background:var(--bg)}
+body.has-sitebg{background:transparent!important}
+#site-bg{position:fixed;inset:-60px;z-index:-1;pointer-events:none;background:var(--sbg) center/cover no-repeat;filter:blur(var(--sblur,18px)) saturate(1.15);opacity:var(--sop,.45)}
+.pf-site{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px;padding:12px;border-radius:12px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--edge)}
+.pf-site span{display:flex;flex-direction:column;gap:3px;flex:1 1 220px}.pf-site small{color:var(--muted);font-size:13px}
 </style>
 </head>
 <body>
@@ -2527,7 +2532,7 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=39"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=40"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3595,9 +3600,11 @@ function nameHTML(p) {
   return `<span class="pn f-${f} g-${g}${gradCss(p) ? ' is-g' : ''}"${css ? ` style="${css}"` : ''}>${esc(p ? p.name : '')}</span>`;
 }
 function mottoHTML(p) { return p && p.motto ? `<span class="motto">„${esc(p.motto)}“</span>` : ''; }
-function pbgNorm(v) { v = String(v || ''); return v === 'none' || v === 'img' || /^g:[A-Za-z0-9_-]{1,36}$/.test(v) ? v : 'auto'; }
+// Endet pbg auf "+s", nutzt der Spieler seinen Profil-Hintergrund auch als Hintergrund der ganzen Seite (nur bei ihm selbst)
+const pbgSite = v => String(v || '').endsWith('+s');
+function pbgNorm(v) { v = String(v || '').replace(/\+s$/, ''); return v === 'none' || v === 'img' || /^g:[A-Za-z0-9_-]{1,36}$/.test(v) ? v : 'auto'; }
 function styleFields(d) { return {font:pickOpt(FONTS, d.font), grad:pickOpt(GRADS, d.grad), frame:pickOpt(FRAMES, d.frame), motto:str(d.motto, 40),
-  shape:pickOpt(SHAPES, d.shape), pbg:pbgNorm(d.pbg), pblur:Math.round(num(d.pblur, 0, 40, 18)), pdim:Math.round(num(d.pdim, 10, 100, 45))}; }
+  shape:pickOpt(SHAPES, d.shape), pbg:pbgNorm(d.pbg) + ((d.psite != null ? d.psite : pbgSite(d.pbg)) ? '+s' : ''), pblur:Math.round(num(d.pblur, 0, 40, 18)), pdim:Math.round(num(d.pdim, 10, 100, 45))}; }
 const blankPlayer = color => ({name:'', avatar:'', color:color || '', font:'std', grad:'none', frame:'std', motto:'', shape:'std', pbg:'auto', pblur:18, pdim:45, crop:null});
 
 const CROP_V = 220;
@@ -4125,7 +4132,27 @@ function patch(el, html) {
 }
 /* Schrift des aktuellen Designs für Canvas-Texte (z. B. Minigolf) */
 function cssFont(v) { return getComputedStyle(document.documentElement).getPropertyValue('--' + v).trim() || 'sans-serif'; }
+/* Hintergrund der ganzen Seite aus dem eigenen Profil (wenn der Spieler das will) */
+let siteBgKey = '';
+function applySiteBg() {
+  const me = myPid(), p = me && playerById(me);
+  let img = '', blur = 18, op = .45;
+  if (p && pbgSite(p.pbg)) {
+    const all = typeof vgOf === 'function' ? vgOf(me) : [];
+    img = pbgImgOf({...p, pbnImg:undefined}, all);
+    blur = num(p.pblur, 0, 40, 18); op = num(p.pdim, 10, 100, 45) / 100;
+  }
+  const key = img ? img.length + ':' + img.slice(-40) + ':' + blur + ':' + op : '';
+  if (key === siteBgKey) return;
+  siteBgKey = key;
+  let el = document.getElementById('site-bg');
+  if (!img) { if (el) el.remove(); document.body.classList.remove('has-sitebg'); return; }
+  if (!el) { el = document.createElement('div'); el.id = 'site-bg'; el.setAttribute('aria-hidden', 'true'); document.body.prepend(el); }
+  el.style.cssText = `--sbg:url('${img}');--sblur:${blur}px;--sop:${op}`;
+  document.body.classList.add('has-sitebg');
+}
 function applyDesign() {
+  try { applySiteBg(); } catch (e) {}
   const d = (S.settings && S.settings.design) || 'neon', h = document.documentElement;
   if (h.dataset.design !== d) { h.dataset.design = d; try { localStorage.setItem('turnier-design', d); } catch (e) {} }
 }
@@ -4525,7 +4552,7 @@ function pbgImgOf(d, games) {
 async function pbnSave(d) {
   if (d.pbnImg == null || !db) return;
   const img = d.pbnImg, r = db.collection('pbn').doc(d.id);
-  try { await vgCommit(d.id, b => img ? b.set(r, {pid:d.id, img, ts:Date.now()}) : b.delete(r)); pbnCache[d.id] = img; }
+  try { await vgCommit(d.id, b => img ? b.set(r, {pid:d.id, img, ts:Date.now()}) : b.delete(r)); pbnCache[d.id] = img; render(); }
   catch (e) { toast(e && e.code === 'permission-denied' ? 'Das Banner-Bild kann nur der Spieler selbst auf seinem Gerät ändern.' : 'Das Banner-Bild konnte nicht gespeichert werden.'); }
 }
 function pfBgHTML(prefix, d) {
@@ -4541,6 +4568,8 @@ function pfBgHTML(prefix, d) {
       ${d.id ? (games.length ? '' : '<p class="muted pf-hint">Trag unter Spieler → dein Profil Spiele mit Bild ein, dann kannst du eins als Hintergrund wählen.</p>') : '<p class="muted pf-hint">Sobald du Spiele mit Bild in deinem Profil hast, kannst du eins davon als Hintergrund wählen.</p>'}
       <label class="pf-range"><span>Unschärfe <b id="${prefix}-blurv">${blur === 0 ? 'scharf' : blur}</b></span><input type="range" min="0" max="40" step="1" value="${blur}" data-draft="${prefix}.pblur" data-live="pbg" data-prefix="${prefix}"></label>
       <label class="pf-range"><span>Sichtbarkeit <b id="${prefix}-dimv">${dim} %</b></span><input type="range" min="10" max="100" step="5" value="${dim}" data-draft="${prefix}.pdim" data-live="pbg" data-prefix="${prefix}"></label>
+      ${d.id ? (() => { const on = d.psite != null ? !!d.psite : pbgSite(d.pbg); return `<div class="pf-site"><span><b>Auch als Hintergrund der ganzen Seite</b><small>Nur bei dir zu sehen: Hinter allen Seiten liegt dann dein Bild, genauso unscharf und deutlich wie hier eingestellt.</small></span>
+        <div class="chips"><button type="button" class="chip" data-act="pf-set" data-target="${prefix}" data-k="psite" data-v="1" aria-pressed="${on}">Ja</button><button type="button" class="chip" data-act="pf-set" data-target="${prefix}" data-k="psite" data-v="" aria-pressed="${!on}">Nein</button></div></div>`; })() : ''}
     </div>`;
 }
 function playerForm(prefix, d) {
