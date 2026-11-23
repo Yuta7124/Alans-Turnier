@@ -2367,12 +2367,11 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
 /* Uncle Grandpa ärgere dich */
 .md-wrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
 @media (max-width:860px){.md-wrap{grid-template-columns:1fr}}
-/* Brett wie beim Klassiker: helles Holz, farbige Ecken, weiße Felder mit dunklem Rand. Leicht nach hinten gekippt (3D). */
-.mb-3d{perspective:1300px;perspective-origin:50% 10%;padding:0 0 26px}
+/* Brett wie beim Klassiker: helles Holz, farbige Ecken, weiße Felder mit dunklem Rand. Flach von oben (2D). */
+.mb-3d{padding:0 0 10px}
 .mboard{position:relative;width:100%;max-width:min(640px,calc(100vh - 220px));aspect-ratio:1;margin:0 auto;border-radius:20px;padding:2.6%;
   background:radial-gradient(circle at 50% 45%,#fbf0d2 0%,#f1dcaa 70%,#e8cd92 100%);
-  box-shadow:inset 0 0 0 5px #c0813f,inset 0 0 0 8px #84501f,inset 0 0 30px rgba(120,70,20,.35),0 10px 0 #7a4519,0 16px 0 #4f2c0f,0 34px 40px -8px rgba(0,0,0,.75);
-  transform:rotateX(24deg);transform-origin:50% 62%;transform-style:preserve-3d}
+  box-shadow:inset 0 0 0 5px #c0813f,inset 0 0 0 8px #84501f,inset 0 0 30px rgba(120,70,20,.35),0 20px 40px -12px rgba(0,0,0,.75)}
 @media (max-width:860px){.mboard{max-width:min(640px,100%)}}
 .mb-grid{position:absolute;inset:2.6%;display:grid;grid-template-columns:repeat(11,1fr);grid-template-rows:repeat(11,1fr)}
 .mb-hz{margin:4%;border-radius:24%;background:color-mix(in srgb,var(--mc) 42%,#f6e5bb);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--mc) 65%,#2b1d10),inset 0 4px 10px rgba(0,0,0,.18)}
@@ -7536,8 +7535,8 @@ function madHop(pid, i, cells, opts = {}) {
   const fr = [];
   cells.forEach(([x, y], k) => {
     const dx = (x - fx) * W, dy = (y - fy) * W;
-    if (k) fr.push({transform:`translate(calc(-50% + ${((cells[k - 1][0] + x) / 2 - fx) * W}px), calc(-50% + ${((cells[k - 1][1] + y) / 2 - fy) * W}px)) translateZ(${W * (opts.arc ? 2.4 : .8)}px)`});
-    fr.push({transform:`translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) translateZ(0px)`});
+    if (k) fr.push({transform:`translate(calc(-50% + ${((cells[k - 1][0] + x) / 2 - fx) * W}px), calc(-50% + ${((cells[k - 1][1] + y) / 2 - fy) * W - W * (opts.arc ? 1.2 : .25)}px)) scale(${opts.arc ? 1.45 : 1.2})`});
+    fr.push({transform:`translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1)`});
   });
   const per = opts.arc ? 420 : 170;
   el.classList.add('moving');
