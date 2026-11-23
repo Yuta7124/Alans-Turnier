@@ -205,6 +205,39 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .pos3 .av{box-shadow:0 0 0 4px var(--bronze),0 0 0 7px var(--shadow)}
 .pod.empty .av{box-shadow:0 0 0 3px var(--edge)}
 .pod.empty .pod-name{color:var(--muted)}
+.hero.hs{grid-template-columns:minmax(0,5fr) minmax(0,7fr);align-items:start;margin-bottom:70px}
+.hero.hs .sec-head{margin-top:0}
+.stage.big{position:sticky;top:12px;min-height:520px;padding:24px 24px 0}
+.stage.big .podium{gap:16px}
+.stage.big .pod-name{font-size:26px}
+.stage.big .pod-pts{font-size:16px}
+.stage.big .pod-block{flex-direction:column;align-items:center;gap:12px;padding-top:16px;font-size:34px}
+.stage.big .pos1 .pod-block{height:220px}
+.stage.big .pos2 .pod-block{height:165px}
+.stage.big .pos3 .pod-block{height:124px}
+.pod-prize{display:inline-flex;align-items:center;gap:6px;font-family:var(--pixel);font-size:15px;color:var(--coin);background:rgba(0,0,0,.35);padding:7px 10px;white-space:nowrap;box-shadow:0 0 0 2px rgba(255,207,63,.45);max-width:94%;overflow:hidden}
+.pos1 .pod-prize{font-size:18px}
+.pod-shared{font-family:var(--body);font-size:11px;color:var(--muted)}
+@media (max-width:860px){
+  .hero.hs{grid-template-columns:minmax(0,1fr)}
+  .hero.hs .stage.big{order:-1;position:static;min-height:0}
+}
+@media (max-width:520px){
+  .stage.big{padding:18px 12px 0}
+  .stage.big .podium{gap:8px}
+  .stage.big .pod .av{width:64px!important;height:64px!important}
+  .stage.big .pos1 .av{width:84px!important;height:84px!important}
+  .stage.big .pod .av.sh-oval{width:52px!important}
+  .stage.big .pos1 .av.sh-oval{width:68px!important}
+  .stage.big .pod-name{font-size:17px}
+  .stage.big .pod-pts{font-size:13px}
+  .stage.big .pod-block{font-size:26px;gap:8px}
+  .stage.big .pos1 .pod-block{height:170px}
+  .stage.big .pos2 .pod-block{height:130px}
+  .stage.big .pos3 .pod-block{height:100px}
+  .pod-prize,.pos1 .pod-prize{font-size:11px;padding:5px 6px;gap:4px}
+  .pod-prize svg{width:12px;height:12px}
+}
 .prize-tag{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:var(--coin);background:rgba(255,207,63,.12);padding:5px 8px;white-space:nowrap;box-shadow:0 0 0 2px rgba(255,207,63,.35)}
 .prize-tag small{font-family:var(--body);font-size:11px;color:var(--muted);margin-left:2px}
 
@@ -4492,10 +4525,11 @@ function renderHeader() {
 }
 
 /* Rangliste */
-function podiumSlot(p, pos) {
-  const big = pos === 1 ? 92 : 72;
-  if (!p) return `<div class="pod pos${pos} empty"><span class="av ghost" style="width:${big}px;height:${big}px"></span><span class="pod-name">Frei</span><span class="pod-pts">&nbsp;</span><div class="pod-block"><span>${pos}</span></div></div>`;
-  return `<div class="pod pos${pos}">${pos === 1 ? CROWN() : ''}${avatar(p, big)}<span class="pod-name">${nameHTML(p)}</span><span class="pod-pts">${p.pts} ${ptsWord(p.pts)}</span>${p.prize > 0 ? `<span class="prize-tag">${COIN(12)}${moneyHTML(p.prize)}</span>` : ''}<div class="pod-block"><span>${p.rank}</span></div></div>`;
+function podiumSlot(p, pos, amount = 0) {
+  const big = pos === 1 ? 124 : 96;
+  const money = v => v > 0 ? `<span class="pod-prize">${COIN(18)}${moneyHTML(v)}</span>` : '';
+  if (!p) return `<div class="pod pos${pos} empty"><span class="av ghost" style="width:${big}px;height:${big}px"></span><span class="pod-name">Frei</span><span class="pod-pts">&nbsp;</span><div class="pod-block"><span>${pos}</span>${money(amount)}</div></div>`;
+  return `<div class="pod pos${pos}">${pos === 1 ? CROWN() : ''}${avatar(p, big)}<span class="pod-name">${nameHTML(p)}</span><span class="pod-pts">${p.pts} ${ptsWord(p.pts)}</span><div class="pod-block"><span>${pos}</span>${money(p.prize)}${p.shared && p.prize > 0 ? '<small class="pod-shared">geteilt</small>' : ''}</div></div>`;
 }
 const PX = {"GIRL": "<svg class=\"px-girl\" viewBox=\"0 0 18 25\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#140c2c\" d=\"M8 0h2v1h-2zM6 1h2v1h-2zM10 1h3v1h-3zM4 2h2v1h-2zM12 2h2v1h-2zM3 3h1v1h-1zM13 3h2v1h-2zM2 4h1v1h-1zM15 4h1v1h-1zM2 10h1v1h-1zM15 10h1v1h-1zM2 11h1v1h-1zM15 11h1v1h-1zM2 12h1v1h-1zM15 12h1v1h-1zM2 13h1v1h-1zM15 13h1v1h-1zM2 14h1v1h-1zM15 14h1v1h-1zM2 15h1v1h-1zM4 15h2v1h-2zM12 15h2v1h-2zM15 15h1v1h-1zM2 16h3v1h-3zM13 16h3v1h-3zM2 17h1v1h-1zM16 17h1v1h-1zM2 18h1v1h-1zM16 18h1v1h-1zM1 19h1v1h-1zM17 19h1v1h-1zM1 20h1v1h-1zM17 20h1v1h-1zM1 21h1v1h-1zM17 21h1v1h-1zM2 22h3v1h-3zM14 22h3v1h-3zM4 23h1v1h-1zM7 23h1v1h-1zM10 23h1v1h-1zM13 23h1v1h-1zM4 24h4v1h-4zM10 24h4v1h-4z\"/><path fill=\"#a88bff\" d=\"M8 1h1v1h-1zM5 4h2v1h-2zM5 5h1v1h-1z\"/><path fill=\"#6a3cff\" d=\"M9 1h1v1h-1zM6 2h6v1h-6zM4 4h1v1h-1zM7 4h7v1h-7zM3 5h2v1h-2zM6 5h9v1h-9zM3 6h12v1h-12zM3 7h1v1h-1zM5 7h8v1h-8zM14 7h1v1h-1zM3 8h1v1h-1zM5 8h1v1h-1zM13 8h2v1h-2zM3 9h2v1h-2zM14 9h1v1h-1zM3 10h1v1h-1zM3 11h1v1h-1zM3 12h1v1h-1zM3 13h1v1h-1zM3 14h2v1h-2zM14 14h1v1h-1zM3 15h1v1h-1zM14 15h1v1h-1z\"/><path fill=\"#ff5fa2\" d=\"M4 3h9v1h-9zM3 4h1v1h-1zM14 4h1v1h-1zM1 5h2v1h-2zM15 5h2v1h-2zM0 6h1v1h-1zM17 6h1v1h-1zM0 7h1v1h-1zM17 7h1v1h-1zM0 8h1v1h-1zM17 8h1v1h-1zM1 9h2v1h-2zM15 9h2v1h-2z\"/><path fill=\"#ffc2dd\" d=\"M1 6h2v1h-2zM15 6h2v1h-2zM1 7h2v1h-2zM15 7h2v1h-2zM1 8h2v1h-2zM15 8h2v1h-2z\"/><path fill=\"#4a25c9\" d=\"M4 7h1v1h-1zM13 7h1v1h-1zM4 8h1v1h-1z\"/><path fill=\"#ffdcc4\" d=\"M6 8h7v1h-7zM5 9h9v1h-9zM4 10h2v1h-2zM8 10h3v1h-3zM13 10h2v1h-2zM4 11h1v1h-1zM8 11h3v1h-3zM14 11h1v1h-1zM4 12h1v1h-1zM8 12h3v1h-3zM14 12h1v1h-1zM4 13h1v1h-1zM6 13h6v1h-6zM13 13h2v1h-2zM5 14h3v1h-3zM10 14h4v1h-4zM6 15h6v1h-6zM2 20h2v1h-2zM15 20h2v1h-2zM2 21h2v1h-2zM15 21h2v1h-2z\"/><path fill=\"#2a1c5c\" d=\"M6 10h2v1h-2zM11 10h2v1h-2zM5 11h1v1h-1zM13 11h1v1h-1zM5 12h1v1h-1zM13 12h1v1h-1z\"/><path fill=\"#39d6f2\" d=\"M6 11h1v1h-1zM11 11h1v1h-1zM6 12h2v1h-2zM11 12h2v1h-2z\"/><path fill=\"#ffffff\" d=\"M7 11h1v1h-1zM12 11h1v1h-1z\"/><path fill=\"#ff9eb5\" d=\"M5 13h1v1h-1zM12 13h1v1h-1z\"/><path fill=\"#c43c6b\" d=\"M8 14h2v1h-2z\"/><path fill=\"#39d6f2\" d=\"M5 16h3v1h-3zM10 16h3v1h-3zM3 17h13v1h-13zM3 18h1v1h-1zM5 18h3v1h-3zM10 18h4v1h-4zM15 18h1v1h-1zM2 19h2v1h-2zM5 19h2v1h-2zM11 19h3v1h-3zM15 19h2v1h-2zM4 20h1v1h-1zM6 20h7v1h-7zM14 20h1v1h-1zM5 21h9v1h-9z\"/><path fill=\"#f2b79c\" d=\"M8 16h2v1h-2z\"/><path fill=\"#1f8fb0\" d=\"M4 18h1v1h-1zM14 18h1v1h-1zM4 19h1v1h-1zM14 19h1v1h-1zM5 20h1v1h-1zM13 20h1v1h-1zM4 21h1v1h-1zM14 21h1v1h-1zM5 22h9v1h-9z\"/><path fill=\"#ffcf3f\" d=\"M8 18h2v1h-2zM7 19h4v1h-4z\"/><path fill=\"#3a3f66\" d=\"M5 23h2v1h-2zM11 23h2v1h-2z\"/></svg>", "CTRL": "<svg class=\"px-ctrl\" viewBox=\"0 0 20 10\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#140c2c\" d=\"M6 0h8v1h-8zM3 1h3v1h-3zM14 1h3v1h-3zM2 2h1v1h-1zM17 2h1v1h-1zM1 3h1v1h-1zM5 3h1v1h-1zM18 3h1v1h-1zM1 4h1v1h-1zM4 4h3v1h-3zM18 4h1v1h-1zM1 5h1v1h-1zM5 5h1v1h-1zM18 5h1v1h-1zM1 6h1v1h-1zM18 6h1v1h-1zM1 7h1v1h-1zM7 7h6v1h-6zM18 7h1v1h-1zM2 8h1v1h-1zM6 8h1v1h-1zM13 8h1v1h-1zM17 8h1v1h-1zM3 9h3v1h-3zM14 9h3v1h-3z\"/><path fill=\"#3a3f66\" d=\"M6 1h8v1h-8zM3 2h3v1h-3zM14 2h3v1h-3zM2 3h3v1h-3zM6 3h9v1h-9zM16 3h2v1h-2zM2 4h2v1h-2zM7 4h6v1h-6zM14 4h2v1h-2zM17 4h1v1h-1zM2 5h3v1h-3zM6 5h2v1h-2zM12 5h6v1h-6zM2 6h13v1h-13zM16 6h2v1h-2zM2 7h5v1h-5zM13 7h5v1h-5zM3 8h3v1h-3zM14 8h3v1h-3z\"/><path fill=\"#5a6199\" d=\"M6 2h8v1h-8z\"/><path fill=\"#ffcf3f\" d=\"M15 3h1v1h-1z\"/><path fill=\"#39d6f2\" d=\"M13 4h1v1h-1z\"/><path fill=\"#ff4f6d\" d=\"M16 4h1v1h-1z\"/><path fill=\"#8890c4\" d=\"M8 5h4v1h-4z\"/><path fill=\"#4ff08f\" d=\"M15 6h1v1h-1z\"/></svg>", "CAT": "<svg class=\"px-cat\" viewBox=\"0 0 16 13\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#140c2c\" d=\"M1 0h1v1h-1zM14 0h1v1h-1zM0 1h1v1h-1zM2 1h1v1h-1zM13 1h1v1h-1zM15 1h1v1h-1zM0 2h1v1h-1zM3 2h1v1h-1zM12 2h1v1h-1zM15 2h1v1h-1zM0 3h1v1h-1zM4 3h8v1h-8zM15 3h1v1h-1zM0 4h1v1h-1zM15 4h1v1h-1zM0 5h1v1h-1zM15 5h1v1h-1zM0 6h1v1h-1zM15 6h1v1h-1zM0 7h1v1h-1zM4 7h1v1h-1zM11 7h1v1h-1zM15 7h1v1h-1zM0 8h1v1h-1zM15 8h1v1h-1zM0 9h1v1h-1zM15 9h1v1h-1zM0 10h1v1h-1zM15 10h1v1h-1zM1 11h1v1h-1zM14 11h1v1h-1zM2 12h12v1h-12z\"/><path fill=\"#ffc2dd\" d=\"M1 1h1v1h-1zM14 1h1v1h-1zM1 2h2v1h-2zM13 2h2v1h-2zM2 3h1v1h-1zM13 3h1v1h-1z\"/><path fill=\"#5a6199\" d=\"M1 3h1v1h-1zM3 3h1v1h-1zM12 3h1v1h-1zM14 3h1v1h-1zM1 4h14v1h-14zM1 5h1v1h-1zM3 5h12v1h-12zM1 6h2v1h-2zM5 6h6v1h-6zM13 6h2v1h-2zM1 7h2v1h-2zM5 7h6v1h-6zM13 7h2v1h-2zM1 8h2v1h-2zM5 8h6v1h-6zM13 8h2v1h-2zM2 9h5v1h-5zM9 9h5v1h-5zM1 10h5v1h-5zM7 10h2v1h-2zM10 10h5v1h-5zM2 11h5v1h-5zM9 11h5v1h-5z\"/><path fill=\"#8890c4\" d=\"M2 5h1v1h-1z\"/><path fill=\"#ffcf3f\" d=\"M3 6h2v1h-2zM11 6h2v1h-2zM3 7h1v1h-1zM12 7h1v1h-1zM3 8h2v1h-2zM11 8h2v1h-2z\"/><path fill=\"#ff9eb5\" d=\"M1 9h1v1h-1zM14 9h1v1h-1z\"/><path fill=\"#ff5fa2\" d=\"M7 9h2v1h-2z\"/><path fill=\"#c43c6b\" d=\"M6 10h1v1h-1zM9 10h1v1h-1zM7 11h2v1h-2z\"/></svg>", "HEART": "<svg class=\"px-heart\" viewBox=\"0 0 7 7\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#140c2c\" d=\"M1 0h2v1h-2zM4 0h2v1h-2zM0 1h1v1h-1zM3 1h1v1h-1zM6 1h1v1h-1zM0 2h1v1h-1zM6 2h1v1h-1zM0 3h1v1h-1zM6 3h1v1h-1zM1 4h1v1h-1zM5 4h1v1h-1zM2 5h1v1h-1zM4 5h1v1h-1zM3 6h1v1h-1z\"/><path fill=\"#ff5fa2\" d=\"M1 1h2v1h-2zM4 1h2v1h-2zM1 2h1v1h-1zM3 2h3v1h-3zM1 3h5v1h-5zM2 4h3v1h-3zM3 5h1v1h-1z\"/><path fill=\"#ffc2dd\" d=\"M2 2h1v1h-1z\"/></svg>", "STAR": "<svg class=\"px-star\" viewBox=\"0 0 7 7\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#ffcf3f\" d=\"M3 0h1v1h-1zM2 1h3v1h-3zM0 2h7v1h-7zM1 3h5v1h-5zM2 4h3v1h-3zM1 5h2v1h-2zM4 5h2v1h-2zM0 6h1v1h-1zM6 6h1v1h-1z\"/></svg>"};
 /* Turnier-Status im Main-Menü: none | plan | today | live. Wechselt von allein, wenn die Zeit erreicht ist. */
@@ -4695,28 +4729,20 @@ function viewBoard() {
       <div class="row r${p.rank}">
         <span class="rank">${p.rank}.</span>
         <span class="who">${avatar(p, 44)}<span class="who-txt"><span class="nm">${nameHTML(p)}</span><span class="xpbar" aria-hidden="true"><i style="width:${(Math.max(0, p.pts) / top * 100).toFixed(1)}%"></i></span></span></span>
-        <span class="prize-col">${p.prize > 0 ? `<span class="prize-tag">${COIN(12)}${moneyHTML(p.prize)}${p.shared ? '<small>geteilt</small>' : ''}</span>` : ''}</span>
+        <span class="prize-col">${p.prize > 0 && p.rank > 3 ? `<span class="prize-tag">${COIN(12)}${moneyHTML(p.prize)}${p.shared ? '<small>geteilt</small>' : ''}</span>` : ''}</span>
         <span class="pts">${p.pts}<small>Pkt</small></span>
         ${adm ? `<span class="pm"><button class="btn plus minus" type="button" data-act="pt-minus1" data-pid="${esc(p.id)}" aria-label="1 Punkt weg von ${esc(p.name)}" ${p.pts > 0 ? '' : 'disabled'}>−</button><button class="btn plus" type="button" data-act="pt-plus1" data-pid="${esc(p.id)}" aria-label="+1 Punkt für ${esc(p.name)}">+</button></span>` : ''}
       </div>`).join('')
     : `<div class="empty-box"><strong>Noch keine Spieler</strong><span>${adm ? 'Leg zuerst die Spieler mit Namen und Foto an.' : 'Der Spielleiter trägt die Spieler gleich ein.'}</span>${adm ? `<button class="btn btn-gold" type="button" data-act="tab" data-tab="spieler">Spieler hinzufügen</button>` : ''}</div>`;
   return `${banner}
-  <section class="hero">
-    <div class="vault">
-      <div class="vault-top"><span class="eyebrow">Jackpot</span>${COIN(36, 'spin')}</div>
-      <div class="prize ${fmtMoney(totalPrize()).length > 6 ? 'long' : ''}">${moneyHTML(totalPrize())}</div>
-      <ul class="split ${amounts.length > 5 ? 'many' : ''}">${amounts.map((a, i) => `<li><span class="medal m${Math.min(i + 1, 4)}">${i + 1}</span><span>${i + 1}. Platz</span><b>${moneyHTML(a)}</b></li>`).join('')}</ul>
-      ${adm ? `<div><button class="link" type="button" data-act="tab" data-tab="einstellungen">Preisgeld ändern</button></div>` : ''}
-    </div>
-    <div class="stage">
-      <div class="stage-head"><h2 class="h">Siegertreppchen</h2>${adm && list.length ? `<button class="btn btn-gold" type="button" data-act="open-points">+ Punkte vergeben</button>` : ''}</div>
-      <div class="podium">${podiumSlot(list[1], 2)}${podiumSlot(list[0], 1)}${podiumSlot(list[2], 3)}</div>
-    </div>
-  </section>
-  <section class="cols one">
-    <div>
-      <div class="sec-head"><h2 class="h">Highscore <span class="count">${list.length} Spieler</span></h2></div>
+  <section class="hero hs">
+    <div class="hs-list">
+      <div class="sec-head"><h2 class="h">Punkte <span class="count">${list.length} Spieler</span></h2></div>
       <div class="board ${adm ? 'is-admin' : ''}">${rows}</div>
+    </div>
+    <div class="stage big">
+      <div class="stage-head"><h2 class="h">Siegertreppchen</h2>${adm && list.length ? `<button class="btn btn-gold" type="button" data-act="open-points">+ Punkte vergeben</button>` : ''}</div>
+      <div class="podium">${podiumSlot(list[1], 2, amounts[1])}${podiumSlot(list[0], 1, amounts[0])}${podiumSlot(list[2], 3, amounts[2])}</div>
     </div>
   </section>`;
 }
