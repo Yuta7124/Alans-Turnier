@@ -2568,7 +2568,7 @@ body.has-sitebg{background:transparent!important}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=44"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=45"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3593,7 +3593,7 @@ const TABS = [['start', 'Main-Menü'], ['turnier', 'Turnier'], ['spiele', 'Spiel
 const TAB_SHORT = {start:'Menü'};
 /* Ober-Tabs mit Unterseiten */
 const GROUPS = {
-  turnier:[['rangliste', '🏆', 'Highscore'], ['rad', '🎡', 'Zufallsrad'], ['liste', '📋', 'Spieleliste']]
+  turnier:[['rangliste', '🏆', 'Highscore'], ['rad', '🎡', 'Zufallsrad']]
 };
 const groupOf = t => Object.keys(GROUPS).find(g => GROUPS[g].some(x => x[0] === t)) || '';
 function groupPick(g) {
@@ -3606,6 +3606,7 @@ const HUB = ['quiz', 'malen'];
 const viewOk = t => VIEWS.includes(t);
 function viewFor(t) {
   if (t === 'vg') return 'spieler';
+  if (t === 'liste') return 'rad'; // Spieleliste gibt es im Turnier nicht mehr
   if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf' || t === 'karten' || t === 'mad' || t === 'bj') return S.room ? roomView() : 'spiele';
   return GROUPS[t] ? groupPick(t) : viewOk(t) ? t : 'start';
 }
@@ -4004,7 +4005,7 @@ function subscribe() {
   U(db.collection('gvotes').onSnapshot(sn => { S.gvotes = sn.docs.map(d => { const x = d.data() || {}; return {id:d.id, gid:str(x.gid, 40), voter:str(x.voter, 40)}; }).filter(v => v.gid); got('gvotes', sn); }, fail));
   U(db.collection('lobbies').onSnapshot(sn => { onLobbies(sn); got('lobbies', sn); }, fail));
   U(db.doc('meta/dwords').onSnapshot(d => { S.dwords = normDwords(d.exists ? d.data() : null); got('dwords', d); }, fail));
-  U(db.doc('meta/wheel').onSnapshot(d => { S.wheel = normWheel(d.exists ? d.data() : null); got('wheel', d); }, fail));
+  U(db.doc('meta/wheel').onSnapshot(d => { S.wheel = normWheel(d.exists ? d.data() : null); wheelFollow(); got('wheel', d); }, fail));
   U(db.doc('meta/gate').onSnapshot(d => { const g = d.exists ? d.data() : null; S.gate = {open: !!(g && g.open), openAt: Number(g && g.openAt) || 0}; got('gate', d); }, fail));
   U(db.collection('answers').orderBy('ts', 'desc').limit(40).onSnapshot(s => {
     S.answers = s.docs.map(d => ({id:d.id, ...d.data()}));
@@ -4458,7 +4459,9 @@ function tourClearCheckins() {
   S.checkins = (S.checkins || []).filter(x => !x.id.startsWith('chk_' + key + '_'));
 }
 function tourIntroHTML() {
-  const st = S.settings, plan = (S.games || []).filter(g => g.status === 'geplant'), list = (plan.length ? plan : (S.games || []).filter(g => g.status === 'vielleicht')).slice().sort((a, b) => (a.order || 0) - (b.order || 0) || a.name.localeCompare(b.name, 'de'));
+  // Die Spiele kommen aus dem Zufallsrad (was noch drin ist und was schon gezogen wurde)
+  const st = S.settings, w = S.wheel || {items:[], history:[]}, seenN = new Set(), list = [];
+  [...(w.items || []).map(x => x.label), ...(w.history || []).map(h => h.label)].forEach(n => { const k = String(n || '').toLowerCase(); if (n && !seenN.has(k)) { seenN.add(k); const g = (S.games || []).find(x => x.name.toLowerCase() === k); list.push({name:n, img:g && g.img || '', mode:g && g.mode || '', plat:g && g.plat || ''}); } });
   const am = prizeAmounts(), total = totalPrize(), inL = tourIn().map(id => playerById(id)).filter(Boolean);
   const medal = ['🥇', '🥈', '🥉'];
   return `<section class="section tour-intro">
@@ -4487,9 +4490,9 @@ function tourStatusFormHTML(cancel) {
     ${t.status === 'plan' ? `<div class="news-dt"><div class="field"><label for="ts-date">Datum</label><input class="input" type="date" id="ts-date" data-draft="ts.date" value="${esc(t.date)}"></div>
       <div class="field"><label for="ts-time">Uhrzeit</label><input class="input" type="time" id="ts-time" data-draft="ts.time" value="${esc(t.time)}"></div></div>
       <small class="muted">Mit Uhrzeit läuft überall ein Countdown bis zum Start. Ab dann steht das Turnier auf „Läuft gerade“. Am nächsten Morgen springt es von allein auf „Kein Turnier geplant“.</small>` : ''}
-    ${t.status === 'none' ? '<small class="muted">Im Turnier-Tab steht dann „Aktuell kein Turnier“. Highscore, Zufallsrad und Spieleliste sind für Spieler gesperrt.</small>' : ''}
+    ${t.status === 'none' ? '<small class="muted">Im Turnier-Tab steht dann „Aktuell kein Turnier“. Highscore und Zufallsrad sind für Spieler gesperrt.</small>' : ''}
     ${t.status === 'soon' ? '<small class="muted">Im Turnier-Tab steht „Gleich geht’s los!“ und „Gleich live“, aber noch ohne Termin. Sobald du den Termin weißt, stell auf „Termin mit Countdown“.</small>' : ''}
-    ${t.status === 'live' ? '<small class="muted">Alle können Highscore, Zufallsrad und Spieleliste benutzen. Steht bis morgen früh so, außer du stellst es vorher um.</small>' : ''}
+    ${t.status === 'live' ? '<small class="muted">Alle können Highscore und Zufallsrad benutzen. Steht bis morgen früh so, außer du stellst es vorher um.</small>' : ''}
     <div class="ts-btns"><button class="btn btn-gold" type="submit">Speichern</button>${cancel ? '<button class="btn btn-ghost" type="button" data-act="ts-close">Abbrechen</button>' : ''}</div>
   </form>`;
 }
@@ -4900,6 +4903,21 @@ function normWheel(x) {
   const shift = x.pv === POINTER ? 0 : POINTER;
   if (spin && shift) { spin.from += shift; spin.to += shift; }
   return {items, history, spin, rot: (Number(x.rot) || 0) + shift, removeDrawn: x.removeDrawn !== false, pv: POINTER};
+}
+/* Dreht der Spielleiter das Rad, springen alle zum Zufallsrad und sehen dieselbe Drehung.
+   Wer gerade in einem laufenden Raum-Spiel ist, bekommt nur einen Hinweis. */
+let wheelSeenSpin = null;
+function wheelFollow() {
+  const w = S.wheel, sp = w && w.spin;
+  if (!sp) { wheelSeenSpin = wheelSeenSpin || ''; return; }
+  if (wheelSeenSpin === null) { wheelSeenSpin = sp.id; if (!wheelSpinning(w)) return; }
+  else if (sp.id === wheelSeenSpin) return;
+  wheelSeenSpin = sp.id;
+  if (!wheelSpinning(w) || S.tab === 'rad') return;
+  const busy = roomTabs.includes(S.tab) && S.tab !== 'raum' && ((S.uno && S.uno.status === 'running') || (S.mad && S.mad.status === 'running') || (S.bj && S.bj.status === 'running') || (S.golf && S.golf.status === 'running') || (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running'));
+  if (busy) { toast('🎡 Das Zufallsrad dreht sich! Schau im Turnier vorbei.'); return; }
+  if (S.modal) closeModal();
+  setTab('rad');
 }
 function wheelSpinning(w = S.wheel) { return !!(w.spin && Date.now() < w.spin.startedAt + w.spin.duration); }
 function wheelAngle(w = S.wheel) {
@@ -9458,7 +9476,7 @@ const TK_AREAS = [
 ];
 const TK_SUB = {
   menu:['Ankündigungen', 'Countdown', 'Online-Anzeige', 'Event-Look'],
-  turnier:['Rangliste', 'Glücksrad', 'Spieleliste', 'Highscore', 'Turnier-Start'],
+  turnier:['Rangliste', 'Glücksrad', 'Highscore', 'Turnier-Start'],
   raeume:['Raum beitreten', 'Raum verlassen', 'Spiel starten', 'Lobby-Highscore', 'Zuschauen', 'Menü im Spiel'],
   quiz:['Fragen', 'Antworten', 'Punkte', 'Spielfeld', 'Schätzfragen', 'Timer'],
   malen:['Stift', 'Formen', 'Radierer', 'Rückgängig / Wiederholen', 'Wort raten', 'Bild speichern'],
@@ -11411,7 +11429,7 @@ const actions = {
   'tour-preview': () => { D.tourEdit = false; render(); window.scrollTo({top:0}); },
   'tour-golive': () => {
     if (!S.admin) return;
-    confirmBox('Turnier jetzt starten?', 'Alle Spieler können dann Highscore, Zufallsrad und Spieleliste benutzen. Der Status steht bis morgen früh auf „Läuft gerade“.', [{label:'Abbrechen', cls:'btn-ghost'},
+    confirmBox('Turnier jetzt starten?', 'Alle Spieler können dann Highscore und Zufallsrad benutzen. Der Status steht bis morgen früh auf „Läuft gerade“.', [{label:'Abbrechen', cls:'btn-ghost'},
       {label:'Jetzt starten', cls:'btn-gold', fn:() => { const p = berlinParts(Date.now()); ops.saveSettings(normSettings({...S.settings, status:'live', liveAt:Date.now(), date:`${p.year}-${p.month}-${p.day}`, time:''})); D.tourEdit = false; toast('Das Turnier läuft. Alle können jetzt mitmachen.'); }}]);
   },
   'admin-logout': () => confirmBox('Abmelden?', 'Danach siehst du die Seite wie ein Gast.', [

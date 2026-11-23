@@ -124,7 +124,7 @@ In **Optionen → 🎨 Design** wählt der Spielleiter das Design der Webseite f
 
 ## Turnier-Check-in
 
-Sobald das Turnier läuft („Läuft gerade“ oder Termin erreicht), sehen alle im Turnier-Tab zuerst den Check-in: „✅ Ich bin dabei!“ und eine Liste, wer schon da ist und wer noch fehlt. Der Spielleiter bestätigt mit „✅ Alle da: Turnier starten“ (speichert `settings.chk`). Danach sieht jeder einmal die Übersicht mit den geplanten Spielen (Status „Geplant“, sonst „Vielleicht“) und dem Preisgeld pro Platz, dann ist das Turnier offen. Check-ins liegen als `presence/chk_<Turnier>_<Spieler>`, deshalb braucht es keine neuen Firebase-Regeln.
+Sobald das Turnier läuft („Läuft gerade“ oder Termin erreicht), sehen alle im Turnier-Tab zuerst den Check-in: „✅ Ich bin dabei!“ und eine Liste, wer schon da ist und wer noch fehlt. Der Spielleiter bestätigt mit „✅ Alle da: Turnier starten“ (speichert `settings.chk`). Danach sieht jeder einmal die Übersicht mit den Spielen aus dem Zufallsrad und dem Preisgeld pro Platz, dann ist das Turnier offen. Check-ins liegen als `presence/chk_<Turnier>_<Spieler>`, deshalb braucht es keine neuen Firebase-Regeln.
 
 ## Private Räume
 
