@@ -2416,6 +2416,8 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
 .md-die.land{animation:mdLand .35s ease-out}
 @keyframes mdRoll{0%{transform:rotate(0) translateY(-4px)}50%{transform:rotate(180deg) translateY(4px)}100%{transform:rotate(360deg) translateY(-4px)}}
 @keyframes mdLand{0%{transform:scale(1.35)}60%{transform:scale(.92)}100%{transform:scale(1)}}
+.md-cdie{position:fixed;z-index:60;pointer-events:none;filter:drop-shadow(0 14px 18px rgba(0,0,0,.55))}
+.md-cdie .md-die{--ds:inherit;width:var(--ds);height:var(--ds);border-radius:20%}
 .md-fan{display:flex;gap:16px;justify-content:center;margin:14px 0 6px}
 .md-fan .md-die{--ds:64px}
 .md-fan .fan0{transform:rotate(-12deg)}.md-fan .fan2{transform:rotate(10deg)}
@@ -7514,7 +7516,7 @@ function madSnd(n, w = 0) {
 // Würfel kurz rollen lassen (gut 0,65 s), dann die echte Zahl zeigen
 const MAD_ROLL_MS = 700;
 function madRollFx(d, rerender) {
-  mf.rolling = true; madSnd('dice');
+  mf.rolling = true; madSnd('dice'); madCenterDie(d);
   const el = () => document.querySelector('.md-roll .md-die');
   let n = 0;
   const step = () => {
@@ -7526,6 +7528,28 @@ function madRollFx(d, rerender) {
     if (d === 6) madSnd('six', .05);
   };
   step();
+}
+// Großer Würfel taucht in der Mitte des Bretts auf, dreht sich und bleibt kurz liegen
+function madCenterDie(d) {
+  const b = document.getElementById('mboard'); if (!b || document.hidden) return;
+  document.querySelectorAll('.md-cdie').forEach(x => x.remove());
+  const r = b.getBoundingClientRect(), sz = Math.max(70, Math.min(150, r.width * .24));
+  const el = document.createElement('div');
+  el.className = 'md-cdie'; el.setAttribute('aria-hidden', 'true');
+  el.style.cssText = `left:${r.left + r.width / 2}px;top:${r.top + r.height / 2}px;--ds:${sz}px`;
+  el.innerHTML = madDieHTML(1 + Math.floor(Math.random() * 6));
+  document.body.appendChild(el);
+  let n = 0;
+  const spin = setInterval(() => { n++; const f = n >= 9 ? d : 1 + Math.floor(Math.random() * 6); el.innerHTML = madDieHTML(f, n >= 9 ? 'land' : ''); if (n >= 9) clearInterval(spin); }, 75);
+  try {
+    el.animate([
+      {transform:'translate(-50%,-50%) scale(.2) rotate(-200deg)', opacity:0},
+      {transform:'translate(-50%,-50%) scale(1.15) rotate(260deg)', opacity:1, offset:.35},
+      {transform:'translate(-50%,-50%) scale(.95) rotate(600deg)', opacity:1, offset:.75},
+      {transform:'translate(-50%,-50%) scale(1) rotate(720deg)', opacity:1}
+    ], {duration:MAD_ROLL_MS, easing:'cubic-bezier(.2,.7,.3,1)', fill:'forwards'});
+    setTimeout(() => { const an = el.animate([{opacity:1, transform:'translate(-50%,-50%) scale(1)'}, {opacity:0, transform:'translate(-50%,-50%) scale(.7)'}], {duration:300, delay:0, fill:'forwards'}); an.onfinish = () => el.remove(); }, MAD_ROLL_MS + 900);
+  } catch (e) { setTimeout(() => el.remove(), MAD_ROLL_MS + 900); }
 }
 // Figur Feld für Feld hüpfen lassen
 function madHop(pid, i, cells, opts = {}) {
