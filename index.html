@@ -267,7 +267,9 @@ button.wmode{cursor:pointer}
 .ti-team{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--c) 50%,transparent);animation:tiIn .5s both;animation-delay:var(--d)}
 .ti-team b{display:block;color:var(--c)}
 .ti-team small{color:var(--muted)}
-#team-card{scroll-margin-top:110px}
+#team-card{scroll-margin-top:110px;margin:26px 0 0}
+.tm-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tm-top h3{margin:0}
 .pod-shared{font-family:var(--body);font-size:11px;color:var(--muted)}
 @media (max-width:860px){
   .hero.hs{grid-template-columns:minmax(0,1fr)}
@@ -2766,7 +2768,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=55"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=56"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4290,7 +4292,7 @@ function teamCardHTML() {
   const pool = S.players.filter(p => !(typeof isBot === 'function' && isBot(p.id)) && !inT.has(p.id));
   const chip = p => `<button class="tm-p ${sel === p.id ? 'on' : ''}" type="button" data-act="team-pick" data-pid="${esc(p.id)}">${avatar(p, 26)}<span>${esc(p.name)}</span></button>`;
   const drop = t => sel ? ` data-act="team-put" data-t="${esc(t)}"` : '';
-  return `<div class="card share-card tm-card" id="team-card"><h3>👥 Spielmodus</h3>
+  return `<div class="card share-card tm-card" id="team-card"><div class="tm-top"><h3>👥 Spielmodus</h3><button class="btn btn-sm" type="button" data-act="teams-edit">Fertig ✓</button></div>
     <p class="m-text">Spielt jeder für sich oder in Teams? Im Team-Modus zeigen Highscore und Siegertreppchen die Teams, Punkte und Preisgeld gibt es pro Team.</p>
     <div class="chips">${FMTS.map(([v, l, ic]) => `<button class="chip" type="button" data-act="fmt-set" data-v="${v}" aria-pressed="${fmt === v}">${ic} ${l}${v > 1 ? ` (${v}er)` : ''}</button>`).join('')}</div>
     ${tm ? `<div class="tm-tools"><button class="btn btn-sm btn-gold" type="button" data-act="teams-draw">🎲 Teams auslosen</button><button class="btn btn-sm" type="button" data-act="team-add">+ Team</button></div>
@@ -4844,9 +4846,10 @@ function viewBoard() {
         <span class="pts">${p.pts}<small>Pkt</small></span>
         ${adm ? `<span class="pm"><button class="btn plus minus" type="button" data-act="pt-minus1" data-pid="${esc(p.id)}" aria-label="1 Punkt weg von ${esc(p.name)}" ${p.pts > 0 ? '' : 'disabled'}>−</button><button class="btn plus" type="button" data-act="pt-plus1" data-pid="${esc(p.id)}" aria-label="+1 Punkt für ${esc(p.name)}">+</button></span>` : ''}
       </div>`).join('')
-    : teamMode() ? `<div class="empty-box"><strong>Noch keine Teams</strong><span>${adm ? 'Los die Teams unter Optionen → Spielmodus aus.' : 'Der Spielleiter stellt die Teams gleich zusammen.'}</span>${adm ? `<button class="btn btn-gold" type="button" data-act="teams-edit">👥 Teams einteilen</button>` : ''}</div>`
+    : teamMode() ? `<div class="empty-box"><strong>Noch keine Teams</strong><span>${adm ? 'Tippe auf „Teams einteilen“ und los die Teams aus.' : 'Der Spielleiter stellt die Teams gleich zusammen.'}</span>${adm ? `<button class="btn btn-gold" type="button" data-act="teams-edit">👥 Teams einteilen</button>` : ''}</div>`
     : `<div class="empty-box"><strong>Noch keine Spieler</strong><span>${adm ? 'Leg zuerst die Spieler mit Namen und Foto an.' : 'Der Spielleiter trägt die Spieler gleich ein.'}</span>${adm ? `<button class="btn btn-gold" type="button" data-act="tab" data-tab="spieler">Spieler hinzufügen</button>` : ''}</div>`;
   return `${banner}
+  ${adm && D.teamOpen ? teamCardHTML() : ''}
   <section class="hero hs">
     <div class="hs-list">
       ${amounts.length > 3 ? `<div class="sec-head"><h2 class="h">Preisgeld <span class="count">Platz 4–${amounts.length}</span></h2></div>
@@ -5025,7 +5028,6 @@ function viewSettings() {
       <div class="chips"><button class="btn btn-sm" type="button" data-act="gate-preview">Wartebildschirm ansehen</button></div>
       ${tourKey() ? `<div class="ts-run"><span><b>🟢 Das Turnier läuft gerade</b><small>${tourCheckin() ? `Check-in läuft · ${tourIn().length} angemeldet` : 'Gestartet, alle sind drin.'}</small></span>
         <div class="chips"><button class="btn btn-sm btn-gold" type="button" data-act="tour-stop">⏹ Turnier stoppen</button><button class="btn btn-sm" type="button" data-act="tour-restart">↺ Neu starten mit Check-in</button></div></div>` : ''}</div>
-    ${teamCardHTML()}
     ${designCardHTML()}
     ${inviteCardHTML()}
     ${langCardHTML()}
@@ -12086,8 +12088,8 @@ const actions = {
   'pd-amount': b => { D.pd.amount = b.dataset.n; renderModal(); },
   'pd-reason': b => { D.pd.reason = b.dataset.r; renderModal(); },
   'teams-edit': () => {
-    if (!S.admin) return; setTab('einstellungen');
-    setTimeout(() => { const f = $('#team-card'); if (!f) return; f.scrollIntoView({behavior:'smooth', block:'start'}); f.classList.remove('flash'); void f.offsetWidth; f.classList.add('flash'); }, 60);
+    if (!S.admin) return; D.teamOpen = !D.teamOpen; D.tSel = ''; render();
+    if (D.teamOpen) setTimeout(() => { const f = $('#team-card'); if (!f) return; f.scrollIntoView({behavior:'smooth', block:'start'}); f.classList.remove('flash'); void f.offsetWidth; f.classList.add('flash'); }, 60);
   },
   'fmt-set': b => {
     if (!S.admin) return; const v = Number(b.dataset.v); if (v === (S.settings.fmt || 1)) return;
