@@ -2527,7 +2527,7 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=38"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=39"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4490,7 +4490,7 @@ function pbnGet(pid) {
   db.collection('pbn').doc(pid).get().then(d => {
     const img = d.exists ? safeBanner((d.data() || {}).img) : '';
     pbnCache[pid] = img;
-    if (img) { if (S.modal && S.modal.type === 'player') renderModal(); else if (S.tab === 'spieler') render(); }
+    if (img) { if (S.modal && (S.modal.type === 'player' || S.modal.type === 'pbg')) renderModal(); else if (S.tab === 'spieler') render(); }
   }).catch(() => {});
   return '';
 }
@@ -9202,7 +9202,7 @@ function spProfileHTML(p) {
           <div class="sp-lvrow"><span class="sp-lvlbl">Level</span>${spLvHTML(lv.l, 'big')}</div>
           <div class="sp-xp"><span class="vg-bt"><i style="width:${Math.round(lv.into / lv.span * 100)}%;--c:${spLvCol(lv.l)}"></i></span><small>${lv.xp} XP · noch ${lv.next - lv.xp} bis Level ${lv.l + 1}</small></div>
           ${got.length ? `<div class="sp-feat" title="${esc(got[got.length - 1].d)}"><span>${got[got.length - 1].i}</span><div><b>${esc(got[got.length - 1].n)}</b><small>${esc(got[got.length - 1].d)}</small></div></div>` : ''}
-          <div class="sp-btns">${editable ? `<button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Profil bearbeiten</button>` : ''}${can ? `<button class="btn btn-sm btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}</div>
+          <div class="sp-btns">${editable ? `<button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Profil bearbeiten</button><button class="btn btn-sm" type="button" data-act="pbg-edit" data-pid="${esc(p.id)}">🖼️ Hintergrund</button>` : ''}${can ? `<button class="btn btn-sm btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}</div>
         </div>
       </div>
     </div>
@@ -10997,6 +10997,7 @@ function renderModal() {
   else if (m.type === 'game') inner = D.gm ? modalGame() : '';
   else if (m.type === 'adminlogin') inner = adminLoginModal();
   else if (m.type === 'player') inner = modalPlayer();
+  else if (m.type === 'pbg') inner = D.ep ? modalPbg() : '';
   else if (m.type === 'botadd') inner = botAddModalHTML();
   else if (m.type === 'roominv') inner = roomInviteModalHTML();
   else if (m.type === 'vgshow') inner = vgShowModal();
@@ -11061,6 +11062,14 @@ function pdLabel() {
   return `${n > 0 ? '+' : ''}${n} für ${k === 1 ? esc(ghost(D.pd.sel[0]).name) : k + ' Spieler'}`;
 }
 function updatePdSubmit() { const b = $('#pd-submit'); if (b) b.innerHTML = H(pdLabel()); }
+function modalPbg() {
+  return `
+    <div class="m-head"><h2 id="m-title">🖼️ Profil-Hintergrund</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
+    <p class="m-text">Lade ein eigenes Bild hoch oder nimm eins deiner Spiele. Mit den Reglern stellst du ein, wie unscharf und wie deutlich es zu sehen ist.</p>
+    <form class="stack" data-form="edit-player">${pfBgHTML('ep', D.ep)}
+      <div class="m-foot"><button class="btn btn-ghost" type="button" data-act="modal-close">Abbrechen</button><button class="btn btn-gold" type="submit">Speichern</button></div>
+    </form>`;
+}
 function modalPlayer() {
   return `
     <div class="m-head"><h2 id="m-title">${S.admin ? 'Spieler bearbeiten' : 'Dein Spieler'}</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
@@ -11234,6 +11243,7 @@ const actions = {
   },
   'pick-color': b => { const t = D[b.dataset.target]; if (!t) return; t.color = b.dataset.c; S.modal ? renderModal() : render(); },
   'photo-clear': b => { const t = D[b.dataset.target]; if (!t) return; t.avatar = ''; S.modal ? renderModal() : render(); },
+  'pbg-edit': b => { const p = playerById(b.dataset.pid); if (!p) return; D.ep = {...p, crop:null}; openModal({type:'pbg'}); },
   'edit-player': b => { const p = playerById(b.dataset.pid); if (!p) return; D.ep = {...p, crop:null}; openModal({type:'player'}); },
   'pbn-clear': b => { const d = D[b.dataset.target]; if (!d) return; d.pbnImg = ''; d.pbg = 'auto'; renderModal(); },
   'pf-set': b => { const t = D[b.dataset.target]; if (!t) return; t[b.dataset.k] = b.dataset.v; S.modal ? renderModal() : render(); },
