@@ -134,6 +134,15 @@ Sobald das Turnier läuft („Läuft gerade“ oder Termin erreicht), sehen alle
 
 Der Host kann seinen Raum in der Raum-Leiste mit **„🔓 Öffentlich“ / „🔒 Privat“** umschalten. Bei „Privat“ lädt er über **„💌 Einladen“** Spieler ein (wer schon im Raum ist, ist automatisch eingeladen). Alle anderen sehen den Raum mit 🔒 und können weder beitreten noch zuschauen; Eingeladene sehen „Du bist eingeladen“. Wer rausgeworfen wird, verliert seine Einladung. Verlässt der Letzte den Raum oder ist der Host 10 Minuten weg, ist der Raum wieder offen. Die Firestore-Regeln prüfen das ebenfalls (nach dem Veröffentlichen der Regeln).
 
+## Spielmodus und Teams
+Unter Optionen → 👥 Spielmodus stellt der Spielleiter ein: Alle gegen alle, Duos, Trios oder Squads (4er).
+Im Team-Modus werden die Teams ausgelost (unter allen, die beim Check-in dabei sind) und können danach per Tippen
+getauscht, verschoben und umbenannt werden. Highscore, Siegertreppchen und Preisgeld gelten dann pro Team.
+Teams stehen in `meta/settings` (`fmt`, `teams`), Team-Punkte als Punkte-Einträge mit `playerId: "T:<teamId>"`.
+
+Ins Zufallsrad können auch die Server-Spiele (Quiz, Minigolf, Blackjack usw.) aufgenommen werden. Jedes Spiel im Rad
+ist im Team-Modus als „Team“ oder „Solo“ markiert. Punkte vergibt der Spielleiter wie gewohnt mit +/−.
+
 ## Spieler-Ansicht für den Spielleiter
 
 Unten links gibt es für den Spielleiter den Knopf **„Spieler-Ansicht“**. Damit sieht er die Seite so, wie ein normaler Spieler sie sieht (ohne Admin-Knöpfe, Support als Spieler, Sperrbildschirm vor dem Turnierstart usw.). Ein gelber Streifen oben zeigt, dass die Spieler-Ansicht an ist; „Admin-Ansicht“ schaltet zurück. Es erscheinen dabei keine Hinweis-Meldungen. Angemeldet bleibt man dabei als Spielleiter. In laufenden Spielen ist der Knopf ausgeblendet. Nach dem Neuladen ist wieder die Admin-Ansicht an.
