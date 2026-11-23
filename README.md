@@ -110,6 +110,10 @@ Ganz oben in **Optionen** gibt es die Karte **„🏆 Turnier“** mit vier Stuf
 
 „Wartebildschirm ansehen“ zeigt dem Spielleiter den Bildschirm so, wie ihn die Spieler sehen. Die Laufschrift-Meldung „Heute im Studio“ gibt es nicht mehr.
 
+## Uncle Grandpa ärgere dich
+
+Brettspiel für 2 bis 4 Spieler in den Spiele-Räumen (Regeln wie beim bekannten Klassiker: mit 6 raus, nach 6 nochmal, Startfeld räumen, rauswerfen, exakt ins Ziel). Host-Einstellungen: Zeit pro Zug, Schnellstart, Schlagzwang. Bots spielen mit (leicht, mittel, schwer). Platz 1 bis 3 bekommen 3, 2 und 1 Punkt im Raum-Highscore. Der Spielstand liegt im Raum-Feld `uno` mit `g:'mad'`, deshalb braucht es keine neuen Firebase-Regeln.
+
 ## Designs
 
 In **Optionen → 🎨 Design** wählt der Spielleiter das Design der Webseite für alle: **Arcade (Pixel)** oder **Neon-Glas** (Standard). Neues Design: Eintrag in `DESIGNS` (index.html) und ein CSS-Block mit `html[data-design="id"]`.
