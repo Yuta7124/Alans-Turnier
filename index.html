@@ -2556,6 +2556,52 @@ body.has-sitebg{background:transparent!important}
 html body .gate.gate-inline{width:100vw;max-width:none;margin:0 0 0 calc(50% - 50vw);border-radius:0;box-shadow:none;min-height:calc(100dvh - var(--hh,130px));padding-top:96px;padding-bottom:110px;border:0}
 body:has(.tour-tvsec) footer,body:has(.tour-tvsec) .foot{display:none}
 body:has(.tour-tvsec) #main{padding-bottom:0}
+/* Hintergrund-Studio */
+#fly-site .fly-layer{opacity:var(--flyop,.2)}
+.fly{filter:blur(var(--fb,0px)) drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+.fly-layer.fg-none .fly{filter:blur(var(--fb,0px))}
+.fly-layer.fg-neon .fly{filter:blur(var(--fb,0px)) drop-shadow(0 0 6px #ff4f9a) drop-shadow(0 0 14px #39d6f2)}
+.fly-layer.fg-gold .fly{filter:blur(var(--fb,0px)) drop-shadow(0 0 8px #ffcf3f) drop-shadow(0 0 18px rgba(255,207,63,.6))}
+.fly-layer.fs-round .fly{border-radius:50%;object-fit:cover}
+.fly-layer.fs-soft .fly{border-radius:22%;object-fit:cover}
+.fly-layer.fs-sticker .fly{border-radius:18%;object-fit:cover;background:#fff;padding:5px;box-shadow:0 4px 10px rgba(0,0,0,.4)}
+.fly.f-rtl{animation-name:flyrev}
+.fly.f-up{left:var(--x);top:0;animation-name:flyup}
+.fly.f-down{left:var(--x);top:0;animation-name:flydown}
+.fly.f-float{left:var(--x);top:var(--y);animation-name:flyfloat;animation-timing-function:ease-in-out;animation-direction:alternate}
+@keyframes flyup{0%{transform:translate(0,115vh) rotate(var(--r0))}50%{transform:translate(4vw,50vh) rotate(calc((var(--r0) + var(--r1)) / 2))}100%{transform:translate(-2vw,-30vh) rotate(var(--r1))}}
+@keyframes flydown{0%{transform:translate(0,-30vh) rotate(var(--r0))}50%{transform:translate(-4vw,45vh) rotate(calc((var(--r0) + var(--r1)) / 2))}100%{transform:translate(2vw,115vh) rotate(var(--r1))}}
+@keyframes flyfloat{0%{transform:translate(-6vw,-4vh) rotate(var(--r0))}33%{transform:translate(5vw,3vh) rotate(calc(var(--r0) * -1))}66%{transform:translate(-3vw,6vh) rotate(var(--r0))}100%{transform:translate(6vw,-5vh) rotate(var(--r1))}}
+.fly-layer.fpulse .fly{scale:1;animation-name:fly,flypulse;animation-duration:var(--d),var(--pd);animation-iteration-count:infinite,infinite;animation-timing-function:linear,ease-in-out;animation-direction:normal,alternate;animation-delay:var(--dl),0s}
+.fly-layer.fpulse .fly.f-rtl{animation-name:flyrev,flypulse}.fly-layer.fpulse .fly.f-up{animation-name:flyup,flypulse}.fly-layer.fpulse .fly.f-down{animation-name:flydown,flypulse}.fly-layer.fpulse .fly.f-float{animation-name:flyfloat,flypulse;animation-direction:alternate,alternate}
+@keyframes flypulse{from{scale:.85}to{scale:1.18}}
+#fx-site{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;pointer-events:none}
+#deco-layers{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+#deco-layers i{position:absolute;inset:0;display:none}
+#deco-layers.on .dl-tint{display:block;background:var(--tint);opacity:var(--tintop)}
+#deco-layers.on.fx-aurora .dl-aurora{display:block;inset:-20%;opacity:var(--fxop);filter:blur(40px);
+  background:radial-gradient(40% 30% at 20% 30%,rgba(79,240,143,.55),transparent 70%),radial-gradient(35% 28% at 70% 25%,rgba(57,214,242,.5),transparent 70%),radial-gradient(45% 30% at 50% 70%,rgba(196,147,255,.5),transparent 70%);
+  animation:auroraMove calc(18s * var(--fxsp,1)) ease-in-out infinite alternate}
+@keyframes auroraMove{0%{transform:translate(-6%,-3%) rotate(-4deg) scale(1)}50%{transform:translate(5%,4%) rotate(5deg) scale(1.15)}100%{transform:translate(-3%,6%) rotate(-2deg) scale(1.05)}}
+#deco-layers.on.fx-grid .dl-grid{display:block;top:45%;bottom:-40%;left:-50%;right:-50%;opacity:var(--fxop);transform:perspective(500px) rotateX(62deg);transform-origin:50% 0;
+  background:linear-gradient(transparent 0 calc(100% - 2px),var(--fxc) calc(100% - 2px)) 0 0/100% 60px,linear-gradient(90deg,transparent 0 calc(100% - 2px),var(--fxc) calc(100% - 2px)) 0 0/60px 100%;
+  -webkit-mask-image:linear-gradient(transparent,#000 35%);mask-image:linear-gradient(transparent,#000 35%);animation:gridRun calc(2s * var(--fxsp,1)) linear infinite;filter:drop-shadow(0 0 6px var(--fxc))}
+@keyframes gridRun{to{background-position:0 60px,0 0}}
+#deco-top{position:fixed;inset:0;z-index:9000;pointer-events:none}
+#deco-top i{position:absolute;inset:0;display:none}
+#deco-top.vig .dl-vig{display:block;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(0,0,0,.6) 100%)}
+#deco-top.scan .dl-scan{display:block;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 3px);mix-blend-mode:multiply;animation:scanFlick 6s steps(60) infinite}
+@keyframes scanFlick{50%{opacity:.85}}
+.deco-sec{margin:14px 0;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.03);box-shadow:inset 0 0 0 1px var(--edge)}
+.deco-sec summary{cursor:pointer;font-weight:800;font-size:16px}
+.deco-sec .lbl{display:block;margin-top:12px}
+.deco-fx{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:10px}
+.deco-fxb{padding:10px 8px;gap:4px}.deco-fxb span{font-size:26px}.deco-fxb b{font-size:13px}
+.deco-col{display:flex;align-items:center;gap:10px;margin-top:8px}
+.deco-col input{width:44px;height:34px;border:0;background:none;padding:0}
+@media (prefers-reduced-motion:reduce){#deco-layers i{animation:none!important}}
+.deco-card .toggle span{display:flex;flex-direction:column;gap:2px}.deco-card .toggle small{color:var(--muted);font-size:12px}
+.deco-fxb[aria-pressed="true"]{outline:2px solid var(--coin);outline-offset:2px;background:rgba(255,207,63,.1)}
 </style>
 </head>
 <body>
@@ -2574,7 +2620,7 @@ body:has(.tour-tvsec) #main{padding-bottom:0}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=45"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=46"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -12431,10 +12477,33 @@ async function saveOwnPlayer(d) {
   } catch (e) { toast('Speichern hat nicht geklappt. Prüfe die Verbindung und versuch es nochmal.'); }
 }
 
-/* ---------- Eigene Bilder, die durchs Bild fliegen ---------- */
-const DEFAULT_DECO = {bgm:true, flyLobby:true, flySite:true};
+/* ---------- Hintergrund-Studio: fliegende Bilder, Effekte und Extras (meta/deco, nur der Spielleiter ändert) ---------- */
+const DEFAULT_DECO = {bgm:true, flyLobby:true, flySite:true,
+  flyCount:6, flySize:100, flySpeed:100, flyDir:'both', flySpin:'some', flyShape:'orig', flyGlow:'shadow', flyBlur:0, flyOp:20, flyPulse:false,
+  fx:'none', fxAmount:50, fxSpeed:100, fxColor:'theme', fxCustom:'#ffcf3f', fxEmoji:'🎮⭐🔥', fxOp:60,
+  tint:'', tintOp:0, vignette:false, scan:false, trail:false, clickFx:false};
 const PICS_MAX = 20;
-function normDeco(x) { x = x || {}; return {bgm:x.bgm !== false, flyLobby:x.flyLobby !== false, flySite:x.flySite !== false}; }
+const DECO_DIRS = [['both', '↔ Hin und her'], ['ltr', '→ Nach rechts'], ['rtl', '← Nach links'], ['up', '↑ Aufsteigen'], ['down', '↓ Herunterfallen'], ['float', '〰 Schweben']];
+const DECO_SPIN = [['none', 'Keine Drehung'], ['some', 'Leicht'], ['wild', 'Wild']];
+const DECO_SHAPE = [['orig', 'Original'], ['round', 'Rund'], ['soft', 'Abgerundet'], ['sticker', 'Sticker']];
+const DECO_GLOW = [['none', 'Nichts'], ['shadow', 'Schatten'], ['neon', 'Neon-Leuchten'], ['gold', 'Gold-Schein']];
+const DECO_FX = [['none', '🚫', 'Kein Effekt'], ['stars', '✨', 'Funkelnde Sterne'], ['snow', '❄️', 'Schnee'], ['confetti', '🎊', 'Konfetti'], ['bubbles', '🫧', 'Blasen'],
+  ['fireflies', '🌟', 'Glühwürmchen'], ['rain', '🌧️', 'Regen'], ['hearts', '💖', 'Herzen'], ['emoji', '😎', 'Emoji-Regen'], ['pixels', '👾', 'Pixel-Regen'], ['aurora', '🌌', 'Polarlicht'], ['grid', '🕹️', 'Neon-Gitter']];
+const DECO_COLORS = [['theme', 'Passend zum Design'], ['gold', 'Gold'], ['pink', 'Pink'], ['cyan', 'Türkis'], ['green', 'Grün'], ['white', 'Weiß'], ['rainbow', 'Regenbogen'], ['custom', 'Eigene Farbe']];
+const DECO_HEX = {gold:'#ffcf3f', pink:'#ff4f9a', cyan:'#39d6f2', green:'#4ff08f', white:'#ffffff'};
+const DECO_TINTS = [['', 'Kein Farbschleier'], ['#7c4dff', 'Lila'], ['#ff4f6d', 'Rot'], ['#39d6f2', 'Türkis'], ['#ffcf3f', 'Gold'], ['#4ff08f', 'Grün'], ['#000000', 'Dunkler']];
+function normDeco(x) {
+  x = x && typeof x === 'object' ? x : {};
+  const d = DEFAULT_DECO, pick = (list, v, def) => list.some(o => o[0] === v) ? v : def;
+  const hex = v => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v) ? v : '';
+  return {bgm:x.bgm !== false, flyLobby:x.flyLobby !== false, flySite:x.flySite !== false,
+    flyCount:Math.round(num(x.flyCount, 1, 30, d.flyCount)), flySize:Math.round(num(x.flySize, 40, 250, d.flySize)), flySpeed:Math.round(num(x.flySpeed, 30, 300, d.flySpeed)),
+    flyDir:pick(DECO_DIRS, x.flyDir, d.flyDir), flySpin:pick(DECO_SPIN, x.flySpin, d.flySpin), flyShape:pick(DECO_SHAPE, x.flyShape, d.flyShape), flyGlow:pick(DECO_GLOW, x.flyGlow, d.flyGlow),
+    flyBlur:Math.round(num(x.flyBlur, 0, 12, 0)), flyOp:Math.round(num(x.flyOp, 5, 100, d.flyOp)), flyPulse:x.flyPulse === true,
+    fx:pick(DECO_FX, x.fx, 'none'), fxAmount:Math.round(num(x.fxAmount, 10, 100, d.fxAmount)), fxSpeed:Math.round(num(x.fxSpeed, 30, 300, d.fxSpeed)),
+    fxColor:pick(DECO_COLORS, x.fxColor, 'theme'), fxCustom:hex(x.fxCustom) || d.fxCustom, fxEmoji:typeof x.fxEmoji === 'string' ? x.fxEmoji.slice(0, 24) : d.fxEmoji, fxOp:Math.round(num(x.fxOp, 10, 100, d.fxOp)),
+    tint:hex(x.tint), tintOp:Math.round(num(x.tintOp, 0, 60, 0)), vignette:x.vignette === true, scan:x.scan === true, trail:x.trail === true, clickFx:x.clickFx === true};
+}
 function picImg(img) { return typeof img === 'string' && img.length < 140000 && /^data:image\/(png|jpe?g|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(img) ? img : ''; }
 function normPic(id, x) { x = x || {}; return {id, img:picImg(x.img), ts:Number(x.ts) || 0}; }
 async function toPic(file) {
@@ -12457,45 +12526,199 @@ async function toPic(file) {
   } finally { URL.revokeObjectURL(url); }
 }
 function flyHTML(where) {
-  const pics = S.pics || [];
+  const pics = S.pics || [], d = S.deco || normDeco(null);
   if (!pics.length) return '';
   const lobby = where === 'lobby';
-  const n = lobby ? Math.min(12, Math.max(6, pics.length * 2)) : Math.min(4, Math.max(2, pics.length));
+  const n = lobby ? d.flyCount : Math.max(1, Math.round(d.flyCount * .6));
+  const sz = d.flySize / 100, sp = 100 / d.flySpeed;
   let h = '';
   for (let i = 0; i < n; i++) {
     const p = pics[i % pics.length], r = rngFrom(i * 7919 + pics.length * 131 + (lobby ? 1 : 2));
-    const size = Math.round(lobby ? 70 + r() * 90 : 48 + r() * 42);
-    const dur = Math.round((lobby ? 15 : 34) + r() * (lobby ? 14 : 22));
+    const size = Math.round((lobby ? 70 + r() * 90 : 48 + r() * 42) * sz);
+    const dur = Math.max(3, Math.round(((lobby ? 15 : 34) + r() * (lobby ? 14 : 22)) * sp));
     const delay = -(r() * dur).toFixed(1);
-    const y = Math.round(lobby ? 6 + r() * 74 : 8 + r() * 80);
-    const rot = Math.round(r() * 40 - 20), spin = Math.round(rot + (r() < .5 ? -1 : 1) * (60 + r() * 200));
-    h += `<img class="fly ${r() < .5 ? 'rev' : ''}" src="${p.img}" alt="" style="--s:${size}px;--y:${y}vh;--d:${dur}s;--dl:${delay}s;--r0:${rot}deg;--r1:${spin}deg">`;
+    const y = Math.round(lobby ? 6 + r() * 74 : 8 + r() * 80), x = Math.round(4 + r() * 88);
+    const sAmt = d.flySpin === 'none' ? 0 : d.flySpin === 'wild' ? 3 : 1;
+    const rot = Math.round((r() * 40 - 20) * Math.min(1, sAmt)), spin = Math.round(rot + (r() < .5 ? -1 : 1) * (60 + r() * 200) * sAmt);
+    const dir = d.flyDir === 'both' ? (r() < .5 ? 'ltr' : 'rtl') : d.flyDir;
+    h += `<img class="fly f-${dir}" src="${p.img}" alt="" style="--s:${size}px;--y:${y}vh;--x:${x}vw;--d:${dur}s;--dl:${delay}s;--r0:${rot}deg;--r1:${spin}deg;--pd:${(1.6 + r() * 1.4).toFixed(2)}s">`;
   }
-  return `<div class="fly-layer ${where}" aria-hidden="true">${h}</div>`;
+  return `<div class="fly-layer ${where} fs-${d.flyShape} fg-${d.flyGlow} ${d.flyPulse ? 'fpulse' : ''}" style="--fb:${d.flyBlur}px" aria-hidden="true">${h}</div>`;
 }
 let flySiteKey = '';
 function renderFlySite() {
   const el = $('#fly-site'); if (!el) return;
-  const show = S.mode === 'db' && S.loaded && S.deco && S.deco.flySite && !blocked() && !reduced();
-  const key = show ? (S.pics || []).map(p => p.id).join(',') : '';
-  if (key === flySiteKey) return;
-  flySiteKey = key;
-  el.innerHTML = show ? flyHTML('site') : '';
+  const d = S.deco || normDeco(null);
+  const show = S.mode === 'db' && S.loaded && d.flySite && !blocked() && !reduced();
+  const key = show ? (S.pics || []).map(p => p.id).join(',') + JSON.stringify(d) : '';
+  if (key !== flySiteKey) { flySiteKey = key; el.innerHTML = show ? flyHTML('site') : ''; el.style.setProperty('--flyop', d.flyOp / 100); }
+  decoApply();
 }
 function lobbyKey() {
-  return JSON.stringify([S.ticker, (S.pics || []).map(p => p.id), S.deco && S.deco.flyLobby, S.players.map(p => p.name), S.settings.date, S.settings.time, S.settings.status]);
+  return JSON.stringify([S.ticker, (S.pics || []).map(p => p.id), S.deco, S.players.map(p => p.name), S.settings.date, S.settings.time, S.settings.status]);
+}
+
+/* ----- Effekte: ein Canvas hinter der Seite, dazu CSS-Ebenen für Polarlicht, Gitter, Farbschleier, Vignette und Scanlines ----- */
+const fxs = {key:'', cv:null, ctx:null, parts:[], raf:0, last:0, w:0, h:0, dpr:1, kind:'none', d:null, extra:[]};
+function decoColor(d, i) {
+  if (d.fxColor === 'rainbow') return `hsl(${(i * 47 + Date.now() / 40) % 360} 90% 65%)`;
+  if (d.fxColor === 'custom') return d.fxCustom;
+  if (d.fxColor === 'theme') return ['#ffcf3f', '#ff4f6d', '#39d6f2', '#c493ff'][i % 4];
+  return DECO_HEX[d.fxColor] || '#ffffff';
+}
+function decoApply() {
+  const d = S.deco || normDeco(null), on = S.mode === 'db' && S.loaded && !blocked();
+  const root = document.body; if (!root) return;
+  // CSS-Ebenen
+  let lay = document.getElementById('deco-layers');
+  if (!lay) { lay = document.createElement('div'); lay.id = 'deco-layers'; lay.setAttribute('aria-hidden', 'true'); lay.innerHTML = '<i class="dl-aurora"></i><i class="dl-grid"></i><i class="dl-tint"></i>'; root.prepend(lay); }
+  let top = document.getElementById('deco-top');
+  if (!top) { top = document.createElement('div'); top.id = 'deco-top'; top.setAttribute('aria-hidden', 'true'); top.innerHTML = '<i class="dl-vig"></i><i class="dl-scan"></i>'; root.appendChild(top); }
+  const fxc = d.fxColor === 'custom' ? d.fxCustom : DECO_HEX[d.fxColor] || '#7c4dff';
+  lay.className = on ? `on fx-${d.fx}` : '';
+  lay.style.cssText = `--fxop:${d.fxOp / 100};--fxc:${fxc};--tint:${d.tint || 'transparent'};--tintop:${d.tint ? d.tintOp / 100 : 0};--fxsp:${(100 / d.fxSpeed).toFixed(2)}`;
+  top.className = on ? `${d.vignette ? 'vig' : ''} ${d.scan ? 'scan' : ''}` : '';
+  // Canvas-Teilchen
+  const canvasFx = ['stars', 'snow', 'confetti', 'bubbles', 'fireflies', 'rain', 'hearts', 'emoji', 'pixels'].includes(d.fx);
+  const need = on && !reduced() && (canvasFx || d.trail || d.clickFx);
+  const key = need ? JSON.stringify([d.fx, d.fxAmount, d.fxSpeed, d.fxColor, d.fxCustom, d.fxEmoji, d.fxOp, d.trail, d.clickFx]) : '';
+  if (key === fxs.key) return;
+  fxs.key = key; fxs.d = d;
+  if (!need) { if (fxs.cv) { cancelAnimationFrame(fxs.raf); fxs.cv.remove(); fxs.cv = null; } return; }
+  if (!fxs.cv) {
+    fxs.cv = document.createElement('canvas'); fxs.cv.id = 'fx-site'; fxs.cv.setAttribute('aria-hidden', 'true');
+    root.prepend(fxs.cv); fxs.ctx = fxs.cv.getContext('2d');
+    window.addEventListener('resize', fxResize);
+  }
+  fxResize();
+  fxs.kind = canvasFx ? d.fx : 'none';
+  const n = fxs.kind === 'none' ? 0 : Math.round({stars:140, snow:120, confetti:90, bubbles:40, fireflies:45, rain:160, hearts:35, emoji:30, pixels:80}[fxs.kind] * d.fxAmount / 100);
+  fxs.parts = []; for (let i = 0; i < n; i++) fxs.parts.push(fxNew(i, true));
+  cancelAnimationFrame(fxs.raf); fxs.last = performance.now(); fxs.raf = requestAnimationFrame(fxLoop);
+}
+function fxResize() {
+  if (!fxs.cv) return;
+  fxs.dpr = Math.min(2, window.devicePixelRatio || 1); fxs.w = innerWidth; fxs.h = innerHeight;
+  fxs.cv.width = fxs.w * fxs.dpr; fxs.cv.height = fxs.h * fxs.dpr;
+}
+function fxNew(i, init) {
+  const d = fxs.d, W = fxs.w, H = fxs.h, k = fxs.kind, R = Math.random;
+  const p = {i, x:R() * W, y:init ? R() * H : -20, c:decoColor(d, i), a:1, r:R()};
+  if (k === 'stars') Object.assign(p, {y:R() * H, s:.6 + R() * 1.8, tw:R() * 6.28, ts:.8 + R() * 2});
+  else if (k === 'snow') Object.assign(p, {s:1.5 + R() * 3, vy:20 + R() * 40, vx:R() * 20 - 10, ph:R() * 6.28});
+  else if (k === 'confetti') Object.assign(p, {s:4 + R() * 5, vy:40 + R() * 60, vx:R() * 40 - 20, rot:R() * 6.28, vr:R() * 6 - 3});
+  else if (k === 'bubbles') Object.assign(p, {y:init ? R() * H : H + 20, s:6 + R() * 18, vy:-(15 + R() * 30), ph:R() * 6.28});
+  else if (k === 'fireflies') Object.assign(p, {y:R() * H, s:1.5 + R() * 2.5, vx:R() * 30 - 15, vy:R() * 30 - 15, ph:R() * 6.28});
+  else if (k === 'rain') Object.assign(p, {s:10 + R() * 14, vy:500 + R() * 400, vx:-60});
+  else if (k === 'hearts') Object.assign(p, {y:init ? R() * H : H + 20, s:10 + R() * 14, vy:-(20 + R() * 30), ph:R() * 6.28});
+  else if (k === 'emoji') { const em = [...(d.fxEmoji || '⭐')].filter(x => x.trim()); Object.assign(p, {s:16 + R() * 18, vy:40 + R() * 50, vx:R() * 20 - 10, rot:R() * 6.28, vr:R() * 2 - 1, ch:em[i % Math.max(1, em.length)] || '⭐'}); }
+  else if (k === 'pixels') Object.assign(p, {s:3 + Math.floor(R() * 3) * 3, vy:30 + R() * 80});
+  return p;
+}
+function fxLoop(t) {
+  fxs.raf = requestAnimationFrame(fxLoop);
+  if (document.hidden || !fxs.cv) return;
+  const raw = Math.min(.05, (t - fxs.last) / 1000), dt = raw * (fxs.d.fxSpeed / 100); fxs.last = t;
+  const c = fxs.ctx, W = fxs.w, H = fxs.h, k = fxs.kind;
+  c.setTransform(fxs.dpr, 0, 0, fxs.dpr, 0, 0); c.clearRect(0, 0, W, H);
+  c.globalAlpha = fxs.d.fxOp / 100;
+  for (const p of fxs.parts) {
+    if (fxs.d.fxColor === 'rainbow') p.c = decoColor(fxs.d, p.i);
+    if (k === 'stars') { p.tw += dt * p.ts; const a = .35 + .65 * Math.abs(Math.sin(p.tw)); c.fillStyle = p.c; c.globalAlpha = a * fxs.d.fxOp / 100; c.beginPath(); c.arc(p.x, p.y, p.s, 0, 6.28); c.fill(); if (p.s > 1.8) { c.fillRect(p.x - p.s * 3, p.y - .5, p.s * 6, 1); c.fillRect(p.x - .5, p.y - p.s * 3, 1, p.s * 6); } c.globalAlpha = fxs.d.fxOp / 100; continue; }
+    if (k === 'fireflies') { p.ph += dt; p.x += (p.vx + Math.sin(p.ph * 1.3) * 20) * dt; p.y += (p.vy + Math.cos(p.ph) * 20) * dt; if (p.x < -10) p.x = W + 10; if (p.x > W + 10) p.x = -10; if (p.y < -10) p.y = H + 10; if (p.y > H + 10) p.y = -10;
+      const g = c.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.s * 6); g.addColorStop(0, p.c); g.addColorStop(1, 'transparent'); c.globalAlpha = (.4 + .6 * Math.abs(Math.sin(p.ph * 2))) * fxs.d.fxOp / 100; c.fillStyle = g; c.fillRect(p.x - p.s * 6, p.y - p.s * 6, p.s * 12, p.s * 12); c.globalAlpha = fxs.d.fxOp / 100; continue; }
+    if (k === 'bubbles' || k === 'hearts') { p.ph += dt * 1.5; p.y += p.vy * dt; p.x += Math.sin(p.ph) * 18 * dt; if (p.y < -30) Object.assign(p, fxNew(p.i, false), {y:H + 20});
+      if (k === 'bubbles') { c.strokeStyle = p.c; c.lineWidth = 1.5; c.beginPath(); c.arc(p.x, p.y, p.s, 0, 6.28); c.stroke(); c.fillStyle = 'rgba(255,255,255,.35)'; c.beginPath(); c.arc(p.x - p.s * .35, p.y - p.s * .35, p.s * .22, 0, 6.28); c.fill(); }
+      else { c.fillStyle = p.c; const s = p.s / 2; c.beginPath(); c.moveTo(p.x, p.y + s * .9); c.bezierCurveTo(p.x - s * 2, p.y - s * .4, p.x - s * .8, p.y - s * 1.8, p.x, p.y - s * .6); c.bezierCurveTo(p.x + s * .8, p.y - s * 1.8, p.x + s * 2, p.y - s * .4, p.x, p.y + s * .9); c.fill(); }
+      continue; }
+    p.y += p.vy * dt; p.x += (p.vx || 0) * dt;
+    if (p.y > H + 30) { Object.assign(p, fxNew(p.i, false)); continue; }
+    if (k === 'snow') { p.ph += dt; p.x += Math.sin(p.ph) * 12 * dt; c.fillStyle = p.c === '#ffffff' || fxs.d.fxColor === 'theme' ? '#fff' : p.c; c.beginPath(); c.arc(p.x, p.y, p.s, 0, 6.28); c.fill(); }
+    else if (k === 'confetti') { p.rot += p.vr * dt; c.save(); c.translate(p.x, p.y); c.rotate(p.rot); c.fillStyle = p.c; c.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); c.restore(); }
+    else if (k === 'rain') { c.strokeStyle = fxs.d.fxColor === 'theme' ? 'rgba(160,190,255,.8)' : p.c; c.lineWidth = 1.2; c.beginPath(); c.moveTo(p.x, p.y); c.lineTo(p.x + p.vx * .02, p.y + p.s); c.stroke(); }
+    else if (k === 'emoji') { p.rot += p.vr * dt; c.save(); c.translate(p.x, p.y); c.rotate(p.rot); c.font = `${p.s}px system-ui,"Apple Color Emoji","Segoe UI Emoji",sans-serif`; c.textAlign = 'center'; c.fillText(p.ch, 0, 0); c.restore(); }
+    else if (k === 'pixels') { c.fillStyle = p.c; c.fillRect(Math.round(p.x / 3) * 3, Math.round(p.y / 3) * 3, p.s, p.s); }
+  }
+  // Funken von Maus/Finger und Klick-Konfetti
+  c.globalAlpha = 1;
+  for (let i = fxs.extra.length - 1; i >= 0; i--) {
+    const e = fxs.extra[i]; e.life -= raw * 1.1;
+    if (e.life <= 0) { fxs.extra.splice(i, 1); continue; }
+    e.vy += 380 * raw * (e.g || 0); e.x += e.vx * raw; e.y += e.vy * raw;
+    c.globalAlpha = Math.max(0, e.life); c.fillStyle = e.c;
+    if (e.sq) { c.save(); c.translate(e.x, e.y); c.rotate(e.life * 8); c.fillRect(-e.s / 2, -e.s / 4, e.s, e.s / 2); c.restore(); }
+    else { c.beginPath(); c.arc(e.x, e.y, e.s * e.life, 0, 6.28); c.fill(); }
+  }
+  c.globalAlpha = 1;
+  if (k === 'none' && !fxs.extra.length && !fxs.d.trail && !fxs.d.clickFx) cancelAnimationFrame(fxs.raf);
+}
+let fxTrailAt = 0;
+document.addEventListener('pointermove', e => {
+  const d = S.deco; if (!d || !d.trail || !fxs.cv || reduced()) return;
+  const t = performance.now(); if (t - fxTrailAt < 30) return; fxTrailAt = t;
+  for (let i = 0; i < 2; i++) fxs.extra.push({x:e.clientX, y:e.clientY, vx:Math.random() * 60 - 30, vy:Math.random() * 60 - 50, s:2.5 + Math.random() * 2.5, life:.8, c:decoColor(d, Math.floor(Math.random() * 8)), g:.3});
+  if (fxs.extra.length > 160) fxs.extra.splice(0, fxs.extra.length - 160);
+}, {passive:true});
+document.addEventListener('pointerdown', e => {
+  const d = S.deco; if (!d || !d.clickFx || !fxs.cv || reduced()) return;
+  for (let i = 0; i < 18; i++) { const a = Math.random() * 6.28, v = 120 + Math.random() * 220; fxs.extra.push({x:e.clientX, y:e.clientY, vx:Math.cos(a) * v, vy:Math.sin(a) * v - 120, s:5 + Math.random() * 4, life:1, c:decoColor(d, i), g:1, sq:true}); }
+}, {passive:true});
+
+/* ----- Einstellungs-Karte ----- */
+let decoSaveT = 0;
+function decoSet(k, v, soon) {
+  const d = {...(S.deco || normDeco(null)), [k]:v}, n = normDeco(d);
+  S.deco = n; render();
+  clearTimeout(decoSaveT);
+  if (soon) decoSaveT = setTimeout(() => ops.saveDeco(S.deco), 450); else ops.saveDeco(n);
 }
 function picsCardHTML() {
-  const d = S.deco || DEFAULT_DECO, pics = S.pics || [];
-  return `<div class="card share-card pics-card">
-    <h3>Eigene Bilder</h3>
-    <p class="m-text">${'Deine Bilder fliegen durch den Wartebildschirm im Turnier-Tab und, wenn du willst, ganz dezent im Hintergrund der Seite.'} Bilder mit durchsichtigem Hintergrund (PNG) sehen besonders gut aus.</p>
-    <div class="pics-grid">${pics.map((p, i) => `<div class="pic"><img src="${p.img}" alt="Eigenes Bild ${i + 1}"><button class="x" type="button" data-act="pic-del" data-id="${esc(p.id)}" aria-label="Bild ${i + 1} löschen">×</button></div>`).join('')}
-      ${pics.length < PICS_MAX ? `<label class="pic add" for="pic-file"><span>+ Bild</span></label>` : ''}</div>
-    <input class="vh" type="file" id="pic-file" accept="image/*" multiple>
-    <p class="m-text">${pics.length} von ${PICS_MAX} Bildern.</p>
-    <div class="tk-opts">${`<label class="toggle"><input type="checkbox" id="deco-lobby" ${d.flyLobby ? 'checked' : ''}><span>Im Wartebildschirm fliegen lassen</span></label>`}<label class="toggle"><input type="checkbox" id="deco-site" ${d.flySite ? 'checked' : ''}><span>Dezent auf der ganzen Seite</span></label></div>
-    <div class="chips"><button class="btn btn-sm" type="button" data-act="gate-preview">Vorschau ansehen</button></div>
+  const d = S.deco || normDeco(null), pics = S.pics || [];
+  const chips = (k, list) => `<div class="chips">${list.map(([v, l, l2]) => `<button class="chip" type="button" data-act="deco-set" data-k="${k}" data-v="${esc(v)}" aria-pressed="${String(d[k]) === String(v)}">${l2 ? `${l} ${l2}` : l}</button>`).join('')}</div>`;
+  const slider = (k, label, min, max, step, fmt) => `<label class="pf-range"><span>${label} <b id="dv-${k}">${fmt(d[k])}</b></span><input type="range" min="${min}" max="${max}" step="${step}" value="${d[k]}" data-deco="${k}"></label>`;
+  const tog = (k, label, hint) => `<label class="toggle"><input type="checkbox" data-deco-t="${k}" ${d[k] ? 'checked' : ''}><span><b>${label}</b>${hint ? `<small>${hint}</small>` : ''}</span></label>`;
+  return `<div class="card share-card pics-card deco-card">
+    <h3>🎨 Hintergrund-Studio</h3>
+    <p class="m-text">Gib der Seite Persönlichkeit: eigene Bilder, die durchs Bild fliegen, Effekte im Hintergrund und kleine Extras. Alles wirkt sofort bei allen.</p>
+    <details class="deco-sec" open><summary>🖼️ Fliegende Bilder</summary>
+      <p class="m-text">Bilder mit durchsichtigem Hintergrund (PNG) sehen besonders gut aus.</p>
+      <div class="pics-grid">${pics.map((p, i) => `<div class="pic"><img src="${p.img}" alt="Eigenes Bild ${i + 1}"><button class="x" type="button" data-act="pic-del" data-id="${esc(p.id)}" aria-label="Bild ${i + 1} löschen">×</button></div>`).join('')}
+        ${pics.length < PICS_MAX ? `<label class="pic add" for="pic-file"><span>+ Bild</span></label>` : ''}</div>
+      <input class="vh" type="file" id="pic-file" accept="image/*" multiple>
+      <p class="m-text">${pics.length} von ${PICS_MAX} Bildern.</p>
+      <div class="tk-opts"><label class="toggle"><input type="checkbox" id="deco-lobby" ${d.flyLobby ? 'checked' : ''}><span>Im Wartebildschirm fliegen lassen</span></label><label class="toggle"><input type="checkbox" id="deco-site" ${d.flySite ? 'checked' : ''}><span>Im Hintergrund der ganzen Seite</span></label></div>
+      <span class="lbl">Richtung</span>${chips('flyDir', DECO_DIRS)}
+      <span class="lbl">Drehung</span>${chips('flySpin', DECO_SPIN)}
+      <span class="lbl">Form</span>${chips('flyShape', DECO_SHAPE)}
+      <span class="lbl">Leuchten</span>${chips('flyGlow', DECO_GLOW)}
+      ${slider('flyCount', 'Anzahl', 1, 30, 1, v => v)}
+      ${slider('flySize', 'Größe', 40, 250, 10, v => v + ' %')}
+      ${slider('flySpeed', 'Tempo', 30, 300, 10, v => v + ' %')}
+      ${slider('flyOp', 'Sichtbarkeit im Seiten-Hintergrund', 5, 100, 5, v => v + ' %')}
+      ${slider('flyBlur', 'Unschärfe', 0, 12, 1, v => v ? v + ' px' : 'scharf')}
+      <div class="tk-opts">${tog('flyPulse', 'Pulsieren', 'Die Bilder werden sanft größer und kleiner.')}</div>
+      <div class="chips"><button class="btn btn-sm" type="button" data-act="gate-preview">Wartebildschirm ansehen</button></div>
+    </details>
+    <details class="deco-sec" open><summary>✨ Effekt im Hintergrund</summary>
+      <div class="deco-fx">${DECO_FX.map(([v, i, l]) => `<button class="pick-big deco-fxb" type="button" data-act="deco-set" data-k="fx" data-v="${v}" aria-pressed="${d.fx === v}"><span aria-hidden="true">${i}</span><b>${l}</b></button>`).join('')}</div>
+      ${d.fx === 'emoji' ? `<label class="lbl" for="deco-emoji">Welche Emojis?</label><input class="input" id="deco-emoji" maxlength="24" value="${esc(d.fxEmoji)}" data-deco-txt="fxEmoji" placeholder="z. B. 🎮⭐🔥">` : ''}
+      <span class="lbl">Farbe</span>${chips('fxColor', DECO_COLORS)}
+      ${d.fxColor === 'custom' ? `<label class="deco-col"><input type="color" value="${d.fxCustom}" data-deco-c="fxCustom"> Eigene Farbe wählen</label>` : ''}
+      ${slider('fxAmount', 'Menge', 10, 100, 5, v => v + ' %')}
+      ${slider('fxSpeed', 'Tempo', 30, 300, 10, v => v + ' %')}
+      ${slider('fxOp', 'Deutlichkeit', 10, 100, 5, v => v + ' %')}
+    </details>
+    <details class="deco-sec"><summary>🪄 Extras</summary>
+      <span class="lbl">Farbschleier über dem Hintergrund</span>${chips('tint', DECO_TINTS)}
+      ${d.tint ? slider('tintOp', 'Stärke', 0, 60, 5, v => v + ' %') : ''}
+      <div class="tk-opts">
+        ${tog('vignette', 'Dunkle Ränder (Vignette)', 'Die Ecken werden etwas dunkler, die Mitte leuchtet.')}
+        ${tog('scan', 'Retro-Röhrenfernseher', 'Feine Linien über der Seite wie bei einem alten Fernseher.')}
+        ${tog('trail', 'Funken hinter Maus und Finger', 'Wo man hinfährt, sprühen kleine Funken.')}
+        ${tog('clickFx', 'Konfetti bei jedem Klick', 'Jeder Tipp löst eine kleine Konfetti-Explosion aus.')}
+      </div>
+    </details>
+    <div class="chips"><button class="btn btn-sm btn-ghost" type="button" data-act="deco-reset">Alles auf Standard zurücksetzen</button></div>
   </div>`;
 }
 async function addPics(files) {
@@ -12509,6 +12732,25 @@ async function addPics(files) {
   toast(ok ? (ok === 1 ? 'Bild hinzugefügt.' : `${ok} Bilder hinzugefügt.`) : 'Das Bild ließ sich nicht öffnen. Versuch ein JPG oder PNG.');
   if (files.length > room) toast(`Maximal ${PICS_MAX} Bilder. Nicht alle wurden übernommen.`);
 }
+const decoActions = {
+  'deco-set': b => { const k = b.dataset.k, v = b.dataset.v; if (!S.admin) return; decoSet(k, v); },
+  'deco-reset': () => { if (!S.admin) return; confirmBox('Alles zurücksetzen?', 'Alle Einstellungen im Hintergrund-Studio gehen auf Standard. Deine Bilder bleiben erhalten.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Zurücksetzen', cls:'btn-gold', fn:() => { const d = normDeco({bgm:S.deco && S.deco.bgm}); S.deco = d; ops.saveDeco(d); }}]); }
+};
+Object.assign(actions, decoActions);
+document.addEventListener('input', e => {
+  const t = e.target; if (!t || !t.dataset || !S.admin) return;
+  if (t.dataset.deco) { const k = t.dataset.deco, v = Number(t.value), el = document.getElementById('dv-' + k);
+    const d = {...S.deco, [k]:v}; S.deco = normDeco(d);
+    if (el) el.textContent = {flySize:v + ' %', flySpeed:v + ' %', flyOp:v + ' %', flyBlur:v ? v + ' px' : tx('scharf'), fxAmount:v + ' %', fxSpeed:v + ' %', fxOp:v + ' %', tintOp:v + ' %'}[k] ?? v;
+    clearTimeout(decoSaveT); decoSaveT = setTimeout(() => { ops.saveDeco(S.deco); }, 450);
+    flySiteKey = ''; renderFlySite(); return; }
+  if (t.dataset.decoTxt) { const k = t.dataset.decoTxt; S.deco = normDeco({...S.deco, [k]:t.value}); clearTimeout(decoSaveT); decoSaveT = setTimeout(() => ops.saveDeco(S.deco), 700); fxs.key = ''; decoApply(); return; }
+  if (t.dataset.decoC) { const k = t.dataset.decoC; S.deco = normDeco({...S.deco, [k]:t.value}); clearTimeout(decoSaveT); decoSaveT = setTimeout(() => ops.saveDeco(S.deco), 450); fxs.key = ''; decoApply(); return; }
+});
+document.addEventListener('change', e => {
+  const t = e.target; if (!t || !t.dataset || !t.dataset.decoT || !S.admin) return;
+  decoSet(t.dataset.decoT, t.checked);
+});
 
 /* ---------- Hintergrundmusik: wird live im Browser erzeugt, keine Datei nötig ---------- */
 const BGM_STYLES = {
