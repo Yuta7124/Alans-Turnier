@@ -2542,6 +2542,14 @@ body.has-sitebg{background:transparent!important}
 .ti-who{color:var(--muted);max-width:640px}
 .ts-run{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(79,240,143,.08);box-shadow:inset 0 0 0 1px rgba(79,240,143,.45)}
 .ts-run span{display:flex;flex-direction:column;gap:2px}.ts-run small{color:var(--muted)}
+.vg-cs{margin-top:8px}
+.vg-csmsg{margin:6px 0}
+.vg-csl{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:6px}
+.vg-csi{display:flex;flex-direction:column;gap:4px;padding:4px;border:0;border-radius:10px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px var(--edge);cursor:pointer;color:var(--ink);text-align:left;transition:transform .12s,box-shadow .12s}
+.vg-csi:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 2px var(--coin)}
+.vg-csi img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:7px;background:var(--bg-2)}
+.vg-csi small{font-size:11px;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.vg-csi.busy{opacity:.5;pointer-events:none}
 </style>
 </head>
 <body>
@@ -2560,7 +2568,7 @@ body.has-sitebg{background:transparent!important}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=43"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=44"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -8725,6 +8733,47 @@ function vgShowModal() {
 
 /* Formular: Spiel eintragen oder bearbeiten */
 function vgBlank(pid) { return {id:'', pid, title:'', img:'', plat:[], gen:[], md:[], fsk:-1, st:'done', ach:'none', achU:'', achT:'', r:-1, rd:{}, hrs:'', hrsp:false, note:''}; }
+/* Cover-Suche: fragt die Wikipedia (englisch und deutsch) nach Seiten zum Spiel und zeigt deren Titelbilder.
+   Ein Tipp lädt das Bild, schneidet es zu wie ein eigenes Foto und speichert es im Spiel. Kein Schlüssel nötig. */
+const vgCs = {q:'', st:'', list:[], t:0, seq:0};
+function vgCsHTML() {
+  if (!vgCs.q) return '';
+  if (vgCs.st === 'load') return `<p class="muted vg-csmsg">🔎 Suche Cover für „${esc(vgCs.q)}“ …</p>`;
+  if (vgCs.st === 'err') return `<p class="muted vg-csmsg">Die Suche hat gerade nicht geklappt. Versuch es gleich nochmal oder wähl ein eigenes Bild.</p>`;
+  if (!vgCs.list.length) return `<p class="muted vg-csmsg">Kein Cover für „${esc(vgCs.q)}“ gefunden. Probier den genauen Namen, z. B. „The Witcher 3“.</p>`;
+  return `<span class="lbl">Gefundene Cover, tipp eins an</span><div class="vg-csl">${vgCs.list.map((r, i) => `<button type="button" class="vg-csi" data-act="vgf-cpick" data-i="${i}" title="${esc(r.title)}"><img src="${esc(r.src)}" alt="" loading="lazy" referrerpolicy="no-referrer"><small>${esc(r.title)}</small></button>`).join('')}</div>`;
+}
+function vgCsPaint() { const el = document.getElementById('vg-cs'); if (el) el.innerHTML = vgCsHTML(); }
+async function vgCsRun(q) {
+  q = String(q || '').trim(); if (q.length < 2) return;
+  const my = ++vgCs.seq; vgCs.q = q; vgCs.st = 'load'; vgCs.list = []; vgCsPaint();
+  const api = (lang, term) => `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=8&gsrsearch=${encodeURIComponent(term)}&prop=pageimages&piprop=thumbnail&pithumbsize=480&pilicense=any`;
+  const get = u => fetch(u).then(r => r.ok ? r.json() : null).catch(() => null);
+  const [en, de] = await Promise.all([get(api('en', q + ' video game')), get(api('de', q + ' Computerspiel'))]);
+  if (my !== vgCs.seq) return;
+  if (!en && !de) { vgCs.st = 'err'; vgCsPaint(); return; }
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean), seen = new Set(), out = [];
+  for (const res of [en, de]) {
+    const pages = res && res.query && res.query.pages ? Object.values(res.query.pages) : [];
+    pages.sort((a, b) => (a.index || 0) - (b.index || 0)).forEach(pg => {
+      const src = pg.thumbnail && pg.thumbnail.source, tk = String(pg.title || '').toLowerCase(); if (!src || seen.has(src) || seen.has(tk) || /\.svg/i.test(src)) return;
+      seen.add(src); seen.add(tk);
+      const t = String(pg.title || ''), hit = words.filter(w => t.toLowerCase().includes(w)).length;
+      out.push({title:t, src, score:hit * 10 - (pg.index || 0) + (/(video game|computerspiel|spiel\))/i.test(t) ? 3 : 0)});
+    });
+  }
+  vgCs.list = out.sort((a, b) => b.score - a.score).slice(0, 8);
+  vgCs.st = 'ok'; vgCsPaint();
+}
+async function vgCsPick(i) {
+  const r = vgCs.list[i], d = D.vgF; if (!r || !d) return;
+  const btn = document.querySelectorAll('.vg-csi')[i]; if (btn) btn.classList.add('busy');
+  try {
+    const blob = await fetch(r.src).then(x => { if (!x.ok) throw new Error('http'); return x.blob(); });
+    d.img = await toVgCover(blob);
+    vgCs.q = ''; renderModal(); toast('Cover übernommen.');
+  } catch (e) { if (btn) btn.classList.remove('busy'); toast('Das Bild ließ sich nicht laden. Nimm ein anderes.'); }
+}
 function vgFormModal() {
   const d = D.vgF; if (!d) return '';
   const chip = (act, k, v, on, lbl) => `<button class="chip" type="button" data-act="${act}" data-k="${k}" data-v="${v}" aria-pressed="${on}">${lbl}</button>`;
@@ -8735,7 +8784,9 @@ function vgFormModal() {
       <div class="field vg-imgfield"><span class="lbl">Bild</span>
         <div class="vg-imgrow">${vgCoverHTML({title:d.title || '?', img:d.img}, 'form')}
           <div class="vg-imgbtns"><label class="btn btn-sm" for="vg-file">${d.img ? 'Anderes Bild' : 'Bild wählen'}</label><input type="file" id="vg-file" accept="image/*" hidden>
-          ${d.img ? '<button class="btn btn-sm btn-ghost" type="button" data-act="vgf-noimg">Bild entfernen</button>' : ''}<small class="muted">Am besten das Cover. Es wird auf Hochformat zugeschnitten.</small></div></div></div>
+          <button class="btn btn-sm btn-gold" type="button" data-act="vgf-csearch">🔎 Cover online suchen</button>
+          ${d.img ? '<button class="btn btn-sm btn-ghost" type="button" data-act="vgf-noimg">Bild entfernen</button>' : ''}<small class="muted">Tipp den Namen ein, dann sucht die Seite das Cover von selbst. Oder wähl ein eigenes Bild.</small></div></div>
+        <div class="vg-cs" id="vg-cs">${vgCsHTML()}</div></div>
       <div class="field"><span class="lbl">Plattform (bis zu 4)</span><div class="chips">${VG_PLAT.map(([v, l]) => chip('vgf-plat', 'plat', v, d.plat.includes(v), esc(l))).join('')}</div></div>
       <div class="field"><span class="lbl">Altersfreigabe (FSK / USK)</span><div class="chips vg-fskchips">${VG_FSK.map(([f]) => `<button class="chip" type="button" data-act="vgf-fsk" data-v="${f}" aria-pressed="${d.fsk === f}">${vgFskHTML(f)} ab ${f}</button>`).join('')}<button class="chip" type="button" data-act="vgf-fsk" data-v="-1" aria-pressed="${d.fsk < 0}">Weiß nicht</button></div></div>
       <div class="field"><span class="lbl">Spielart</span><small class="muted">Story-Spiel, online oder zusammen? Mehrere gehen.</small><div class="chips">${VG_MODE.map(([v, l, i]) => chip('vgf-plat', 'md', v, d.md.includes(v), `${i} ${esc(l)}`)).join('')}</div></div>
@@ -8829,8 +8880,8 @@ const vgActions = {
   'vg-filt': b => { D.vgFilt = b.dataset.v; render(); },
   'vg-sort': b => { D.vgSort = b.dataset.v; render(); },
   'vg-gen': b => { D.vgGen = b.dataset.v; render(); },
-  'vg-new': b => { const p = playerById(b.dataset.pid); if (!vgCan(p)) { toast('Spiele eintragen kann nur der Spieler selbst.'); return; } D.vgF = vgBlank(p.id); openModal({type:'vgform'}); },
-  'vg-edit': b => { const g = (S.vg || []).find(x => x.id === b.dataset.id); if (!g) return; D.vgF = {...g, plat:g.plat.slice(), gen:g.gen.slice(), md:g.md.slice(), rd:{...g.rd}, hrsp:g.hrsp, achU:g.achU ? String(g.achU) : '', achT:g.achT ? String(g.achT) : '', hrs:g.hrs ? String(g.hrs) : ''}; openModal({type:'vgform'}); },
+  'vg-new': b => { vgCs.q = ''; vgCs.seq++; const p = playerById(b.dataset.pid); if (!vgCan(p)) { toast('Spiele eintragen kann nur der Spieler selbst.'); return; } D.vgF = vgBlank(p.id); openModal({type:'vgform'}); },
+  'vg-edit': b => { vgCs.q = ''; vgCs.seq++; const g = (S.vg || []).find(x => x.id === b.dataset.id); if (!g) return; D.vgF = {...g, plat:g.plat.slice(), gen:g.gen.slice(), md:g.md.slice(), rd:{...g.rd}, hrsp:g.hrsp, achU:g.achU ? String(g.achU) : '', achT:g.achT ? String(g.achT) : '', hrs:g.hrs ? String(g.hrs) : ''}; openModal({type:'vgform'}); },
   'vg-del': b => {
     const g = (S.vg || []).find(x => x.id === b.dataset.id); if (!g) return;
     confirmBox('Spiel löschen?', `„${g.title}“ wird mit allen Screenshots und Clips aus dem Profil entfernt.`, [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Löschen', cls:'btn-gold', fn:async () => {
@@ -8848,7 +8899,9 @@ const vgActions = {
   'vgf-rd': b => { const d = D.vgF, k = b.dataset.k, v = Number(b.dataset.v); if (!d) return; if (d.rd[k] === v) delete d.rd[k]; else d.rd[k] = v; renderModal(); },
   'vgf-fsk': b => { if (D.vgF) { D.vgF.fsk = Number(b.dataset.v); renderModal(); } },
   'vgf-hrsp': () => { if (D.vgF) { D.vgF.hrsp = !D.vgF.hrsp; renderModal(); } },
-  'vgf-noimg': () => { if (D.vgF) { D.vgF.img = ''; renderModal(); } }
+  'vgf-noimg': () => { if (D.vgF) { D.vgF.img = ''; renderModal(); } },
+  'vgf-csearch': () => { const d = D.vgF; if (!d) return; if (!String(d.title || '').trim()) { toast('Gib zuerst den Namen vom Spiel ein.'); return; } vgCsRun(d.title); },
+  'vgf-cpick': b => vgCsPick(Number(b.dataset.i))
 };
 /* ---------- Videogames ENDE ---------- */
 /* ---------- Videogames: Screenshots und Clips ----------
@@ -11500,6 +11553,7 @@ document.addEventListener('input', e => {
   if (t.dataset && t.dataset.draft) {
     setPath(D, t.dataset.draft, t.value);
     if (t.id === 'nt-text') { ntSaveSoon(); ntCount(); }
+    if (t.id === 'vg-title' && D.vgF && !D.vgF.img) { clearTimeout(vgCs.t); vgCs.t = setTimeout(() => { if (D.vgF && !D.vgF.img && document.getElementById('vg-cs')) vgCsRun(D.vgF.title); }, 900); }
     if (t.dataset.draft.startsWith('tkF.')) { tkDraftSave(); if (t.id === 'tk-title') { const c = $('#tk-tcnt'); if (c) c.textContent = t.value.length + '/100'; } }
     if (t.id === 'tk-q') render();
     if (t.dataset.live && live[t.dataset.live]) live[t.dataset.live](t);
