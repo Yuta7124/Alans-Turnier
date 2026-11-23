@@ -2540,6 +2540,8 @@ body.has-sitebg{background:transparent!important}
 .ti-pl{display:flex;flex-direction:column;align-items:center;min-width:110px;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px var(--edge);animation:tiIn .5s var(--d) backwards}
 .ti-pl span{font-size:26px}.ti-pl b{font-size:20px;color:var(--coin)}.ti-pl small{color:var(--muted)}
 .ti-who{color:var(--muted);max-width:640px}
+.ts-run{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(79,240,143,.08);box-shadow:inset 0 0 0 1px rgba(79,240,143,.45)}
+.ts-run span{display:flex;flex-direction:column;gap:2px}.ts-run small{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -2558,7 +2560,7 @@ body.has-sitebg{background:transparent!important}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=42"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=43"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4437,10 +4439,15 @@ function tourCheckinHTML() {
       <div class="ck-box"><span class="ck-h">Schon da · ${yes.length}${ppl.length ? ` von ${ppl.length}` : ''}</span>
         <div class="ck-list">${yes.length ? yes.map(p => chip(p, true)).join('') : '<small class="muted">Noch niemand. Sei der Erste!</small>'}</div>
         ${no.length ? `<span class="ck-h">Noch nicht da</span><div class="ck-list off">${no.map(p => chip(p, false)).join('')}</div>` : ''}</div>
-      ${S.admin ? `<div class="tour-tvbtns"><button class="btn btn-gold" type="button" data-act="tour-allin" ${yes.length ? '' : 'disabled'}>✅ Alle da: Turnier starten</button><button class="btn" type="button" data-act="tour-edit">✏️ Turnier bearbeiten</button></div>
+      ${S.admin ? `<div class="tour-tvbtns"><button class="btn btn-gold" type="button" data-act="tour-allin" ${yes.length ? '' : 'disabled'}>✅ Alle da: Turnier starten</button><button class="btn" type="button" data-act="tour-edit">✏️ Turnier bearbeiten</button><button class="btn btn-ghost" type="button" data-act="tour-stop">⏹ Stoppen</button></div>
         <small class="muted ck-hint">Nur du siehst diese Knöpfe. Wer nicht angemeldet ist, kann trotzdem später mitmachen.</small>` : ''}
     </div>
   </div></section>`;
+}
+function tourClearCheckins() {
+  const key = tourKey(); if (!key || !db) return;
+  (S.checkins || []).filter(x => x.id.startsWith('chk_' + key + '_')).forEach(x => db.collection('presence').doc(x.id).delete().catch(() => {}));
+  S.checkins = (S.checkins || []).filter(x => !x.id.startsWith('chk_' + key + '_'));
 }
 function tourIntroHTML() {
   const st = S.settings, plan = (S.games || []).filter(g => g.status === 'geplant'), list = (plan.length ? plan : (S.games || []).filter(g => g.status === 'vielleicht')).slice().sort((a, b) => (a.order || 0) - (b.order || 0) || a.name.localeCompare(b.name, 'de'));
@@ -4736,7 +4743,9 @@ function viewSettings() {
   return `<section class="section narrow">
     <div class="sec-head"><h2 class="h">Optionen</h2></div>
     <div class="card share-card ts-card"><h3>🏆 Turnier</h3><p class="m-text">Steht noch kein Turnier an, sehen alle im Turnier-Tab den Wartebildschirm. Hier stellst du ein, was dort steht: kein Turnier geplant, bald, oder ein fester Termin mit Countdown.</p>${tourStatusFormHTML(false)}
-      <div class="chips"><button class="btn btn-sm" type="button" data-act="gate-preview">Wartebildschirm ansehen</button></div></div>
+      <div class="chips"><button class="btn btn-sm" type="button" data-act="gate-preview">Wartebildschirm ansehen</button></div>
+      ${tourKey() ? `<div class="ts-run"><span><b>🟢 Das Turnier läuft gerade</b><small>${tourCheckin() ? `Check-in läuft · ${tourIn().length} angemeldet` : 'Gestartet, alle sind drin.'}</small></span>
+        <div class="chips"><button class="btn btn-sm btn-gold" type="button" data-act="tour-stop">⏹ Turnier stoppen</button><button class="btn btn-sm" type="button" data-act="tour-restart">↺ Neu starten mit Check-in</button></div></div>` : ''}</div>
     ${designCardHTML()}
     ${inviteCardHTML()}
     ${langCardHTML()}
@@ -11326,6 +11335,21 @@ const actions = {
     if (!S.admin) return; const key = tourKey(); if (!key) return;
     confirmBox('Alle da?', `${tourIn().length} Spieler haben sich angemeldet. Danach sehen alle die Spiele und das Preisgeld und das Turnier ist offen.`, [{label:'Noch warten', cls:'btn-ghost'}, {label:'Turnier starten', cls:'btn-gold', fn:() => {
       D.tourEdit = false; ops.saveSettings(normSettings({...S.settings, chk:key}));
+    }}]);
+  },
+  'tour-stop': () => {
+    if (!S.admin) return;
+    confirmBox('Turnier stoppen?', 'Alle sehen wieder den Wartebildschirm „Gleich geht’s los!“. Highscore und Punkte bleiben erhalten. Die Anmeldungen vom Check-in werden gelöscht.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Stoppen', cls:'btn-gold', fn:() => {
+      tourClearCheckins(); D.tourEdit = false; D.tourIntro = false; D.ts = null;
+      ops.saveSettings(normSettings({...S.settings, status:'soon', date:'', time:'', liveAt:0, chk:''})); toast('Turnier gestoppt.');
+    }}]);
+  },
+  'tour-restart': () => {
+    if (!S.admin) return;
+    confirmBox('Neu starten?', 'Das Turnier startet nochmal von vorn mit dem Check-in. Alle müssen sich wieder mit „Ich bin dabei“ anmelden und sehen danach wieder die Spiele und das Preisgeld. Highscore und Punkte bleiben erhalten.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Neu starten', cls:'btn-gold', fn:() => {
+      tourClearCheckins(); D.tourEdit = false; D.tourIntro = false; D.ts = null;
+      const p = berlinParts(Date.now());
+      ops.saveSettings(normSettings({...S.settings, status:'live', liveAt:Date.now(), date:`${p.year}-${p.month}-${p.day}`, time:'', chk:''})); toast('Check-in läuft wieder.');
     }}]);
   },
   'tour-intro-ok': () => { lsSet('turnier-intro', tourKey()); D.tourIntro = false; try { kSnd('call'); } catch (e) {} render(); },
