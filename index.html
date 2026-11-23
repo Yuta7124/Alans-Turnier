@@ -855,6 +855,7 @@ h2.h .count{font-family:var(--pixel);font-size:10px;color:var(--muted);text-tran
 .vg-noimg.t3{font-size:7px}
 .sp-t3t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sp-pcard .sp-top3{padding:8px 4px 0;border-top:2px solid var(--edge);margin-top:6px}
+.sp-top3.top10{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:5px 14px}
 .sp-t3h{font-family:var(--pixel);font-size:8px;color:var(--muted);text-transform:uppercase;margin-top:6px}
 .sp-id .sp-top3{max-width:340px}
 .sp-id .sp-t3{font-size:14px}
@@ -2532,7 +2533,7 @@ body.has-sitebg{background:transparent!important}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=40"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=41"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3601,10 +3602,13 @@ function nameHTML(p) {
 }
 function mottoHTML(p) { return p && p.motto ? `<span class="motto">„${esc(p.motto)}“</span>` : ''; }
 // Endet pbg auf "+s", nutzt der Spieler seinen Profil-Hintergrund auch als Hintergrund der ganzen Seite (nur bei ihm selbst)
-const pbgSite = v => String(v || '').endsWith('+s');
-function pbgNorm(v) { v = String(v || '').replace(/\+s$/, ''); return v === 'none' || v === 'img' || /^g:[A-Za-z0-9_-]{1,36}$/.test(v) ? v : 'auto'; }
+// Schalter hängen als Buchstaben hinten an pbg: "+s" = auch Seiten-Hintergrund, "+t" = Top 10 statt Top 3 im Profil
+const pbgFlags = v => (String(v || '').match(/\+([a-z]+)$/) || [, ''])[1];
+const pbgSite = v => pbgFlags(v).includes('s');
+const pbgTop10 = v => pbgFlags(v).includes('t');
+function pbgNorm(v) { v = String(v || '').replace(/\+[a-z]+$/, ''); return v === 'none' || v === 'img' || /^g:[A-Za-z0-9_-]{1,36}$/.test(v) ? v : 'auto'; }
 function styleFields(d) { return {font:pickOpt(FONTS, d.font), grad:pickOpt(GRADS, d.grad), frame:pickOpt(FRAMES, d.frame), motto:str(d.motto, 40),
-  shape:pickOpt(SHAPES, d.shape), pbg:pbgNorm(d.pbg) + ((d.psite != null ? d.psite : pbgSite(d.pbg)) ? '+s' : ''), pblur:Math.round(num(d.pblur, 0, 40, 18)), pdim:Math.round(num(d.pdim, 10, 100, 45))}; }
+  shape:pickOpt(SHAPES, d.shape), pbg:(() => { const f = ((d.psite != null ? d.psite : pbgSite(d.pbg)) ? 's' : '') + ((d.ptop != null ? d.ptop : pbgTop10(d.pbg)) ? 't' : ''); return pbgNorm(d.pbg) + (f ? '+' + f : ''); })(), pblur:Math.round(num(d.pblur, 0, 40, 18)), pdim:Math.round(num(d.pdim, 10, 100, 45))}; }
 const blankPlayer = color => ({name:'', avatar:'', color:color || '', font:'std', grad:'none', frame:'std', motto:'', shape:'std', pbg:'auto', pblur:18, pdim:45, crop:null});
 
 const CROP_V = 220;
@@ -4593,6 +4597,9 @@ function playerForm(prefix, d) {
       <div class="chips">${FONTS.map(f => `<button type="button" class="chip fchip" style="font-family:${f[2]}" data-act="pf-set" data-target="${prefix}" data-k="font" data-v="${f[0]}" aria-pressed="${pickOpt(FONTS, d.font) === f[0]}">${f[1]}</button>`).join('')}</div></div>
     <div class="pf-sec"><span class="lbl">Farbverlauf</span>
       <div class="swatches">${GRADS.map(g => `<button type="button" class="gsw" style="--g:${g[2] || (g[0] === 'farbe' ? (d.color || COLORS[0]) : '#f2eeff')}" title="${g[1]}" aria-label="Farbverlauf ${g[1]}" data-act="pf-set" data-target="${prefix}" data-k="grad" data-v="${g[0]}" aria-pressed="${pickOpt(GRADS, d.grad) === g[0]}"></button>`).join('')}</div></div>
+    ${d.id ? (() => { const t10 = d.ptop != null ? !!d.ptop : pbgTop10(d.pbg); return `<div class="pf-sec"><span class="lbl">Lieblingsspiele im Profil</span>
+      <div class="chips"><button type="button" class="chip" data-act="pf-set" data-target="${prefix}" data-k="ptop" data-v="" aria-pressed="${!t10}">🏆 Top 3</button><button type="button" class="chip" data-act="pf-set" data-target="${prefix}" data-k="ptop" data-v="1" aria-pressed="${t10}">🔟 Top 10</button></div>
+      <p class="muted pf-hint">Platz 1 bis 3 legst du bei deinen Spielen fest. Danach kommen deine am besten bewerteten Spiele.</p></div>`; })() : ''}
     <div class="pf-sec"><span class="lbl">Form vom Profilbild</span>
       <div class="chips">${SHAPES.map(f => `<button type="button" class="chip frchip" data-act="pf-set" data-target="${prefix}" data-k="shape" data-v="${f[0]}" aria-pressed="${pickOpt(SHAPES, d.shape) === f[0]}">${avatar({...prev, shape:f[0]}, 22)}${f[1]}</button>`).join('')}</div></div>
     ${pfBgHTML(prefix, d)}
@@ -9107,18 +9114,18 @@ function spBadges(p, list) {
 }
 const spSince = p => p.createdAt ? new Date(p.createdAt).toLocaleDateString(LOC, {month:'long', year:'numeric'}) : '';
 /* Top 3: erst die selbst gewählten Plätze 1 bis 3, Lücken füllen die bestbewerteten Spiele */
-function vgTop3(list) {
-  const out = [null, null, null];
+function vgTop3(list, n = 3) {
+  const out = Array(n).fill(null);
   list.filter(g => g.fav > 0).sort((a, b) => a.fav - b.fav || b.up - a.up).forEach(g => { if (!out[g.fav - 1]) out[g.fav - 1] = g; });
   const rest = list.filter(g => !out.includes(g) && g.r >= 0).sort((a, b) => b.r - a.r || b.hrs - a.hrs || b.ts - a.ts);
-  for (let i = 0; i < 3; i++) if (!out[i]) out[i] = rest.shift() || null;
+  for (let i = 0; i < n; i++) if (!out[i]) out[i] = rest.shift() || null;
   return out.filter(Boolean);
 }
 const spFav = list => vgTop3(list)[0] || null;
-function spTop3HTML(list) {
-  const t = vgTop3(list);
+function spTop3HTML(list, n = 3) {
+  const t = vgTop3(list, n);
   if (!t.length) return '';
-  return `<span class="sp-top3" aria-label="Top 3 Lieblingsspiele">${t.map((g, i) => `<span class="sp-t3"><b class="sp-t3n">${i + 1}</b>${vgCoverHTML(g, 't3')}<span class="sp-t3t">${esc(g.title)}</span></span>`).join('')}</span>`;
+  return `<span class="sp-top3 ${n > 3 ? 'top10' : ''}" aria-label="Top ${n} Lieblingsspiele">${t.map((g, i) => `<span class="sp-t3"><b class="sp-t3n">${i + 1}</b>${vgCoverHTML(g, 't3')}<span class="sp-t3t">${esc(g.title)}</span></span>`).join('')}</span>`;
 }
 
 /* Screenshot-Showcase: die neuesten Screenshots eines Spielers, einmal pro Profilaufruf geladen */
@@ -9225,7 +9232,7 @@ function spProfileHTML(p) {
           ${mottoHTML(p)}
           <span class="sp-st ${s.k}">${esc(s.t)}</span>
           ${spSince(p) ? `<span class="sp-since">Dabei seit ${esc(spSince(p))}</span>` : ''}
-          ${all.length ? `<span class="sp-t3h">Top 3 Lieblingsspiele</span>${spTop3HTML(all)}` : ''}
+          ${all.length ? (() => { const n = pbgTop10(p.pbg) ? 10 : 3; return `<span class="sp-t3h">Top ${n} Lieblingsspiele</span>${spTop3HTML(all, n)}`; })() : ''}
         </div>
         <div class="sp-lvbox">
           <div class="sp-lvrow"><span class="sp-lvlbl">Level</span>${spLvHTML(lv.l, 'big')}</div>
