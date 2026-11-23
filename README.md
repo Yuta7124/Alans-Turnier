@@ -143,6 +143,11 @@ Teams stehen in `meta/settings` (`fmt`, `teams`), Team-Punkte als Punkte-Einträ
 Ins Zufallsrad können auch die Server-Spiele (Quiz, Minigolf, Blackjack usw.) aufgenommen werden. Jedes Spiel im Rad
 ist im Team-Modus als „Team“ oder „Solo“ markiert. Punkte vergibt der Spielleiter wie gewohnt mit +/−.
 
+## Rauswurf bei Inaktivität
+Wer in einer Lobby eine bestimmte Zeit nichts tut (kein Tippen, Klicken, keine Taste), verlässt sie automatisch.
+Eine Minute vorher kommt „Bist du noch da?“. Die Zeit (1–30 Minuten, Standard 30) stellt der Spielleiter unter
+Optionen → ⏱️ Rauswurf aus der Lobby ein (`meta/settings.afk`).
+
 ## Spieler-Ansicht für den Spielleiter
 
 Unten links gibt es für den Spielleiter den Knopf **„Spieler-Ansicht“**. Damit sieht er die Seite so, wie ein normaler Spieler sie sieht (ohne Admin-Knöpfe, Support als Spieler, Sperrbildschirm vor dem Turnierstart usw.). Ein gelber Streifen oben zeigt, dass die Spieler-Ansicht an ist; „Admin-Ansicht“ schaltet zurück. Es erscheinen dabei keine Hinweis-Meldungen. Angemeldet bleibt man dabei als Spielleiter. In laufenden Spielen ist der Knopf ausgeblendet. Nach dem Neuladen ist wieder die Admin-Ansicht an.
