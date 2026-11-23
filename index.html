@@ -2624,6 +2624,40 @@ body.icrop-open{overflow:hidden}
 .ifoc-pc,.ifoc-ph{display:block;overflow:hidden;border-radius:8px;background-size:cover;background-repeat:no-repeat;box-shadow:0 0 0 2px var(--edge);position:relative}
 .ifoc-pc{width:220px;height:68px}.ifoc-ph{width:72px;height:120px}
 .ifoc-pc i,.ifoc-ph i{position:absolute;inset:0;background-size:cover;background-repeat:no-repeat}
+/* Dicktris */
+.dt-wrap{display:flex;justify-content:center;align-items:flex-start;gap:12px;margin-top:8px}
+.dt-boardbox{position:relative;display:flex;gap:4px}
+.dt-cv{display:block;height:min(68vh,620px);aspect-ratio:1/2;border-radius:10px;box-shadow:0 0 0 3px #2b2350,0 0 40px -10px rgba(124,77,255,.6);touch-action:none;background:#0d0a1c}
+.dt-incbar{width:8px;border-radius:4px;background:rgba(255,255,255,.06);position:relative;overflow:hidden}
+.dt-incbar i{position:absolute;left:0;right:0;bottom:0;height:0;background:#ff4f6d;box-shadow:0 0 10px #ff4f6d;transition:height .2s}
+.dt-side{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:84px}
+.dt-side canvas{background:rgba(255,255,255,.04);border-radius:8px;box-shadow:inset 0 0 0 1px var(--edge)}
+.dt-side canvas.sm{opacity:.75}
+.dt-lbl{font-family:var(--pixel);font-size:9px;text-transform:uppercase;color:var(--muted)}
+.dt-stats{display:flex;flex-direction:column;gap:6px;margin-top:8px;width:100%}
+.dt-stats span{display:flex;flex-direction:column;align-items:center;padding:4px 6px;border-radius:8px;background:rgba(255,255,255,.04)}
+.dt-stats small{font-size:10px;color:var(--muted);text-transform:uppercase}.dt-stats b{font-size:16px;color:var(--coin)}
+.dt-timebox{font-weight:800;font-size:16px;white-space:nowrap}
+.dt-timebox b.low{color:var(--hp);animation:blink 1s steps(1) infinite}
+.dt-pad{display:none;grid-template-columns:repeat(6,1fr);gap:6px;max-width:460px;margin:10px auto 0}
+.dt-k{height:54px;border:0;border-radius:14px;background:var(--panel-2,#2a2152);color:var(--ink);font-size:24px;font-weight:900;box-shadow:inset 0 -3px 0 rgba(0,0,0,.3),inset 0 0 0 1px var(--edge);touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.dt-k:active{transform:translateY(2px)}
+.dt-k.gold{background:var(--coin);color:#2b1a00}
+.dt-opps{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px}
+.dt-opp{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border-radius:12px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--edge);font-size:12px}
+.dt-opp canvas{width:60px;height:120px;border-radius:4px}
+.dt-opp span{display:flex;align-items:center;gap:4px;max-width:100px}.dt-opp span b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dt-opp small{color:var(--muted)}.dt-opp.dead{opacity:.5}
+.dt-fan{display:flex;gap:16px;justify-content:center;margin:14px 0 6px}
+.dt-fan span{display:grid;grid-template-columns:repeat(4,18px);grid-template-rows:repeat(2,18px);gap:2px}
+.dt-fan i{background:var(--c);border-radius:3px;box-shadow:inset 0 3px 0 rgba(255,255,255,.35)}
+@media (pointer:coarse),(max-width:700px){.dt-pad{display:grid}}
+@media (max-width:700px){
+  .dt-wrap{gap:6px}
+  .dt-cv{height:min(56vh,520px)}
+  .dt-side{min-width:58px}.dt-side canvas{width:58px;height:44px}.dt-side canvas.sm{height:36px}
+  .dt-stats b{font-size:13px}
+}
 </style>
 </head>
 <body>
@@ -2642,7 +2676,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=49"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=50"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3675,7 +3709,7 @@ function groupPick(g) {
   return GROUPS[g].some(x => x[0] === last) ? last : GROUPS[g][0][0];
 }
 /* Ansichten: "Spiele" ist der Ober-Tab für Quiz und Malen */
-const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'support', 'einstellungen'];
+const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'support', 'einstellungen'];
 const HUB = ['quiz', 'malen'];
 const viewOk = t => VIEWS.includes(t);
 /* Im Turnier entscheidet nur der Spielleiter, ob alle den Highscore oder das Zufallsrad sehen (settings.tview) */
@@ -3687,7 +3721,7 @@ function viewFor(t) {
   if (t === 'vg') return 'spieler';
   if (t === 'liste') t = 'rad'; // Spieleliste gibt es im Turnier nicht mehr
   if (!S.admin && (t === 'turnier' || t === 'rangliste' || t === 'rad')) return S.settings.tview;
-  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf' || t === 'karten' || t === 'mad' || t === 'bj') return S.room ? roomView() : 'spiele';
+  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf' || t === 'karten' || t === 'mad' || t === 'bj' || t === 'dt') return S.room ? roomView() : 'spiele';
   return GROUPS[t] ? groupPick(t) : viewOk(t) ? t : 'start';
 }
 
@@ -4299,14 +4333,14 @@ function render() {
   else if (S.mode === 'lock') html = lockHTML();
   else if (blocked()) html = `<div style="min-height:70vh"></div>`;
   else if (S.tab === 'spiele-pick') html = `<div class="loading">${COIN(48, 'spin')}</div>`;
-  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, mad:viewMad, bj:viewBj, support:viewSupport, einstellungen:viewSettings}[S.tab] || viewStart)();
+  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, mad:viewMad, bj:viewBj, dt:viewDt, support:viewSupport, einstellungen:viewSettings}[S.tab] || viewStart)();
   if (groupOf(S.tab) === 'turnier' && tourLocked()) html = tourCheckin() && !D.tourPeek ? tourCheckinHTML() : tourPreviewHTML();
   else if (groupOf(S.tab) === 'turnier' && tourKey() && !tourCheckin() && (D.tourIntro || lsGet('turnier-intro', '') !== tourKey())) html = tourIntroHTML();
   else if (groupOf(S.tab) === 'turnier' && S.admin && D.tourEdit && !['live', 'today'].includes(tourState().k)) html = `<div class="tour-editbar"><span>✏️ Bearbeitungsmodus: Nur du siehst das so. Für die Spieler ist das Turnier noch gesperrt.</span><button class="btn btn-sm" type="button" data-act="tour-preview">Zur Vorschau</button></div>` + html;
   const oldStand = m.querySelector('.stand');
   const oldKey = oldStand ? oldStand.dataset.key : null;
   const before = standCapture(oldStand);
-  m.classList.toggle('wide', /class="section (qsec|dsec|gsec|ksec|msec|bsec)"/.test(html));
+  m.classList.toggle('wide', /class="section (qsec|dsec|gsec|ksec|msec|bsec|tsec)"/.test(html));
   renderSubnav();
   if (S.tab === 'malen' && !blocked() && S.mode === 'db' && S.loaded && dPartsOk(m)) dPatchParts();
   else {
@@ -4320,6 +4354,7 @@ function render() {
   kMount();
   madMount();
   bjMount();
+  dtMount();
   renderFlySite();
   const newStand = m.querySelector('.stand');
   if (oldStand && newStand && newStand.dataset.key === oldKey) newStand.replaceWith(oldStand);
@@ -4339,7 +4374,7 @@ function render() {
 function tabsHidden() { return S.mode === 'loading' || S.mode === 'setup' || S.mode === 'lock' || S.mode === 'firstrun' || (S.mode === 'db' && !S.loaded) || blocked(); }
 function inGame() {
   if (tabsHidden() || S.mode !== 'db') return false;
-  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running') || (S.tab === 'karten' && !!S.uno && S.uno.status === 'running') || (S.tab === 'mad' && !!S.mad && S.mad.status === 'running') || (S.tab === 'bj' && !!S.bj && S.bj.status === 'running');
+  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running') || (S.tab === 'karten' && !!S.uno && S.uno.status === 'running') || (S.tab === 'mad' && !!S.mad && S.mad.status === 'running') || (S.tab === 'bj' && !!S.bj && S.bj.status === 'running') || (S.tab === 'dt' && !!S.dt && S.dt.status === 'running');
 }
 const isTouch = () => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } };
 const canFull = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
@@ -4366,7 +4401,7 @@ function renderSubnav() {
     h = `<div class="hub" style="--n:${list.length}" role="group" aria-label="Turnier">${list.map(([k, i, l]) => `<button class="hub-btn" type="button" data-act="tab" data-tab="${k}" aria-pressed="${S.tab === k}"><span class="hub-ico" aria-hidden="true">${i}</span><span class="hub-txt"><b>${l}</b>${sub(k)}</span></button>`).join('')}</div>`;
   } else if (!hide && inRoom) {
     h = roomBarHTML();
-    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf' && S.tab !== 'karten' && S.tab !== 'mad' && S.tab !== 'bj') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
+    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf' && S.tab !== 'karten' && S.tab !== 'mad' && S.tab !== 'bj' && S.tab !== 'dt') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
   }
   el.setAttribute('aria-label', tx(inRoom ? 'Raum' : 'Turnier'));
   el.classList.toggle('wide', (!!grp || inRoom) && $('#main').classList.contains('wide'));
@@ -5011,7 +5046,7 @@ function wheelFollow() {
   else if (sp.id === wheelSeenSpin) return;
   wheelSeenSpin = sp.id;
   if (!wheelSpinning(w) || S.tab === 'rad') return;
-  const busy = roomTabs.includes(S.tab) && S.tab !== 'raum' && ((S.uno && S.uno.status === 'running') || (S.mad && S.mad.status === 'running') || (S.bj && S.bj.status === 'running') || (S.golf && S.golf.status === 'running') || (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running'));
+  const busy = roomTabs.includes(S.tab) && S.tab !== 'raum' && ((S.uno && S.uno.status === 'running') || (S.mad && S.mad.status === 'running') || (S.bj && S.bj.status === 'running') || (S.dt && S.dt.status === 'running') || (S.golf && S.golf.status === 'running') || (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running'));
   if (busy) { toast('🎡 Das Zufallsrad dreht sich! Schau im Turnier vorbei.'); return; }
   if (S.modal) closeModal();
   setTab('rad');
@@ -6463,7 +6498,7 @@ function normLobby(id, x) {
   for (const [pid, v] of Object.entries(m)) if (pid && pid.length <= 40 && v && typeof v === 'object') members[pid] = {at:Number(v.at) || 0, dev:str(v.dev, 60)};
   const host = x.host && typeof x.host === 'object' && x.host.dev ? {pid:str(x.host.pid, 40), dev:str(x.host.dev, 60)} : null;
   const inv = Object.fromEntries(Object.keys(x.inv && typeof x.inv === 'object' && !Array.isArray(x.inv) ? x.inv : {}).filter(k => k && k.length <= 40).slice(0, 40).map(k => [k, true]));
-  return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true, inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj'].includes(x.kind) ? x.kind : '',
+  return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true, inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt'].includes(x.kind) ? x.kind : '',
     quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null, uno:x.uno && typeof x.uno === 'object' ? x.uno : null,
     hs:Object.fromEntries(Object.entries(x.hs && typeof x.hs === 'object' && !Array.isArray(x.hs) ? x.hs : {}).filter(([pid, v]) => pid.length <= 40 && Number.isFinite(Number(v))).map(([pid, v]) => [pid, Math.round(Number(v))])),
     bots:Object.fromEntries(Object.entries(x.bots && typeof x.bots === 'object' && !Array.isArray(x.bots) ? x.bots : {}).filter(([id, b]) => id.startsWith('bot_') && id.length <= 40 && b && typeof b === 'object').slice(0, ROOM_MAX)
@@ -6489,6 +6524,8 @@ function lobbyAutoAward() {
   if (M && M.status === 'finished' && !M.transferred && !lhsDone.has('m' + M.id)) { lhsDone.add('m' + M.id); madTransfer(); }
   const BJ = S.bj;
   if (BJ && BJ.status === 'finished' && !BJ.transferred && !lhsDone.has('b' + BJ.id)) { lhsDone.add('b' + BJ.id); bjTransfer(); }
+  const DTM = S.dt;
+  if (DTM && DTM.status === 'finished' && !DTM.transferred && !lhsDone.has('t' + DTM.id)) { lhsDone.add('t' + DTM.id); dtTransfer(); }
 }
 function lobbyHsHTML(L = lobby(), max = 10, inModal = false) {
   if (!L) return '';
@@ -6537,19 +6574,19 @@ function roomInviteModalHTML() {
 function hostStale(L) { return !L || !L.host || Date.now() - (L.hostSeen || 0) > HOST_STALE_MS; }
 function roomState(L) {
   if (!L) return 'free';
-  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : L.kind === 'karten' ? (L.uno && !L.uno.g ? L.uno : null) : L.kind === 'mad' ? (L.uno && L.uno.g === 'mad' ? L.uno : null) : L.kind === 'bj' ? (L.uno && L.uno.g === 'bj' ? L.uno : null) : null;
+  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : L.kind === 'karten' ? (L.uno && !L.uno.g ? L.uno : null) : L.kind === 'mad' ? (L.uno && L.uno.g === 'mad' ? L.uno : null) : L.kind === 'bj' ? (L.uno && L.uno.g === 'bj' ? L.uno : null) : L.kind === 'dt' ? (L.uno && L.uno.g === 'dt' ? L.uno : null) : null;
   if (g && g.status === 'running') return 'running';
   if (g && g.status === 'finished') return 'finished';
   return roomMembers(L).length ? 'waiting' : 'free';
 }
-function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : L.kind === 'karten' ? 'karten' : L.kind === 'mad' ? 'mad' : L.kind === 'bj' ? 'bj' : 'raum'; }
-const roomTabs = ['raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj'];
+function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : L.kind === 'karten' ? 'karten' : L.kind === 'mad' ? 'mad' : L.kind === 'bj' ? 'bj' : L.kind === 'dt' ? 'dt' : 'raum'; }
+const roomTabs = ['raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt'];
 const FV = () => window.firebase && firebase.firestore && firebase.firestore.FieldValue;
 function roomRef(r = S.room) { return db.collection('lobbies').doc(r); }
 function roomSet(r, spectate = false) {
   if (S.room === r && S.spectate === spectate) return;
   S.room = r; S.spectate = !!(r && spectate);
-  S.quiz = null; S.draw = null; S.golf = null; S.uno = null; S.mad = null; ml.pend = null; ml.n = 0; S.bj = null; bjl.pend = null; bjl.n = 0; gl.key = ''; dLastTurnKey = ''; D.dnew = false; kl.pend = null; kl.n = 0;
+  S.quiz = null; S.draw = null; S.golf = null; S.uno = null; S.mad = null; ml.pend = null; ml.n = 0; S.bj = null; bjl.pend = null; bjl.n = 0; S.dt = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false; kl.pend = null; kl.n = 0;
   roomApply();
 }
 function roomApply() {
@@ -6566,6 +6603,8 @@ function roomApply() {
   madOnSnap();
   S.bj = L && L.kind === 'bj' && L.uno ? bjNorm(L.uno) : null;
   bjOnSnap();
+  S.dt = L && L.kind === 'dt' && L.uno ? dtNorm(L.uno) : null;
+  dtOnSnap();
   handleAnswers();
   if (S.room && roomTabs.includes(S.tab)) { const v = roomView(); if (S.tab !== v) { S.tab = v; try { history.replaceState(null, '', '#' + v); } catch (e) {} } }
   if (!S.room && roomTabs.includes(S.tab)) S.tab = 'spiele';
@@ -6664,7 +6703,7 @@ const ROOM_STATE = {free:['Frei', '#4ff08f'], waiting:['Wartet', '#ffcf3f'], run
 function roomCardHTML(r) {
   const L = lobby(r), mem = roomMembers(L), n = mem.length, me = myPid(), mine = !!(me && L.members[me]);
   const st = roomState(L), sl = ROOM_STATE[st];
-  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : L.kind === 'karten' ? ['🃏', 'Kartenwahn'] : L.kind === 'mad' ? ['🎲', 'Uncle Grandpa ärgere dich'] : L.kind === 'bj' ? ['🂡', 'Blackjack'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
+  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : L.kind === 'karten' ? ['🃏', 'Kartenwahn'] : L.kind === 'mad' ? ['🎲', 'Uncle Grandpa ärgere dich'] : L.kind === 'bj' ? ['🂡', 'Blackjack'] : L.kind === 'dt' ? ['🧱', 'Dicktris'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
   const hostP = L.host && playerById(L.host.pid);
   const slots = Array.from({length:ROOM_MAX}, (_, i) => mem[i] ? `<span class="rc-slot" title="${esc(ghost(mem[i]).name)}">${avatar(ghost(mem[i]), 34)}</span>` : '<span class="rc-slot empty"></span>').join('');
   const priv = roomPriv(L), invd = !mine && priv && !!(me && L.inv[me]);
@@ -6687,10 +6726,10 @@ function roomCardHTML(r) {
 function viewRooms() {
   const me = myPid();
   return `<section class="section">
-    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich und Blackjack könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
+    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack und Dicktris könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
     ${me ? '' : `<div class="card rooms-hint"><p class="m-text">Damit du mitspielen kannst, brauchst du einen eigenen Spieler. Den erstellst du unter <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button>.</p></div>`}
     <div class="rooms">${ROOMS.map(roomCardHTML).join('')}</div>
-    <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich oder Blackjack, stellt alles ein und startet.</li><li><b>Privat:</b> Wollt ihr unter euch bleiben, stellt der Host den Raum auf privat und lädt seine Freunde ein. Andere können dann nicht beitreten.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
+    <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack oder Dicktris, stellt alles ein und startet.</li><li><b>Privat:</b> Wollt ihr unter euch bleiben, stellt der Host den Raum auf privat und lädt seine Freunde ein. Andere können dann nicht beitreten.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
   </section>`;
 }
 function viewRoom() {
@@ -6703,6 +6742,7 @@ function viewRoom() {
         <button class="pick-big" type="button" data-act="room-kind" data-v="malen" style="--tc:#ff7fc3"><span aria-hidden="true">🎨</span><b>Malen</b><small>Einer malt, alle anderen raten. Wie skribbl.io.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="golf" style="--tc:#4ff08f"><span aria-hidden="true">⛳</span><b>Golf</b><small>Minigolf in 3D mit 30 Bahnen, von kurz und leicht bis extrem. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="mad" style="--tc:#ff9f5a"><span aria-hidden="true">🎲</span><b>Uncle Grandpa ärgere dich</b><small>Das Brettspiel für 2 bis 4: Würfeln, mit einer 6 rauskommen, Gegner rauswerfen und alle Figuren ins Ziel bringen.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="dt" style="--tc:#39d6f2"><span aria-hidden="true">🧱</span><b>Dicktris</b><small>Fallende Blöcke: Reihen voll machen, im Battle-Modus Müllzeilen an die anderen schicken. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="bj" style="--tc:#2ecc71"><span aria-hidden="true">🂡</span><b>Blackjack</b><small>Alle gegen die Bank: Komm näher an 21 als die Bank. Mit Chips, Verdoppeln und Teilen. Auch allein spielbar.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="karten" style="--tc:#ffcf3f"><span aria-hidden="true">🃏</span><b>Kartenwahn</b><small>Das Ablegespiel für 2 bis 8: Farbe oder Zahl ablegen, +2, +4, Aussetzen, Richtungswechsel.</small></button>
       </div>
@@ -6716,7 +6756,7 @@ function roomBarHTML() {
   const L = lobby(); if (!L) return '';
   const mem = roomMembers(L), me = myPid(), member = !!(me && L.members[me]), host = ctl();
   const st = roomState(L);
-  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : L.kind === 'mad' ? '🎲 Uncle Grandpa ärgere dich' : L.kind === 'bj' ? '🂡 Blackjack' : 'Spiel wird gewählt';
+  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : L.kind === 'mad' ? '🎲 Uncle Grandpa ärgere dich' : L.kind === 'bj' ? '🂡 Blackjack' : L.kind === 'dt' ? '🧱 Dicktris' : 'Spiel wird gewählt';
   const chips = mem.map(pid => { const p = ghost(pid), isHost = L.host && L.host.pid === pid, bot = isBot(pid);
     return `<span class="rb-mem ${pid === me ? 'me' : ''} ${bot ? 'bot' : ''}">${avatar(p, 26)}<span>${esc(p.name)}</span>${bot ? `<small class="rb-lvl">${botLvlName(p.lvl)}</small>` : ''}${isHost ? '<i title="Host" aria-label="Host">👑</i>' : ''}${(host || S.admin) && pid !== me ? `<button class="x" type="button" data-act="room-kick" data-pid="${esc(pid)}" aria-label="${esc(p.name)} aus dem Raum werfen" title="Rauswerfen">×</button>` : ''}</span>`; }).join('');
   return `<div class="roombar">
@@ -8476,6 +8516,337 @@ function botBj(L) {
 
 /* ---------- Blackjack ENDE ---------- */
 
+/* ---------- Dicktris: Fallende-Blöcke-Spiel im Raum, jeder spielt sein eigenes Feld ----------
+   Gespeichert im Raum-Feld uno (mit g:'dt'): {g, id, status, cfg, players, startAt, p:{Spieler:{sc, ln, lv, dead, sent, b, ts}}, transferred}.
+   Jeder schreibt nur seinen eigenen Stand in uno.p.<Spieler>. Der Host startet und beendet die Runde.
+   Im Modus „Battle“ schickt jeder ab 2 Reihen auf einmal Müllzeilen an alle anderen. */
+const DT_W = 10, DT_H = 20;
+const DT_TIMES = [[120, '2 Min'], [180, '3 Min'], [300, '5 Min'], [0, 'Bis alle raus sind']];
+const DT_DEF_CFG = {mode:'battle', time:180, lvl:1};
+const DT_COL = ['', '#39d6f2', '#ffcf3f', '#c493ff', '#4ff08f', '#ff4f6d', '#5b8cff', '#ff9f43', '#6b6585'];
+// Formen in Drehstellung 0 (x, y)
+const DT_SHAPES = {1:[[0, 1], [1, 1], [2, 1], [3, 1]], 2:[[1, 0], [2, 0], [1, 1], [2, 1]], 3:[[1, 0], [0, 1], [1, 1], [2, 1]], 4:[[1, 0], [2, 0], [0, 1], [1, 1]], 5:[[0, 0], [1, 0], [1, 1], [2, 1]], 6:[[0, 0], [0, 1], [1, 1], [2, 1]], 7:[[2, 0], [0, 1], [1, 1], [2, 1]]};
+const DT_SIZE = {1:4, 2:4, 3:3, 4:3, 5:3, 6:3, 7:3};
+const DT_PTS = [0, 100, 300, 500, 800], DT_SEND = [0, 0, 1, 2, 4];
+function dtCells(t, r) {
+  const n = DT_SIZE[t];
+  return DT_SHAPES[t].map(([x, y]) => { let a = x, b = y; for (let i = 0; i < (r & 3); i++) { const nx = n - 1 - b; b = a; a = nx; } return [a, b]; });
+}
+function dtNormCfg(c) { c = c && typeof c === 'object' ? c : {}; return {mode:c.mode === 'classic' ? 'classic' : 'battle', time:DT_TIMES.some(t => t[0] === Number(c.time)) ? Number(c.time) : 180, lvl:Math.max(1, Math.min(10, Math.round(Number(c.lvl) || 1)))}; }
+function dtNorm(x) {
+  if (!x || typeof x !== 'object' || x.g !== 'dt' || !['running', 'finished'].includes(x.status)) return null;
+  const players = (Array.isArray(x.players) ? x.players : []).filter(p => typeof p === 'string').slice(0, ROOM_MAX);
+  const p = {};
+  for (const id of players) { const q = x.p && x.p[id] && typeof x.p[id] === 'object' ? x.p[id] : {}; p[id] = {sc:Math.max(0, Number(q.sc) || 0), ln:Math.max(0, Number(q.ln) || 0), lv:Math.max(1, Number(q.lv) || 1), dead:q.dead === true, sent:Math.max(0, Number(q.sent) || 0), b:typeof q.b === 'string' && q.b.length === DT_W * DT_H ? q.b : '', ts:Number(q.ts) || 0}; }
+  return {g:'dt', id:str(x.id, 40), status:x.status, cfg:dtNormCfg(x.cfg), players, startAt:Number(x.startAt) || 0, endAt:Number(x.endAt) || 0, p, transferred:x.transferred === true, early:x.early === true};
+}
+const dtIn = () => { const M = S.dt, me = myPid(), L = lobby(); return !!(M && M.status === 'running' && me && M.players.includes(me) && L && L.members[me] && !S.spectate); };
+function dtRank(M) { return M.players.filter(id => M.p[id]).map(id => ({id, ...M.p[id]})).sort((a, b) => b.sc - a.sc || b.ln - a.ln).map((r, i) => ({...r, rank:i + 1})); }
+
+/* ----- Host ----- */
+function dtStart() {
+  if (!ctl()) return;
+  if (S.dt && S.dt.status === 'finished' && !S.dt.transferred) dtTransfer();
+  const L = lobby(), players = roomMembers(L).filter(id => !isBot(id)).slice(0, ROOM_MAX);
+  if (!players.length) { toast('Es braucht mindestens einen echten Spieler.'); return; }
+  const cfg = dtNormCfg(D.dtcfg || DT_DEF_CFG);
+  const M = {g:'dt', id:uid(), status:'running', cfg, players, startAt:Date.now() + 3500, endAt:0, p:{}, transferred:false, early:false};
+  S.lobbies[S.room] = {...L, uno:M}; S.dt = dtNorm(M);
+  roomWrite({uno:M}); render();
+}
+function dtHostTick() {
+  const M = S.dt, L = lobby(); if (!M || M.status !== 'running' || !ctl() || !L) return;
+  const now = Date.now(), alive = M.players.filter(id => L.members[id] && !(M.p[id] && M.p[id].dead));
+  const timeUp = M.cfg.time && now > M.startAt + M.cfg.time * 1000 + 1500;
+  if (now > M.startAt + 2000 && (timeUp || !alive.length)) { M.status = 'finished'; roomWrite({'uno.status':'finished', 'uno.endAt':now}); render(); }
+}
+function dtTransfer() {
+  const M = S.dt; if (!ctl() || !M || M.status !== 'finished' || M.transferred) return;
+  const rows = dtRank(M);
+  const entries = rows.length >= 2 ? rows.filter(r => r.rank <= 3 && r.sc > 0 && playerById(r.id)).map(r => ({playerId:r.id, delta:K_PLACE_PTS[r.rank - 1]})) : [];
+  lobbyAward({'uno.transferred':true}, entries);
+}
+
+/* ----- Eigenes Spiel (läuft nur auf diesem Gerät) ----- */
+const dtg = {gid:'', b:null, t:0, r:0, x:0, y:0, bag:[], next:[], hold:0, canHold:true, sc:0, ln:0, lv:1, dead:false, sent:0, got:0, fall:0, lock:0, last:0, raf:0, syncAt:0, flash:[], lastSyncKey:''};
+function dtBag() { const a = [1, 2, 3, 4, 5, 6, 7]; for (let i = 6; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function dtPull() { while (dtg.next.length < 5) { if (!dtg.bag.length) dtg.bag = dtBag(); dtg.next.push(dtg.bag.pop()); } return dtg.next.shift(); }
+function dtNewGame(M) {
+  Object.assign(dtg, {gid:M.id, b:Array.from({length:DT_H}, () => Array(DT_W).fill(0)), bag:[], next:[], hold:0, canHold:true, sc:0, ln:0, lv:M.cfg.lvl, dead:false, sent:0, got:dtIncoming(M), fall:0, lock:0, flash:[], lastSyncKey:''});
+  dtSpawn();
+}
+function dtFits(t, r, x, y) { return dtCells(t, r).every(([a, b]) => { const X = x + a, Y = y + b; return X >= 0 && X < DT_W && Y < DT_H && (Y < 0 || !dtg.b[Y][X]); }); }
+function dtSpawn(t) {
+  dtg.t = t || dtPull(); dtg.r = 0; dtg.x = DT_SIZE[dtg.t] === 4 ? 3 : 3; dtg.y = dtg.t === 1 ? -1 : 0; dtg.lock = 0; dtg.fall = 0;
+  if (!dtFits(dtg.t, dtg.r, dtg.x, dtg.y)) { dtg.dead = true; dtSnd('over'); dtSync(true); render(); }
+}
+function dtMove(dx) { if (dtFits(dtg.t, dtg.r, dtg.x + dx, dtg.y)) { dtg.x += dx; dtg.lock = 0; dtSnd('move'); return true; } return false; }
+function dtRotate(d = 1) {
+  const r = (dtg.r + d + 4) % 4;
+  for (const [kx, ky] of [[0, 0], [-1, 0], [1, 0], [0, -1], [-2, 0], [2, 0], [0, 1]]) if (dtFits(dtg.t, r, dtg.x + kx, dtg.y + ky)) { dtg.r = r; dtg.x += kx; dtg.y += ky; dtg.lock = 0; dtSnd('rot'); return; }
+}
+function dtGhostY() { let y = dtg.y; while (dtFits(dtg.t, dtg.r, dtg.x, y + 1)) y++; return y; }
+function dtHard() { const y = dtGhostY(); dtg.sc += (y - dtg.y) * 2; dtg.y = y; dtSnd('drop'); dtLock(); }
+function dtHold() {
+  if (!dtg.canHold) return;
+  const h = dtg.hold; dtg.hold = dtg.t; dtg.canHold = false; dtSnd('hold');
+  dtSpawn(h || 0);
+}
+function dtLock() {
+  for (const [a, b] of dtCells(dtg.t, dtg.r)) { const Y = dtg.y + b; if (Y < 0) { dtg.dead = true; dtSnd('over'); dtSync(true); render(); return; } dtg.b[Y][dtg.x + a] = dtg.t; }
+  const full = []; dtg.b.forEach((row, i) => { if (row.every(v => v)) full.push(i); });
+  if (full.length) {
+    dtg.flash = full.map(i => ({y:i, t:performance.now()}));
+    dtg.b = dtg.b.filter((_, i) => !full.includes(i)); while (dtg.b.length < DT_H) dtg.b.unshift(Array(DT_W).fill(0));
+    dtg.ln += full.length; dtg.sc += DT_PTS[full.length] * dtg.lv;
+    dtg.lv = Math.max(dtg.lv, (S.dt ? S.dt.cfg.lvl : 1) + Math.floor(dtg.ln / 10));
+    if (S.dt && S.dt.cfg.mode === 'battle') dtg.sent += DT_SEND[full.length];
+    dtSnd(full.length >= 4 ? 'tetris' : 'line', 0, full.length);
+    dtSync(true);
+  } else dtSnd('lock');
+  // Müll von den anderen
+  const M = S.dt;
+  if (M && M.cfg.mode === 'battle') {
+    const inc = dtIncoming(M) - dtg.got;
+    if (inc > 0) {
+      const n = Math.min(inc, 8), hole = Math.floor(Math.random() * DT_W);
+      for (let i = 0; i < n; i++) { dtg.b.shift(); const row = Array(DT_W).fill(8); row[hole] = 0; dtg.b.push(row); }
+      dtg.got += n; dtSnd('garbage');
+    }
+  }
+  dtg.canHold = true;
+  dtSpawn();
+}
+function dtIncoming(M) { const me = myPid(); return M.players.filter(id => id !== me).reduce((t, id) => t + (M.p[id] ? M.p[id].sent : 0), 0); }
+function dtSpeed() { return Math.max(60, 1000 * Math.pow(.82, dtg.lv - 1)); }
+function dtBoardStr() { return dtg.b.map(r => r.join('')).join(''); }
+function dtSync(force) {
+  const M = S.dt, me = myPid(); if (!M || !dtIn()) return;
+  const now = Date.now(); if (now - dtg.syncAt < (force ? 600 : 2000)) { if (force) dtg.syncDue = true; return; }
+  dtg.syncDue = false;
+  const b = dtBoardStr(), key = [dtg.sc, dtg.ln, dtg.lv, dtg.dead, dtg.sent, b].join('|');
+  if (key === dtg.lastSyncKey && !force) return;
+  dtg.syncAt = now; dtg.lastSyncKey = key;
+  const v = {sc:dtg.sc, ln:dtg.ln, lv:dtg.lv, dead:dtg.dead, sent:dtg.sent, b, ts:now};
+  M.p[me] = v; roomWrite({['uno.p.' + me]:v});
+}
+let dtSoft = false;
+function dtLoop(t) {
+  dtg.raf = requestAnimationFrame(dtLoop);
+  const M = S.dt;
+  if (!M || M.status !== 'running' || S.tab !== 'dt' || !dtIn()) return;
+  if (dtg.gid !== M.id) dtNewGame(M);
+  const now = Date.now(), dt = Math.min(100, t - (dtg.last || t)); dtg.last = t;
+  if (now < M.startAt) { dtDraw(); return; }
+  if (M.cfg.time && now > M.startAt + M.cfg.time * 1000) { dtDraw(); return; }
+  if (!dtg.dead && !document.hidden) {
+    dtg.fall += dt * (dtSoft ? 12 : 1);
+    if (dtg.fall >= dtSpeed()) {
+      dtg.fall = 0;
+      if (dtFits(dtg.t, dtg.r, dtg.x, dtg.y + 1)) { dtg.y++; if (dtSoft) dtg.sc += 1; }
+    }
+    if (!dtFits(dtg.t, dtg.r, dtg.x, dtg.y + 1)) { dtg.lock += dt; if (dtg.lock > 500) dtLock(); } else dtg.lock = 0;
+    dtSync(!!dtg.syncDue);
+  } else if (dtg.syncDue) dtSync(true);
+  dtDraw();
+}
+function dtDraw() {
+  const cv = document.getElementById('dt-cv'); if (!cv) return;
+  const c = cv.getContext('2d'), W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
+  if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
+  const s = W / DT_W;
+  c.fillStyle = '#0d0a1c'; c.fillRect(0, 0, W, H);
+  c.strokeStyle = 'rgba(255,255,255,.05)'; c.lineWidth = 1;
+  for (let x = 1; x < DT_W; x++) { c.beginPath(); c.moveTo(x * s, 0); c.lineTo(x * s, H); c.stroke(); }
+  for (let y = 1; y < DT_H; y++) { c.beginPath(); c.moveTo(0, y * s); c.lineTo(W, y * s); c.stroke(); }
+  const cell = (x, y, v, a = 1) => { if (y < 0) return; const col = DT_COL[v]; c.globalAlpha = a; c.fillStyle = col; c.fillRect(x * s + 1, y * s + 1, s - 2, s - 2); c.fillStyle = 'rgba(255,255,255,.35)'; c.fillRect(x * s + 1, y * s + 1, s - 2, s * .18); c.fillStyle = 'rgba(0,0,0,.25)'; c.fillRect(x * s + 1, y * s + s * .8, s - 2, s * .2 - 1); c.globalAlpha = 1; };
+  if (dtg.b) dtg.b.forEach((row, y) => row.forEach((v, x) => { if (v) cell(x, y, v); }));
+  const M = S.dt;
+  if (dtg.b && !dtg.dead && M && Date.now() >= M.startAt) {
+    const gy = dtGhostY();
+    for (const [a, b] of dtCells(dtg.t, dtg.r)) { const y = gy + b; if (y >= 0) { c.strokeStyle = DT_COL[dtg.t]; c.globalAlpha = .5; c.lineWidth = 2; c.strokeRect((dtg.x + a) * s + 2, y * s + 2, s - 4, s - 4); c.globalAlpha = 1; } }
+    for (const [a, b] of dtCells(dtg.t, dtg.r)) cell(dtg.x + a, dtg.y + b, dtg.t);
+  }
+  // Reihen-Blitz
+  const pn = performance.now();
+  dtg.flash = dtg.flash.filter(f => pn - f.t < 260);
+  for (const f of dtg.flash) { c.fillStyle = `rgba(255,255,255,${.7 * (1 - (pn - f.t) / 260)})`; c.fillRect(0, f.y * s, W, s); }
+  // Countdown / Ende
+  if (M && Date.now() < M.startAt) { const n = Math.ceil((M.startAt - Date.now()) / 1000); c.fillStyle = 'rgba(0,0,0,.55)'; c.fillRect(0, 0, W, H); c.fillStyle = '#ffcf3f'; c.font = `900 ${s * 3}px system-ui,sans-serif`; c.textAlign = 'center'; c.fillText(n > 3 ? 3 : n, W / 2, H / 2 + s); }
+  else if (dtg.dead) { c.fillStyle = 'rgba(0,0,0,.6)'; c.fillRect(0, 0, W, H); c.fillStyle = '#ff4f6d'; c.font = `900 ${s * 1.2}px system-ui,sans-serif`; c.textAlign = 'center'; c.fillText(tx('Raus!'), W / 2, H / 2); c.fillStyle = '#fff'; c.font = `600 ${s * .55}px system-ui,sans-serif`; c.fillText(tx('Schau den anderen zu'), W / 2, H / 2 + s); }
+  // Seitenteile
+  dtMini('dt-hold', dtg.hold); dtMini('dt-next0', dtg.next[0]); dtMini('dt-next1', dtg.next[1]); dtMini('dt-next2', dtg.next[2]);
+  const st = document.getElementById('dt-stats');
+  if (st) { const k = `${dtg.sc}|${dtg.ln}|${dtg.lv}`; if (st.dataset.k !== k) { st.dataset.k = k; st.innerHTML = `<span><small>${tx('Punkte')}</small><b>${dtg.sc.toLocaleString('de-DE')}</b></span><span><small>${tx('Reihen')}</small><b>${dtg.ln}</b></span><span><small>${tx('Level')}</small><b>${dtg.lv}</b></span>`; } }
+  const tm = document.getElementById('dt-time');
+  if (tm && M) { const left = M.cfg.time ? Math.max(0, Math.ceil((M.startAt + M.cfg.time * 1000 - Math.max(Date.now(), M.startAt)) / 1000)) : 0; const txt = M.cfg.time ? `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}` : '∞'; if (tm.textContent !== txt) tm.textContent = txt; tm.classList.toggle('low', !!M.cfg.time && left <= 15); }
+  const inc = document.getElementById('dt-inc');
+  if (inc && M && M.cfg.mode === 'battle') { const n = Math.max(0, dtIncoming(M) - dtg.got); inc.style.height = Math.min(100, n * 5) + '%'; }
+}
+function dtMini(id, t) {
+  const cv = document.getElementById(id); if (!cv) return;
+  if (cv.dataset.t === String(t || 0)) return; cv.dataset.t = String(t || 0);
+  const c = cv.getContext('2d'), W = cv.width, H = cv.height; c.clearRect(0, 0, W, H);
+  if (!t) return;
+  const cells = dtCells(t, 0), s = Math.min(W, H) / 4.6, minx = Math.min(...cells.map(p => p[0])), maxx = Math.max(...cells.map(p => p[0])), miny = Math.min(...cells.map(p => p[1])), maxy = Math.max(...cells.map(p => p[1]));
+  const ox = (W - (maxx - minx + 1) * s) / 2 - minx * s, oy = (H - (maxy - miny + 1) * s) / 2 - miny * s;
+  for (const [a, b] of cells) { c.fillStyle = DT_COL[t]; c.fillRect(ox + a * s + 1, oy + b * s + 1, s - 2, s - 2); c.fillStyle = 'rgba(255,255,255,.3)'; c.fillRect(ox + a * s + 1, oy + b * s + 1, s - 2, s * .2); }
+}
+function dtOppDraw() {
+  const M = S.dt; if (!M) return;
+  document.querySelectorAll('canvas[data-dtopp]').forEach(cv => {
+    const q = M.p[cv.dataset.dtopp]; const b = q && q.b; const key = (b || '') + (q && q.dead);
+    if (cv.dataset.k === key) return; cv.dataset.k = key;
+    const c = cv.getContext('2d'), s = cv.width / DT_W; c.fillStyle = '#0d0a1c'; c.fillRect(0, 0, cv.width, cv.height);
+    if (b) for (let i = 0; i < b.length; i++) { const v = +b[i]; if (v) { c.fillStyle = DT_COL[v]; c.fillRect((i % DT_W) * s, Math.floor(i / DT_W) * s, s - .5, s - .5); } }
+    if (q && q.dead) { c.fillStyle = 'rgba(0,0,0,.6)'; c.fillRect(0, 0, cv.width, cv.height); }
+  });
+}
+
+/* ----- Sounds ----- */
+function dtSnd(n, w = 0, k = 1) {
+  if (!actx || muted) return;
+  if (n === 'move') tone(330, .025, 'square', .02, w);
+  else if (n === 'rot') tone(520, .03, 'triangle', .03, w);
+  else if (n === 'drop') { kNoise(.08, 900, 300, .08, w, .9); tone(120, .1, 'sine', .12, w); }
+  else if (n === 'lock') tone(200, .05, 'square', .03, w);
+  else if (n === 'hold') { tone(440, .05, 'triangle', .04, w); tone(660, .06, 'triangle', .04, w + .05); }
+  else if (n === 'line') { for (let i = 0; i < k; i++) tone(660 + i * 180, .09, 'square', .045, w + i * .06); kNoise(.2, 3000, 7000, .03, w, 2); }
+  else if (n === 'tetris') { [523, 659, 784, 1047, 1318].forEach((f, i) => tone(f, i === 4 ? .4 : .1, 'square', .05, w + i * .07)); kNoise(.4, 4000, 9000, .04, w, 3); }
+  else if (n === 'garbage') { kGlide(200, 80, .3, 'sawtooth', .08, w); }
+  else if (n === 'over') { [392, 330, 262, 196].forEach((f, i) => tone(f, .22, 'triangle', .07, w + i * .18)); }
+}
+
+/* ----- Steuerung ----- */
+document.addEventListener('keydown', e => {
+  if (S.tab !== 'dt' || !dtIn() || dtg.dead || !S.dt || Date.now() < S.dt.startAt) return;
+  const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
+  const k = e.key;
+  if (k === 'ArrowLeft' || k === 'a') dtMove(-1);
+  else if (k === 'ArrowRight' || k === 'd') dtMove(1);
+  else if (k === 'ArrowUp' || k === 'x' || k === 'w') dtRotate(1);
+  else if (k === 'z' || k === 'y' || k === 'Control') dtRotate(-1);
+  else if (k === 'ArrowDown' || k === 's') { dtSoft = true; }
+  else if (k === ' ') dtHard();
+  else if (k === 'c' || k === 'Shift') dtHold();
+  else return;
+  e.preventDefault(); ensureAudio(); dtDraw();
+});
+document.addEventListener('keyup', e => { if (e.key === 'ArrowDown' || e.key === 's') dtSoft = false; });
+// Wischen auf dem Feld: links/rechts schieben, tippen = drehen, schnell nach unten = fallen lassen
+(() => {
+  let st = null;
+  document.addEventListener('pointerdown', e => { if (!e.target || e.target.id !== 'dt-cv') return; st = {x:e.clientX, y:e.clientY, t:Date.now(), mx:0, id:e.pointerId}; });
+  document.addEventListener('pointermove', e => {
+    if (!st || e.pointerId !== st.id || dtg.dead) return;
+    const cv = document.getElementById('dt-cv'); if (!cv) return;
+    const s = cv.clientWidth / DT_W, dx = e.clientX - st.x, steps = Math.trunc(dx / s) - st.mx;
+    if (steps) { for (let i = 0; i < Math.abs(steps); i++) dtMove(Math.sign(steps)); st.mx += steps; dtDraw(); }
+  });
+  document.addEventListener('pointerup', e => {
+    if (!st || e.pointerId !== st.id) return;
+    const dx = e.clientX - st.x, dy = e.clientY - st.y, dtm = Date.now() - st.t;
+    if (!dtg.dead && dtIn() && S.dt && Date.now() >= S.dt.startAt) {
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10 && dtm < 300) dtRotate(1);
+      else if (dy > 60 && dy > Math.abs(dx) * 1.5 && dtm < 400) dtHard();
+      dtDraw();
+    }
+    st = null;
+  });
+})();
+const dtActions = {
+  'dt-cfg': b => { const c = dtNormCfg(D.dtcfg || DT_DEF_CFG); c[b.dataset.k] = b.dataset.k === 'mode' ? b.dataset.v : Number(b.dataset.v); D.dtcfg = c; render(); },
+  'dt-start': () => dtStart(),
+  'dt-btn': b => { ensureAudio(); const v = b.dataset.v; if (!dtIn() || dtg.dead || !S.dt || Date.now() < S.dt.startAt) return; if (v === 'l') dtMove(-1); else if (v === 'r') dtMove(1); else if (v === 'rot') dtRotate(1); else if (v === 'ccw') dtRotate(-1); else if (v === 'hard') dtHard(); else if (v === 'hold') dtHold(); else if (v === 'down') { if (dtFits(dtg.t, dtg.r, dtg.x, dtg.y + 1)) { dtg.y++; dtg.sc++; } } dtDraw(); },
+  'dt-end': () => confirmBox('Dicktris beenden?', 'Die Runde endet jetzt. Es zählen die Punkte, die jeder gerade hat.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => { const M = S.dt; if (M && ctl() && M.status === 'running') roomWrite({'uno.status':'finished', 'uno.endAt':Date.now(), 'uno.early':true}); }}]),
+  'dt-setup': () => { if (!ctl()) return; if (S.dt && S.dt.status === 'finished' && !S.dt.transferred) dtTransfer(); S.dt = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); }
+};
+// Gedrückt halten = wiederholen (für ◀ ▶ ▼ auf dem Handy)
+(() => {
+  let rep = 0, del = 0;
+  const stop = () => { clearInterval(rep); clearTimeout(del); dtSoft = false; };
+  document.addEventListener('pointerdown', e => {
+    const b = e.target.closest && e.target.closest('[data-act="dt-btn"]'); if (!b || !['l', 'r', 'down'].includes(b.dataset.v)) return;
+    stop(); del = setTimeout(() => { rep = setInterval(() => dtActions['dt-btn'](b), 55); }, 170);
+  });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(n => document.addEventListener(n, stop));
+})();
+
+/* ----- Ansichten ----- */
+function dtSetupHTML() {
+  const L = lobby(), hostP = L && L.host && playerById(L.host.pid);
+  const rules = open => `<details class="card k-rules" ${open ? '' : 'open'}><summary>So wird gespielt</summary><ul>
+    <li><b>Ziel:</b> Füll ganze Reihen mit den fallenden Blöcken, dann verschwinden sie und du bekommst Punkte. Je mehr Reihen auf einmal, desto mehr Punkte. 4 auf einmal ist ein Dicktris!</li>
+    <li><b>PC:</b> ← → schieben, ↑ drehen, ↓ schneller, Leertaste fallen lassen, C oder Shift halten.</li>
+    <li><b>Handy:</b> Auf dem Feld wischen zum Schieben, tippen zum Drehen, schnell nach unten wischen zum Fallenlassen. Oder die Knöpfe darunter.</li>
+    <li><b>Battle:</b> Räumst du 2 oder mehr Reihen auf einmal, bekommen alle anderen graue Müllzeilen von unten.</li>
+    <li><b>Ende:</b> Wenn die Zeit um ist oder alle raus sind. Platz 1 bis 3 nach Punkten bekommen 3, 2 und 1 Punkt im Raum-Highscore.</li></ul></details>`;
+  if (!ctl()) return `<section class="section tsec"><div class="card waiting">${COIN(56, 'spin')}<span class="eyebrow">${esc(L ? L.name : '')} · 🧱 Dicktris</span><h2>Gleich geht's los</h2>
+    <p class="muted">${hostP ? `<b>${esc(hostP.name)}</b> ist Host und stellt das Spiel gerade ein.` : 'Gerade ist niemand Host.'}</p>
+    ${hostStale(L) && L.members[myPid()] ? `<button class="btn btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}</div>${rules(false)}</section>`;
+  const c = dtNormCfg(D.dtcfg || DT_DEF_CFG), n = roomMembers(L).filter(id => !isBot(id)).length;
+  const chip = (k, v, label) => `<button class="chip" type="button" data-act="dt-cfg" data-k="${k}" data-v="${v}" aria-pressed="${String(c[k]) === String(v)}">${label}</button>`;
+  return `<section class="section tsec"><div class="card k-setup">
+    <span class="eyebrow">Du bist Host</span><h2 class="k-title-big">🧱 Dicktris</h2>
+    <p class="muted">Der Klassiker mit den fallenden Blöcken. Alle spielen gleichzeitig, jeder auf seinem eigenen Feld. Wer am Ende die meisten Punkte hat, gewinnt.</p>
+    <div class="dt-fan" aria-hidden="true">${[1, 3, 5, 2].map(t => `<span style="--c:${DT_COL[t]}">${dtCells(t, 0).map(([x, y]) => `<i style="grid-area:${y + 1}/${x + 1}"></i>`).join('')}</span>`).join('')}</div>
+    <span class="lbl">Modus</span><div class="chips">${chip('mode', 'battle', '⚔️ Battle (Müllzeilen an die anderen)')}${chip('mode', 'classic', '🧘 Klassisch (jeder für sich)')}</div>
+    <span class="lbl">Dauer</span><div class="chips">${DT_TIMES.map(([v, l]) => chip('time', v, l)).join('')}</div>
+    <span class="lbl">Start-Level (Tempo)</span><div class="chips">${[1, 3, 5, 8].map(v => chip('lvl', v, v)).join('')}</div>
+    <button class="btn btn-gold btn-big" type="button" data-act="dt-start" ${n ? '' : 'disabled'}>Dicktris starten · ${n} Spieler</button>
+    <p class="muted">Bots spielen hier nicht mit. Du kannst auch allein spielen, Punkte für den Raum-Highscore gibt es ab 2 Spielern.</p>
+  </div>${rules(true)}</section>`;
+}
+function dtPlayHTML(M) {
+  const me = myPid(), inG = dtIn(), host = ctl();
+  const opps = M.players.filter(id => id !== me || !inG);
+  const oppHTML = opps.map(id => { const p = ghost(id), q = M.p[id] || {sc:0, ln:0, dead:false}; return `<div class="dt-opp ${q.dead ? 'dead' : ''}"><canvas data-dtopp="${esc(id)}" width="60" height="120"></canvas><span>${avatar(p, 20)}<b>${esc(p.name)}</b></span><small>${(q.sc || 0).toLocaleString('de-DE')} · ${q.ln || 0} R.${q.dead ? ' · raus' : ''}</small></div>`; }).join('');
+  return `<section class="section tsec dplay">
+    <div class="k-top">
+      <button class="gmenu" type="button" data-act="gmenu" aria-label="Menü anzeigen" title="Menü">☰</button>
+      <div class="k-head"><b>🧱 Dicktris</b><small>${esc((lobby() || {}).name || '')} · ${M.cfg.mode === 'battle' ? 'Battle' : 'Klassisch'}</small></div>
+      <div class="dt-timebox">⏱ <b id="dt-time">–</b></div>
+      ${host ? `<button class="btn btn-sm btn-ghost k-endbtn" type="button" data-act="dt-end">Beenden</button>` : ''}
+    </div>
+    <div class="dt-wrap">
+      ${inG ? `<div class="dt-side dt-left"><span class="dt-lbl">Halten</span><canvas id="dt-hold" width="80" height="60"></canvas><div class="dt-stats" id="dt-stats"></div></div>
+      <div class="dt-boardbox">${M.cfg.mode === 'battle' ? '<div class="dt-incbar" aria-hidden="true"><i id="dt-inc"></i></div>' : ''}<canvas id="dt-cv" class="dt-cv" aria-label="Spielfeld"></canvas></div>
+      <div class="dt-side dt-right"><span class="dt-lbl">Als Nächstes</span><canvas id="dt-next0" width="80" height="60"></canvas><canvas id="dt-next1" width="80" height="50" class="sm"></canvas><canvas id="dt-next2" width="80" height="50" class="sm"></canvas></div>`
+        : `<p class="muted">👀 Du schaust zu.</p>`}
+    </div>
+    ${inG ? `<div class="dt-pad">
+      <button class="dt-k" type="button" data-act="dt-btn" data-v="hold" aria-label="Halten">⇄</button>
+      <button class="dt-k" type="button" data-act="dt-btn" data-v="l" aria-label="Links">◀</button>
+      <button class="dt-k" type="button" data-act="dt-btn" data-v="down" aria-label="Schneller">▼</button>
+      <button class="dt-k" type="button" data-act="dt-btn" data-v="r" aria-label="Rechts">▶</button>
+      <button class="dt-k" type="button" data-act="dt-btn" data-v="rot" aria-label="Drehen">⟳</button>
+      <button class="dt-k gold" type="button" data-act="dt-btn" data-v="hard" aria-label="Fallen lassen">⤓</button></div>` : ''}
+    ${oppHTML ? `<div class="dt-opps">${oppHTML}</div>` : ''}
+  </section>`;
+}
+function dtEndHTML(M) {
+  const rows = dtRank(M), host = ctl(), w = rows[0] && ghost(rows[0].id);
+  return `<section class="section tsec"><div class="card k-end">
+    <span class="eyebrow">🧱 Dicktris</span>
+    ${w ? `<div class="k-winner">${avatar(w, 72)}<h2>${esc(w.name)} gewinnt!</h2></div>` : '<h2>Spiel beendet</h2>'}
+    <ol class="k-rank">${rows.map(r => `<li class="${r.rank === 1 ? 'win' : ''}"><b>${r.rank}.</b>${avatar(ghost(r.id), 34)}<span>${esc(ghost(r.id).name)}</span><small>${r.sc.toLocaleString('de-DE')} Punkte · ${r.ln} Reihen</small>${r.rank <= 3 && rows.length >= 2 && r.sc > 0 ? `<em>+${K_PLACE_PTS[r.rank - 1]}</em>` : ''}</li>`).join('')}</ol>
+    ${M.transferred && rows.length >= 2 ? `<p class="okline">✓ Platz 1 bis 3 stehen im Highscore von ${esc((lobby() || {}).name || 'diesem Raum')}.</p>` : ''}
+    ${host ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="dt-start">Nochmal spielen</button><button class="btn" type="button" data-act="dt-setup">Einstellungen</button></div>` : '<p class="muted">Der Host kann eine neue Runde starten.</p>'}
+  </div>${lobbyHsHTML()}</section>`;
+}
+function viewDt() { const M = S.dt; if (!M) return dtSetupHTML(); return M.status === 'finished' ? dtEndHTML(M) : dtPlayHTML(M); }
+function dtMount() {
+  const M = S.dt;
+  if (M && M.status === 'finished' && dtg.gid === M.id && !dtg.endSnd && S.tab === 'dt') { dtg.endSnd = true; const r = dtRank(M); kSnd(r[0] && r[0].id === myPid() ? 'win' : 'lose', .3); }
+  if (M && M.status === 'running') dtg.endSnd = false;
+  if (!dtg.raf) dtg.raf = requestAnimationFrame(dtLoop);
+  dtOppDraw(); dtDraw();
+}
+function dtOnSnap() { if (ctl()) dtHostTick(); }
+
+/* ---------- Dicktris ENDE ---------- */
+
 /* ---------- Bots: Computer-Mitspieler in den Räumen ----------
    Ein Bot ist ein Raum-Mitglied mit der ID "bot_…". Name, Farbe und Stufe stehen im Raum unter bots.<ID>.
    Spielen tut für alle Bots das Gerät des Hosts (botTick, 5-mal pro Sekunde). In den Raum-Highscore kommen Bots nicht. */
@@ -9320,7 +9691,7 @@ async function vgmLinkSubmit() {
 /* ---------- Spieler-Profile im Steam-Stil ----------
    Der Tab „Spieler“ zeigt alle Spieler. Ein Tipp auf einen Spieler öffnet sein Profil: Kopfbereich mit Level und Status,
    Lieblingsspiel, Screenshots, kürzliche Aktivität, Spielebibliothek; daneben Abzeichen, Zahlen und die anderen Spieler. */
-const GAME_KIND_NAME = {quiz:'Quiz', malen:'Malen', golf:'Minigolf', karten:'Kartenwahn', mad:'Uncle Grandpa ärgere dich', bj:'Blackjack'};
+const GAME_KIND_NAME = {quiz:'Quiz', malen:'Malen', golf:'Minigolf', karten:'Kartenwahn', mad:'Uncle Grandpa ärgere dich', bj:'Blackjack', dt:'Dicktris'};
 /* Status wie bei Steam: im Spiel (in einem Raum mit laufendem Spiel), online oder offline */
 function spStatus(pid) {
   const now = Date.now();
@@ -9575,7 +9946,7 @@ const TK_TYPES = [
 ];
 const TK_AREAS = [
   ['menu', 'Main-Menü', '🏠'], ['turnier', 'Turnier', '🏆'], ['raeume', 'Spiele-Räume', '🚪'], ['quiz', 'Quiz', '❔'], ['malen', 'Malen', '🎨'],
-  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['mad', 'Uncle Grandpa ärgere dich', '🎲'], ['bj', 'Blackjack', '🂡'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
+  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['mad', 'Uncle Grandpa ärgere dich', '🎲'], ['bj', 'Blackjack', '🂡'], ['dt', 'Dicktris', '🧱'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
   ['support', 'Support', '🛟'], ['musik', 'Musik und Sound', '🎵'], ['optionen', 'Optionen', '⚙️'], ['login', 'Login und Einladungen', '🔑'], ['handy', 'Handy-Ansicht', '📱'], ['other', 'Sonstiges', '🧩']
 ];
 const TK_SUB = {
@@ -9648,7 +10019,7 @@ function tkContext() {
   const t = S.tab, L = typeof lobby === 'function' ? lobby() : null, me = myPid();
   const map = {start:'menu', turnier:'turnier', rangliste:'turnier', rad:'turnier', liste:'turnier', spiele:'raeume', raum:'raeume', spieler:'profile', einstellungen:'optionen'};
   let area = map[t] || '', hole = 0, sub = '';
-  if (['quiz', 'malen', 'golf', 'karten', 'mad', 'bj'].includes(t)) area = t;
+  if (['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt'].includes(t)) area = t;
   if (t === 'spieler' && D.vgP) area = 'games';
   if (area === 'golf' && S.golf && S.golf.status === 'running') { const p = S.golf.pos && S.golf.pos[me]; hole = (Array.isArray(p) ? p[3] : S.golf.hi) + 1 || 0; }
   if (area === 'turnier') sub = {rangliste:'Rangliste', rad:'Glücksrad', liste:'Spieleliste'}[t] || '';
@@ -11214,6 +11585,7 @@ function tick() {
   madTimerTick();
   bjHostTick();
   bjTimerTick();
+  dtHostTick();
   botTick();
   lobbyAutoAward();
   if (ctl() && S.quiz && S.quiz.status === 'running' && S.answers && S.answers.length) handleAnswers();
@@ -11668,7 +12040,7 @@ const actions = {
   'quiz-again': () => { const base = clone(S.quiz); withPending(() => quizStart(base)); },
   'quiz-new': () => withPending(() => quizDiscard())
 };
-Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions);
+Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions, dtActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
   if (e.target.classList && e.target.classList.contains('scrim')) { closeModal(); return; }
@@ -13146,7 +13518,7 @@ function boot() {
   if (!S.deco) S.deco = normDeco(null);
   renderBgm();
   const h = (location.hash || '').slice(1);
-  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj'].includes(h) ? 'spiele-pick' : viewFor(h);
+  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt'].includes(h) ? 'spiele-pick' : viewFor(h);
   const fc = CFG && CFG.firebase;
   if (!fc || !fc.apiKey || /HIER_EINTRAGEN/.test(fc.apiKey) || /DEIN-PROJEKT/.test(fc.projectId || '') || !window.firebase) {
     S.mode = 'setup'; S.loaded = true;

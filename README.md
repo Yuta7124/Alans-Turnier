@@ -118,6 +118,10 @@ Brettspiel für 2 bis 4 Spieler in den Spiele-Räumen (Regeln wie beim bekannten
 
 Raum-Spiel für 1 bis 8 Spieler gegen die Bank (das Gerät des Hosts ist die Bank). Start-Chips einstellbar (500 bis 10.000, Standard 2000), 5, 10 oder 20 Runden. Karte, Bleiben, Verdoppeln, Teilen (einmal, geteilte Asse bekommen eine Karte). Bank zieht bis 16, bleibt ab 17. Blackjack zahlt 3:2. Bots spielen mit (schwer = Grundstrategie). Platz 1 bis 3 nach Chips bekommen ab 2 Spielern 3, 2 und 1 Punkt. Spielstand im Raum-Feld `uno` mit `g:'bj'`.
 
+## Dicktris
+
+Fallende-Blöcke-Spiel im Raum: alle spielen gleichzeitig auf ihrem eigenen Feld (PC: Pfeiltasten, Leertaste, C; Handy: Wischen und Knöpfe). Modi Battle (ab 2 Reihen bekommen die anderen Müllzeilen) und Klassisch, Dauer 2/3/5 Minuten oder bis alle raus sind, Start-Level einstellbar. Mini-Felder der anderen live. Jeder schreibt nur `uno.p.<Spieler>` (alle 2 Sekunden und bei Reihen/Raus). Platz 1 bis 3 nach Punkten ab 2 Spielern in den Raum-Highscore.
+
 ## Designs
 
 In **Optionen → 🎨 Design** wählt der Spielleiter das Design der Webseite für alle: **Arcade (Pixel)** oder **Neon-Glas** (Standard). Neues Design: Eintrag in `DESIGNS` (index.html) und ein CSS-Block mit `html[data-design="id"]`.
