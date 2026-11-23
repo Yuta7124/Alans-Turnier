@@ -122,6 +122,10 @@ Raum-Spiel für 1 bis 8 Spieler gegen die Bank (das Gerät des Hosts ist die Ban
 
 In **Optionen → 🎨 Design** wählt der Spielleiter das Design der Webseite für alle: **Arcade (Pixel)** oder **Neon-Glas** (Standard). Neues Design: Eintrag in `DESIGNS` (index.html) und ein CSS-Block mit `html[data-design="id"]`.
 
+## Turnier-Check-in
+
+Sobald das Turnier läuft („Läuft gerade“ oder Termin erreicht), sehen alle im Turnier-Tab zuerst den Check-in: „✅ Ich bin dabei!“ und eine Liste, wer schon da ist und wer noch fehlt. Der Spielleiter bestätigt mit „✅ Alle da: Turnier starten“ (speichert `settings.chk`). Danach sieht jeder einmal die Übersicht mit den geplanten Spielen (Status „Geplant“, sonst „Vielleicht“) und dem Preisgeld pro Platz, dann ist das Turnier offen. Check-ins liegen als `presence/chk_<Turnier>_<Spieler>`, deshalb braucht es keine neuen Firebase-Regeln.
+
 ## Private Räume
 
 Der Host kann seinen Raum in der Raum-Leiste mit **„🔓 Öffentlich“ / „🔒 Privat“** umschalten. Bei „Privat“ lädt er über **„💌 Einladen“** Spieler ein (wer schon im Raum ist, ist automatisch eingeladen). Alle anderen sehen den Raum mit 🔒 und können weder beitreten noch zuschauen; Eingeladene sehen „Du bist eingeladen“. Wer rausgeworfen wird, verliert seine Einladung. Verlässt der Letzte den Raum oder ist der Host 10 Minuten weg, ist der Raum wieder offen. Die Firestore-Regeln prüfen das ebenfalls (nach dem Veröffentlichen der Regeln).
