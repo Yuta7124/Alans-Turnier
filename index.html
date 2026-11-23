@@ -2351,6 +2351,19 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
   html[data-design="neon"] .btn{font-size:13px}
   html[data-design="neon"] .card h3{font-size:18px}
 }
+.nt-cats{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.nt-catbtn{gap:6px}
+.nt-n{font-size:11px;opacity:.75;min-width:0}
+.nt-n:empty{display:none}
+.nt-n::before{content:"· "}
+.nt-addbtn{border-style:dashed;opacity:.85}
+.nt-namerow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.nt-namerow .input{flex:1 1 180px;min-width:0}
+.nt-warn{color:var(--hp)}
+.nt-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px}
+.nt-catacts{display:flex;gap:12px;align-items:center;font-size:13px}
+.nt-catacts button:disabled{opacity:.3}
+.nt-delbtn{color:var(--hp)}
 </style>
 </head>
 <body>
@@ -2369,7 +2382,7 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=34"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=35"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -8196,17 +8209,35 @@ function tkPlayerHTML() {
     ${list.length ? `<div class="tk-list">${list.map(tkCardHTML).join('')}</div>` : `<div class="empty-box"><strong>${seg === 'mine' ? 'Du hast noch keine Tickets geschrieben' : 'Hier ist noch nichts'}</strong>${D.tkQ ? '<p>Mit dieser Suche gibt es keinen Treffer.</p>' : ''}</div>`}
   </section>`;
 }
-/* Notizen nur für den Spielleiter (admin/notes, nur er kann sie lesen). Speichert automatisch beim Tippen. */
+/* Notizen nur für den Spielleiter (admin/notes, nur er kann sie lesen), sortiert nach Kategorien.
+   Speichert automatisch beim Tippen. Alte Notizen ohne Kategorien landen in „Allgemein“. */
 let ntSub = false, ntT = 0;
-const NT_MAX = 20000, NT_BUL = ['• ', '☐ ', '☑ ', '- '];
+const NT_MAX = 20000, NT_CATS = 30, NT_BUL = ['• ', '☐ ', '☑ ', '- '];
+const ntId = () => Math.random().toString(36).slice(2, 10);
+// Kategorien werden als JSON im Feld text gespeichert (Präfix NT1:), damit die bestehenden Firebase-Regeln reichen.
+function ntNorm(x) {
+  if (typeof x.text === 'string' && x.text.startsWith('NT1:')) { try { x = {cats:JSON.parse(x.text.slice(4))}; } catch (e) { x = {}; } }
+  let cats = Array.isArray(x.cats) ? x.cats.filter(c => c && typeof c === 'object').slice(0, NT_CATS).map(c => ({id:str(c.id, 12) || ntId(), name:str(c.name, 30) || 'Ohne Namen', text:String(c.text || '').slice(0, NT_MAX)})) : null;
+  if (!cats || !cats.length) {
+    cats = [{id:'neu', name:'Neue Sachen', text:''}, {id:'spiele', name:'Spiele', text:''}, {id:'menu', name:'Menü', text:''}];
+    const old = String(x.text || '').trim();
+    if (old) cats.unshift({id:'allg', name:'Allgemein', text:String(x.text).slice(0, NT_MAX)});
+  }
+  return cats;
+}
 function ntEnsure() {
   if (ntSub || !S.admin || !fs) return;
   ntSub = true;
   unsubs.push(fs.doc('admin/notes').onSnapshot(d => {
     const x = d.exists ? d.data() || {} : {};
-    S.notes = {text:str(x.text, NT_MAX), at:Number(x.at) || 0};
-    if (D.notes == null || D.ntState !== 'dirty') { D.notes = S.notes.text; if (S.tab === 'support') render(); }
+    S.notes = {cats:ntNorm(x), at:Number(x.at) || 0};
+    if (D.ntState !== 'dirty' && D.ntState !== 'saving') { D.ntCats = S.notes.cats.map(c => ({...c})); if (S.tab === 'support') render(); }
   }, () => { ntSub = false; }));
+}
+function ntCur() {
+  const cats = D.ntCats || []; if (!cats.length) return null;
+  const id = D.ntCat || lsGet('turnier-nt-cat', '');
+  return cats.find(c => c.id === id) || cats[0];
 }
 function ntSaveSoon() {
   D.ntState = 'dirty'; ntStatus();
@@ -8214,8 +8245,10 @@ function ntSaveSoon() {
 }
 async function ntSave() {
   clearTimeout(ntT);
-  if (D.ntState !== 'dirty') return;
-  const text = String(D.notes || '').slice(0, NT_MAX);
+  if (D.ntState !== 'dirty' || !D.ntCats) return;
+  const cats = D.ntCats.slice(0, NT_CATS).map(c => ({id:c.id, name:str(c.name, 30) || 'Ohne Namen', text:String(c.text || '').slice(0, NT_MAX)}));
+  const text = 'NT1:' + JSON.stringify(cats);
+  if (text.length > NT_MAX) { D.ntState = 'dirty'; ntStatus(); toast('Deine Notizen sind zu lang. Lösch etwas, dann wird wieder gespeichert.'); return; }
   D.ntState = 'saving'; ntStatus();
   try { await fs.doc('admin/notes').set({text, at:Date.now()}); if (D.ntState === 'saving') D.ntState = 'saved'; }
   catch (e) { D.ntState = 'dirty'; toast('Notizen konnten nicht gespeichert werden. Versuch es gleich nochmal.'); }
@@ -8231,8 +8264,14 @@ function ntLine(ta) {
 }
 function ntSet(ta, v, caret) {
   ta.value = v; ta.setSelectionRange(caret, caret); ta.focus();
-  D.notes = v; ntSaveSoon();
+  const c = ntCur(); if (c) c.text = v;
+  ntSaveSoon(); ntCount();
 }
+function ntCount() {
+  const c = ntCur(), el = c && $(`[data-act="nt-cat"][data-v="${c.id}"] .nt-n`);
+  if (el) { const n = ntLines(c.text); el.textContent = n || ''; }
+}
+const ntLines = t => String(t || '').split('\n').filter(l => l.trim()).length;
 function ntPrefix(kind) {
   const ta = $('#nt-text'); if (!ta) return;
   const {v, a} = ntLine(ta), cur = NT_BUL.find(b => v.startsWith(b, a)) || '';
@@ -8252,17 +8291,47 @@ function ntKey(ev) {
   const next = cur === '☑ ' ? '☐ ' : cur;
   ntSet(ta, v.slice(0, p) + '\n' + next + v.slice(p), p + 1 + next.length);
 }
+const ntActions = {
+  'nt-cat': b => { D.ntCat = b.dataset.v; lsSet('turnier-nt-cat', b.dataset.v); D.ntEdit = null; D.ntDel = false; render(); },
+  'nt-add': () => { D.ntEdit = {mode:'add', name:''}; D.ntDel = false; render(); setTimeout(() => { const i = $('#nt-name'); if (i) i.focus(); }, 30); },
+  'nt-rename': () => { const c = ntCur(); if (!c) return; D.ntEdit = {mode:'ren', name:c.name}; D.ntDel = false; render(); setTimeout(() => { const i = $('#nt-name'); if (i) { i.focus(); i.select(); } }, 30); },
+  'nt-name-ok': () => {
+    const e = D.ntEdit, name = str(e && e.name, 30); if (!e) return;
+    if (!name) { toast('Gib der Kategorie einen Namen.'); return; }
+    if (e.mode === 'add') {
+      if (D.ntCats.length >= NT_CATS) { toast(`Höchstens ${NT_CATS} Kategorien.`); return; }
+      const c = {id:ntId(), name, text:''}; D.ntCats.push(c); D.ntCat = c.id; lsSet('turnier-nt-cat', c.id);
+    } else { const c = ntCur(); if (c) c.name = name; }
+    D.ntEdit = null; ntSaveSoon(); render();
+  },
+  'nt-name-cancel': () => { D.ntEdit = null; render(); },
+  'nt-move': b => {
+    const c = ntCur(), i = D.ntCats.indexOf(c), j = i + Number(b.dataset.d);
+    if (!c || j < 0 || j >= D.ntCats.length) return;
+    D.ntCats.splice(i, 1); D.ntCats.splice(j, 0, c); ntSaveSoon(); render();
+  },
+  'nt-del': () => {
+    const c = ntCur(); if (!c) return;
+    if (D.ntCats.length <= 1) { toast('Eine Kategorie muss bleiben.'); return; }
+    if (c.text.trim() && !D.ntDel) { D.ntDel = true; render(); return; }
+    D.ntCats = D.ntCats.filter(x => x !== c); D.ntCat = D.ntCats[0].id; lsSet('turnier-nt-cat', D.ntCat); D.ntDel = false; ntSaveSoon(); render();
+  },
+  'nt-del-no': () => { D.ntDel = false; render(); }
+};
 function ntCardHTML() {
   ntEnsure();
   const open = lsGet('turnier-nt-open', '1') === '1';
   const at = S.notes && S.notes.at ? `Zuletzt geändert: ${fmtBerlin(S.notes.at)}` : 'Noch keine Notizen';
+  const c = D.ntCats && ntCur(), i = c ? D.ntCats.indexOf(c) : -1, e = D.ntEdit;
   return `<details class="card nt-card" ${open ? 'open' : ''} id="nt-box">
     <summary><b>📝 Meine Notizen</b><span class="muted">Nur für dich sichtbar</span></summary>
-    ${S.notes == null ? `<p class="muted">Lade Notizen …</p>` : `
+    ${!c ? `<p class="muted">Lade Notizen …</p>` : `
+    <div class="nt-cats" role="tablist" aria-label="Kategorien">${D.ntCats.map(x => `<button class="chip nt-catbtn" type="button" role="tab" data-act="nt-cat" data-v="${esc(x.id)}" aria-pressed="${x === c}" aria-selected="${x === c}">${esc(x.name)}<span class="nt-n">${ntLines(x.text) || ''}</span></button>`).join('')}<button class="chip nt-addbtn" type="button" data-act="nt-add">+ Kategorie</button></div>
+    ${e ? `<div class="nt-namerow"><input class="input" id="nt-name" maxlength="30" placeholder="${e.mode === 'add' ? 'Name der neuen Kategorie, z. B. Ideen' : 'Neuer Name'}" value="${esc(e.name)}" data-draft="ntEdit.name"><button class="btn btn-sm btn-gold" type="button" data-act="nt-name-ok">${e.mode === 'add' ? 'Anlegen' : 'Umbenennen'}</button><button class="btn btn-sm btn-ghost" type="button" data-act="nt-name-cancel">Abbrechen</button></div>` : ''}
+    ${D.ntDel ? `<div class="nt-namerow nt-warn"><span>„${esc(c.name)}“ mit allen Notizen darin löschen?</span><button class="btn btn-sm" type="button" data-act="nt-del">Ja, löschen</button><button class="btn btn-sm btn-ghost" type="button" data-act="nt-del-no">Nein</button></div>` : ''}
     <div class="nt-tools"><button class="btn btn-sm" type="button" data-act="nt-bul">• Stichpunkt</button><button class="btn btn-sm" type="button" data-act="nt-task">☐ Aufgabe</button><button class="btn btn-sm" type="button" data-act="nt-check">☑ Abhaken</button><span class="nt-st muted" id="nt-st">${D.ntState === 'dirty' ? 'Ungespeichert …' : D.ntState === 'saving' ? 'Speichert …' : 'Gespeichert ✓'}</span></div>
-    <textarea class="input nt-text" id="nt-text" data-draft="notes" maxlength="${NT_MAX}" placeholder="Hier kannst du dir alles merken: Ideen, To-dos, Termine …
-Tipp: Mit „• Stichpunkt“ oder „☐ Aufgabe“ anfangen. Bei Enter geht die Liste automatisch weiter." spellcheck="true">${esc(D.notes ?? S.notes.text)}</textarea>
-    <p class="muted nt-at">${esc(at)}</p>`}
+    <textarea class="input nt-text" id="nt-text" data-draft="ntCats.${i}.text" maxlength="${NT_MAX}" placeholder="Notizen zu „${esc(c.name)}“ …\nTipp: Mit „• Stichpunkt“ oder „☐ Aufgabe“ anfangen. Bei Enter geht die Liste automatisch weiter." spellcheck="true">${esc(c.text)}</textarea>
+    <div class="nt-foot"><span class="muted nt-at">${esc(at)}</span><span class="nt-catacts"><button class="link" type="button" data-act="nt-move" data-d="-1" ${i <= 0 ? 'disabled' : ''} aria-label="Kategorie nach links">◀</button><button class="link" type="button" data-act="nt-move" data-d="1" ${i >= D.ntCats.length - 1 ? 'disabled' : ''} aria-label="Kategorie nach rechts">▶</button><button class="link" type="button" data-act="nt-rename">Umbenennen</button><button class="link nt-delbtn" type="button" data-act="nt-del">Kategorie löschen</button></span></div>`}
   </details>`;
 }
 function tkAdminHTML() {
@@ -10012,7 +10081,7 @@ const actions = {
   'quiz-again': () => { const base = clone(S.quiz); withPending(() => quizStart(base)); },
   'quiz-new': () => withPending(() => quizDiscard())
 };
-Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions);
+Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
   if (e.target.classList && e.target.classList.contains('scrim')) { closeModal(); return; }
@@ -10034,13 +10103,13 @@ document.addEventListener('input', e => {
   }
   if (t.dataset && t.dataset.draft) {
     setPath(D, t.dataset.draft, t.value);
-    if (t.id === 'nt-text') ntSaveSoon();
+    if (t.id === 'nt-text') { ntSaveSoon(); ntCount(); }
     if (t.dataset.draft.startsWith('tkF.')) { tkDraftSave(); if (t.id === 'tk-title') { const c = $('#tk-tcnt'); if (c) c.textContent = t.value.length + '/100'; } }
     if (t.id === 'tk-q') render();
     if (t.dataset.live && live[t.dataset.live]) live[t.dataset.live](t);
   }
 });
-document.addEventListener('keydown', e => { if (e.target && e.target.id === 'nt-text') ntKey(e); });
+document.addEventListener('keydown', e => { if (e.target && e.target.id === 'nt-text') ntKey(e); else if (e.target && e.target.id === 'nt-name' && e.key === 'Enter') { e.preventDefault(); ntActions['nt-name-ok'](); } });
 document.addEventListener('toggle', e => { if (e.target && e.target.id === 'nt-box') lsSet('turnier-nt-open', e.target.open ? '1' : '0'); }, true);
 document.addEventListener('visibilitychange', () => { if (document.hidden && D.ntState === 'dirty') ntSave(); });
 document.addEventListener('change', async e => {
