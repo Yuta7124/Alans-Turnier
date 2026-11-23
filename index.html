@@ -8214,16 +8214,21 @@ function tkPlayerHTML() {
 let ntSub = false, ntT = 0;
 const NT_MAX = 20000, NT_CATS = 30, NT_BUL = ['• ', '☐ ', '☑ ', '- '];
 const ntId = () => Math.random().toString(36).slice(2, 10);
-// Kategorien werden als JSON im Feld text gespeichert (Präfix NT1:), damit die bestehenden Firebase-Regeln reichen.
+// Kategorien werden als JSON im Feld text gespeichert (Präfix NT2:), damit die bestehenden Firebase-Regeln reichen.
+// Ältere Notizen (Text oder NT1:) bekommen beim Laden die Standard-Kategorien dazu.
+const NT_DEF = [['menu', 'Menü'], ['spieler', 'Spieler'], ['spiele', 'Spiele'], ['turnier', 'Turnier'], ['optionen', 'Optionen'], ['support', 'Support'], ['neu', 'Neue Sachen']];
 function ntNorm(x) {
-  if (typeof x.text === 'string' && x.text.startsWith('NT1:')) { try { x = {cats:JSON.parse(x.text.slice(4))}; } catch (e) { x = {}; } }
-  let cats = Array.isArray(x.cats) ? x.cats.filter(c => c && typeof c === 'object').slice(0, NT_CATS).map(c => ({id:str(c.id, 12) || ntId(), name:str(c.name, 30) || 'Ohne Namen', text:String(c.text || '').slice(0, NT_MAX)})) : null;
-  if (!cats || !cats.length) {
-    cats = [{id:'neu', name:'Neue Sachen', text:''}, {id:'spiele', name:'Spiele', text:''}, {id:'menu', name:'Menü', text:''}];
-    const old = String(x.text || '').trim();
-    if (old) cats.unshift({id:'allg', name:'Allgemein', text:String(x.text).slice(0, NT_MAX)});
-  }
-  return cats;
+  const t = typeof x.text === 'string' ? x.text : '';
+  const clean = list => (Array.isArray(list) ? list : []).filter(c => c && typeof c === 'object').slice(0, NT_CATS)
+    .map(c => ({id:str(c.id, 12) || ntId(), name:str(c.name, 30) || 'Ohne Namen', text:String(c.text || '').slice(0, NT_MAX)}));
+  if (t.startsWith('NT2:')) { try { const c = clean(JSON.parse(t.slice(4))); if (c.length) return c; } catch (e) {} }
+  let old = [];
+  if (t.startsWith('NT1:')) { try { old = clean(JSON.parse(t.slice(4))); } catch (e) {} }
+  else if (t.trim()) old = [{id:'allg', name:'Allgemein', text:t.slice(0, NT_MAX)}];
+  const key = n => n.trim().toLowerCase();
+  const cats = NT_DEF.map(([id, name]) => old.find(c => key(c.name) === key(name)) || {id, name, text:''});
+  old.forEach(c => { if (!cats.includes(c) && (c.text.trim() || !NT_DEF.some(d => d[0] === c.id))) cats.push(c); });
+  return cats.slice(0, NT_CATS);
 }
 function ntEnsure() {
   if (ntSub || !S.admin || !fs) return;
@@ -8247,7 +8252,7 @@ async function ntSave() {
   clearTimeout(ntT);
   if (D.ntState !== 'dirty' || !D.ntCats) return;
   const cats = D.ntCats.slice(0, NT_CATS).map(c => ({id:c.id, name:str(c.name, 30) || 'Ohne Namen', text:String(c.text || '').slice(0, NT_MAX)}));
-  const text = 'NT1:' + JSON.stringify(cats);
+  const text = 'NT2:' + JSON.stringify(cats);
   if (text.length > NT_MAX) { D.ntState = 'dirty'; ntStatus(); toast('Deine Notizen sind zu lang. Lösch etwas, dann wird wieder gespeichert.'); return; }
   D.ntState = 'saving'; ntStatus();
   try { await fs.doc('admin/notes').set({text, at:Date.now()}); if (D.ntState === 'saving') D.ntState = 'saved'; }
