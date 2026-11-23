@@ -116,7 +116,7 @@ Brettspiel für 2 bis 4 Spieler in den Spiele-Räumen (Regeln wie beim bekannten
 
 ## Blackjack
 
-Raum-Spiel für 1 bis 8 Spieler gegen die Bank (das Gerät des Hosts ist die Bank). Jeder startet mit 1000 Chips, 5, 10 oder 20 Runden. Karte, Bleiben, Verdoppeln, Teilen (einmal, geteilte Asse bekommen eine Karte). Bank zieht bis 16, bleibt ab 17. Blackjack zahlt 3:2. Bots spielen mit (schwer = Grundstrategie). Platz 1 bis 3 nach Chips bekommen ab 2 Spielern 3, 2 und 1 Punkt. Spielstand im Raum-Feld `uno` mit `g:'bj'`.
+Raum-Spiel für 1 bis 8 Spieler gegen die Bank (das Gerät des Hosts ist die Bank). Start-Chips einstellbar (500 bis 10.000, Standard 2000), 5, 10 oder 20 Runden. Karte, Bleiben, Verdoppeln, Teilen (einmal, geteilte Asse bekommen eine Karte). Bank zieht bis 16, bleibt ab 17. Blackjack zahlt 3:2. Bots spielen mit (schwer = Grundstrategie). Platz 1 bis 3 nach Chips bekommen ab 2 Spielern 3, 2 und 1 Punkt. Spielstand im Raum-Feld `uno` mit `g:'bj'`.
 
 ## Designs
 

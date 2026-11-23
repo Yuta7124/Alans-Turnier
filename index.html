@@ -2462,7 +2462,7 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
 .bj-hand.bust .bj-cards{opacity:.6}
 .bj-cards{display:flex;justify-content:center;min-height:84px;padding-left:22px}
 .bj-cards .bjc{margin-left:-22px}
-.bjc{position:relative;width:58px;height:82px;border-radius:7px;background:linear-gradient(160deg,#fff,#f1eee6);color:#151515;box-shadow:0 0 0 1px rgba(0,0,0,.25),0 4px 8px rgba(0,0,0,.45);flex:none;font-family:Georgia,"Times New Roman",serif}
+.bjc{position:relative;display:inline-block;vertical-align:top;width:58px;height:82px;border-radius:7px;background:linear-gradient(160deg,#fff,#f1eee6);color:#151515;box-shadow:0 0 0 1px rgba(0,0,0,.25),0 4px 8px rgba(0,0,0,.45);flex:none;font-family:Georgia,"Times New Roman",serif}
 .bjc.red{color:#c8102e}
 .bjc b{position:absolute;left:5px;top:3px;display:flex;flex-direction:column;align-items:center;font-size:17px;line-height:1;font-weight:700}
 .bjc b small{font-size:14px}
@@ -2499,7 +2499,7 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
 .bj-wait{text-align:center;padding:6px}
 .bj-log{margin-top:10px;text-align:center}
 .bj-fan{display:flex;justify-content:center;align-items:center;gap:0;margin:14px 0 6px}
-.bj-fan > span{margin-left:-14px}.bj-fan .fan0{transform:rotate(-12deg)}.bj-fan .fan2{transform:rotate(12deg)}
+.bj-fan > span{display:inline-block;margin-left:-14px}.bj-fan .fan0{transform:rotate(-12deg)}.bj-fan .fan2{transform:rotate(12deg)}
 .bj-fan .fanchip{margin-left:14px}
 @media (max-width:600px){
   .bj-table{padding:16px 10px 24px;border-radius:28px 28px 120px 120px / 28px 28px 70px 70px}
@@ -2527,7 +2527,7 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=37"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=38"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -7737,9 +7737,9 @@ function botMad(L) {
    B = {g:'bj', id, status, cfg, players, s, r, transferred, early}. s schreibt nur das Host-Gerät (er ist auch die Bank),
    alle anderen schreiben ihren Wunsch in uno.r.<Spieler> = {n, a, v}.
    Karten: Rang (A,2-9,T,J,Q,K) + Farbe (S,H,D,C), z. B. "AS", "TH". Die Bank zieht bis 16 und bleibt ab 17 (auch bei weicher 17). */
-const BJ_START = 1000, BJ_MIN = 10, BJ_CHIPS = [10, 25, 50, 100, 500];
+const BJ_STARTS = [500, 1000, 2000, 5000, 10000], BJ_MIN = 10, BJ_CHIPS = [10, 25, 50, 100, 500];
 const BJ_ROUNDS = [5, 10, 20];
-const BJ_DEF_CFG = {rounds:10, time:30};
+const BJ_DEF_CFG = {rounds:10, time:30, start:2000};
 const BJ_BET_MS = 25000, BJ_RESULT_MS = 4200, BJ_DEALER_MS = 750;
 const BJ_SUIT = {S:'♠', H:'♥', D:'♦', C:'♣'};
 const bjl = {n:0, pend:null, seenSeq:0, seqAt:0, hKey:'', hAt:0, warnSeq:'', wasMine:false, dAt:0};
@@ -7760,11 +7760,12 @@ function bjShoe(rnd = Math.random) {
 }
 function bjNormCfg(c) {
   c = c && typeof c === 'object' ? c : {};
-  return {rounds:BJ_ROUNDS.includes(Number(c.rounds)) ? Number(c.rounds) : 10, time:K_TIMES.some(t => t[0] === Number(c.time)) ? Number(c.time) : 30};
+  return {rounds:BJ_ROUNDS.includes(Number(c.rounds)) ? Number(c.rounds) : 10, time:K_TIMES.some(t => t[0] === Number(c.time)) ? Number(c.time) : 30,
+    start:BJ_STARTS.includes(Number(c.start)) ? Number(c.start) : 2000};
 }
 function bjNew(players, cfg, rnd = Math.random, now = Date.now()) {
   const pl = {};
-  for (const p of players) pl[p] = {chips:BJ_START, bet:0, hands:[], out:false};
+  for (const p of players) pl[p] = {chips:cfg.start, bet:0, hands:[], out:false};
   return {order:players.slice(), ph:'bet', rnd:1, shoe:bjShoe(rnd), dl:[], hole:true, pl, tp:{p:-1, h:0}, at:now, seq:1, log:[], win:'', done:{}};
 }
 function bjNormState(s) {
@@ -8024,8 +8025,9 @@ function bjSetupHTML() {
   const chip = (k, v, label) => `<button class="chip" type="button" data-act="bj-cfg" data-k="${k}" data-v="${v}" aria-pressed="${String(c[k]) === String(v)}">${label}</button>`;
   return `<section class="section bsec"><div class="card k-setup">
     <span class="eyebrow">Du bist Host</span><h2 class="k-title-big">🂡 Blackjack</h2>
-    <p class="muted">Alle gegen die Bank: Komm näher an 21 als die Bank, ohne drüber zu gehen. Jeder startet mit ${BJ_START} Chips. Wer am Ende die meisten hat, gewinnt.</p>
+    <p class="muted">Alle gegen die Bank: Komm näher an 21 als die Bank, ohne drüber zu gehen. Jeder startet mit ${c.start} Chips. Wer am Ende die meisten hat, gewinnt.</p>
     <div class="bj-fan" aria-hidden="true">${['AS', 'KH', 'TD'].map((x, i) => `<span class="fan${i}">${bjCardHTML(x)}</span>`).join('')}${bjChipHTML(100, 'fanchip')}</div>
+    <span class="lbl">Start-Chips für jeden</span><div class="chips">${BJ_STARTS.map(v => chip('start', v, v.toLocaleString('de-DE'))).join('')}</div>
     <span class="lbl">Runden</span><div class="chips">${BJ_ROUNDS.map(v => chip('rounds', v, v)).join('')}</div>
     <span class="lbl">Zeit pro Zug</span><div class="chips">${K_TIMES.map(([v, l]) => chip('time', v, l)).join('')}</div>
     <button class="btn btn-gold btn-big" type="button" data-act="bj-start" ${n < 1 ? 'disabled' : ''}>Blackjack starten · ${n} Spieler</button>
