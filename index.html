@@ -2658,6 +2658,7 @@ body.icrop-open{overflow:hidden}
   .dt-side{min-width:58px}.dt-side canvas{width:58px;height:44px}.dt-side canvas.sm{height:36px}
   .dt-stats b{font-size:13px}
 }
+.btn.plus.bump{animation:bjPop .35s}
 </style>
 </head>
 <body>
@@ -2676,7 +2677,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=51"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=52"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4692,7 +4693,7 @@ function viewBoard() {
         <span class="who">${avatar(p, 44)}<span class="who-txt"><span class="nm">${nameHTML(p)}</span><span class="xpbar" aria-hidden="true"><i style="width:${(Math.max(0, p.pts) / top * 100).toFixed(1)}%"></i></span></span></span>
         <span class="prize-col">${p.prize > 0 ? `<span class="prize-tag">${COIN(12)}${moneyHTML(p.prize)}${p.shared ? '<small>geteilt</small>' : ''}</span>` : ''}</span>
         <span class="pts">${p.pts}<small>Pkt</small></span>
-        ${adm ? `<button class="btn plus" type="button" data-act="open-points" data-pid="${esc(p.id)}" aria-label="Punkte für ${esc(p.name)} vergeben">+</button>` : ''}
+        ${adm ? `<button class="btn plus" type="button" data-act="pt-plus1" data-pid="${esc(p.id)}" aria-label="+1 Punkt für ${esc(p.name)}">+</button>` : ''}
       </div>`).join('')
     : `<div class="empty-box"><strong>Noch keine Spieler</strong><span>${adm ? 'Leg zuerst die Spieler mit Namen und Foto an.' : 'Der Spielleiter trägt die Spieler gleich ein.'}</span>${adm ? `<button class="btn btn-gold" type="button" data-act="tab" data-tab="spieler">Spieler hinzufügen</button>` : ''}</div>`;
   const feed = recent.length ? recent.map(e => {
@@ -11936,6 +11937,13 @@ const actions = {
   'pd-all': () => { D.pd.sel = D.pd.sel.length === S.players.length ? [] : S.players.map(p => p.id); renderModal(); },
   'pd-amount': b => { D.pd.amount = b.dataset.n; renderModal(); },
   'pd-reason': b => { D.pd.reason = b.dataset.r; renderModal(); },
+  'pt-plus1': b => {
+    if (!S.admin) return; const p = playerById(b.dataset.pid); if (!p) return;
+    ops.addPoints([{id:uid(), playerId:p.id, delta:1, reason:'', ts:Date.now()}]);
+    try { ensureAudio(); bjSnd('chip'); } catch (e) {}
+    b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
+    toast(`+1 Punkt für ${p.name}`);
+  },
   'pd-submit': () => {
     const n = Math.round(Number(D.pd.amount) || 0);
     if (!D.pd.sel.length) { toast('Wähle mindestens einen Spieler aus.'); return; }
