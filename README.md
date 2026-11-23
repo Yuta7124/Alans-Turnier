@@ -143,6 +143,12 @@ Teams stehen in `meta/settings` (`fmt`, `teams`), Team-Punkte als Punkte-Einträ
 Ins Zufallsrad können auch die Server-Spiele (Quiz, Minigolf, Blackjack usw.) aufgenommen werden. Jedes Spiel im Rad
 ist im Team-Modus als „Team“ oder „Solo“ markiert. Punkte vergibt der Spielleiter wie gewohnt mit +/−.
 
+## Geburtstage
+Jedes neue Konto muss seinen Geburtstag (Tag, Monat, Jahr) angeben; bestehende Spieler werden beim nächsten Besuch einmal danach gefragt.
+Hat jemand Geburtstag (deutsche Zeit, 29.2. in normalen Jahren am 28.2.), feiert die ganze Seite: bunter Banner, Ballons, Konfetti, Partyfarben.
+Weil die Firestore-Regeln kein eigenes Feld erlauben, hängt das Datum hinten an `shape` (z. B. `oval~20000314`).
+Vorschau für den Spielleiter: Optionen → Aussehen → 🎂 Geburtstage.
+
 ## Rauswurf bei Inaktivität
 Wer in einer Lobby eine bestimmte Zeit nichts tut (kein Tippen, Klicken, keine Taste), verlässt sie automatisch.
 Eine Minute vorher kommt „Bist du noch da?“. Die Zeit (1–30 Minuten, Standard 30) stellt der Spielleiter unter

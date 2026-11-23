@@ -268,6 +268,29 @@ button.wmode{cursor:pointer}
 .ti-team b{display:block;color:var(--c)}
 .ti-team small{color:var(--muted)}
 #team-card{scroll-margin-top:110px;margin:26px 0 0}
+.bd-row{display:grid;grid-template-columns:0.8fr 1.4fr 1fr;gap:8px}
+.bd-row select{min-width:0;padding-right:6px}
+.bd-field .req{font-size:10px;background:var(--coin);color:#1a1030;padding:2px 6px;border-radius:6px;margin-left:6px;vertical-align:middle}
+#bd-banner{display:none}
+body.is-bday #bd-banner{display:flex;align-items:center;justify-content:center;gap:12px;position:relative;z-index:6;padding:10px 14px;text-align:center;font-weight:800;color:#fff;
+  background:linear-gradient(90deg,#ff4f9a,#ff9f5a,#ffcf3f,#4ff08f,#39d6f2,#c493ff,#ff4f9a);background-size:300% 100%;animation:bdSlide 8s linear infinite;text-shadow:0 2px 0 rgba(0,0,0,.35);box-shadow:0 4px 0 rgba(0,0,0,.35)}
+#bd-banner small{opacity:.85;font-weight:700}
+.bd-cake{font-size:24px;animation:bdBob 1.2s ease-in-out infinite}
+.bd-cake:last-child{animation-delay:.6s}
+@keyframes bdSlide{to{background-position:300% 0}}
+@keyframes bdBob{50%{transform:translateY(-4px) rotate(-8deg)}}
+#bd-layer{position:fixed;inset:0;pointer-events:none;z-index:3;overflow:hidden}
+.bd-ball{position:absolute;left:var(--x);bottom:-140px;width:calc(54px * var(--s));height:calc(66px * var(--s));border-radius:50% 50% 48% 48%;background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.65),transparent 22%),var(--c);
+  opacity:.75;animation:bdRise var(--t) linear infinite;animation-delay:var(--d)}
+.bd-ball::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:60px;background:rgba(255,255,255,.4)}
+.bd-conf{position:absolute;left:var(--x);top:-20px;width:8px;height:13px;background:var(--c);transform:rotate(var(--r));animation:bdFall var(--t) linear infinite;animation-delay:var(--d);opacity:.85}
+@keyframes bdRise{0%{transform:translateY(0) translateX(0)}50%{transform:translateY(-60vh) translateX(18px)}100%{transform:translateY(-130vh) translateX(-10px)}}
+@keyframes bdFall{to{transform:translateY(110vh) rotate(calc(var(--r) + 720deg))}}
+body.is-bday{--coin:#ff6fb5}
+body.is-bday::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 20% 0%,rgba(255,79,154,.22),transparent 55%),radial-gradient(ellipse at 85% 10%,rgba(255,207,63,.18),transparent 50%),radial-gradient(ellipse at 50% 100%,rgba(57,214,242,.14),transparent 60%)}
+body.is-bday .tab[aria-selected="true"]{box-shadow:0 0 0 2px #ff6fb5,0 0 18px rgba(255,111,181,.5)}
+@media (prefers-reduced-motion:reduce){.bd-ball,.bd-conf{animation:none;display:none}#bd-banner{animation:none}}
+@media (max-width:560px){#bd-banner{font-size:13px;gap:8px;padding:8px 10px}.bd-cake{font-size:18px}.bd-row{grid-template-columns:0.8fr 1.5fr 1fr;gap:6px}.bd-row select{font-size:14px;padding-left:8px}}
 .opt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-bottom:24px}
 .opt-tile{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:14px;align-items:center;text-align:left;padding:18px;border:0;border-radius:16px;cursor:pointer;
   background:var(--panel);color:var(--ink);box-shadow:inset 0 0 0 2px rgba(255,255,255,.08),0 6px 0 var(--shadow);font:inherit;min-width:0}
@@ -2794,7 +2817,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=58"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=59"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3874,14 +3897,82 @@ function nameHTML(p) {
 function mottoHTML(p) { return p && p.motto ? `<span class="motto">„${esc(p.motto)}“</span>` : ''; }
 // Endet pbg auf "+s", nutzt der Spieler seinen Profil-Hintergrund auch als Hintergrund der ganzen Seite (nur bei ihm selbst)
 // Schalter hängen als Buchstaben hinten an pbg: "+s" = auch Seiten-Hintergrund, "+t" = Top 10 statt Top 3 im Profil
+/* Geburtstag: Pflicht für jedes Konto. Die Firestore-Regeln kennen dafür kein eigenes Feld, darum hängt das Datum
+   hinten an "shape" (z. B. "oval~20000314"). styleFields liest es als p.bday ("2000-03-14"), dbP schreibt es zurück. */
+const BD_MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+function bdayOk(v) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v || '')); if (!m) return false;
+  const y = +m[1], mo = +m[2], d = +m[3], dt = new Date(Date.UTC(y, mo - 1, d));
+  return y >= 1900 && y <= new Date().getFullYear() && dt.getUTCMonth() === mo - 1 && dt.getUTCDate() === d;
+}
+function shapeBday(v) { const m = /~(\d{4})(\d{2})(\d{2})$/.exec(String(v || '')), b = m ? `${m[1]}-${m[2]}-${m[3]}` : ''; return bdayOk(b) ? b : ''; }
+function dbP(o) {
+  o = {...o};
+  if ('shape' in o || 'bday' in o) { const b = bdayOk(o.bday) ? o.bday : shapeBday(o.shape); o.shape = pickOpt(SHAPES, String(o.shape || '').replace(/~\d*$/, '')) + (b ? '~' + b.replace(/-/g, '') : ''); }
+  delete o.bday; delete o.bdd; delete o.bdm; delete o.bdy; return o;
+}
+function bdayText(b) { if (!bdayOk(b)) return ''; const [y, m, d] = b.split('-').map(Number); return `${d}. ${BD_MONTHS[m - 1]} ${y}`; }
+function bdayFieldHTML(prefix, d) {
+  if (d.bdd == null && bdayOk(d.bday)) { const [y, m, dd] = d.bday.split('-'); d.bdy = y; d.bdm = String(+m); d.bdd = String(+dd); }
+  const yNow = new Date().getFullYear(), opt = (v, l, cur) => `<option value="${v}" ${String(cur || '') === String(v) ? 'selected' : ''}>${l}</option>`;
+  return `<div class="field bd-field"><span class="lbl">🎂 Geburtstag <b class="req">Pflicht</b></span>
+    <div class="bd-row">
+      <select class="input" data-bd="${prefix}" data-k="d" aria-label="Tag">${opt('', 'Tag', d.bdd)}${Array.from({length:31}, (_, i) => opt(i + 1, i + 1, d.bdd)).join('')}</select>
+      <select class="input" data-bd="${prefix}" data-k="m" aria-label="Monat">${opt('', 'Monat', d.bdm)}${BD_MONTHS.map((m, i) => opt(i + 1, m, d.bdm)).join('')}</select>
+      <select class="input" data-bd="${prefix}" data-k="y" aria-label="Jahr">${opt('', 'Jahr', d.bdy)}${Array.from({length:yNow - 1919}, (_, i) => opt(yNow - i, yNow - i, d.bdy)).join('')}</select>
+    </div>
+    <small class="muted">An deinem Geburtstag feiert die ganze Seite mit dir. 🎉</small></div>`;
+}
+function bdaySetPart(prefix, k, v) {
+  const d = D[prefix]; if (!d) return;
+  d['bd' + k] = v;
+  const b = d.bdy && d.bdm && d.bdd ? `${d.bdy}-${String(d.bdm).padStart(2, '0')}-${String(d.bdd).padStart(2, '0')}` : '';
+  d.bday = bdayOk(b) ? b : '';
+}
+function bdayMissingMsg(d) { return d.bdy && d.bdm && d.bdd && !d.bday ? 'Dieses Datum gibt es nicht. Prüf Tag und Monat.' : 'Gib deinen Geburtstag ein (Tag, Monat und Jahr).'; }
+/* Wer hat heute (deutsche Zeit) Geburtstag? 29. Februar feiert in normalen Jahren am 28. */
+let bdCache = {k:'', list:[]};
+function bdayKids() {
+  const t = berlinParts(Date.now()), key = `${t.year}-${t.month}-${t.day}:${S.players.length}:${S.players.map(p => p.bday).join()}`;
+  if (bdCache.k === key) return bdCache.list;
+  const y = +t.year, leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0, md = `${t.month}-${t.day}`;
+  const list = S.players.filter(p => { if (!p.bday) return false; let m = p.bday.slice(5); if (m === '02-29' && !leap) m = '02-28'; return m === md; })
+    .map(p => ({p, age:y - +p.bday.slice(0, 4)}));
+  bdCache = {k:key, list}; return list;
+}
+function bdaySync() {
+  const kids = D.bdPreview && !bdayKids().length ? [{p:{name:'Vorschau', id:''}, age:0}] : bdayKids(), on = kids.length > 0;
+  document.body.classList.toggle('is-bday', on);
+  let lay = document.getElementById('bd-layer');
+  if (!on) { if (lay) lay.remove(); return; }
+  const txt = kids.map(k => esc(k.p.name) + (k.age > 0 ? ` <small>(wird ${k.age})</small>` : '')).join(' &amp; ');
+  if (!lay) {
+    lay = document.createElement('div'); lay.id = 'bd-layer'; lay.setAttribute('aria-hidden', 'true');
+    const cols = ['#ff4f9a', '#ffcf3f', '#39d6f2', '#4ff08f', '#c493ff', '#ff9f5a'];
+    lay.innerHTML = Array.from({length:12}, (_, i) => `<i class="bd-ball" style="--x:${(i * 8.3 + Math.random() * 5).toFixed(1)}%;--c:${cols[i % cols.length]};--t:${(11 + Math.random() * 9).toFixed(1)}s;--d:${(-Math.random() * 18).toFixed(1)}s;--s:${(0.7 + Math.random() * .6).toFixed(2)}"></i>`).join('')
+      + Array.from({length:40}, (_, i) => `<b class="bd-conf" style="--x:${(Math.random() * 100).toFixed(1)}%;--c:${cols[i % cols.length]};--t:${(6 + Math.random() * 7).toFixed(1)}s;--d:${(-Math.random() * 12).toFixed(1)}s;--r:${Math.round(Math.random() * 360)}deg"></b>`).join('');
+    document.body.appendChild(lay);
+  }
+  let ban = document.getElementById('bd-banner');
+  const html = `<span class="bd-cake">🎂</span><span class="bd-txt">Heute hat <b>${txt}</b> Geburtstag! Alles Gute! 🎉</span><span class="bd-cake">🎈</span>`;
+  if (!ban) { ban = document.createElement('div'); ban.id = 'bd-banner'; ban.setAttribute('role', 'status'); const hd = document.querySelector('header'); (hd && hd.parentNode ? hd.parentNode : document.body).insertBefore(ban, hd ? hd.nextSibling : document.body.firstChild); }
+  if (ban.dataset.h !== html) { ban.innerHTML = html; ban.dataset.h = html; }
+}
+/* Fehlt beim eigenen Spieler der Geburtstag, fragt die Seite einmal danach (Pflicht). */
+function bdayAsk() {
+  if (S.admin || S.modal || D.bdAskOff || S.mode !== 'db' || !S.loaded) return;
+  const me = playerById(myPid()); if (!me || me.bday || !ownEdit(me)) return;
+  D.ep = {...me, crop:null}; openModal({type:'bday-ask'});
+}
 const pbgFlags = v => (String(v || '').match(/\+([a-z]+)$/) || [, ''])[1];
 const pbgSite = v => pbgFlags(v).includes('s');
 const pbgTop10 = v => pbgFlags(v).includes('t');
 const pbgFocus = v => focusParse(v);
 function pbgNorm(v) { v = String(v || '').replace(/\+[a-z]+$/, '').replace(/@[\d.,]+/, ''); return v === 'none' || v === 'img' || /^g:[A-Za-z0-9_-]{1,36}$/.test(v) ? v : 'auto'; }
 function styleFields(d) { return {font:pickOpt(FONTS, d.font), grad:pickOpt(GRADS, d.grad), frame:pickOpt(FRAMES, d.frame), motto:str(d.motto, 40),
-  shape:pickOpt(SHAPES, d.shape), pbg:(() => { const f = ((d.psite != null ? d.psite : pbgSite(d.pbg)) ? 's' : '') + ((d.ptop != null ? d.ptop : pbgTop10(d.pbg)) ? 't' : ''); const fo = d.pfoc != null ? d.pfoc : (String(d.pbg || '').match(/@[\d.,]+/) || [''])[0]; return pbgNorm(d.pbg) + (fo && fo !== '@50,50,1' ? fo : '') + (f ? '+' + f : ''); })(), pblur:Math.round(num(d.pblur, 0, 40, 18)), pdim:Math.round(num(d.pdim, 10, 100, 45))}; }
-const blankPlayer = color => ({name:'', avatar:'', color:color || '', font:'std', grad:'none', frame:'std', motto:'', shape:'std', pbg:'auto', pblur:18, pdim:45, crop:null});
+  bday:d.bday != null ? (bdayOk(d.bday) ? d.bday : '') : shapeBday(d.shape),
+  shape:pickOpt(SHAPES, String(d.shape || '').replace(/~\d*$/, '')), pbg:(() => { const f = ((d.psite != null ? d.psite : pbgSite(d.pbg)) ? 's' : '') + ((d.ptop != null ? d.ptop : pbgTop10(d.pbg)) ? 't' : ''); const fo = d.pfoc != null ? d.pfoc : (String(d.pbg || '').match(/@[\d.,]+/) || [''])[0]; return pbgNorm(d.pbg) + (fo && fo !== '@50,50,1' ? fo : '') + (f ? '+' + f : ''); })(), pblur:Math.round(num(d.pblur, 0, 40, 18)), pdim:Math.round(num(d.pdim, 10, 100, 45))}; }
+const blankPlayer = color => ({name:'', avatar:'', color:color || '', font:'std', grad:'none', frame:'std', motto:'', shape:'std', bday:'', pbg:'auto', pblur:18, pdim:45, crop:null});
 
 const CROP_V = 220;
 function cropGeom(c) {
@@ -4182,7 +4273,7 @@ const ops = {
   savePlayer(p) {
     const i = S.players.findIndex(x => x.id === p.id);
     if (i >= 0) S.players[i] = p; else S.players.push(p);
-    render(); return write('players/' + p.id, body(p));
+    render(); return write('players/' + p.id, body(dbP(p)));
   },
   async deletePlayer(id) {
     const mine = S.points.filter(e => e.playerId === id);
@@ -4501,6 +4592,7 @@ function designCardHTML() {
 function render() {
   applyDesign();
   eventSync();
+  try { bdaySync(); } catch (e) {}
   renderHeader();
   const m = $('#main');
   let html;
@@ -4939,6 +5031,8 @@ function savePlayerEdit(d) {
   const name = str(d.name, 40);
   if (!name) { toast('Gib einen Namen ein.'); return; }
   if (d.crop) { toast('Tipp erst auf „Zuschnitt übernehmen“.'); return; }
+  if (!S.admin && !d.bday) { toast(bdayMissingMsg(d)); return; }
+  if (S.admin && d.bdy && d.bdm && d.bdd && !d.bday) { toast(bdayMissingMsg(d)); return; }
   if (!S.admin) { saveOwnPlayer(d); return; }
   const old = playerById(d.id) || {};
   const p = {id:d.id, name, avatar:d.avatar || '', color:d.color, createdAt:d.createdAt || Date.now(), wins:old.wins || 0, ...styleFields(d), ...(old.byGuest ? {byGuest:true} : {}), ...(old.kh ? {kh:old.kh} : {})};
@@ -4982,6 +5076,7 @@ function playerForm(prefix, d) {
     ${photo}
     <div class="field"><label for="${prefix}-name">Name</label>
       <input class="input" id="${prefix}-name" data-draft="${prefix}.name" data-live="pname" data-prefix="${prefix}" value="${esc(d.name)}" maxlength="40" placeholder="z. B. Lena" autocomplete="off"></div>
+    ${bdayFieldHTML(prefix, d)}
     <div class="field"><label for="${prefix}-motto">Spruch (optional)</label>
       <input class="input" id="${prefix}-motto" data-draft="${prefix}.motto" value="${esc(d.motto || '')}" maxlength="40" placeholder="z. B. Ich hol mir den Pott!" autocomplete="off"></div>
     <div class="pf-sec"><span class="lbl">Farbe</span>
@@ -5098,6 +5193,8 @@ function viewSettings() {
       <div><button class="btn btn-gold" type="submit" id="st-save" ${splitValid() ? '' : 'disabled'}>Speichern</button></div>
     </form>`,
     look: () => `${designCardHTML()}
+    <div class="card share-card"><h3>🎂 Geburtstage</h3><p class="m-text">Hat ein Spieler Geburtstag, feiert die ganze Seite: Banner, Ballons, Konfetti und Partyfarben. ${(() => { const k = bdayKids(); return k.length ? `Heute: <b>${k.map(x => esc(x.p.name)).join(', ')}</b> 🎉` : `Eingetragen: ${S.players.filter(p => p.bday).length} von ${S.players.length} Spielern.`; })()}</p>
+      <div class="chips"><button class="btn btn-sm" type="button" data-act="bd-preview" aria-pressed="${!!D.bdPreview}">${D.bdPreview ? 'Vorschau beenden' : '👀 Vorschau ansehen'}</button></div></div>
     ${picsCardHTML()}`,
     musik: () => `${bgmCardHTML()}
     ${musicCardHTML()}`,
@@ -11903,6 +12000,11 @@ function renderModal() {
     <p class="m-text">Dein Gerät hat das automatische Kopieren blockiert. Halte den Link gedrückt oder markiere ihn und kopiere ihn von Hand.</p>
     <input class="input" id="share-link-m" readonly value="${SHARE_URL}" aria-label="Link zur Seite">
     <div class="m-foot"><button class="btn btn-gold" type="button" data-act="select-link" data-autofocus>Link markieren</button></div>`;
+  else if (m.type === 'bday-ask') inner = `
+    <div class="m-head"><h2 id="m-title">🎂 Wann hast du Geburtstag?</h2></div>
+    <p class="m-text">Neu bei Darkime: Jeder trägt seinen Geburtstag ein. An deinem Geburtstag feiert die ganze Seite mit dir!</p>
+    ${D.ep ? bdayFieldHTML('ep', D.ep) : ''}
+    <div class="m-foot"><button class="btn btn-gold" type="button" data-act="bday-save" data-autofocus>Speichern</button></div>`;
   else if (m.type === 'afk') inner = `
     <div class="m-head"><h2 id="m-title">⏱️ Bist du noch da?</h2></div>
     <p class="m-text">Du warst eine Weile nicht aktiv. In einer Minute wirst du automatisch aus der Lobby geworfen.</p>
@@ -12206,6 +12308,8 @@ const actions = {
     toast(`+1 Punkt für ${p.name}`);
   },
   'opt-sec': b => { D.optSec = b.dataset.s || ''; render(); scrollTo({top:0, behavior:'instant'}); },
+  'bday-save': () => { const d = D.ep; if (!d) return; if (!d.bday) { toast(bdayMissingMsg(d)); return; } saveOwnPlayer(d); },
+  'bd-preview': () => { D.bdPreview = !D.bdPreview; render(); toast(D.bdPreview ? '🎂 Geburtstags-Look an (nur bei dir)' : 'Vorschau aus'); },
   'afk-set': b => {
     if (!S.admin) return; const v = Number(b.dataset.v); ops.saveSettings(normSettings({...S.settings, afk:v})); toast(`Rauswurf nach ${v} ${v === 1 ? 'Minute' : 'Minuten'} ohne Aktivität`);
   },
@@ -12336,7 +12440,7 @@ const actions = {
 Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions, dtActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
-  if (e.target.classList && e.target.classList.contains('scrim')) { closeModal(); return; }
+  if (e.target.classList && e.target.classList.contains('scrim')) { if (!(S.modal && S.modal.type === 'bday-ask')) closeModal(); return; }
   const b = e.target.closest('[data-act]');
   if (!b || b.disabled) return;
   const fn = actions[b.dataset.act];
@@ -12371,6 +12475,7 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', async e => {
   const t = e.target;
+  if (t.dataset && t.dataset.bd) { bdaySetPart(t.dataset.bd, t.dataset.k, t.value); return; }
   if (t.hasAttribute && t.hasAttribute('data-afk')) {
     if (!S.admin) return; const v = Number(t.value); ops.saveSettings(normSettings({...S.settings, afk:v})); toast(`Rauswurf nach ${v} ${v === 1 ? 'Minute' : 'Minuten'} ohne Aktivität`);
     return;
@@ -12554,7 +12659,7 @@ document.addEventListener('submit', e => {
   }
 });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && S.modal) { closeModal(); return; }
+  if (e.key === 'Escape' && S.modal && S.modal.type !== 'bday-ask') { closeModal(); return; }
   if (!S.modal && S.tab === 'malen' && (e.ctrlKey || e.metaKey) && dcCan()) {
     const k = e.key.toLowerCase();
     if (k === 'z' && !e.shiftKey) { e.preventDefault(); dcUndo(); return; }
@@ -12933,6 +13038,7 @@ let afkLast = Date.now(), afkWarned = false;
 function afkPing() { afkLast = Date.now(); if (afkWarned) { afkWarned = false; if (S.modal && S.modal.type === 'afk') closeModal(); } }
 ['pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(ev => document.addEventListener(ev, afkPing, {passive:true, capture:true}));
 setInterval(() => {
+  try { bdayAsk(); } catch (e) {}
   if (!S.room) { afkLast = Date.now(); afkWarned = false; return; }
   const lim = (S.settings.afk || 30) * 60000, idle = Date.now() - afkLast;
   if (idle >= lim) {
@@ -13167,12 +13273,13 @@ async function createGuestPlayer() {
   if (!name) { toast('Gib einen Namen ein.'); return; }
   if (S.mode !== 'db' || !db) return;
   if (D.gp.crop) { toast('Tipp erst auf „Zuschnitt übernehmen“.'); return; }
+  if (!D.gp.bday) { toast(bdayMissingMsg(D.gp)); const el = document.querySelector('[data-bd="gp"]'); if (el) el.focus(); return; }
   const id = uid();
   const avatar = await shrinkImg(D.gp.avatar, 120, .7);
   const key = newKey();
   try {
     pkeyPut(id, [key]);
-    await db.collection('players').doc(id).set({name, color:D.gp.color || COLORS[0], avatar, createdAt:Date.now(), byGuest:true, kh:await sha256hex(key), ...styleFields(D.gp)});
+    await db.collection('players').doc(id).set({name, color:D.gp.color || COLORS[0], avatar, createdAt:Date.now(), byGuest:true, kh:await sha256hex(key), ...dbP(styleFields(D.gp))});
     lsSet('turnier-me', id);
     D.gp = blankPlayer('');
     closeModal(); render();
@@ -13201,7 +13308,7 @@ async function saveOwnPlayer(d) {
   const old = playerById(d.id), how = ownEdit(old);
   if (!how || !db) { toast('Diesen Spieler kann nur der Spielleiter ändern.'); return; }
   const name = str(d.name, 40);
-  const fields = {name, color:d.color || old.color, avatar:await shrinkImg(d.avatar || '', 120, .7), ...styleFields(d)};
+  const fields = dbP({name, color:d.color || old.color, avatar:await shrinkImg(d.avatar || '', 120, .7), ...styleFields(d)});
   const ref = db.collection('players').doc(d.id);
   try {
     let keys = pkeyOf(d.id);
