@@ -1616,6 +1616,7 @@ button.bcell[disabled]{cursor:default}
 .ti-auto i{display:block;height:100%;width:100%;background:var(--coin);transform-origin:left;animation:tiAuto 15s linear forwards}
 @keyframes tiAuto{from{transform:scaleX(1)}to{transform:scaleX(0)}}
 .wm-go{display:block;margin-top:8px;font-weight:800;color:var(--coin)}
+.wm-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .hub-admin{display:flex;justify-content:center;margin:8px 0 0}
 .hub-stop{background:rgba(255,79,109,.14);color:#ff9fb2;box-shadow:inset 0 0 0 2px rgba(255,79,109,.45)}
 .hub-stop:hover{background:rgba(255,79,109,.25)}
@@ -4313,7 +4314,7 @@ function normSettings(x) {
     fmt: [1, 2, 3, 4].includes(Number(x.fmt)) ? Number(x.fmt) : 1, teams: normTeams(x.teams),
     afk: Math.min(30, Math.max(1, Math.round(Number(x.afk)) || 30)),
     pshow: ['places', 'total', 'both'].includes(x.pshow) ? x.pshow : 'places',
-    tgo: x.tgo && typeof x.tgo === 'object' && ROOMS.includes(x.tgo.room) ? {id:str(x.tgo.id, 40), room:x.tgo.room, kind:str(x.tgo.kind, 8), at:Number(x.tgo.at) || 0} : null
+    tgo: x.tgo && typeof x.tgo === 'object' && ['r1', 'r2', 'r3', 'rt'].includes(x.tgo.room) ? {id:str(x.tgo.id, 40), room:x.tgo.room, kind:str(x.tgo.kind, 8), at:Number(x.tgo.at) || 0, go:Number(x.tgo.go) || 0} : null
   };
 }
 function normTeams(a) {
@@ -5600,7 +5601,7 @@ function viewWheel() {
     ? `<div class="wheel-msg"><span class="eyebrow">Das Rad dreht sich</span><b class="wm-big">Daumen drücken …</b></div>`
     : done
       ? (() => { const it = w.items.find(x => x.id === w.spin.winner.id) || w.spin.winner;
-          return `<div class="wheel-msg win"><span class="eyebrow">Als Nächstes wird gespielt</span><b class="wm-big">${it.srv ? SRV_ICON[it.srv] + ' ' : ''}${esc(w.spin.winner.label)}</b>${teamMode() ? `<span class="wm-mode">${itemMode(it) === 'team' ? `👥 Im Team (${fmtName()})` : '⚔️ Jeder gegen jeden'}</span>` : ''}${it.srv ? (tourKey() && S.settings.tgo && S.settings.tgo.id === w.spin.id && Date.now() < S.settings.tgo.at + 90000 ? `<span class="wm-go" data-cd-go="${S.settings.tgo.at}">🏆 ${Date.now() < S.settings.tgo.at ? `In ${Math.ceil((S.settings.tgo.at - Date.now()) / 1000)} s geht es in die Turnier-Lobby` : 'Ab in die Turnier-Lobby!'}</span><button class="btn btn-sm" type="button" data-act="tgo-join">Jetzt rein</button>` : tourKey() ? '<span class="wm-go">🏆 Die Turnier-Lobby wird vorbereitet …</span>' : `<button class="btn btn-sm" type="button" data-act="tab" data-tab="spiele">🎮 Zu den Spielräumen</button>`) : ''}</div>`; })()
+          return `<div class="wheel-msg win"><span class="eyebrow">Als Nächstes wird gespielt</span><b class="wm-big">${it.srv ? SRV_ICON[it.srv] + ' ' : ''}${esc(w.spin.winner.label)}</b>${teamMode() ? `<span class="wm-mode">${itemMode(it) === 'team' ? `👥 Im Team (${fmtName()})` : '⚔️ Jeder gegen jeden'}</span>` : ''}${it.srv ? tgoMsgHTML(w.spin.id, it.srv) : ''}</div>`; })()
       : `<div class="wheel-msg"><span class="eyebrow">Zufallsrad</span><b class="wm-big">${w.items.length ? 'Bereit zum Drehen' : 'Noch leer'}</b></div>`;
   const cols = segColors(w.items.length);
   const chips = w.items.length ? `<div class="witems">${w.items.map((it, i) => `<span class="wchip ${it.id === winnerId ? 'is-win' : ''}" style="--c:${cols[i]}"><i></i>${it.srv ? `<span class="wsrv-ic" title="Server-Spiel">${SRV_ICON[it.srv]}</span>` : ''}${esc(it.label)}${modeBadge(it, adm, spinning)}${adm ? `<button class="x" type="button" data-act="wheel-del" data-id="${esc(it.id)}" ${spinning ? 'disabled' : ''} aria-label="${esc(it.label)} aus dem Rad löschen">×</button>` : ''}</span>`).join('')}</div>`
@@ -6942,6 +6943,8 @@ const golfActions = {
 
 /* ---------- Räume: Quiz, Malen und Golf jederzeit, ohne Spielleiter ---------- */
 const ROOMS = ['r1', 'r2', 'r3'];
+/* rt = eigene Turnier-Lobby: nur für Turnier-Spieler, immer privat, taucht nicht bei den normalen Räumen auf */
+const TOUR_ID = 'rt', ALL_ROOMS = [...ROOMS, TOUR_ID];
 const ROOM_MAX = 8;
 const DUO_KINDS = ['tt', 'ah'];
 function roomMax(L) { return ROOM_MAX; }
@@ -6955,8 +6958,8 @@ function normLobby(id, x) {
   for (const [pid, v] of Object.entries(m)) if (pid && pid.length <= 40 && v && typeof v === 'object') members[pid] = {at:Number(v.at) || 0, dev:str(v.dev, 60)};
   const host = x.host && typeof x.host === 'object' && x.host.dev ? {pid:str(x.host.pid, 40), dev:str(x.host.dev, 60)} : null;
   const inv = Object.fromEntries(Object.keys(x.inv && typeof x.inv === 'object' && !Array.isArray(x.inv) ? x.inv : {}).filter(k => k && k.length <= 40).slice(0, 40).map(k => [k, true]));
-  const tour = x.name === TOUR_ROOM || x.tour === true;
-  return {id, name:tour ? '🏆 Turnier-Lobby' : ROOM_NAMES[id] || id, tour, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true, inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw'].includes(x.kind) ? x.kind : '',
+  const tour = id === 'rt' || x.name === TOUR_ROOM || x.tour === true;
+  return {id, name:tour ? '🏆 Turnier-Lobby' : ROOM_NAMES[id] || id, tour, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true || id === 'rt', inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw'].includes(x.kind) ? x.kind : '',
     quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null, uno:x.uno && typeof x.uno === 'object' ? x.uno : null,
     hs:Object.fromEntries(Object.entries(x.hs && typeof x.hs === 'object' && !Array.isArray(x.hs) ? x.hs : {}).filter(([pid, v]) => pid.length <= 40 && Number.isFinite(Number(v))).map(([pid, v]) => [pid, Math.round(Number(v))])),
     bots:Object.fromEntries(Object.entries(x.bots && typeof x.bots === 'object' && !Array.isArray(x.bots) ? x.bots : {}).filter(([id, b]) => id.startsWith('bot_') && id.length <= 40 && b && typeof b === 'object').slice(0, ROOM_MAX)
@@ -7003,7 +7006,7 @@ function lobbyHsHTML(L = lobby(), max = 10, inModal = false) {
 function lobby(id = S.room) { return id ? (S.lobbies[id] || normLobby(id, null)) : null; }
 function myPid() { const me = lsGet('turnier-me', ''); return me && playerById(me) ? me : ''; }
 function roomMembers(L) { return L ? Object.entries(L.members).sort((a, b) => a[1].at - b[1].at).map(e => e[0]).filter(id => playerById(id)) : []; }
-function myRoom() { const me = myPid(); return me ? ROOMS.find(r => S.lobbies[r] && S.lobbies[r].members[me]) || '' : ''; }
+function myRoom() { const me = myPid(); return me ? ALL_ROOMS.find(r => S.lobbies[r] && S.lobbies[r].members[me]) || '' : ''; }
 function ctl() { const L = S.room && S.lobbies[S.room]; return !!(L && L.host && L.host.dev === devId); }
 /* Privater Raum: Nur wer eingeladen ist, kann beitreten oder zuschauen. Ist der Host 10 Minuten weg, ist der Raum wieder offen. */
 const PRIV_MS = 600000;
@@ -7122,11 +7125,13 @@ document.addEventListener('visibilitychange', () => {
   if (humans.length === 1 && humans[0] === myPid()) pzSet(true, true);
 });
 /* ---------- Turnier-Lobby ----------
-   Zieht das Zufallsrad im laufenden Turnier ein Server-Spiel, legt der Admin 10 Sekunden später eine eigene Lobby an
-   (ein freier Raum, Name „TOUR“, privat, eingeladen sind die Turnier-Spieler) und schreibt settings.tgo = {id, room, kind, at}.
-   Zum Zeitpunkt at wechseln alle Turnier-Spieler automatisch dorthin; der Admin ist Host und startet das Spiel. */
+   Zieht das Zufallsrad im laufenden Turnier ein Server-Spiel, legt der Admin die eigene Turnier-Lobby rt an (privat, eingeladen sind
+   nur die Turnier-Spieler, der Admin ist Host) und schreibt settings.tgo = {id, room, kind, go:0}. Klickt der Admin auf
+   „Alle rüber“, setzt er go = Zeitpunkt: Dann wechseln alle Turnier-Spieler gleichzeitig dorthin. Nochmal klicken holt Nachzügler.
+   Fehlt die Regel für rt noch, nimmt er wie früher einen freien Raum 1 bis 3. */
 const TGO_WAIT = 10000;
-function tourLobbyActive(r) { const t = S.settings.tgo; return !!(t && t.room === r && tourKey() && Date.now() - t.at < 4 * 3600000); }
+function tourLobbyActive(r) { const t = S.settings.tgo; return !!(t && t.room === r && tourKey()); }
+function tourLobbyVisible() { const t = S.settings.tgo, me = myPid(), L = lobby(TOUR_ID); return !!(t && t.room === TOUR_ID && tourKey() && (S.admin || (me && (L.inv[me] || L.members[me])))); }
 function tourPlayersForLobby() { const inL = tourIn(); return inL.length ? inL : S.players.filter(p => !isBot(p.id)).map(p => p.id); }
 function tourLobbyPick() {
   const free = ROOMS.find(r => !roomHumans(lobby(r)).length);
@@ -7134,29 +7139,55 @@ function tourLobbyPick() {
 }
 async function tourLobbyPrepare(t) {
   const me = myPid(), inv = Object.fromEntries(tourPlayersForLobby().slice(0, 40).map(id => [id, true]));
+  if (me) inv[me] = true;
   const doc = {name:TOUR_ROOM, members:me ? {[me]:{at:Date.now(), dev:devId}} : {}, bots:{}, host:me ? {pid:me, dev:devId} : null, hostSeen:Date.now(),
     kind:t.kind, quiz:null, draw:null, golf:null, uno:null, priv:true, inv};
-  if (me) inv[me] = true;
-  try { await roomRef(t.room).set(doc); } catch (e) { toast('Die Turnier-Lobby konnte nicht angelegt werden.'); }
+  const old = myRoom();
+  if (old && old !== TOUR_ID) await roomLeave(old, true);
+  try { await roomRef(TOUR_ID).set(doc); t.room = TOUR_ID; return true; } catch (e) {}
+  t.room = tourLobbyPick();
+  try { await roomRef(t.room).set(doc); return true; } catch (e) { toast('Die Turnier-Lobby konnte nicht angelegt werden.'); return false; }
+}
+/* Admin: alle Turnier-Spieler gleichzeitig in die Turnier-Lobby schicken (und selbst mitgehen) */
+function tourLobbyGo() {
+  const t = S.settings.tgo; if (!S.admin || !t) return;
+  const go = Date.now();
+  ops.saveSettings(normSettings({...S.settings, tgo:{...t, go}}));
+  D.tgoDone = t.id + ':' + go;
+  const join = () => roomJoin(t.room).then(() => { if (S.room === t.room) setTab(roomView()); });
+  const me = myPid();
+  if (me && lobby(t.room).members[me]) { roomSet(t.room); setTab(roomView()); } else join();
+  toast('🏆 Alle Turnier-Spieler wechseln jetzt in die Turnier-Lobby.');
+}
+function tgoMsgHTML(spinId, kind) {
+  const t = S.settings.tgo, nm = GAME_KIND_NAME[kind] || 'Spiel';
+  if (!tourKey()) return `<button class="btn btn-sm" type="button" data-act="tab" data-tab="spiele">🎮 Zu den Spielräumen</button>`;
+  if (!t || t.id !== spinId) return '<span class="wm-go">🏆 Die Turnier-Lobby wird vorbereitet …</span>';
+  const me = myPid(), L = lobby(t.room), inside = !!(me && L.members[me]);
+  if (S.admin) return t.go
+    ? `<span class="wm-go">🏆 Alle sind auf dem Weg in die Turnier-Lobby.</span><div class="wm-btns">${inside ? `<button class="btn btn-sm btn-gold" type="button" data-act="tgo-join">Zur Turnier-Lobby</button>` : ''}<button class="btn btn-sm" type="button" data-act="tgo-go">🔁 Nachzügler nochmal holen</button></div>`
+    : `<span class="wm-go">🏆 Die Turnier-Lobby für ${esc(nm)} ist bereit. Klick, dann wechseln alle gleichzeitig.</span><button class="btn btn-gold" type="button" data-act="tgo-go">🏆 Alle rüber: ${esc(nm)}</button>`;
+  if (!L.inv[me]) return '';
+  return t.go ? `<span class="wm-go">🏆 Ab in die Turnier-Lobby!</span>${inside ? '' : `<button class="btn btn-sm" type="button" data-act="tgo-join">Jetzt rein</button>`}`
+    : '<span class="wm-go">🏆 Gleich geht\'s los: Der Admin schickt alle gleichzeitig in die Turnier-Lobby.</span>';
 }
 function tourLobbyTick() {
-  document.querySelectorAll('[data-cd-go]').forEach(el => { const s = Math.ceil((+el.dataset.cdGo - Date.now()) / 1000); const t = s > 0 ? `🏆 In ${s} s geht es in die Turnier-Lobby` : '🏆 Ab in die Turnier-Lobby!'; if (el.textContent !== t) el.textContent = t; });
   if (S.mode !== 'db' || !db) return;
   const now = Date.now(), t = S.settings.tgo, w = S.wheel, sp = w && w.spin;
-  // Admin: Server-Spiel gezogen → Lobby vorbereiten und Startzeit festlegen
+  // Admin: Server-Spiel gezogen → Lobby vorbereiten (die Spieler wechseln erst, wenn er auf „Alle rüber“ klickt)
   if (S.admin && tourKey() && sp && sp.winner && sp.winner.srv && !wheelSpinning() && (!t || t.id !== sp.id) && now - (sp.startedAt + sp.duration) < 30000 && D.tgoMade !== sp.id) {
     D.tgoMade = sp.id;
-    const tg = {id:sp.id, room:tourLobbyPick(), kind:sp.winner.srv, at:Math.max(now, sp.startedAt + sp.duration) + TGO_WAIT};
-    tourLobbyPrepare(tg).then(() => ops.saveSettings(normSettings({...S.settings, tgo:tg})));
+    const tg = {id:sp.id, room:TOUR_ID, kind:sp.winner.srv, at:0, go:0};
+    tourLobbyPrepare(tg).then(ok => { if (ok) ops.saveSettings(normSettings({...S.settings, tgo:tg})); });
     return;
   }
-  // Alle: zur Startzeit in die Turnier-Lobby wechseln
-  if (!t || !tourKey() || now < t.at || now - t.at > 90000 || D.tgoDone === t.id) return;
+  // Alle: Hat der Admin „Alle rüber“ geklickt, wechseln die Turnier-Spieler sofort
+  if (!t || !t.go || !tourKey() || now - t.go > 300000 || D.tgoDone === t.id + ':' + t.go) return;
   const me = myPid(); if (!me) return;
-  const inL = tourIn(), ok = S.admin || (inL.length ? inL.includes(me) : groupOf(S.tab) === 'turnier');
-  D.tgoDone = t.id;
+  D.tgoDone = t.id + ':' + t.go;
+  const L = lobby(t.room), ok = S.admin || !!L.inv[me];
   if (!ok) return;
-  if (S.room === t.room && lobby(t.room).members[me]) { setTab(roomView()); return; }
+  if (S.room === t.room && L.members[me]) { if (S.tab !== roomView()) setTab(roomView()); return; }
   roomJoin(t.room).then(() => { if (S.room === t.room) { setTab(roomView()); toast(`🏆 Ab in die Turnier-Lobby: ${GAME_KIND_NAME[t.kind] || 'Spiel'}!`); } });
 }
 /* Tischtennis/Air-Hockey: Reine Ball-/Puck-Updates zeichnet die Spielschleife selbst. Die ganze Seite wird nur neu aufgebaut,
@@ -7193,7 +7224,7 @@ function roomApply() {
 }
 function onLobbies(sn) {
   const m = {};
-  sn.docs.forEach(d => { if (ROOMS.includes(d.id)) m[d.id] = normLobby(d.id, d.data()); });
+  sn.docs.forEach(d => { if (ALL_ROOMS.includes(d.id)) m[d.id] = normLobby(d.id, d.data()); });
   S.lobbies = m;
   const mine = myRoom();
   if (mine && (S.room !== mine || S.spectate)) roomSet(mine);
@@ -7232,7 +7263,7 @@ async function roomJoin(r) {
   const old = myRoom();
   if (old && old !== r) await roomLeave(old, true);
   const patch = {members:{[me]:{at:Date.now(), dev:devId}}};
-  if (!roomHumans(L).length && !(L.tour && tourLobbyActive(r))) {
+  if (!roomHumans(L).length && r !== TOUR_ID && !(L.tour && tourLobbyActive(r))) {
     // Leerer Raum (höchstens übrig gebliebene Bots): frisch anfangen
     if (L.tour) patch.name = '';
     patch.kind = ''; patch.quiz = null; patch.draw = null; patch.golf = null; patch.uno = null; patch.bots = {}; patch.priv = false; patch.inv = {};
@@ -7257,7 +7288,7 @@ async function roomLeave(r = S.room, silent = false) {
     patch.hostSeen = next ? Date.now() : 0;
   }
   // Geht der letzte Mensch, gehen auch die Bots
-  if (!rest.length) patch = {members:{}, bots:{}, kind:'', quiz:null, draw:null, golf:null, uno:null, host:null, hostSeen:0, priv:false, inv:{}};
+  if (!rest.length) patch = r === TOUR_ID ? {members:{}, bots:{}, uno:null, host:null, hostSeen:0} : {members:{}, bots:{}, kind:'', quiz:null, draw:null, golf:null, uno:null, host:null, hostSeen:0, priv:false, inv:{}};
   try { await roomRef(r).update(patch); } catch (e) {}
   if (r === S.room) roomSet('');
   if (!silent) { setTab('spiele'); toast(`Du hast ${L.name} verlassen.`); }
@@ -7277,8 +7308,9 @@ function roomTake() {
 function roomKind(k) { if (!ctl()) return;
   D.dnew = false; S.lobbies[S.room] = {...lobby(), kind:k}; roomWrite({kind:k}); S.tab = roomView(); render(); }
 function roomReset(r) {
-  confirmBox(`${ROOM_NAMES[r]} zurücksetzen?`, 'Alle fliegen aus dem Raum und ein laufendes Spiel wird abgebrochen.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Zurücksetzen', cls:'btn-gold', fn:() => {
-    db.collection('lobbies').doc(r).set({members:{}, bots:{}, host:null, hostSeen:0, kind:'', quiz:null, draw:null, golf:null, uno:null}).then(() => toast(`${ROOM_NAMES[r]} ist wieder frei.`)).catch(e => onWriteError(e));
+  const nm = lobby(r).name;
+  confirmBox(`${nm} zurücksetzen?`, 'Alle fliegen aus dem Raum und ein laufendes Spiel wird abgebrochen.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Zurücksetzen', cls:'btn-gold', fn:() => {
+    db.collection('lobbies').doc(r).set({members:{}, bots:{}, host:null, hostSeen:0, kind:'', quiz:null, draw:null, golf:null, uno:null}).then(() => toast(`${nm} ist wieder frei.`)).catch(e => onWriteError(e));
   }}]);
 }
 function roomLiveList() { return ROOMS.map(r => S.lobbies[r]).filter(L => L && roomState(L) === 'running'); }
@@ -7311,7 +7343,7 @@ function viewRooms() {
   return `<section class="section">
     <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack, Dicktris, Tischtennis, Air-Hockey und Bowling könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
     ${me ? '' : `<div class="card rooms-hint"><p class="m-text">Damit du mitspielen kannst, brauchst du einen eigenen Spieler. Den erstellst du unter <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button>.</p></div>`}
-    <div class="rooms">${ROOMS.map(roomCardHTML).join('')}</div>
+    <div class="rooms">${tourLobbyVisible() ? roomCardHTML(TOUR_ID) : ''}${ROOMS.map(roomCardHTML).join('')}</div>
     <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack oder Dicktris, stellt alles ein und startet.</li><li><b>Privat:</b> Wollt ihr unter euch bleiben, stellt der Host den Raum auf privat und lädt seine Freunde ein. Andere können dann nicht beitreten.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
   </section>`;
 }
@@ -7352,7 +7384,7 @@ function roomBarHTML() {
       <span class="rb-acts">
         ${host && L.kind && st !== 'running' ? `<button class="btn btn-sm" type="button" data-act="room-kind" data-v="">Anderes Spiel</button>` : ''}
         ${host && st !== 'running' && mem.length < roomMax(L) ? `<button class="btn btn-sm" type="button" data-act="bot-open">🤖 Bot dazu</button>` : ''}
-        ${host ? `<button class="btn btn-sm ${L.priv ? 'btn-gold' : ''}" type="button" data-act="room-priv" aria-pressed="${L.priv}">${L.priv ? '🔒 Privat' : '🔓 Öffentlich'}</button>` : ''}
+        ${host && L.id !== TOUR_ID ? `<button class="btn btn-sm ${L.priv ? 'btn-gold' : ''}" type="button" data-act="room-priv" aria-pressed="${L.priv}">${L.priv ? '🔒 Privat' : '🔓 Öffentlich'}</button>` : ''}
         ${host && L.priv ? `<button class="btn btn-sm" type="button" data-act="room-invite-open">💌 Einladen</button>` : ''}
         ${!host && (member || S.admin) && (hostStale(L) || S.admin) ? `<button class="btn btn-sm btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}
         <button class="btn btn-sm" type="button" data-act="lhs-open">🏆 Highscore</button>
@@ -10748,7 +10780,7 @@ const botLvlName = l => (BOT_LVLS.find(x => x[0] === l) || BOT_LVLS[1])[1];
 function botsOf(L) { return (L && L.bots) || {}; }
 function botById(id) {
   if (!isBot(id) || !S.lobbies) return null;
-  for (const r of ROOMS) {
+  for (const r of ALL_ROOMS) {
     const b = botsOf(S.lobbies[r])[id];
     if (b) return {id, name:'🤖 ' + b.name, color:b.color, avatar:botAvatar(b.color), bot:true, lvl:b.lvl, createdAt:0};
   }
@@ -13831,7 +13863,7 @@ const actions = {
     if (!S.admin) return;
     confirmBox('Turnier stoppen?', 'Alle sehen wieder den Wartebildschirm „Gleich geht’s los!“. Highscore und Punkte bleiben erhalten. Die Anmeldungen vom Check-in werden gelöscht.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Stoppen', cls:'btn-gold', fn:() => {
       tourClearCheckins(); D.tourEdit = false; D.tourIntro = false; D.ts = null;
-      const tg = S.settings.tgo; if (tg && lobby(tg.room).tour) roomRef(tg.room).set({name:'', priv:false, inv:{}}, {merge:true}).catch(() => {});
+      const tg = S.settings.tgo; if (tg && tg.room === TOUR_ID) roomRef(TOUR_ID).set({name:TOUR_ROOM, members:{}, bots:{}, host:null, hostSeen:0, kind:'', quiz:null, draw:null, golf:null, uno:null, priv:true, inv:{}}).catch(() => {}); else if (tg && lobby(tg.room).tour) roomRef(tg.room).set({name:'', priv:false, inv:{}}, {merge:true}).catch(() => {});
       ops.saveSettings(normSettings({...S.settings, status:'soon', date:'', time:'', liveAt:0, chk:'', tgo:null})); toast('Turnier gestoppt.');
     }}]);
   },
@@ -13931,7 +13963,8 @@ const actions = {
     b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
     toast(`+1 Punkt für ${p.name}`);
   },
-  'tgo-join': () => { const t = S.settings.tgo; if (!t) return; D.tgoDone = t.id; roomJoin(t.room).then(() => { if (S.room === t.room) setTab(roomView()); }); },
+  'tgo-go': () => tourLobbyGo(),
+  'tgo-join': () => { const t = S.settings.tgo; if (!t) return; D.tgoDone = t.id + ':' + t.go; roomJoin(t.room).then(() => { if (S.room === t.room) setTab(roomView()); }); },
   'pshow': b => { if (!S.admin) return; ops.saveSettings(normSettings({...S.settings, pshow:b.dataset.v})); toast('Gespeichert'); },
   'opt-sec': b => { D.optSec = b.dataset.s || ''; render(); scrollTo({top:0, behavior:'instant'}); },
   'bday-save': () => { const d = D.ep; if (!d) return; if (!d.bday) { toast(bdayMissingMsg(d)); return; } saveOwnPlayer(d); },

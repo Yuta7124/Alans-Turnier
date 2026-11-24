@@ -180,13 +180,16 @@ service cloud.firestore {
       // Spiele-Räume (Quiz, Malen, Golf und Kartenwahn): jeder darf beitreten und als Host das Spiel steuern. Höchstens 8 Spieler pro Raum.
       match /lobbies/{id} {
         allow read: if true;
-        allow create, update: if id in ['r1', 'r2', 'r3']
+        allow create, update: if id in ['r1', 'r2', 'r3', 'rt']
+          // rt = Turnier-Lobby: nur der Admin legt sie an, sie bleibt immer privat
+          && (id != 'rt' || ((resource != null || isAdmin()) && (request.resource.data.get('priv', false) == true || isAdmin())))
           && request.resource.data.keys().hasOnly(['name', 'members', 'host', 'hostSeen', 'kind', 'quiz', 'draw', 'golf', 'uno', 'hs', 'bots', 'v', 'priv', 'inv'])
           && (!('inv' in request.resource.data) || (request.resource.data.inv is map && request.resource.data.inv.size() <= 40))
           // Privater Raum: Neu dazukommen darf nur, wer eingeladen ist (oder ein Bot des Hosts).
           // Ist der Host 10 Minuten weg, ist der Raum wieder offen.
           && (resource == null || resource.data.get('priv', false) != true
-            || request.time.toMillis() - resource.data.get('hostSeen', 0) > 600000
+            || (id != 'rt' && request.time.toMillis() - resource.data.get('hostSeen', 0) > 600000)
+            || isAdmin()
             || request.resource.data.get('members', {}).keys().toSet().difference(resource.data.get('members', {}).keys().toSet())
                  .hasOnly(resource.data.get('inv', {}).keys().concat(request.resource.data.get('bots', {}).keys())))
           && (!('bots' in request.resource.data) || (request.resource.data.bots is map && request.resource.data.bots.size() <= 8))

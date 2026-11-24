@@ -144,10 +144,13 @@ Ins Zufallsrad können auch die Server-Spiele (Quiz, Minigolf, Blackjack usw.) a
 ist im Team-Modus als „Team“ oder „Solo“ markiert. Punkte vergibt der Spielleiter wie gewohnt mit +/−.
 
 ## Turnier-Lobby
-Zieht das Zufallsrad im laufenden Turnier ein Server-Spiel, legt der Admin automatisch eine Turnier-Lobby an: ein freier
-Raum (sonst der letzte), Name `TOUR` (angezeigt als „🏆 Turnier-Lobby“), privat, eingeladen sind die Check-in-Spieler.
-`settings.tgo = {id, room, kind, at}`; 10 Sekunden nach dem Rad wechseln alle Turnier-Spieler dorthin, der Admin ist Host.
-Bei Tischtennis/Air-Hockey wählt der Host dort 2 Spieler aus, die anderen schauen zu. „Turnier stoppen“ gibt den Raum wieder frei.
+Zieht das Zufallsrad im laufenden Turnier ein Server-Spiel, legt der Admin automatisch die eigene Turnier-Lobby `rt` an
+(zusätzlich zu Raum 1 bis 3, angezeigt als „🏆 Turnier-Lobby“). Sie ist immer privat, eingeladen sind nur die Check-in-Spieler,
+der Admin ist Host. In der Raumliste sehen sie nur die Eingeladenen und der Admin. `settings.tgo = {id, room, kind, go}`:
+Erst wenn der Admin am Rad auf „🏆 Alle rüber“ klickt, wird `go` gesetzt und alle Turnier-Spieler wechseln gleichzeitig.
+Nochmal klicken holt Nachzügler. Die Firestore-Regel erlaubt `rt` nur dem Admin zum Anlegen und hält sie privat.
+Ist die neue Regel noch nicht veröffentlicht, nimmt der Admin wie früher einen freien Raum 1 bis 3.
+Bei Tischtennis/Air-Hockey wählt der Host dort 2 Spieler aus, die anderen schauen zu. „Turnier stoppen“ leert die Lobby.
 
 ## Klick-Sounds
 Leise Bestätigungstöne für Knöpfe, Reiter und Auswahl-Chips (eigene Töne für Reiter, An/Aus, Hauptknöpfe und Schließen).
