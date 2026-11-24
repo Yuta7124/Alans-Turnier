@@ -2561,6 +2561,9 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
   background:radial-gradient(circle at 50% 50%,transparent 0 38%,rgba(0,0,0,.18) 39% 43%,transparent 44%),radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--mc) 45%,#fff) 0%,var(--mc) 45%,color-mix(in srgb,var(--mc) 65%,#000) 100%);
   box-shadow:0 0 0 2px #fff,0 0 0 4px #2b1d10,inset 0 -3px 0 rgba(0,0,0,.25),inset 0 2px 0 rgba(255,255,255,.45)}
 .mp-body,.mp-head{display:none}
+.mp-av{position:absolute;inset:15%;border-radius:50%;overflow:hidden;display:block;box-shadow:0 0 0 2px rgba(0,0,0,.25);background:#fff}
+.mp-av .av{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;border-radius:50%!important;box-shadow:none!important;margin:0!important;border:0!important;font-size:min(1.1vw,12px)!important;clip-path:none!important}
+.mp-av .av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .mp.mp-on{z-index:3}
 .mp.moving{z-index:6}
 .mp.can{cursor:pointer;z-index:5}
@@ -8297,6 +8300,14 @@ function madTransfer() {
 /* ----- Zeichnen ----- */
 const MAD_PIPS = {1:[4], 2:[0, 8], 3:[0, 4, 8], 4:[0, 2, 6, 8], 5:[0, 2, 4, 6, 8], 6:[0, 2, 3, 5, 6, 8]};
 function madDieHTML(d, cls = '') { return `<span class="md-die ${cls}" data-d="${d || 0}">${[...Array(9)].map((_, k) => `<i class="${(MAD_PIPS[d] || []).includes(k) ? 'on' : ''}"></i>`).join('')}</span>`; }
+/* Profilbild des Spielers rund auf seinen Figuren (zwischengespeichert, damit das Brett schnell bleibt) */
+const madAvCache = new Map();
+function madAv(pid) {
+  const p = ghost(pid), key = pid + '|' + (p.avatar || '').length + '|' + (p.avatar || '').slice(-24) + '|' + p.name;
+  let h = madAvCache.get(key);
+  if (!h) { h = `<span class="mp-av">${avatar(p, 28)}</span>`; madAvCache.set(key, h); if (madAvCache.size > 60) madAvCache.delete(madAvCache.keys().next().value); }
+  return h;
+}
 function madBoardHTML(M, can) {
   const s = M.s, used = new Set(s.order.map(p => s.col[p]));
   let cells = '';
@@ -8318,7 +8329,7 @@ function madBoardHTML(M, can) {
     return s.pos[pid].map((r, i) => {
       const [x, y] = madCell(c, r, i), ok = pid === me && canI.has(i);
       const tag = ok ? 'button' : 'span';
-      return `<${tag} class="mp ${ok ? 'can' : ''} ${madTurnPid(s) === pid ? 'mp-on' : ''}" ${ok ? `type="button" data-act="mad-move" data-i="${i}" aria-label="Figur ${i + 1} ziehen"` : 'aria-hidden="true"'} data-k="${esc(pid)}:${i}" data-r="${r}" style="--mc:${MAD_HEX[c]};left:${(x + .5) / 11 * 100}%;top:${(y + .5) / 11 * 100}%"><span class="mp-3d"><i class="mp-body"></i><i class="mp-head"></i></span><span class="vh">${ini}</span></${tag}>`;
+      return `<${tag} class="mp ${ok ? 'can' : ''} ${madTurnPid(s) === pid ? 'mp-on' : ''}" ${ok ? `type="button" data-act="mad-move" data-i="${i}" aria-label="Figur ${i + 1} ziehen"` : 'aria-hidden="true"'} data-k="${esc(pid)}:${i}" data-r="${r}" style="--mc:${MAD_HEX[c]};left:${(x + .5) / 11 * 100}%;top:${(y + .5) / 11 * 100}%"><span class="mp-3d">${madAv(pid)}</span><span class="vh">${ini}</span></${tag}>`;
     }).join('');
   }).join('');
   return `<div class="mb-3d"><div class="mboard" id="mboard"><div class="mb-grid">${cells}<span class="mb-mid" aria-hidden="true" style="--c0:${MAD_HEX[0]};--c1:${MAD_HEX[1]};--c2:${MAD_HEX[2]};--c3:${MAD_HEX[3]}"><b>👴</b></span></div><div class="mb-pcs">${pcs}</div></div></div>`;
