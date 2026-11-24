@@ -2847,6 +2847,25 @@ body.icrop-open{overflow:hidden}
   .tt-nm{font-size:13px}
   .tt-cv{height:min(66vh,118vw)}
 }
+/* Blackjack größer: Tisch füllt den Bildschirm, große Karten */
+.bplay .bj-table{min-height:calc(100vh - 250px);display:flex;flex-direction:column;justify-content:space-between;gap:10px}
+.bplay .bjc{width:86px;height:122px;border-radius:10px}
+.bplay .bjc b{font-size:24px;left:7px;top:5px}.bplay .bjc b small{font-size:19px}.bplay .bjc i{font-size:46px;padding-top:10px}
+.bplay .bj-cards{min-height:126px;padding-left:34px}.bplay .bj-cards .bjc{margin-left:-34px}
+.bplay .bj-seats{gap:18px}
+.bplay .bj-seat{flex:1 1 240px;max-width:360px;padding:14px;gap:8px}
+.bplay .bj-seats.many .bj-seat{flex-basis:200px}
+.bplay .bj-dealer{min-height:200px;gap:10px}
+.bplay .bj-hv b{font-size:26px}
+.bplay .bj-pn{font-size:17px}
+@media (max-width:600px){
+  .bplay .bj-table{min-height:calc(100vh - 300px)}
+  .bplay .bjc{width:58px;height:82px;border-radius:8px}.bplay .bjc b{font-size:17px;left:5px;top:3px}.bplay .bjc b small{font-size:14px}.bplay .bjc i{font-size:32px;padding-top:6px}
+  .bplay .bj-cards{min-height:84px;padding-left:24px}.bplay .bj-cards .bjc{margin-left:-24px}
+  .bplay .bj-seat{flex:1 1 46%;max-width:none;padding:8px}
+  .bplay .bj-dealer{min-height:140px}
+  .bplay .bj-hv b{font-size:20px}
+}
 /* Dicktris */
 .dt-wrap{display:flex;justify-content:center;align-items:flex-start;gap:12px;margin-top:8px}
 .dt-boardbox{position:relative;display:flex;gap:4px}
