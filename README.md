@@ -143,6 +143,10 @@ Teams stehen in `meta/settings` (`fmt`, `teams`), Team-Punkte als Punkte-Einträ
 Ins Zufallsrad können auch die Server-Spiele (Quiz, Minigolf, Blackjack usw.) aufgenommen werden. Jedes Spiel im Rad
 ist im Team-Modus als „Team“ oder „Solo“ markiert. Punkte vergibt der Spielleiter wie gewohnt mit +/−.
 
+## Klick-Sounds
+Leise Bestätigungstöne für Knöpfe, Reiter und Auswahl-Chips (eigene Töne für Reiter, An/Aus, Hauptknöpfe und Schließen).
+Während eines laufenden Spiels bleiben sie still. Pro Gerät abschaltbar unter Optionen → Musik und Sounds (`turnier-uisnd`).
+
 ## Bowling
 🎳 Bowling für alle im Raum (auch Bots), 3, 5 oder 10 Frames, echte Bowling-Wertung mit Strike, Spare und Extrawurf im letzten Frame.
 Werfen wie beim Minigolf: Kugel nach unten ziehen und loslassen (Länge = Kraft, schräg = Richtung), Effet per Auswahl unter der Bahn. Wer dran ist, rechnet den Wurf

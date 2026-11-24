@@ -2884,7 +2884,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=64"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=65"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -5211,6 +5211,7 @@ function viewSettings() {
       <p class="m-text">Leichte Musik, die die Seite selbst erzeugt. Gilt nur für dieses Gerät.</p>
       ${bgmControlsHTML('bgmc')}
     </div>
+    ${uiSndCardHTML()}
   </section>`;
   if (!D.set) D.set = draftSettings();
   const s = D.set;
@@ -5227,7 +5228,7 @@ function viewSettings() {
     ['turnier', '🏆', 'Turnier', 'Status, Start, Stopp, Passwort'],
     ['preis', '💰', 'Preisgeld', 'Name, Plätze, Aufteilung'],
     ['look', '🎨', 'Aussehen', 'Design und Hintergrund'],
-    ['musik', '🎵', 'Musik', 'Hintergrund- und Quiz-Musik'],
+    ['musik', '🎵', 'Musik und Sounds', 'Musik, Klick-Sounds'],
     ['freunde', '🔗', 'Freunde einladen', 'Link und Einladung'],
     ['lobby', '⏱️', 'Lobby', `Rauswurf nach ${S.settings.afk || 30} Min.`],
     ['sprache', '🌐', 'Sprache', LANG === 'en' ? 'English' : 'Deutsch'],
@@ -5267,7 +5268,8 @@ function viewSettings() {
     <div class="card share-card"><h3>🎂 Geburtstage</h3><p class="m-text">Hat ein Spieler Geburtstag, feiert die ganze Seite: Banner, Ballons, Konfetti und Partyfarben. ${(() => { const k = bdayKids(); return k.length ? `Heute: <b>${k.map(x => esc(x.p.name)).join(', ')}</b> 🎉` : `Eingetragen: ${S.players.filter(p => p.bday).length} von ${S.players.length} Spielern.`; })()}</p>
       <div class="chips"><button class="btn btn-sm" type="button" data-act="bd-preview" aria-pressed="${!!D.bdPreview}">${D.bdPreview ? 'Vorschau beenden' : '👀 Vorschau ansehen'}</button></div></div>
     ${picsCardHTML()}`,
-    musik: () => `${bgmCardHTML()}
+    musik: () => `${uiSndCardHTML()}
+    ${bgmCardHTML()}
     ${musicCardHTML()}`,
     freunde: () => `    <div class="card share-card">
       <h3>Link für deine Freunde</h3>
@@ -13287,6 +13289,37 @@ function autoLeft(q) {
 /* Sound */
 let actx = null, muted = false;
 try { muted = localStorage.getItem('spieleturnier-muted') === '1'; } catch (e) {}
+/* ---------- Klick-Sounds für die ganze Seite ----------
+   Leise, kurze Bestätigungstöne beim Tippen auf Knöpfe, Reiter und Auswahl-Chips. Nicht während eines laufenden Spiels
+   (die Spiele haben eigene Sounds), nicht wenn der Ton aus ist. Pro Gerät abschaltbar unter Optionen. */
+let uiSnd = true;
+try { uiSnd = localStorage.getItem('turnier-uisnd') !== '0'; } catch (e) {}
+let uiSndLast = 0;
+function uiClick(kind) {
+  if (!uiSnd || muted) return;
+  const now = performance.now(); if (now - uiSndLast < 45) return; uiSndLast = now;
+  ensureAudio(); if (!actx) return;
+  if (kind === 'tab') { tone(880, .03, 'sine', .028, 0); tone(1320, .04, 'sine', .022, .03); }
+  else if (kind === 'on') { tone(988, .03, 'sine', .028, 0); tone(1480, .035, 'sine', .02, .028); }
+  else if (kind === 'off') { tone(1175, .03, 'sine', .024, 0); tone(784, .04, 'sine', .02, .028); }
+  else if (kind === 'main') { tone(660, .04, 'triangle', .035, 0); tone(990, .06, 'sine', .025, .035); }
+  else if (kind === 'close') { tone(740, .03, 'sine', .022, 0); tone(523, .04, 'sine', .018, .03); }
+  else { tone(1600, .018, 'sine', .03, 0); tone(2400, .012, 'sine', .012, .008); }
+}
+document.addEventListener('click', e => {
+  const el = e.target && e.target.closest && e.target.closest('button, a[href], summary, select, input[type=checkbox], input[type=radio], [data-act], label.chip');
+  if (!el || el.disabled || el.closest('canvas') || el.dataset.nosnd !== undefined) return;
+  const inLayer = el.closest('#pz-layer, #modal-root, .gmenu, .top');
+  if (document.body.classList.contains('ingame') && !inLayer) return;
+  const act = el.dataset.act || '';
+  if (/^(pz-|quiz-sound|bgm-|snd-)/.test(act)) return;
+  let kind = 'tick';
+  if (act === 'tab' || el.closest('nav, .tabs')) kind = 'tab';
+  else if (el.classList.contains('x') || /close|cancel|abbrechen/i.test(act) || el.getAttribute('aria-label') === 'Schließen') kind = 'close';
+  else if (el.hasAttribute('aria-pressed')) kind = el.getAttribute('aria-pressed') === 'true' ? 'off' : 'on';
+  else if (el.classList.contains('btn-gold') || el.type === 'submit') kind = 'main';
+  uiClick(kind);
+}, true);
 function ensureAudio() {
   try {
     if (!actx) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) actx = new AC(); }
@@ -13780,6 +13813,7 @@ const actions = {
   'quiz-resume': () => quizResume(),
   'quiz-next': () => quizNext(),
   'quiz-skip': () => quizSkip(),
+  'uisnd': b => { uiSnd = b.dataset.v === '1'; try { localStorage.setItem('turnier-uisnd', uiSnd ? '1' : '0'); } catch (e) {} render(); if (uiSnd) setTimeout(() => uiClick('on'), 30); },
   'quiz-sound': () => { muted = !muted; try { localStorage.setItem('spieleturnier-muted', muted ? '1' : '0'); } catch (e) {} ensureAudio(); render(); },
   'quiz-abort': () => confirmBox('Quiz beenden?', 'Du kannst jetzt auswerten (die bisherigen Antworten zählen) oder das Quiz komplett verwerfen.', [
       {label:'Weiterspielen', cls:'btn-ghost'}, {label:'Verwerfen', fn:() => quizDiscard()}, {label:'Jetzt auswerten', cls:'btn-gold', fn:() => quizFinishNow()}]),
@@ -14213,6 +14247,11 @@ function syncMusic() {
   } else if (!el.paused) el.pause();
 }
 document.addEventListener('pointerdown', () => { if (music.blocked && musicShouldPlay()) syncMusic(); }, true);
+function uiSndCardHTML() {
+  return `<div class="card share-card"><h3>🔔 Klick-Sounds</h3>
+    <p class="m-text">Ein leiser Ton, wenn du auf Knöpfe, Reiter oder Auswahlen tippst. Während eines Spiels bleiben sie still. Gilt nur für dieses Gerät.</p>
+    <div class="chips"><button class="chip" type="button" data-act="uisnd" data-v="1" aria-pressed="${uiSnd}">🔔 An</button><button class="chip" type="button" data-act="uisnd" data-v="0" aria-pressed="${!uiSnd}">🔕 Aus</button></div></div>`;
+}
 function musicCardHTML() {
   return `<div class="card share-card music-card">
       <h3>Quiz-Musik</h3>
