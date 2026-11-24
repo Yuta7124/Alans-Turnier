@@ -6445,14 +6445,20 @@ function gGhostSync() {
   }
   for (const k in gGhost) if (!G.players.includes(k)) delete gGhost[k];
 }
+/* Die Bälle der anderen laufen auf derselben Uhr wie die gezeichneten Hindernisse: Kommt ein Schlag verspätet an (Netz) oder
+   ruckelt das Gerät, rechnet der Ball bis „jetzt“ nach. Sonst stößt er gegen Hindernisse, die schon woanders gezeichnet sind,
+   und es sieht aus, als flöge er hindurch. */
 function gGhostStep(dt) {
   const G = S.golf; if (!G || G.status !== 'running') return;
-  const H = gHole(G.holes[G.hi]);
+  const H = gHole(G.holes[G.hi]), T = (performance.now() - gl.t0) / 1000;
   for (const pid in gGhost) {
     const g = gGhost[pid]; if (!g.vx && !g.vy) continue;
-    g.acc += Math.min(0.05, dt);
-    while (g.acc >= G_DT) {
-      g.acc -= G_DT; g.t += G_DT;
+    if (g.t > T + .25) g.t = T; // andere Uhr beim Schützen: nicht warten
+    // Rückstand weich aufholen (bis 2,5-fach schnell), nur bei großem Rückstand (Tab war weg) sofort
+    const lag = T - g.t, end = lag > 1 ? T : g.t + Math.min(lag, Math.min(.05, dt) * 2.5);
+    let n = 0;
+    while (g.t + G_DT <= end && n++ < 2400) {
+      g.t += G_DT;
       const r = gStep(g, H, g.t, G_DT);
       if (r) { g.vx = 0; g.vy = 0; if (r === 'sink') { g.x = H.cup[0]; g.y = H.cup[1]; } break; }
       if (!g.vx && !g.vy) break;
@@ -6731,8 +6737,11 @@ function gFrame(now) {
   const w = Math.max(200, stage.clientWidth), h = Math.max(200, stage.clientHeight), dpr = Math.min(2, window.devicePixelRatio || 1);
   if (gl.w !== w || gl.h !== h || cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { gl.w = w; gl.h = h; cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); gl.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
   const dtg = Math.max(0, (now - (gl.prev || now)) / 1000);
-  gPhysics(now);
-  gGhostStep(dtg);
+  // Gemeinsame Bahn-Uhr für alle Geräte: Sekunden seit holeAt (beim Pausieren angehalten, danach verschiebt der Host holeAt).
+  // Danach richten sich die beweglichen Hindernisse, der eigene Ball und die Bälle der anderen.
+  const pz = roomPaused(), wall = pz ? pz.at : Date.now();
+  gl.t0 = now - (wall - (S.golf.holeAt || wall));
+  if (!pz) { gPhysics(now); gGhostStep(dtg); }
   golfHostTick();
   gCamera(now);
   gl.prev = now;
