@@ -9694,7 +9694,7 @@ function ttMount() {
    Der Puck läuft auf jedem Gerät gleich weiter (feste Rechenschritte, Bande, Reibung). Für jede Hälfte entscheidet nur ihr Besitzer
    (bei einem Bot der Host): Schlägertreffer und Tore auf seiner Seite schreibt er als neues Puck-Ereignis. So reicht ein
    Schreibvorgang pro Schlag. Nach einem Tor liegt der Puck ruhig in der Hälfte dessen, der das Tor bekommen hat. */
-const AH_L = 1.6, AH_PR = .045, AH_MR = .078, AH_GW = .17, AH_MAXV = 3.4, AH_FR = .22, AH_STEP = 1 / 120;
+const AH_L = 1.6, AH_PR = .034, AH_MR = .078, AH_GW = .2, AH_MAXV = 3.4, AH_FR = .22, AH_STEP = 1 / 120;
 const AH_TO = [[5, 'Bis 5'], [7, 'Bis 7'], [10, 'Bis 10']];
 const ahC = (v, a, b) => Math.max(a, Math.min(b, Number.isFinite(v) ? v : (a + b) / 2));
 function ahNorm(x) {
@@ -9752,7 +9752,7 @@ function ahGoal(M, w) {
 /* Bot-Schläger: verteidigt das Tor, geht hinter den Puck und schießt Richtung gegnerisches Tor. Läuft auf allen Geräten (für die Anzeige),
    aber nur auf dem Host zählt sein Treffer. */
 function ahBotMove(M, i, s, dt) {
-  const L = botLvl(M.p[i]), sp = {e:1.7, m:2.5, h:3.4}[L] || 2.5, m = al.ml[i], dir = i === 0 ? 1 : -1, gy = i === 0 ? 0 : AH_L;
+  const L = botLvl(M.p[i]), sp = {e:1.4, m:2.1, h:2.9}[L] || 2.1, m = al.ml[i], dir = i === 0 ? 1 : -1, gy = i === 0 ? 0 : AH_L;
   const v = Math.hypot(s.vx, s.vy), mine = ahSide(s.y) === i, coming = s.vy * dir < -.05, R = AH_MR + AH_PR;
   const defD = {e:.15, m:.19, h:.21}[L] || .19, front = (s.y - m.y) * dir > .01;
   let tx, ty;
@@ -9772,9 +9772,9 @@ function ahBotMove(M, i, s, dt) {
       const lineY = gy + dir * defD, t = Math.abs((lineY - s.y) / s.vy);
       let q = s.x + s.vx * t;
       for (let k = 0; k < 4; k++) { if (q < AH_PR) q = 2 * AH_PR - q; if (q > 1 - AH_PR) q = 2 * (1 - AH_PR) - q; }
-      px = s.x + (q - s.x) * ({e:.45, m:.85, h:1}[L] || .85);
+      px = s.x + (q - s.x) * ({e:.3, m:.65, h:.9}[L] || .65);
     }
-    tx = .5 + (px - .5) * ({e:.55, m:.8, h:.9}[L] || .8); ty = gy + dir * defD;
+    tx = .5 + (px - .5) * ({e:.45, m:.7, h:.85}[L] || .7); ty = gy + dir * defD;
   }
   const c = ahClampMallet(i, tx, ty), dx = c.x - m.x, dy = c.y - m.y, d = Math.hypot(dx, dy), mv = Math.min(d, sp * dt);
   const nx = d > 1e-6 ? m.x + dx / d * mv : m.x, ny = d > 1e-6 ? m.y + dy / d * mv : m.y;
