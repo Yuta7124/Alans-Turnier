@@ -10004,12 +10004,17 @@ function ahCollide(s, m) {
   s.x = m.x + nx * (R + .001); s.y = m.y + ny * (R + .001);
   let res = 'push';
   if (rn < 0) { s.vx -= 1.7 * rn * nx; s.vy -= 1.7 * rn * ny; if (rn < -.08) res = 'hit'; }
-  // an der Bande eingeklemmt: Puck bleibt im Feld und rutscht seitlich weg
-  if (s.x < AH_PR) { s.x = AH_PR; s.vx = Math.abs(s.vx); s.vy += (s.y > m.y ? 1 : -1) * .5; }
-  else if (s.x > 1 - AH_PR) { s.x = 1 - AH_PR; s.vx = -Math.abs(s.vx); s.vy += (s.y > m.y ? 1 : -1) * .5; }
+  // An der Bande eingeklemmt: Puck bleibt im Feld und rutscht an der Bande am Schläger vorbei (ohne bei jedem Schritt schneller zu werden)
+  const slide = (a, b, ma, mb) => { const h = R * R - (a - ma) * (a - ma); return h > 0 ? mb + (b >= mb ? 1 : -1) * (Math.sqrt(h) + .001) : b; };
+  if (s.x < AH_PR || s.x > 1 - AH_PR) {
+    s.x = s.x < AH_PR ? AH_PR : 1 - AH_PR; s.vx = (s.x < .5 ? 1 : -1) * Math.abs(s.vx) * .5;
+    const side = s.y >= m.y ? 1 : -1; s.y = slide(s.x, s.y, m.x, m.y); s.vy = side * Math.max(Math.abs(s.vy), .35);
+  }
   const inMouth = Math.abs(s.x - .5) < AH_GW - AH_PR * .4;
-  if (!inMouth && s.y < AH_PR) { s.y = AH_PR; s.vy = Math.abs(s.vy); s.vx += (s.x > m.x ? 1 : -1) * .5; }
-  else if (!inMouth && s.y > AH_L - AH_PR) { s.y = AH_L - AH_PR; s.vy = -Math.abs(s.vy); s.vx += (s.x > m.x ? 1 : -1) * .5; }
+  if (!inMouth && (s.y < AH_PR || s.y > AH_L - AH_PR)) {
+    s.y = s.y < AH_PR ? AH_PR : AH_L - AH_PR; s.vy = (s.y < 1 ? 1 : -1) * Math.abs(s.vy) * .5;
+    const side = s.x >= m.x ? 1 : -1; s.x = ahC(slide(s.y, s.x, m.y, m.x), AH_PR, 1 - AH_PR); s.vx = side * Math.max(Math.abs(s.vx), .35);
+  }
   const v = Math.hypot(s.vx, s.vy); if (v > AH_MAXV) { s.vx *= AH_MAXV / v; s.vy *= AH_MAXV / v; }
   return res;
 }
@@ -10075,15 +10080,27 @@ function ahLogic(nowArg) {
       al.wait = true; s.vx = s.vy = 0;
     }
   }
-  al.simT += steps * AH_STEP * 1000; mm.px = mm.x; mm.py = mm.y;
+  al.simT += steps * AH_STEP * 1000;
+  // Kurzer Frame ohne Rechenschritt: eigener Schläger darf trotzdem nicht im Puck stehen
+  if (!steps && me >= 0 && !al.wait && Date.now() >= M.startAt && ahCollide(s, {x:mm.x, y:mm.y, vx:0, vy:0})) al.dirty = al.dirty || {by:me, m:{x:mm.x, y:mm.y}, hit:false};
+  mm.px = mm.x; mm.py = mm.y;
   // Neuen Puck-Zustand nach einem Stoß senden (höchstens alle 110 ms, ein Schieben wird mitgeschickt)
   if (al.dirty && (now - al.lastW > 600 || al.dirty.hit && now - al.lastW > 150)) { const d = al.dirty; al.dirty = null; ahHitWrite(M, d.by, s, d.m, d.hit); al.pn = M.pk.n; al.simT = now; }
   // Gegner-Schläger (Mensch) für die Anzeige: folgt dem Puck auf seiner Hälfte, sonst zurück zum Tor
   for (const i of [0, 1]) if (i !== me && !isBot(M.p[i])) {
     const h = ahHome(i), m = al.ml[i], hit = al.mlT[i] && now - al.mlT[i].t < 450 ? al.mlT[i] : null;
-    const tgt = hit || (ahSide(s.y) === i ? ahClampMallet(i, s.x, h.y + (i === 0 ? .1 : -.1)) : {x:.5 + (s.x - .5) * .4, y:h.y});
-    const k = hit ? .3 : .06;
-    al.ml[i] = {x:m.x + (tgt.x - m.x) * k, y:m.y + (tgt.y - m.y) * k};
+    let tgt = hit;
+    if (!tgt && ahSide(s.y) === i) {
+      // Geschätzt: zwischen Puck und eigenem Tor, mit Abstand zum Puck
+      const gy = i === 0 ? 0 : AH_L, dx = .5 - s.x, dy = gy - s.y, d = Math.hypot(dx, dy) || 1, R = AH_PR + AH_MR + .03;
+      tgt = ahClampMallet(i, s.x + dx / d * Math.min(R, d * .5), s.y + dy / d * Math.min(R, d * .5));
+    } else if (!tgt) tgt = {x:.5 + (s.x - .5) * .4, y:h.y};
+    const k = hit ? .3 : .08;
+    let nm = {x:m.x + (tgt.x - m.x) * k, y:m.y + (tgt.y - m.y) * k};
+    // Nie im Puck: sonst sieht es aus, als ginge der Puck durch den Schläger
+    const ox = nm.x - s.x, oy = nm.y - s.y, od = Math.hypot(ox, oy), RR = AH_PR + AH_MR;
+    if (od < RR) { const ux = od > 1e-6 ? ox / od : 0, uy = od > 1e-6 ? oy / od : (i === 0 ? -1 : 1); nm = ahClampMallet(i, s.x + ux * RR, s.y + uy * RR); }
+    al.ml[i] = nm;
   }
   // Hängt der Puck zu lange (jemand ist weg), stößt der Host ihn zur Mitte an.
   if (al.idleN !== M.n) { al.idleN = M.n; al.idleAt = now; }
@@ -10205,8 +10222,13 @@ function ahSnd(n) {
     ahSetMallet(x, y + (e.pointerType === 'touch' ? (v.flip ? -.09 : .09) : 0));
   };
   let down = false;
-  document.addEventListener('pointerdown', e => { if (!e.target || e.target.id !== 'ah-cv') return; down = true; ensureAudio(); at(e); });
-  document.addEventListener('pointermove', e => { if (S.tab !== 'ah') return; if (down || (e.pointerType === 'mouse' && e.target && e.target.id === 'ah-cv')) at(e); });
+  document.addEventListener('pointerdown', e => { if (!e.target || e.target.id !== 'ah-cv') return; down = true; ensureAudio(); try { e.target.setPointerCapture(e.pointerId); } catch (_) {} at(e); });
+  // Maus: überall auf der Seite (nicht nur über dem Tisch). Außerhalb bleibt der Schläger am Rand der eigenen Hälfte.
+  document.addEventListener('pointermove', e => {
+    if (S.tab !== 'ah') return;
+    const free = e.pointerType === 'mouse' && S.ah && S.ah.status === 'running' && !(e.target && e.target.closest && e.target.closest('#modal-root'));
+    if (down || free) at(e);
+  });
   ['pointerup', 'pointercancel'].forEach(n => document.addEventListener(n, () => { down = false; }));
   const map = {ArrowLeft:'l', a:'l', ArrowRight:'r', d:'r', ArrowUp:'u', w:'u', ArrowDown:'d', s:'d'};
   document.addEventListener('keydown', e => { if (S.tab !== 'ah' || !S.ah) return; const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return; const k = map[e.key]; if (!k) return; al.keys[k] = 1; e.preventDefault(); ensureAudio(); });
