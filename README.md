@@ -143,6 +143,12 @@ Teams stehen in `meta/settings` (`fmt`, `teams`), Team-Punkte als Punkte-Einträ
 Ins Zufallsrad können auch die Server-Spiele (Quiz, Minigolf, Blackjack usw.) aufgenommen werden. Jedes Spiel im Rad
 ist im Team-Modus als „Team“ oder „Solo“ markiert. Punkte vergibt der Spielleiter wie gewohnt mit +/−.
 
+## Air-Hockey und 2er-Spiele
+🏒 Air-Hockey: 1 gegen 1 (auch gegen einen Bot), bis 5, 7 oder 10 Tore. Gespeichert im Raum-Feld `uno` mit `g:'ah'`.
+Der Puck läuft auf jedem Gerät mit festen Rechenschritten gleich weiter. Treffer und Tore auf einer Hälfte schreibt nur deren
+Besitzer (bei Bots der Host) als neues Puck-Ereignis. Tischtennis und Air-Hockey sind reine 2er-Spiele: Ein Raum mit diesem
+Spiel hat genau 2 Plätze (`roomMax`), mehr Leute können nicht beitreten.
+
 ## Pause in Raum-Spielen
 In jedem laufenden Raum-Spiel gibt es rechts unten einen Pause-Knopf (für alle Mitspieler). Die Pause steht im Spiel-Objekt
 als `pz = {at, by, auto}`. Während der Pause laufen keine Zeiten, Host-Abläufe oder Bots; beim Weiterspielen werden die

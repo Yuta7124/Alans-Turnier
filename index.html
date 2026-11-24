@@ -2779,6 +2779,17 @@ body.icrop-open{overflow:hidden}
 .ifoc-pc,.ifoc-ph{display:block;overflow:hidden;border-radius:8px;background-size:cover;background-repeat:no-repeat;box-shadow:0 0 0 2px var(--edge);position:relative}
 .ifoc-pc{width:220px;height:68px}.ifoc-ph{width:72px;height:120px}
 .ifoc-pc i,.ifoc-ph i{position:absolute;inset:0;background-size:cover;background-repeat:no-repeat}
+/* Air-Hockey */
+.ah-cv{height:min(76vh,calc(min(100vw,720px) * 1.6));cursor:none}
+.duo{display:flex;align-items:stretch;justify-content:center;gap:14px;margin:6px 0 16px}
+.duo-p{flex:1;max-width:220px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:16px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);text-align:center;min-width:0}
+.duo-p b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.duo-p small{color:var(--muted)}
+.duo-free{border:2px dashed rgba(255,255,255,.2);box-shadow:none;cursor:pointer;color:var(--ink);font:inherit}
+.duo-free span{font-size:40px;line-height:56px}
+.duo-free:hover{border-color:var(--coin)}
+.duo-vs{align-self:center;font-family:var(--display);font-size:26px;color:var(--coin)}
+@media (max-width:560px){.duo{gap:8px}.duo-vs{font-size:20px}.ah-cv{height:min(72vh,150vw)}}
 /* Tischtennis */
 .ttplay{display:flex;flex-direction:column;gap:10px}
 .tt-board{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px auto 0;max-width:720px;width:100%}
@@ -2854,7 +2865,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=61"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=62"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3866,7 +3877,7 @@ function normTicker(x) {
   };
 }
 const COLORS = ['#f5b83d', '#3fd49c', '#ff8080', '#6ea8ff', '#c493ff', '#ff9f5a', '#5fdde3', '#f58fb8'];
-const SRV_ICON = {quiz:'❓', malen:'🎨', golf:'⛳', karten:'🃏', mad:'🎲', bj:'♠️', dt:'🧱', tt:'🏓'};
+const SRV_ICON = {quiz:'❓', malen:'🎨', golf:'⛳', karten:'🃏', mad:'🎲', bj:'♠️', dt:'🧱', tt:'🏓', ah:'🏒'};
 const FMTS = [[1, 'Alle gegen alle', '⚔️'], [2, 'Duos', '👥'], [3, 'Trios', '👥'], [4, 'Squads', '👥']];
 const TEAM_COLS = ['#ffcf3f', '#39d6f2', '#ff4f6d', '#4ff08f', '#c493ff', '#ff9f5a', '#6ea8ff', '#f58fb8'];
 const LETTERS = ['A', 'B', 'C', 'D'];
@@ -3890,7 +3901,7 @@ function groupPick(g) {
   return GROUPS[g].some(x => x[0] === last) ? last : GROUPS[g][0][0];
 }
 /* Ansichten: "Spiele" ist der Ober-Tab für Quiz und Malen */
-const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'support', 'einstellungen'];
+const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'support', 'einstellungen'];
 const HUB = ['quiz', 'malen'];
 const viewOk = t => VIEWS.includes(t);
 /* Im Turnier entscheidet nur der Spielleiter, ob alle den Highscore oder das Zufallsrad sehen (settings.tview) */
@@ -3902,7 +3913,7 @@ function viewFor(t) {
   if (t === 'vg') return 'spieler';
   if (t === 'liste') t = 'rad'; // Spieleliste gibt es im Turnier nicht mehr
   if (!S.admin && (t === 'turnier' || t === 'rangliste' || t === 'rad')) return S.settings.tview;
-  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf' || t === 'karten' || t === 'mad' || t === 'bj' || t === 'dt' || t === 'tt') return S.room ? roomView() : 'spiele';
+  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf' || t === 'karten' || t === 'mad' || t === 'bj' || t === 'dt' || t === 'tt' || t === 'ah') return S.room ? roomView() : 'spiele';
   return GROUPS[t] ? groupPick(t) : viewOk(t) ? t : 'start';
 }
 
@@ -4640,7 +4651,7 @@ function render() {
   else if (S.mode === 'lock') html = lockHTML();
   else if (blocked()) html = `<div style="min-height:70vh"></div>`;
   else if (S.tab === 'spiele-pick') html = `<div class="loading">${COIN(48, 'spin')}</div>`;
-  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, mad:viewMad, bj:viewBj, dt:viewDt, tt:viewTt, support:viewSupport, einstellungen:viewSettings}[S.tab] || viewStart)();
+  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, mad:viewMad, bj:viewBj, dt:viewDt, tt:viewTt, ah:viewAh, support:viewSupport, einstellungen:viewSettings}[S.tab] || viewStart)();
   if (groupOf(S.tab) === 'turnier' && tourLocked()) html = tourCheckin() && !D.tourPeek ? tourCheckinHTML() : tourPreviewHTML();
   else if (groupOf(S.tab) === 'turnier' && tourKey() && !tourCheckin() && (D.tourIntro || lsGet('turnier-intro', '') !== tourKey())) html = tourIntroHTML();
   else if (groupOf(S.tab) === 'turnier' && S.admin && D.tourEdit && !['live', 'today'].includes(tourState().k)) html = `<div class="tour-editbar"><span>✏️ Bearbeitungsmodus: Nur du siehst das so. Für die Spieler ist das Turnier noch gesperrt.</span><button class="btn btn-sm" type="button" data-act="tour-preview">Zur Vorschau</button></div>` + html;
@@ -4663,6 +4674,7 @@ function render() {
   bjMount();
   dtMount();
   ttMount();
+  ahMount();
   renderFlySite();
   const newStand = m.querySelector('.stand');
   if (oldStand && newStand && newStand.dataset.key === oldKey) newStand.replaceWith(oldStand);
@@ -4682,7 +4694,7 @@ function render() {
 function tabsHidden() { return S.mode === 'loading' || S.mode === 'setup' || S.mode === 'lock' || S.mode === 'firstrun' || (S.mode === 'db' && !S.loaded) || blocked(); }
 function inGame() {
   if (tabsHidden() || S.mode !== 'db') return false;
-  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running') || (S.tab === 'karten' && !!S.uno && S.uno.status === 'running') || (S.tab === 'mad' && !!S.mad && S.mad.status === 'running') || (S.tab === 'bj' && !!S.bj && S.bj.status === 'running') || (S.tab === 'dt' && !!S.dt && S.dt.status === 'running') || (S.tab === 'tt' && !!S.tt && S.tt.status === 'running');
+  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running') || (S.tab === 'karten' && !!S.uno && S.uno.status === 'running') || (S.tab === 'mad' && !!S.mad && S.mad.status === 'running') || (S.tab === 'bj' && !!S.bj && S.bj.status === 'running') || (S.tab === 'dt' && !!S.dt && S.dt.status === 'running') || (S.tab === 'tt' && !!S.tt && S.tt.status === 'running') || (S.tab === 'ah' && !!S.ah && S.ah.status === 'running');
 }
 const isTouch = () => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } };
 const canFull = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
@@ -4709,7 +4721,7 @@ function renderSubnav() {
     h = `<div class="hub" style="--n:${list.length}" role="group" aria-label="Turnier">${list.map(([k, i, l]) => `<button class="hub-btn" type="button" data-act="tab" data-tab="${k}" aria-pressed="${S.tab === k}"><span class="hub-ico" aria-hidden="true">${i}</span><span class="hub-txt"><b>${l}</b>${sub(k)}</span></button>`).join('')}</div>`;
   } else if (!hide && inRoom) {
     h = roomBarHTML();
-    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf' && S.tab !== 'karten' && S.tab !== 'mad' && S.tab !== 'bj' && S.tab !== 'dt' && S.tab !== 'tt') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
+    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf' && S.tab !== 'karten' && S.tab !== 'mad' && S.tab !== 'bj' && S.tab !== 'dt' && S.tab !== 'tt' && S.tab !== 'ah') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
   }
   el.setAttribute('aria-label', tx(inRoom ? 'Raum' : 'Turnier'));
   el.classList.toggle('wide', (!!grp || inRoom) && $('#main').classList.contains('wide'));
@@ -5387,7 +5399,7 @@ function wheelFollow() {
   else if (sp.id === wheelSeenSpin) return;
   wheelSeenSpin = sp.id;
   if (!wheelSpinning(w) || S.tab === 'rad') return;
-  const busy = roomTabs.includes(S.tab) && S.tab !== 'raum' && ((S.uno && S.uno.status === 'running') || (S.mad && S.mad.status === 'running') || (S.bj && S.bj.status === 'running') || (S.dt && S.dt.status === 'running') || (S.tt && S.tt.status === 'running') || (S.golf && S.golf.status === 'running') || (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running'));
+  const busy = roomTabs.includes(S.tab) && S.tab !== 'raum' && ((S.uno && S.uno.status === 'running') || (S.mad && S.mad.status === 'running') || (S.bj && S.bj.status === 'running') || (S.dt && S.dt.status === 'running') || (S.tt && S.tt.status === 'running') || (S.ah && S.ah.status === 'running') || (S.golf && S.golf.status === 'running') || (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running'));
   if (busy) { toast('🎡 Das Zufallsrad dreht sich! Schau im Turnier vorbei.'); return; }
   if (S.modal) closeModal();
   setTab('rad');
@@ -6832,6 +6844,8 @@ const golfActions = {
 /* ---------- Räume: Quiz, Malen und Golf jederzeit, ohne Spielleiter ---------- */
 const ROOMS = ['r1', 'r2', 'r3'];
 const ROOM_MAX = 8;
+const DUO_KINDS = ['tt', 'ah'];
+function roomMax(L) { return L && DUO_KINDS.includes(L.kind) ? 2 : ROOM_MAX; }
 const ROOM_NAMES = {r1:'Raum 1', r2:'Raum 2', r3:'Raum 3'};
 const HOST_STALE_MS = 60000, HOST_AUTO_MS = 90000;
 function normLobby(id, x) {
@@ -6841,7 +6855,7 @@ function normLobby(id, x) {
   for (const [pid, v] of Object.entries(m)) if (pid && pid.length <= 40 && v && typeof v === 'object') members[pid] = {at:Number(v.at) || 0, dev:str(v.dev, 60)};
   const host = x.host && typeof x.host === 'object' && x.host.dev ? {pid:str(x.host.pid, 40), dev:str(x.host.dev, 60)} : null;
   const inv = Object.fromEntries(Object.keys(x.inv && typeof x.inv === 'object' && !Array.isArray(x.inv) ? x.inv : {}).filter(k => k && k.length <= 40).slice(0, 40).map(k => [k, true]));
-  return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true, inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt'].includes(x.kind) ? x.kind : '',
+  return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true, inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah'].includes(x.kind) ? x.kind : '',
     quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null, uno:x.uno && typeof x.uno === 'object' ? x.uno : null,
     hs:Object.fromEntries(Object.entries(x.hs && typeof x.hs === 'object' && !Array.isArray(x.hs) ? x.hs : {}).filter(([pid, v]) => pid.length <= 40 && Number.isFinite(Number(v))).map(([pid, v]) => [pid, Math.round(Number(v))])),
     bots:Object.fromEntries(Object.entries(x.bots && typeof x.bots === 'object' && !Array.isArray(x.bots) ? x.bots : {}).filter(([id, b]) => id.startsWith('bot_') && id.length <= 40 && b && typeof b === 'object').slice(0, ROOM_MAX)
@@ -6871,6 +6885,8 @@ function lobbyAutoAward() {
   if (DTM && DTM.status === 'finished' && !DTM.transferred && !lhsDone.has('t' + DTM.id)) { lhsDone.add('t' + DTM.id); dtTransfer(); }
   const TTM = S.tt;
   if (TTM && TTM.status === 'finished' && !TTM.transferred && !lhsDone.has('p' + TTM.id)) { lhsDone.add('p' + TTM.id); ttTransfer(); }
+  const AHM = S.ah;
+  if (AHM && AHM.status === 'finished' && !AHM.transferred && !lhsDone.has('h' + AHM.id)) { lhsDone.add('h' + AHM.id); ahTransfer(); }
 }
 function lobbyHsHTML(L = lobby(), max = 10, inModal = false) {
   if (!L) return '';
@@ -6919,19 +6935,19 @@ function roomInviteModalHTML() {
 function hostStale(L) { return !L || !L.host || Date.now() - (L.hostSeen || 0) > HOST_STALE_MS; }
 function roomState(L) {
   if (!L) return 'free';
-  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : L.kind === 'karten' ? (L.uno && !L.uno.g ? L.uno : null) : L.kind === 'mad' ? (L.uno && L.uno.g === 'mad' ? L.uno : null) : L.kind === 'bj' ? (L.uno && L.uno.g === 'bj' ? L.uno : null) : L.kind === 'dt' ? (L.uno && L.uno.g === 'dt' ? L.uno : null) : L.kind === 'tt' ? (L.uno && L.uno.g === 'tt' ? L.uno : null) : null;
+  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : L.kind === 'karten' ? (L.uno && !L.uno.g ? L.uno : null) : L.kind === 'mad' ? (L.uno && L.uno.g === 'mad' ? L.uno : null) : L.kind === 'bj' ? (L.uno && L.uno.g === 'bj' ? L.uno : null) : L.kind === 'dt' ? (L.uno && L.uno.g === 'dt' ? L.uno : null) : L.kind === 'tt' ? (L.uno && L.uno.g === 'tt' ? L.uno : null) : L.kind === 'ah' ? (L.uno && L.uno.g === 'ah' ? L.uno : null) : null;
   if (g && g.status === 'running') return 'running';
   if (g && g.status === 'finished') return 'finished';
   return roomMembers(L).length ? 'waiting' : 'free';
 }
-function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : L.kind === 'karten' ? 'karten' : L.kind === 'mad' ? 'mad' : L.kind === 'bj' ? 'bj' : L.kind === 'dt' ? 'dt' : L.kind === 'tt' ? 'tt' : 'raum'; }
-const roomTabs = ['raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt'];
+function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : L.kind === 'karten' ? 'karten' : L.kind === 'mad' ? 'mad' : L.kind === 'bj' ? 'bj' : L.kind === 'dt' ? 'dt' : L.kind === 'tt' ? 'tt' : L.kind === 'ah' ? 'ah' : 'raum'; }
+const roomTabs = ['raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah'];
 const FV = () => window.firebase && firebase.firestore && firebase.firestore.FieldValue;
 function roomRef(r = S.room) { return db.collection('lobbies').doc(r); }
 function roomSet(r, spectate = false) {
   if (S.room === r && S.spectate === spectate) return;
   S.room = r; S.spectate = !!(r && spectate);
-  S.quiz = null; S.draw = null; S.golf = null; S.uno = null; S.mad = null; ml.pend = null; ml.n = 0; S.bj = null; bjl.pend = null; bjl.n = 0; S.dt = null; S.tt = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false; kl.pend = null; kl.n = 0;
+  S.quiz = null; S.draw = null; S.golf = null; S.uno = null; S.mad = null; ml.pend = null; ml.n = 0; S.bj = null; bjl.pend = null; bjl.n = 0; S.dt = null; S.tt = null; S.ah = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false; kl.pend = null; kl.n = 0;
   roomApply();
 }
 /* ---------- Pause für alle Raum-Spiele ----------
@@ -6939,7 +6955,7 @@ function roomSet(r, spectate = false) {
    Während der Pause laufen keine Zeiten, Host-Abläufe und Bots. Beim Weiterspielen schiebt der, der „Weiter“ drückt,
    die gespeicherten Zeitpunkte um die Pausenlänge nach hinten; jedes Gerät verschiebt seine eigenen Zähler genauso.
    Spielt man allein (nur Bots oder niemand sonst), pausiert das Spiel automatisch, wenn man die Seite verlässt. */
-const PZ_FIELD = {quiz:'quiz', malen:'draw', golf:'golf', karten:'uno', mad:'uno', bj:'uno', dt:'uno', tt:'uno'};
+const PZ_FIELD = {quiz:'quiz', malen:'draw', golf:'golf', karten:'uno', mad:'uno', bj:'uno', dt:'uno', tt:'uno', ah:'uno'};
 function pzField(L = lobby()) { return (L && PZ_FIELD[L.kind]) || ''; }
 function pzGame(L = lobby()) { const f = pzField(L), g = f && L[f]; return g && g.status === 'running' && (L.kind !== 'karten' || !g.g) ? g : null; }
 function roomPaused(L = lobby()) { const g = pzGame(L); return g && g.pz && g.pz.at ? g.pz : null; }
@@ -6959,7 +6975,7 @@ function pzSet(on, auto = false) {
   else if (L.kind === 'malen') sh('phaseAt', g.phaseAt);
   else if (L.kind === 'karten' || L.kind === 'mad') { sh('s.turnAt', g.s && g.s.turnAt); if (L.kind === 'karten' && g.s && g.s.unc) for (const [pid, v] of Object.entries(g.s.unc)) sh('s.unc.' + pid, v); }
   else if (L.kind === 'bj') sh('s.at', g.s && g.s.at);
-  else if (L.kind === 'dt' || L.kind === 'tt') sh('startAt', g.startAt);
+  else if (L.kind === 'dt' || L.kind === 'tt' || L.kind === 'ah') sh('startAt', g.startAt);
   else if (L.kind === 'golf') sh('holeAt', g.holeAt);
   const ng = clone(g); delete ng.pz;
   for (const [k, v] of Object.entries(patch)) { const path = k.split('.').slice(1); if (!path.length || path[0] === 'pz') continue; let o = ng; for (const q of path.slice(0, -1)) o = o[q] = o[q] && typeof o[q] === 'object' ? o[q] : {}; o[path[path.length - 1]] = v; }
@@ -6968,7 +6984,7 @@ function pzSet(on, auto = false) {
 }
 let pzLoc = 0, pzLocKey = '';
 function pzShiftLocal(d) {
-  for (const [o, ks] of [[kl, ['seqAt', 'hTurnAt', 'uncAt']], [ml, ['seqAt', 'hTurnAt']], [bjl, ['seqAt', 'hAt', 'dAt']], [gl, ['advAt']], [tl, ['bStart', 'serveAt', 'ptAt', 'mineAt']]])
+  for (const [o, ks] of [[kl, ['seqAt', 'hTurnAt', 'uncAt']], [ml, ['seqAt', 'hTurnAt']], [bjl, ['seqAt', 'hAt', 'dAt']], [gl, ['advAt']], [tl, ['bStart', 'serveAt', 'ptAt', 'mineAt']], [al, ['simT', 'mineAt', 'glAt', 'idleAt']]])
     for (const k of ks) if (o && Number(o[k]) > 0) o[k] += d;
   for (const o of [bk, bq, bmad, bbj]) if (o && o.at) o.at += d;
   for (const m of [bm, bg]) for (const b of Object.values(m)) if (b && typeof b === 'object') { if (b.hitAt) b.hitAt += d; if (b.nextAt) b.nextAt += d; }
@@ -7018,6 +7034,7 @@ function roomApply() {
   S.dt = L && L.kind === 'dt' && L.uno ? dtNorm(L.uno) : null;
   dtOnSnap();
   S.tt = L && L.kind === 'tt' && L.uno ? ttNorm(L.uno) : null;
+  S.ah = L && L.kind === 'ah' && L.uno ? ahNorm(L.uno) : null;
   handleAnswers();
   if (S.room && roomTabs.includes(S.tab)) { const v = roomView(); if (S.tab !== v) { S.tab = v; try { history.replaceState(null, '', '#' + v); } catch (e) {} } }
   if (!S.room && roomTabs.includes(S.tab)) S.tab = 'spiele';
@@ -7060,7 +7077,7 @@ async function roomJoin(r) {
   const L = lobby(r);
   if (L.members[me]) { roomSet(r); setTab('raum'); return; }
   if (roomPriv(L) && !L.inv[me]) { toast(`${L.name} ist privat. Nur eingeladene Spieler können beitreten.`); return; }
-  if (roomMembers(L).length >= ROOM_MAX) { toast(`${L.name} ist voll. Höchstens ${ROOM_MAX} Spieler.`); return; }
+  if (roomMembers(L).length >= roomMax(L)) { toast(DUO_KINDS.includes(L.kind) ? `${L.name} ist voll. ${L.kind === 'ah' ? 'Air-Hockey' : 'Tischtennis'} geht nur zu zweit.` : `${L.name} ist voll. Höchstens ${ROOM_MAX} Spieler.`); return; }
   const old = myRoom();
   if (old && old !== r) await roomLeave(old, true);
   const patch = {members:{[me]:{at:Date.now(), dev:devId}}};
@@ -7105,7 +7122,8 @@ function roomTake() {
   const L = lobby(), me = myPid(); if (!L || !(L.members[me] || S.admin)) return;
   roomRef().update({host:{pid:me || '', dev:devId}, hostSeen:Date.now()}).then(() => toast('Du bist jetzt Host.')).catch(() => {});
 }
-function roomKind(k) { if (!ctl()) return; D.dnew = false; S.lobbies[S.room] = {...lobby(), kind:k}; roomWrite({kind:k}); S.tab = roomView(); render(); }
+function roomKind(k) { if (!ctl()) return;
+  if (DUO_KINDS.includes(k) && roomMembers(lobby()).length > 2) { toast(`${k === 'ah' ? 'Air-Hockey' : 'Tischtennis'} geht nur zu zweit. Im Raum sind gerade ${roomMembers(lobby()).length}. Wechselt in einen anderen Raum oder nehmt ein anderes Spiel.`); return; } D.dnew = false; S.lobbies[S.room] = {...lobby(), kind:k}; roomWrite({kind:k}); S.tab = roomView(); render(); }
 function roomReset(r) {
   confirmBox(`${ROOM_NAMES[r]} zurücksetzen?`, 'Alle fliegen aus dem Raum und ein laufendes Spiel wird abgebrochen.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Zurücksetzen', cls:'btn-gold', fn:() => {
     db.collection('lobbies').doc(r).set({members:{}, bots:{}, host:null, hostSeen:0, kind:'', quiz:null, draw:null, golf:null, uno:null}).then(() => toast(`${ROOM_NAMES[r]} ist wieder frei.`)).catch(e => onWriteError(e));
@@ -7116,20 +7134,20 @@ const ROOM_STATE = {free:['Frei', '#4ff08f'], waiting:['Wartet', '#ffcf3f'], run
 function roomCardHTML(r) {
   const L = lobby(r), mem = roomMembers(L), n = mem.length, me = myPid(), mine = !!(me && L.members[me]);
   const st = roomState(L), sl = ROOM_STATE[st];
-  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : L.kind === 'karten' ? ['🃏', 'Kartenwahn'] : L.kind === 'mad' ? ['🎲', 'Uncle Grandpa ärgere dich'] : L.kind === 'bj' ? ['🂡', 'Blackjack'] : L.kind === 'dt' ? ['🧱', 'Dicktris'] : L.kind === 'tt' ? ['🏓', 'Tischtennis'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
+  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : L.kind === 'karten' ? ['🃏', 'Kartenwahn'] : L.kind === 'mad' ? ['🎲', 'Uncle Grandpa ärgere dich'] : L.kind === 'bj' ? ['🂡', 'Blackjack'] : L.kind === 'dt' ? ['🧱', 'Dicktris'] : L.kind === 'tt' ? ['🏓', 'Tischtennis'] : L.kind === 'ah' ? ['🏒', 'Air-Hockey'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
   const hostP = L.host && playerById(L.host.pid);
-  const slots = Array.from({length:ROOM_MAX}, (_, i) => mem[i] ? `<span class="rc-slot" title="${esc(ghost(mem[i]).name)}">${avatar(ghost(mem[i]), 34)}</span>` : '<span class="rc-slot empty"></span>').join('');
+  const slots = Array.from({length:roomMax(L)}, (_, i) => mem[i] ? `<span class="rc-slot" title="${esc(ghost(mem[i]).name)}">${avatar(ghost(mem[i]), 34)}</span>` : '<span class="rc-slot empty"></span>').join('');
   const priv = roomPriv(L), invd = !mine && priv && !!(me && L.inv[me]);
   let btns = '';
   if (mine) btns = `<button class="btn btn-gold" type="button" data-act="room-open" data-room="${r}">Öffnen</button><button class="btn btn-ghost" type="button" data-act="room-leave" data-room="${r}">Verlassen</button>`;
   else {
-    btns = n >= ROOM_MAX ? `<button class="btn" type="button" disabled>Voll</button>` : priv && !invd ? `<button class="btn" type="button" disabled>🔒 Privat</button>` : `<button class="btn btn-gold" type="button" data-act="room-join" data-room="${r}">Beitreten</button>`;
+    btns = n >= roomMax(L) ? `<button class="btn" type="button" disabled>Voll</button>` : priv && !invd ? `<button class="btn" type="button" disabled>🔒 Privat</button>` : `<button class="btn btn-gold" type="button" data-act="room-join" data-room="${r}">Beitreten</button>`;
     if (n && !myRoom() && (!priv || invd || S.admin)) btns += `<button class="btn btn-ghost" type="button" data-act="room-view" data-room="${r}">Zuschauen</button>`;
   }
   if (S.admin && (Object.keys(L.members).length || L.kind || L.host)) btns += `<button class="link" type="button" data-act="room-reset" data-room="${r}">Zurücksetzen</button>`;
   return `<article class="card room-card ${mine || invd ? 'mine' : ''}" style="--sc:${sl[1]}">
     <div class="rc-head"><b class="rc-name">${esc(L.name)}${priv ? '<span class="rc-priv">🔒 Privat</span>' : ''}</b><span class="rc-state">${st === 'running' ? '■ ' : ''}${sl[0]}</span></div>
-    <div class="rc-game"><span class="rc-ico" aria-hidden="true">${kindTxt[0]}</span><span>${kindTxt[1]}</span><span class="rc-count">${n}/${ROOM_MAX}</span></div>
+    <div class="rc-game"><span class="rc-ico" aria-hidden="true">${kindTxt[0]}</span><span>${kindTxt[1]}</span><span class="rc-count">${n}/${roomMax(L)}</span></div>
     <div class="rc-slots">${slots}</div>
     ${invd ? `<p class="rc-inv">💌 Du bist eingeladen${hostP ? ` von <b>${esc(hostP.name)}</b>` : ''}!</p>` : ''}
     <p class="rc-host">${hostP ? `👑 Host: <b>${esc(hostP.name)}</b>${hostStale(L) && n ? ' <small>(nicht da)</small>' : ''}` : n ? 'Kein Host' : 'Wer zuerst beitritt, wird Host.'}</p>
@@ -7139,7 +7157,7 @@ function roomCardHTML(r) {
 function viewRooms() {
   const me = myPid();
   return `<section class="section">
-    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack und Dicktris könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
+    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack, Dicktris, Tischtennis und Air-Hockey könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
     ${me ? '' : `<div class="card rooms-hint"><p class="m-text">Damit du mitspielen kannst, brauchst du einen eigenen Spieler. Den erstellst du unter <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button>.</p></div>`}
     <div class="rooms">${ROOMS.map(roomCardHTML).join('')}</div>
     <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack oder Dicktris, stellt alles ein und startet.</li><li><b>Privat:</b> Wollt ihr unter euch bleiben, stellt der Host den Raum auf privat und lädt seine Freunde ein. Andere können dann nicht beitreten.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
@@ -7156,7 +7174,8 @@ function viewRoom() {
         <button class="pick-big" type="button" data-act="room-kind" data-v="golf" style="--tc:#4ff08f"><span aria-hidden="true">⛳</span><b>Golf</b><small>Minigolf in 3D mit 30 Bahnen, von kurz und leicht bis extrem. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="mad" style="--tc:#ff9f5a"><span aria-hidden="true">🎲</span><b>Uncle Grandpa ärgere dich</b><small>Das Brettspiel für 2 bis 4: Würfeln, mit einer 6 rauskommen, Gegner rauswerfen und alle Figuren ins Ziel bringen.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="dt" style="--tc:#39d6f2"><span aria-hidden="true">🧱</span><b>Dicktris</b><small>Fallende Blöcke: Reihen voll machen, im Battle-Modus Müllzeilen an die anderen schicken. Alle spielen gleichzeitig.</small></button>
-        <button class="pick-big" type="button" data-act="room-kind" data-v="tt" style="--tc:#ff8a3d"><span aria-hidden="true">🏓</span><b>Tischtennis</b><small>1 gegen 1 an der Platte, auch gegen einen Bot. Jeder Schlag macht den Ball schneller.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="tt" style="--tc:#ff8a3d"><span aria-hidden="true">🏓</span><b>Tischtennis</b><small>Nur zu zweit: 1 gegen 1 an der Platte, auch gegen einen Bot. Jeder Schlag macht den Ball schneller.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="ah" style="--tc:#39d6f2"><span aria-hidden="true">🏒</span><b>Air-Hockey</b><small>Nur zu zweit: 1 gegen 1 am Tisch, auch gegen einen Bot. Schieß den Puck ins Tor.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="bj" style="--tc:#2ecc71"><span aria-hidden="true">🂡</span><b>Blackjack</b><small>Alle gegen die Bank: Komm näher an 21 als die Bank. Mit Chips, Verdoppeln und Teilen. Auch allein spielbar.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="karten" style="--tc:#ffcf3f"><span aria-hidden="true">🃏</span><b>Kartenwahn</b><small>Das Ablegespiel für 2 bis 8: Farbe oder Zahl ablegen, +2, +4, Aussetzen, Richtungswechsel.</small></button>
       </div>
@@ -7170,16 +7189,16 @@ function roomBarHTML() {
   const L = lobby(); if (!L) return '';
   const mem = roomMembers(L), me = myPid(), member = !!(me && L.members[me]), host = ctl();
   const st = roomState(L);
-  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : L.kind === 'mad' ? '🎲 Uncle Grandpa ärgere dich' : L.kind === 'bj' ? '🂡 Blackjack' : L.kind === 'dt' ? '🧱 Dicktris' : L.kind === 'tt' ? '🏓 Tischtennis' : 'Spiel wird gewählt';
+  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : L.kind === 'mad' ? '🎲 Uncle Grandpa ärgere dich' : L.kind === 'bj' ? '🂡 Blackjack' : L.kind === 'dt' ? '🧱 Dicktris' : L.kind === 'tt' ? '🏓 Tischtennis' : L.kind === 'ah' ? '🏒 Air-Hockey' : 'Spiel wird gewählt';
   const chips = mem.map(pid => { const p = ghost(pid), isHost = L.host && L.host.pid === pid, bot = isBot(pid);
     return `<span class="rb-mem ${pid === me ? 'me' : ''} ${bot ? 'bot' : ''}">${avatar(p, 26)}<span>${esc(p.name)}</span>${bot ? `<small class="rb-lvl">${botLvlName(p.lvl)}</small>` : ''}${isHost ? '<i title="Host" aria-label="Host">👑</i>' : ''}${(host || S.admin) && pid !== me ? `<button class="x" type="button" data-act="room-kick" data-pid="${esc(pid)}" aria-label="${esc(p.name)} aus dem Raum werfen" title="Rauswerfen">×</button>` : ''}</span>`; }).join('');
   return `<div class="roombar">
     <div class="rb-top">
-      <b class="rb-name">${esc(L.name)}</b><span class="rb-kind">${kind}</span><span class="rb-count">${mem.length}/${ROOM_MAX}</span>
+      <b class="rb-name">${esc(L.name)}</b><span class="rb-kind">${kind}</span><span class="rb-count">${mem.length}/${roomMax(L)}</span>
       ${host ? '<span class="rb-host">Du bist Host</span>' : ''}${roomPriv(L) || (host && L.priv) ? '<span class="rb-priv">🔒 Privat</span>' : ''}
       <span class="rb-acts">
         ${host && L.kind && st !== 'running' ? `<button class="btn btn-sm" type="button" data-act="room-kind" data-v="">Anderes Spiel</button>` : ''}
-        ${host && st !== 'running' && mem.length < ROOM_MAX ? `<button class="btn btn-sm" type="button" data-act="bot-open">🤖 Bot dazu</button>` : ''}
+        ${host && st !== 'running' && mem.length < roomMax(L) ? `<button class="btn btn-sm" type="button" data-act="bot-open">🤖 Bot dazu</button>` : ''}
         ${host ? `<button class="btn btn-sm ${L.priv ? 'btn-gold' : ''}" type="button" data-act="room-priv" aria-pressed="${L.priv}">${L.priv ? '🔒 Privat' : '🔓 Öffentlich'}</button>` : ''}
         ${host && L.priv ? `<button class="btn btn-sm" type="button" data-act="room-invite-open">💌 Einladen</button>` : ''}
         ${!host && (member || S.admin) && hostStale(L) ? `<button class="btn btn-sm btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}
@@ -9295,9 +9314,9 @@ function ttStart(pl) {
   if (!ctl()) return;
   if (S.tt && S.tt.status === 'finished' && !S.tt.transferred) ttTransfer();
   const L = lobby(), mem = roomMembers(L);
-  let p = (pl || D.ttSel || []).filter(id => mem.includes(id)).slice(0, 2);
-  if (p.length < 2) p = [...p, ...mem.filter(id => !p.includes(id)).sort((a, b) => isBot(a) - isBot(b))].slice(0, 2);
-  if (p.length < 2) { toast('Ihr braucht 2 Spieler. Hol dir einen Bot dazu!'); return; }
+  if (mem.length !== 2) { toast('Tischtennis geht nur zu zweit. Hol dir einen Bot dazu!'); return; }
+  let p = (pl || []).filter(id => mem.includes(id)).slice(0, 2);
+  if (p.length < 2) p = mem.slice().sort((a, b) => isBot(a) - isBot(b));
   if (p.every(isBot)) { toast('Mindestens einer muss ein echter Spieler sein.'); return; }
   const to = [5, 11, 21].includes(D.ttTo) ? D.ttTo : 11;
   const M = {g:'tt', id:uid(), status:'running', to, p, sc:[0, 0], s0:Math.random() < .5 ? 0 : 1, ball:null, pt:null, n:0, rally:0, best:0, startAt:Date.now() + 3500, win:-1, transferred:false};
@@ -9660,12 +9679,354 @@ function ttEndHTML(M) {
     ${host ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="tt-again">Revanche</button><button class="btn" type="button" data-act="tt-setup">Andere Spieler</button></div>` : '<p class="muted">Der Host kann ein neues Match starten.</p>'}
   </div>${lobbyHsHTML()}</section>`;
 }
-function viewTt() { const M = S.tt; if (!M) return ttSetupHTML(); return M.status === 'finished' ? ttEndHTML(M) : ttPlayHTML(M); }
+function viewTt() { const M = S.tt; if (!M) return duoSetupHTML('tt'); return M.status === 'finished' ? ttEndHTML(M) : ttPlayHTML(M); }
 function ttMount() {
   const M = S.tt;
   if (M && M.status === 'finished' && tl.endSnd !== M.id && S.tab === 'tt') { tl.endSnd = M.id; const me = ttMeIdx(M); kSnd(me < 0 || M.win === me ? 'win' : 'lose', .3); }
   if (!tl.raf) tl.raf = requestAnimationFrame(ttLoop);
   if (M && S.tab === 'tt') ttDraw(M);
+}
+
+/* ---------- Air-Hockey: 1 gegen 1 im Raum (auch gegen einen Bot) ----------
+   Spielfeld in Weltkoordinaten: x 0..1 (Breite), y 0..AH_L (Länge). Spieler A (p[0]) hat die untere Hälfte und das Tor bei y = 0,
+   Spieler B (p[1]) die obere Hälfte und das Tor bei y = AH_L. Gespeichert im Raum-Feld uno (mit g:'ah'):
+   {g, id, status, to, p, sc, n, pk:{n, by, x, y, vx, vy, mx, my}, gl:{n, w}, startAt, win, transferred, best}.
+   Der Puck läuft auf jedem Gerät gleich weiter (feste Rechenschritte, Bande, Reibung). Für jede Hälfte entscheidet nur ihr Besitzer
+   (bei einem Bot der Host): Schlägertreffer und Tore auf seiner Seite schreibt er als neues Puck-Ereignis. So reicht ein
+   Schreibvorgang pro Schlag. Nach einem Tor liegt der Puck ruhig in der Hälfte dessen, der das Tor bekommen hat. */
+const AH_L = 1.6, AH_PR = .045, AH_MR = .078, AH_GW = .17, AH_MAXV = 3.4, AH_FR = .22, AH_STEP = 1 / 120;
+const AH_TO = [[5, 'Bis 5'], [7, 'Bis 7'], [10, 'Bis 10']];
+const ahC = (v, a, b) => Math.max(a, Math.min(b, Number.isFinite(v) ? v : (a + b) / 2));
+function ahNorm(x) {
+  if (!x || typeof x !== 'object' || x.g !== 'ah' || !['running', 'finished'].includes(x.status)) return null;
+  const p = (Array.isArray(x.p) ? x.p : []).filter(v => typeof v === 'string').slice(0, 2); if (p.length !== 2) return null;
+  const sc = Array.isArray(x.sc) ? [Math.max(0, Math.round(+x.sc[0]) || 0), Math.max(0, Math.round(+x.sc[1]) || 0)] : [0, 0];
+  const k = x.pk && typeof x.pk === 'object' ? x.pk : null;
+  const pk = k ? {n:+k.n || 0, by:k.by === 0 || k.by === 1 ? k.by : -1, x:ahC(+k.x, AH_PR, 1 - AH_PR), y:ahC(+k.y, 0, AH_L), vx:ahC(+k.vx, -AH_MAXV, AH_MAXV), vy:ahC(+k.vy, -AH_MAXV, AH_MAXV),
+    mx:Number.isFinite(+k.mx) && k.mx != null ? ahC(+k.mx, 0, 1) : -1, my:Number.isFinite(+k.my) && k.my != null ? ahC(+k.my, 0, AH_L) : -1} : null;
+  const gl = x.gl && typeof x.gl === 'object' ? {n:+x.gl.n || 0, w:x.gl.w ? 1 : 0} : null;
+  return {g:'ah', id:str(x.id, 40), status:x.status, to:[5, 7, 10].includes(+x.to) ? +x.to : 7, p, sc, n:+x.n || 0, pk, gl,
+    startAt:+x.startAt || 0, win:x.win === 0 || x.win === 1 ? x.win : -1, transferred:x.transferred === true, hits:Math.max(0, +x.hits || 0)};
+}
+function ahMeIdx(M) { const me = myPid(), L = lobby(); return M && me && !S.spectate && L && L.members[me] ? M.p.indexOf(me) : -1; }
+const ahSide = y => y < AH_L / 2 ? 0 : 1;
+function ahHome(i) { return {x:.5, y:i === 0 ? .16 : AH_L - .16}; }
+function ahClampMallet(i, x, y) { return {x:ahC(x, AH_MR, 1 - AH_MR), y:i === 0 ? ahC(y, AH_MR, AH_L / 2 - AH_MR) : ahC(y, AH_L / 2 + AH_MR, AH_L - AH_MR)}; }
+function ahFaceoff(i) { return {x:.5, y:i === 0 ? AH_L * .27 : AH_L * .73}; }
+
+/* ----- Host ----- */
+function ahStart() {
+  if (!ctl()) return;
+  if (S.ah && S.ah.status === 'finished' && !S.ah.transferred) ahTransfer();
+  const L = lobby(), mem = roomMembers(L);
+  if (mem.length !== 2) { toast('Air-Hockey geht nur zu zweit. Hol dir einen Bot dazu!'); return; }
+  if (mem.every(isBot)) { toast('Mindestens einer muss ein echter Spieler sein.'); return; }
+  const p = mem.slice().sort((a, b) => isBot(a) - isBot(b)), to = [5, 7, 10].includes(D.ahTo) ? D.ahTo : 7, f = Math.random() < .5 ? 0 : 1, fo = ahFaceoff(f);
+  const M = {g:'ah', id:uid(), status:'running', to, p, sc:[0, 0], n:1, pk:{n:1, by:-1, x:fo.x, y:fo.y, vx:0, vy:0}, gl:null, startAt:Date.now() + 3500, win:-1, transferred:false, hits:0};
+  S.lobbies[S.room] = {...L, uno:M}; S.ah = ahNorm(M);
+  roomWrite({uno:M}); render();
+}
+function ahTransfer() {
+  const M = S.ah; if (!ctl() || !M || M.status !== 'finished' || M.transferred || M.win < 0) return;
+  lobbyAward({'uno.transferred':true}, [{playerId:M.p[M.win], delta:3}, {playerId:M.p[1 - M.win], delta:1}]);
+}
+
+/* ----- Ablauf ----- */
+const al = {cd:[0, 0], aim:[.5, .5], aimN:[-1, -1], gid:'', pn:-1, gn:-1, glAt:0, sim:null, simT:0, wait:false, mineN:-1, mineAt:0,
+  me:{x:.5, y:.16, px:.5, py:.16, vx:0, vy:0, t:0}, ml:[{x:.5, y:.16}, {x:.5, y:AH_L - .16}], keys:{l:0, r:0, u:0, d:0}, raf:0, lastT:0, lastW:0, endSnd:'', flash:null, idleN:-1, idleAt:0};
+function ahWrite(patch) { roomWrite(patch); }
+function ahHitWrite(M, by, s, m) {
+  const n = M.n + 1, pk = {n, by, x:+s.x.toFixed(4), y:+s.y.toFixed(4), vx:+s.vx.toFixed(4), vy:+s.vy.toFixed(4), mx:+m.x.toFixed(3), my:+m.y.toFixed(3)};
+  M.pk = pk; M.n = n; M.hits++; al.mineN = n; al.mineAt = performance.now(); al.lastW = al.mineAt;
+  ahWrite({'uno.pk':pk, 'uno.n':n, 'uno.hits':M.hits});
+}
+function ahGoal(M, w) {
+  const sc = M.sc.slice(); sc[w]++;
+  const n = M.n + 1, over = sc[w] >= M.to, fo = ahFaceoff(1 - w), pk = {n, by:-1, x:fo.x, y:fo.y, vx:0, vy:0};
+  const patch = {'uno.sc':sc, 'uno.n':n, 'uno.gl':{n, w}, 'uno.pk':pk};
+  if (over) Object.assign(patch, {'uno.status':'finished', 'uno.win':w});
+  Object.assign(M, {sc, n, gl:{n, w}, pk}); if (over) { M.status = 'finished'; M.win = w; }
+  al.mineN = n; al.mineAt = performance.now();
+  ahWrite(patch);
+}
+/* Bot-Schläger: verteidigt das Tor, geht hinter den Puck und schießt Richtung gegnerisches Tor. Läuft auf allen Geräten (für die Anzeige),
+   aber nur auf dem Host zählt sein Treffer. */
+function ahBotMove(M, i, s, dt) {
+  const L = botLvl(M.p[i]), sp = {e:1.7, m:2.5, h:3.4}[L] || 2.5, m = al.ml[i], dir = i === 0 ? 1 : -1, gy = i === 0 ? 0 : AH_L;
+  const v = Math.hypot(s.vx, s.vy), mine = ahSide(s.y) === i, coming = s.vy * dir < -.05, R = AH_MR + AH_PR;
+  const defD = {e:.15, m:.19, h:.21}[L] || .19, front = (s.y - m.y) * dir > .01;
+  let tx, ty;
+  if (mine && front && (!coming || v < 1.4)) {
+    // Angriff: hinter den Puck und Richtung gegnerisches Tor stoßen (schwer zielt in die Torecken)
+    if (al.aimN[i] !== M.n) { al.aimN[i] = M.n; al.aim[i] = L === 'h' ? .5 + (Math.random() < .5 ? -1 : 1) * (.06 + Math.random() * .07) : L === 'm' ? .5 + (Math.random() - .5) * .12 : .5 + (Math.random() - .5) * .4; }
+    const ox = al.aim[i], oy = i === 0 ? AH_L : 0, dx = ox - s.x, dy = oy - s.y, d = Math.hypot(dx, dy) || 1;
+    tx = s.x - dx / d * R * .55; ty = s.y - dy / d * R * .55;
+  } else if (mine && !front && v < 1.4) {
+    // Puck liegt hinter dem Schläger: außen herum zurück
+    tx = s.x + (s.x < .5 ? 1 : -1) * R * 1.1; ty = s.y - dir * R * 1.1;
+  } else {
+    // Verteidigung: auf der Linie zwischen Puck und eigenem Tor bleiben
+    let px = s.x;
+    if (coming && v > .2) {
+      const lineY = gy + dir * defD, t = Math.abs((lineY - s.y) / s.vy);
+      let q = s.x + s.vx * t;
+      for (let k = 0; k < 4; k++) { if (q < AH_PR) q = 2 * AH_PR - q; if (q > 1 - AH_PR) q = 2 * (1 - AH_PR) - q; }
+      px = s.x + (q - s.x) * ({e:.45, m:.85, h:1}[L] || .85);
+    }
+    tx = .5 + (px - .5) * ({e:.55, m:.8, h:.9}[L] || .8); ty = gy + dir * defD;
+  }
+  const c = ahClampMallet(i, tx, ty), dx = c.x - m.x, dy = c.y - m.y, d = Math.hypot(dx, dy), mv = Math.min(d, sp * dt);
+  const nx = d > 1e-6 ? m.x + dx / d * mv : m.x, ny = d > 1e-6 ? m.y + dy / d * mv : m.y;
+  const r = {x:nx, y:ny, vx:dt > 0 ? (nx - m.x) / dt : 0, vy:dt > 0 ? (ny - m.y) / dt : 0};
+  al.ml[i] = {x:nx, y:ny}; return r;
+}
+function ahCollide(s, m) {
+  const dx = s.x - m.x, dy = s.y - m.y, d = Math.hypot(dx, dy), R = AH_PR + AH_MR;
+  if (d >= R || d < 1e-6) return false;
+  const nx = dx / d, ny = dy / d, rvx = s.vx - m.vx, rvy = s.vy - m.vy, rn = rvx * nx + rvy * ny;
+  if (rn >= -.05) return false;
+  s.x = m.x + nx * (R + .002); s.y = m.y + ny * (R + .002);
+  s.vx -= 1.85 * rn * nx; s.vy -= 1.85 * rn * ny;
+  const v = Math.hypot(s.vx, s.vy); if (v > AH_MAXV) { s.vx *= AH_MAXV / v; s.vy *= AH_MAXV / v; }
+  return true;
+}
+/* Ein Rechenschritt. Gibt 'goal0'/'goal1' zurück, wenn der Puck in ein Tor geht (0 = Tor von A), 'wall' bei Bande. */
+function ahPhys(s, dt) {
+  s.x += s.vx * dt; s.y += s.vy * dt;
+  const f = Math.exp(-AH_FR * dt); s.vx *= f; s.vy *= f;
+  let ev = '';
+  if (s.x < AH_PR) { s.x = 2 * AH_PR - s.x; s.vx = -s.vx * .9; ev = 'wall'; }
+  else if (s.x > 1 - AH_PR) { s.x = 2 * (1 - AH_PR) - s.x; s.vx = -s.vx * .9; ev = 'wall'; }
+  const inMouth = Math.abs(s.x - .5) < AH_GW - AH_PR * .4;
+  if (s.y < AH_PR) { if (inMouth) return s.y < -AH_PR ? 'goal0' : ev; s.y = 2 * AH_PR - s.y; s.vy = -s.vy * .9; ev = 'wall'; }
+  else if (s.y > AH_L - AH_PR) { if (inMouth) return s.y > AH_L + AH_PR ? 'goal1' : ev; s.y = 2 * (AH_L - AH_PR) - s.y; s.vy = -s.vy * .9; ev = 'wall'; }
+  return ev;
+}
+function ahLogic(nowArg) {
+  const M = S.ah; if (!M) return;
+  const now = nowArg || performance.now(), me = ahMeIdx(M), host = ctl();
+  if (al.gid !== M.id) {
+    Object.assign(al, {gid:M.id, pn:-1, gn:M.gl ? M.gl.n : -1, sim:null, wait:false, mineN:-1, endSnd:'', flash:null, idleN:-1});
+    al.ml = [ahHome(0), ahHome(1)];
+    if (me >= 0) { const h = ahHome(me); Object.assign(al.me, {x:h.x, y:h.y, px:h.x, py:h.y, vx:0, vy:0}); }
+  }
+  if (M.gl && M.gl.n !== al.gn) { al.gn = M.gl.n; al.glAt = now; if (S.tab === 'ah') ahSnd(me < 0 || M.gl.w === me ? 'goal' : 'conceded'); }
+  if (M.status !== 'running') return;
+  if (M.pk && M.pk.n !== al.pn) {
+    al.pn = M.pk.n; al.sim = {...M.pk}; al.wait = false;
+    al.simT = al.mineN === M.pk.n ? al.mineAt : now;
+    if (M.pk.by >= 0) { al.flash = {x:M.pk.x, y:M.pk.y, t:now}; if (M.pk.by !== me && M.pk.mx >= 0) al.ml[M.pk.by] = {x:M.pk.mx, y:M.pk.my}; if (S.tab === 'ah' && al.mineN !== M.pk.n) ahSnd('hit'); }
+    if (M.pk.by < 0) al.simT = Math.max(al.simT, now + (M.gl ? 1200 : 0));
+  }
+  const s = al.sim; if (!s) return;
+  if (Date.now() < M.startAt) { al.simT = now; return; }
+  // eigener Schläger: von der letzten Position zur aktuellen, damit schnelle Wischer nicht durch den Puck gehen
+  const mm = al.me, steps = Math.max(0, Math.min(60, Math.floor((now - al.simT) / 1000 / AH_STEP)));
+  const mvx = steps ? (mm.x - mm.px) / (steps * AH_STEP) : 0, mvy = steps ? (mm.y - mm.py) / (steps * AH_STEP) : 0;
+  if (steps >= 60) al.simT = now - 60 * AH_STEP * 1000;
+  for (let k = 0; k < steps && !al.wait; k++) {
+    const t = (k + 1) / steps, side = ahSide(s.y), owner = side;
+    // Bots bewegen sich auf allen Geräten
+    for (const i of [0, 1]) if (isBot(M.p[i])) { const bm = ahBotMove(M, i, s, AH_STEP); if (owner === i && host && now - (al.cd[i] || 0) > 140 && ahCollide(s, bm)) { al.cd[i] = now; ahHitWrite(M, i, s, bm); al.simT += AH_STEP * 1000 * (k + 1); al.pn = M.pk.n; return; } }
+    if (owner === me) {
+      const m = {x:mm.px + (mm.x - mm.px) * t, y:mm.py + (mm.y - mm.py) * t, vx:ahC(mvx, -6, 6), vy:ahC(mvy, -6, 6)};
+      if (now - (al.cd[me] || 0) > 140 && ahCollide(s, m)) { al.cd[me] = now; ahHitWrite(M, me, s, m); al.pn = M.pk.n; al.simT += (k + 1) * AH_STEP * 1000; mm.px = mm.x; mm.py = mm.y; if (S.tab === 'ah') ahSnd('hit'); return; }
+    }
+    const ev = ahPhys(s, AH_STEP);
+    if (ev === 'wall' && S.tab === 'ah' && Math.hypot(s.vx, s.vy) > .4) ahSnd('wall');
+    if (ev === 'goal0' || ev === 'goal1') {
+      const g = ev === 'goal0' ? 0 : 1;
+      if (g === me || (host && isBot(M.p[g]))) { ahGoal(M, 1 - g); return; }
+      al.wait = true; s.vx = s.vy = 0;
+    }
+  }
+  al.simT += steps * AH_STEP * 1000; mm.px = mm.x; mm.py = mm.y;
+  // Gegner-Schläger (Mensch) für die Anzeige: folgt dem Puck auf seiner Hälfte, sonst zurück zum Tor
+  for (const i of [0, 1]) if (i !== me && !isBot(M.p[i])) {
+    const h = ahHome(i), tgt = ahSide(s.y) === i ? ahClampMallet(i, s.x, h.y + (i === 0 ? .08 : -.08)) : h, m = al.ml[i];
+    al.ml[i] = {x:m.x + (tgt.x - m.x) * .08, y:m.y + (tgt.y - m.y) * .08};
+  }
+  // Hängt der Puck zu lange (jemand ist weg), stößt der Host ihn zur Mitte an.
+  if (al.idleN !== M.n) { al.idleN = M.n; al.idleAt = now; }
+  else if (host && now - al.idleAt > 15000 && Math.hypot(s.vx, s.vy) < .3) { al.idleAt = now; ahHitWrite(M, -1, {x:s.x, y:s.y, vx:(Math.random() - .5) * .6, vy:(ahSide(s.y) === 0 ? 1 : -1) * .9}, {x:-1, y:-1}); }
+}
+function ahLoop(t) {
+  al.raf = requestAnimationFrame(ahLoop);
+  const M = S.ah; if (!M || S.tab !== 'ah') return;
+  const dt = Math.min(.05, (t - (al.lastT || t)) / 1000); al.lastT = t;
+  const me = ahMeIdx(M);
+  if (me >= 0 && (al.keys.l || al.keys.r || al.keys.u || al.keys.d)) {
+    const k = al.keys, dir = me === 1 ? -1 : 1, sp = 1.8 * dt;
+    ahSetMallet(al.me.x + (k.r - k.l) * sp * dir, al.me.y + (k.u - k.d) * sp * dir);
+  }
+  if (!roomPaused()) ahLogic(t);
+  ahDraw(M);
+}
+function ahSetMallet(x, y) { const M = S.ah, me = ahMeIdx(M); if (me < 0) return; const c = ahClampMallet(me, x, y); al.me.x = c.x; al.me.y = c.y; }
+
+/* ----- Zeichnen (von oben, eigene Seite unten) ----- */
+function ahDraw(M) {
+  const cv = document.getElementById('ah-cv'); if (!cv) return;
+  const c = cv.getContext('2d'), W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
+  if (!W || !H) return;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
+  const now = performance.now(), me = ahMeIdx(M), flip = me === 1;
+  const pad = 14, sc = Math.min((W - pad * 2) / 1, (H - pad * 2) / AH_L), ox = (W - sc) / 2, oy = (H - sc * AH_L) / 2;
+  const X = x => ox + (flip ? 1 - x : x) * sc, Y = y => oy + (flip ? y : AH_L - y) * sc;
+  al.view = {ox, oy, sc, flip};
+  // Tisch
+  c.fillStyle = '#0b0818'; c.fillRect(0, 0, W, H);
+  const rr = 22, x0 = ox - 8, y0 = oy - 8, w0 = sc + 16, h0 = sc * AH_L + 16;
+  c.fillStyle = '#2a1d52'; c.beginPath(); c.roundRect ? c.roundRect(x0, y0, w0, h0, rr) : c.rect(x0, y0, w0, h0); c.fill();
+  const ig = c.createLinearGradient(0, oy, 0, oy + sc * AH_L); ig.addColorStop(0, '#e9f3ff'); ig.addColorStop(.5, '#f7fbff'); ig.addColorStop(1, '#e9f3ff');
+  c.fillStyle = ig; c.beginPath(); c.roundRect ? c.roundRect(ox, oy, sc, sc * AH_L, 16) : c.rect(ox, oy, sc, sc * AH_L); c.fill();
+  // Luftlöcher
+  c.fillStyle = 'rgba(60,90,140,.12)';
+  for (let yy = .06; yy < AH_L; yy += .08) for (let xx = .06; xx < 1; xx += .08) { c.beginPath(); c.arc(X(xx), Y(yy), 1.2, 0, Math.PI * 2); c.fill(); }
+  // Linien
+  c.strokeStyle = 'rgba(255,79,109,.7)'; c.lineWidth = 3; c.beginPath(); c.moveTo(ox, Y(AH_L / 2)); c.lineTo(ox + sc, Y(AH_L / 2)); c.stroke();
+  c.beginPath(); c.arc(X(.5), Y(AH_L / 2), sc * .14, 0, Math.PI * 2); c.stroke();
+  c.strokeStyle = 'rgba(57,160,255,.55)'; c.lineWidth = 2;
+  for (const gy of [0, AH_L]) { c.beginPath(); c.arc(X(.5), Y(gy), sc * .24, 0, Math.PI * 2); c.stroke(); }
+  // Tore
+  for (const [gy, col] of [[0, flip ? '#39a0ff' : '#ff4f6d'], [AH_L, flip ? '#ff4f6d' : '#39a0ff']]) {
+    const ty = Y(gy), hgt = 8;
+    c.fillStyle = '#120c26'; c.fillRect(X(.5) - AH_GW * sc, ty - hgt / 2, AH_GW * 2 * sc, hgt);
+    c.fillStyle = col; c.fillRect(X(.5) - AH_GW * sc, (Y(gy) < H / 2 ? ty - hgt / 2 : ty + hgt / 2 - 3), AH_GW * 2 * sc, 3);
+  }
+  // Tor-Blitz
+  if (M.gl && now - al.glAt < 1400) { const k = (now - al.glAt) / 1400; c.fillStyle = `rgba(255,207,63,${.35 * (1 - k)})`; c.fillRect(0, 0, W, H); }
+  // Schläger
+  const mallet = (x, y, col) => {
+    const px = X(x), py = Y(y), r = AH_MR * sc;
+    c.fillStyle = 'rgba(0,0,0,.18)'; c.beginPath(); c.arc(px + 3, py + 5, r, 0, Math.PI * 2); c.fill();
+    const g = c.createRadialGradient(px - r * .3, py - r * .3, 2, px, py, r); g.addColorStop(0, col[0]); g.addColorStop(1, col[1]);
+    c.fillStyle = g; c.beginPath(); c.arc(px, py, r, 0, Math.PI * 2); c.fill();
+    c.fillStyle = 'rgba(0,0,0,.18)'; c.beginPath(); c.arc(px, py, r * .55, 0, Math.PI * 2); c.fill();
+    c.fillStyle = col[0]; c.beginPath(); c.arc(px, py, r * .42, 0, Math.PI * 2); c.fill();
+  };
+  const red = ['#ff8a9b', '#d9223f'], blue = ['#7cc4ff', '#1f6fd1'];
+  for (const i of [0, 1]) {
+    const pos = i === me ? al.me : al.ml[i], near = me >= 0 ? i === me : i === 0;
+    mallet(pos.x, pos.y, near ? red : blue);
+  }
+  // Puck
+  const s = al.sim;
+  if (s && M.status === 'running') {
+    const px = X(s.x), py = Y(s.y), r = AH_PR * sc, v = Math.hypot(s.vx, s.vy);
+    if (v > 1.2) { c.strokeStyle = `rgba(255,207,63,${Math.min(.6, (v - 1.2) / 3)})`; c.lineWidth = r * 1.4; c.lineCap = 'round'; c.beginPath(); c.moveTo(px, py); c.lineTo(X(s.x - s.vx * .05), Y(s.y - s.vy * .05)); c.stroke(); }
+    c.fillStyle = 'rgba(0,0,0,.2)'; c.beginPath(); c.arc(px + 2, py + 3, r, 0, Math.PI * 2); c.fill();
+    c.fillStyle = '#1b1b2e'; c.beginPath(); c.arc(px, py, r, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = '#ffcf3f'; c.lineWidth = 2; c.beginPath(); c.arc(px, py, r * .62, 0, Math.PI * 2); c.stroke();
+  }
+  // Treffer-Blitz
+  if (al.flash && now - al.flash.t < 220) {
+    const k = (now - al.flash.t) / 220, f = al.flash; c.strokeStyle = `rgba(255,207,63,${1 - k})`; c.lineWidth = 3;
+    c.beginPath(); c.arc(X(f.x), Y(f.y), (AH_PR + k * .06) * sc, 0, Math.PI * 2); c.stroke();
+  }
+  // Texte
+  c.textAlign = 'center';
+  if (Date.now() < M.startAt) { const n = Math.ceil((M.startAt - Date.now()) / 1000); c.fillStyle = 'rgba(0,0,0,.45)'; c.fillRect(0, 0, W, H); c.fillStyle = '#ffcf3f'; c.font = `900 ${Math.round(W * .2)}px system-ui,sans-serif`; c.fillText(Math.min(3, n), W / 2, H / 2 + W * .07); }
+  else if (M.gl && now - al.glAt < 1500) {
+    const k = (now - al.glAt) / 1500, s2 = 1 + Math.max(0, .4 - k * 2.4);
+    c.save(); c.globalAlpha = 1 - Math.max(0, (k - .6) / .4); c.translate(W / 2, H / 2); c.scale(s2, s2);
+    c.fillStyle = M.gl.w === me ? '#1bbf63' : me >= 0 ? '#e0243f' : '#e0a400'; c.font = `900 ${Math.round(Math.min(W * .11, 46))}px system-ui,sans-serif`;
+    c.fillText(M.gl.w === me ? tx('TOR!') : me >= 0 ? tx('Gegentor') : `${tx('Tor für')} ${ghost(M.p[M.gl.w]).name}`, 0, 12); c.restore();
+  }
+  const sb = document.getElementById('ah-score');
+  if (sb) { const k = M.sc.join(':'); if (sb.dataset.k !== k) { sb.dataset.k = k; sb.innerHTML = ahScoreHTML(M); } }
+}
+function ahScoreHTML(M) {
+  const me = ahMeIdx(M), order = me === 1 ? [1, 0] : [0, 1];
+  return order.map((i, k) => { const p = ghost(M.p[i]); return `<div class="tt-sc ${k ? 'r' : ''} ${i === me ? 'me' : ''}">${avatar(p, 30)}<span class="tt-nm">${esc(p.name)}</span><b>${M.sc[i]}</b></div>`; }).join('<span class="tt-colon">:</span>');
+}
+function ahSnd(n) {
+  if (!actx || muted) return;
+  if (n === 'hit') { tone(520, .05, 'square', .07, 0); kNoise(.04, 2200, 900, .06, 0, 2); }
+  else if (n === 'wall') tone(380, .03, 'triangle', .05, 0);
+  else if (n === 'goal') { tone(523, .1, 'square', .06, 0); tone(659, .1, 'square', .06, .1); tone(784, .22, 'square', .06, .2); }
+  else if (n === 'conceded') { tone(220, .3, 'sawtooth', .05, 0); tone(165, .35, 'sawtooth', .05, .12); }
+}
+/* Steuerung: Finger/Maus bewegt den Schläger direkt (nur eigene Hälfte), Pfeiltasten/WASD */
+(() => {
+  const at = e => {
+    const cv = document.getElementById('ah-cv'); if (!cv || S.tab !== 'ah' || !al.view) return;
+    const r = cv.getBoundingClientRect(), v = al.view, lx = (e.clientX - r.left - v.ox) / v.sc, ly = (e.clientY - r.top - v.oy) / v.sc;
+    const x = v.flip ? 1 - lx : lx, y = v.flip ? ly : AH_L - ly;
+    ahSetMallet(x, y + (e.pointerType === 'touch' ? (v.flip ? -.09 : .09) : 0));
+  };
+  let down = false;
+  document.addEventListener('pointerdown', e => { if (!e.target || e.target.id !== 'ah-cv') return; down = true; ensureAudio(); at(e); });
+  document.addEventListener('pointermove', e => { if (S.tab !== 'ah') return; if (down || (e.pointerType === 'mouse' && e.target && e.target.id === 'ah-cv')) at(e); });
+  ['pointerup', 'pointercancel'].forEach(n => document.addEventListener(n, () => { down = false; }));
+  const map = {ArrowLeft:'l', a:'l', ArrowRight:'r', d:'r', ArrowUp:'u', w:'u', ArrowDown:'d', s:'d'};
+  document.addEventListener('keydown', e => { if (S.tab !== 'ah' || !S.ah) return; const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return; const k = map[e.key]; if (!k) return; al.keys[k] = 1; e.preventDefault(); ensureAudio(); });
+  document.addEventListener('keyup', e => { const k = map[e.key]; if (k) al.keys[k] = 0; });
+})();
+const ahActions = {
+  'ah-to': b => { D.ahTo = Number(b.dataset.v); render(); },
+  'ah-start': () => ahStart(),
+  'ah-end': () => confirmBox('Air-Hockey beenden?', 'Das Match wird abgebrochen. Es gibt keine Punkte für den Raum-Highscore.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => { if (!ctl()) return; S.ah = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); }}]),
+  'ah-setup': () => { if (!ctl()) return; if (S.ah && S.ah.status === 'finished' && !S.ah.transferred) ahTransfer(); S.ah = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); }
+};
+
+/* ----- Ansichten ----- */
+function ahRulesHTML(open) {
+  return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird gespielt</summary><ul>
+    <li><b>Ziel:</b> Schieß den Puck ins Tor des Gegners (oben). Wer zuerst die eingestellten Tore hat, gewinnt.</li>
+    <li><b>Handy:</b> Finger auf deiner Hälfte bewegen, der Schläger folgt (er sitzt etwas über dem Finger, damit du ihn siehst).</li>
+    <li><b>PC:</b> Maus über deine Hälfte bewegen oder Pfeiltasten / WASD.</li>
+    <li><b>Tipp:</b> Je schneller du in den Puck fährst, desto härter der Schuss. Über die Bande spielen lohnt sich.</li>
+    <li><b>Nach einem Tor</b> liegt der Puck bei dem, der das Tor bekommen hat.</li>
+    <li><b>Highscore:</b> Sieger +3, Verlierer +1 im Raum-Highscore.</li></ul></details>`;
+}
+function duoSetupHTML(kind) {
+  const L = lobby(), hostP = L && L.host && playerById(L.host.pid), mem = roomMembers(L), nm = kind === 'ah' ? '🏒 Air-Hockey' : '🏓 Tischtennis';
+  const rules = kind === 'ah' ? ahRulesHTML : ttRulesHTML;
+  if (!ctl()) return `<section class="section tsec"><div class="card waiting">${COIN(56, 'spin')}<span class="eyebrow">${esc(L ? L.name : '')} · ${nm}</span><h2>Gleich geht's los</h2>
+    <p class="muted">${hostP ? `<b>${esc(hostP.name)}</b> ist Host und startet das Match.` : 'Gerade ist niemand Host.'}</p>
+    ${hostStale(L) && L.members[myPid()] ? `<button class="btn btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}</div>${rules(false)}</section>`;
+  const opts = kind === 'ah' ? AH_TO : TT_TO, cur = kind === 'ah' ? ([5, 7, 10].includes(D.ahTo) ? D.ahTo : 7) : ([5, 11, 21].includes(D.ttTo) ? D.ttTo : 11);
+  const ok = mem.length === 2 && !mem.every(isBot);
+  const slot = id => id ? `<div class="duo-p">${avatar(ghost(id), 56)}<b>${esc(ghost(id).name)}</b>${isBot(id) ? `<small>${botLvlName(botLvl(id))}</small>` : ''}</div>` : `<button class="duo-p duo-free" type="button" data-act="bot-open"><span>🤖</span><b>Bot dazuholen</b><small>oder auf einen Freund warten</small></button>`;
+  return `<section class="section tsec"><div class="card k-setup">
+    <span class="eyebrow">Du bist Host</span><h2 class="k-title-big">${nm}</h2>
+    <p class="muted">Ein Spiel nur für zwei: 1 gegen 1. Der Raum hat dafür genau 2 Plätze, auch ein Bot kann mitspielen.</p>
+    <div class="duo">${slot(mem[0])}<span class="duo-vs">VS</span>${slot(mem[1])}</div>
+    <span class="lbl">Gespielt wird</span><div class="chips">${opts.map(([v, l]) => `<button class="chip" type="button" data-act="${kind}-to" data-v="${v}" aria-pressed="${cur === v}">${l}</button>`).join('')}</div>
+    <button class="btn btn-gold btn-big" type="button" data-act="${kind}-start" ${ok ? '' : 'disabled'}>${ok ? 'Match starten' : mem.length < 2 ? 'Es fehlt noch ein Gegner' : 'Mindestens ein echter Spieler'}</button>
+  </div>${rules(true)}</section>`;
+}
+function ahPlayHTML(M) {
+  const me = ahMeIdx(M), host = ctl();
+  return `<section class="section tsec ttplay">
+    <div class="k-top">
+      <button class="gmenu" type="button" data-act="gmenu" aria-label="Menü anzeigen" title="Menü">☰</button>
+      <div class="k-head"><b>🏒 Air-Hockey</b><small>${esc((lobby() || {}).name || '')} · bis ${M.to} Tore</small></div>
+      ${host ? `<button class="btn btn-sm btn-ghost k-endbtn" type="button" data-act="ah-end">Beenden</button>` : ''}
+    </div>
+    <div class="tt-board" id="ah-score">${ahScoreHTML(M)}</div>
+    <div class="tt-box"><canvas id="ah-cv" class="tt-cv ah-cv" aria-label="Air-Hockey-Tisch"></canvas></div>
+    <p class="muted tt-hint">${me >= 0 ? (isTouch() ? 'Finger auf deiner Hälfte bewegen.' : 'Maus über deine Hälfte bewegen oder Pfeiltasten / WASD.') : '👀 Du schaust zu.'}</p>
+  </section>`;
+}
+function ahEndHTML(M) {
+  const host = ctl(), w = ghost(M.p[M.win]), l = ghost(M.p[1 - M.win]);
+  return `<section class="section tsec"><div class="card k-end">
+    <span class="eyebrow">🏒 Air-Hockey</span>
+    <div class="k-winner">${avatar(w, 72)}<h2>${esc(w.name)} gewinnt!</h2></div>
+    <p class="tt-final"><b>${M.sc[M.win]}</b> : <b>${M.sc[1 - M.win]}</b> gegen ${esc(l.name)}</p>
+    ${M.transferred ? `<p class="okline">✓ Steht im Highscore von ${esc((lobby() || {}).name || 'diesem Raum')}: ${esc(w.name)} +3, ${esc(l.name)} +1.</p>` : ''}
+    ${host ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="ah-start">Revanche</button><button class="btn" type="button" data-act="ah-setup">Zurück</button></div>` : '<p class="muted">Der Host kann ein neues Match starten.</p>'}
+  </div>${lobbyHsHTML()}</section>`;
+}
+function viewAh() { const M = S.ah; if (!M) return duoSetupHTML('ah'); return M.status === 'finished' ? ahEndHTML(M) : ahPlayHTML(M); }
+function ahMount() {
+  const M = S.ah;
+  if (M && M.status === 'finished' && al.endSnd !== M.id && S.tab === 'ah') { al.endSnd = M.id; const me = ahMeIdx(M); kSnd(me < 0 || M.win === me ? 'win' : 'lose', .3); }
+  if (!al.raf) al.raf = requestAnimationFrame(ahLoop);
+  if (M && S.tab === 'ah') ahDraw(M);
 }
 
 
@@ -9711,7 +10072,7 @@ function botGameRunning(L) { return ['running'].includes(roomState(L)); }
 function botAdd(lvl) {
   const L = lobby(); if (!L || !ctl()) return;
   if (botGameRunning(L)) { toast('Bots kannst du zwischen den Spielen dazuholen.'); return; }
-  if (roomMembers(L).length >= ROOM_MAX) { toast(`${L.name} ist voll. Höchstens ${ROOM_MAX} Spieler.`); return; }
+  if (roomMembers(L).length >= roomMax(L)) { toast(DUO_KINDS.includes(L.kind) ? `${L.name} ist voll. ${L.kind === 'ah' ? 'Air-Hockey' : 'Tischtennis'} geht nur zu zweit.` : `${L.name} ist voll. Höchstens ${ROOM_MAX} Spieler.`); return; }
   const used = new Set(Object.values(botsOf(L)).map(b => b.name));
   const name = BOT_NAMES.find(n => !used.has(n)) || 'Bot ' + (used.size + 1);
   const color = BOT_COLORS.find(c => !Object.values(botsOf(L)).some(b => b.color === c)) || BOT_COLORS[used.size % BOT_COLORS.length];
@@ -9727,7 +10088,7 @@ function botRemove(id) {
   roomWrite({['bots.' + id]:FV().delete(), ['members.' + id]:FV().delete()});
 }
 function botAddModalHTML() {
-  const L = lobby(), free = L ? ROOM_MAX - roomMembers(L).length : 0;
+  const L = lobby(), free = L ? roomMax(L) - roomMembers(L).length : 0;
   return `<div class="m-head"><h2 id="m-title">🤖 Bot dazuholen</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
     <p class="m-text">Ein Bot spielt wie ein echter Mitspieler mit: bei Kartenwahn, Uncle Grandpa ärgere dich, Blackjack, Golf, Quiz und beim Raten im Malspiel (malen tun Bots nicht). Er belegt einen Platz im Raum und bekommt keine Punkte im Raum-Highscore. Noch ${free} ${free === 1 ? 'Platz' : 'Plätze'} frei.</p>
     <div class="bot-lvls">${BOT_LVLS.map(([k, n, d]) => `<button class="pick-big" type="button" data-act="bot-add" data-v="${k}" ${free > 0 ? '' : 'disabled'}><span aria-hidden="true">${k === 'e' ? '🙂' : k === 'm' ? '😎' : '🧠'}</span><b>${n}</b><small>${d}</small></button>`).join('')}</div>`;
@@ -10516,7 +10877,7 @@ async function vgmLinkSubmit() {
 /* ---------- Spieler-Profile im Steam-Stil ----------
    Der Tab „Spieler“ zeigt alle Spieler. Ein Tipp auf einen Spieler öffnet sein Profil: Kopfbereich mit Level und Status,
    Lieblingsspiel, Screenshots, kürzliche Aktivität, Spielebibliothek; daneben Abzeichen, Zahlen und die anderen Spieler. */
-const GAME_KIND_NAME = {quiz:'Quiz', malen:'Malen', golf:'Minigolf', karten:'Kartenwahn', mad:'Uncle Grandpa ärgere dich', bj:'Blackjack', dt:'Dicktris', tt:'Tischtennis'};
+const GAME_KIND_NAME = {quiz:'Quiz', malen:'Malen', golf:'Minigolf', karten:'Kartenwahn', mad:'Uncle Grandpa ärgere dich', bj:'Blackjack', dt:'Dicktris', tt:'Tischtennis', ah:'Air-Hockey'};
 /* Status wie bei Steam: im Spiel (in einem Raum mit laufendem Spiel), online oder offline */
 function spStatus(pid) {
   const now = Date.now();
@@ -10771,7 +11132,7 @@ const TK_TYPES = [
 ];
 const TK_AREAS = [
   ['menu', 'Main-Menü', '🏠'], ['turnier', 'Turnier', '🏆'], ['raeume', 'Spiele-Räume', '🚪'], ['quiz', 'Quiz', '❔'], ['malen', 'Malen', '🎨'],
-  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['mad', 'Uncle Grandpa ärgere dich', '🎲'], ['bj', 'Blackjack', '🂡'], ['dt', 'Dicktris', '🧱'], ['tt', 'Tischtennis', '🏓'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
+  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['mad', 'Uncle Grandpa ärgere dich', '🎲'], ['bj', 'Blackjack', '🂡'], ['dt', 'Dicktris', '🧱'], ['tt', 'Tischtennis', '🏓'], ['ah', 'Air-Hockey', '🏒'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
   ['support', 'Support', '🛟'], ['musik', 'Musik und Sound', '🎵'], ['optionen', 'Optionen', '⚙️'], ['login', 'Login und Einladungen', '🔑'], ['handy', 'Handy-Ansicht', '📱'], ['other', 'Sonstiges', '🧩']
 ];
 const TK_SUB = {
@@ -10844,7 +11205,7 @@ function tkContext() {
   const t = S.tab, L = typeof lobby === 'function' ? lobby() : null, me = myPid();
   const map = {start:'menu', turnier:'turnier', rangliste:'turnier', rad:'turnier', liste:'turnier', spiele:'raeume', raum:'raeume', spieler:'profile', einstellungen:'optionen'};
   let area = map[t] || '', hole = 0, sub = '';
-  if (['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt'].includes(t)) area = t;
+  if (['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah'].includes(t)) area = t;
   if (t === 'spieler' && D.vgP) area = 'games';
   if (area === 'golf' && S.golf && S.golf.status === 'running') { const p = S.golf.pos && S.golf.pos[me]; hole = (Array.isArray(p) ? p[3] : S.golf.hi) + 1 || 0; }
   if (area === 'turnier') sub = {rangliste:'Rangliste', rad:'Glücksrad', liste:'Spieleliste'}[t] || '';
@@ -12414,6 +12775,7 @@ function tick() {
     bjTimerTick();
     dtHostTick();
     try { ttLogic(); } catch (e) {}
+    try { ahLogic(); } catch (e) {}
     botTick();
   }
   lobbyAutoAward();
@@ -12959,7 +13321,7 @@ const actions = {
   'quiz-again': () => { const base = clone(S.quiz); withPending(() => quizStart(base)); },
   'quiz-new': () => withPending(() => quizDiscard())
 };
-Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions, dtActions, ttActions);
+Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions, dtActions, ttActions, ahActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
   if (e.target.classList && e.target.classList.contains('scrim')) { if (!(S.modal && S.modal.type === 'bday-ask')) closeModal(); return; }
@@ -14474,7 +14836,7 @@ function boot() {
   if (!S.deco) S.deco = normDeco(null);
   renderBgm();
   const h = (location.hash || '').slice(1);
-  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt'].includes(h) ? 'spiele-pick' : viewFor(h);
+  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah'].includes(h) ? 'spiele-pick' : viewFor(h);
   const fc = CFG && CFG.firebase;
   if (!fc || !fc.apiKey || /HIER_EINTRAGEN/.test(fc.apiKey) || /DEIN-PROJEKT/.test(fc.projectId || '') || !window.firebase) {
     S.mode = 'setup'; S.loaded = true;
