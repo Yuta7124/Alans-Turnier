@@ -162,8 +162,8 @@ Frames werden als Map gespeichert (`{"0":[…]}`), weil Firestore keine Listen i
 ## Air-Hockey und 2er-Spiele
 🏒 Air-Hockey: 1 gegen 1 (auch gegen einen Bot), bis 5, 7 oder 10 Tore. Gespeichert im Raum-Feld `uno` mit `g:'ah'`.
 Der Puck läuft auf jedem Gerät mit festen Rechenschritten gleich weiter. Treffer und Tore auf einer Hälfte schreibt nur deren
-Besitzer (bei Bots der Host) als neues Puck-Ereignis. Tischtennis und Air-Hockey sind reine 2er-Spiele: Ein Raum mit diesem
-Spiel hat genau 2 Plätze (`roomMax`), mehr Leute können nicht beitreten.
+Besitzer (bei Bots der Host) als neues Puck-Ereignis. Tischtennis und Air-Hockey sind 2er-Spiele: Sind mehr als 2 im Raum, wählt der Host aus,
+wer gegeneinander spielt; die anderen schauen zu.
 
 ## Pause in Raum-Spielen
 In jedem laufenden Raum-Spiel gibt es rechts unten einen Pause-Knopf (für alle Mitspieler). Die Pause steht im Spiel-Objekt

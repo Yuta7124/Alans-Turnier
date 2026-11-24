@@ -2831,6 +2831,16 @@ body.icrop-open{overflow:hidden}
 /* Bowling */
 .tt-cv.bw-cv{height:min(70vh,calc(min(100vw,720px) * 1.3));cursor:grab;touch-action:none}
 .tt-cv.bw-cv:active{cursor:grabbing}
+.bw-wrap{display:flex;flex-direction:column;gap:10px}
+@media (min-width:901px){
+  .bw-wrap{display:grid;grid-template-columns:minmax(360px,1fr) minmax(0,1.25fr);grid-template-areas:"l c";gap:22px;align-items:start}
+  .bw-left{grid-area:l;display:flex;flex-direction:column;gap:12px;position:sticky;top:12px}
+  .bw-lane{grid-area:c;max-width:none!important}
+  .tt-cv.bw-cv{height:calc(100vh - 120px);min-height:520px}
+  .bw-left .bw-board{margin:0}
+  .bw-left .tt-hint{text-align:left}
+  .bw-left .bw-ctl{justify-content:flex-start}
+}
 .bw-ctl{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
 .bw-ctl .chips{gap:6px}
 .bw-ctl .chip{min-height:34px;padding:6px 12px}
@@ -2942,7 +2952,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=75"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=76"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -6928,7 +6938,7 @@ const golfActions = {
 const ROOMS = ['r1', 'r2', 'r3'];
 const ROOM_MAX = 8;
 const DUO_KINDS = ['tt', 'ah'];
-function roomMax(L) { return L && DUO_KINDS.includes(L.kind) && !L.tour ? 2 : ROOM_MAX; }
+function roomMax(L) { return ROOM_MAX; }
 const ROOM_NAMES = {r1:'Raum 1', r2:'Raum 2', r3:'Raum 3'};
 const TOUR_ROOM = 'TOUR';
 const HOST_STALE_MS = 60000, HOST_AUTO_MS = 90000;
@@ -7212,7 +7222,7 @@ async function roomJoin(r) {
   const L = lobby(r);
   if (L.members[me]) { roomSet(r); setTab('raum'); return; }
   if (roomPriv(L) && !L.inv[me]) { toast(`${L.name} ist privat. Nur eingeladene Spieler können beitreten.`); return; }
-  if (roomMembers(L).length >= roomMax(L)) { toast(DUO_KINDS.includes(L.kind) ? `${L.name} ist voll. ${L.kind === 'ah' ? 'Air-Hockey' : 'Tischtennis'} geht nur zu zweit.` : `${L.name} ist voll. Höchstens ${ROOM_MAX} Spieler.`); return; }
+  if (roomMembers(L).length >= roomMax(L)) { toast(`${L.name} ist voll. Höchstens ${ROOM_MAX} Spieler.`); return; }
   const old = myRoom();
   if (old && old !== r) await roomLeave(old, true);
   const patch = {members:{[me]:{at:Date.now(), dev:devId}}};
@@ -7259,7 +7269,7 @@ function roomTake() {
   roomRef().update({host:{pid:me || '', dev:devId}, hostSeen:Date.now()}).then(() => toast('Du bist jetzt Host.')).catch(() => {});
 }
 function roomKind(k) { if (!ctl()) return;
-  if (DUO_KINDS.includes(k) && roomMembers(lobby()).length > 2 && !lobby().tour) { toast(`${k === 'ah' ? 'Air-Hockey' : 'Tischtennis'} geht nur zu zweit. Im Raum sind gerade ${roomMembers(lobby()).length}. Wechselt in einen anderen Raum oder nehmt ein anderes Spiel.`); return; } D.dnew = false; S.lobbies[S.room] = {...lobby(), kind:k}; roomWrite({kind:k}); S.tab = roomView(); render(); }
+  D.dnew = false; S.lobbies[S.room] = {...lobby(), kind:k}; roomWrite({kind:k}); S.tab = roomView(); render(); }
 function roomReset(r) {
   confirmBox(`${ROOM_NAMES[r]} zurücksetzen?`, 'Alle fliegen aus dem Raum und ein laufendes Spiel wird abgebrochen.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Zurücksetzen', cls:'btn-gold', fn:() => {
     db.collection('lobbies').doc(r).set({members:{}, bots:{}, host:null, hostSeen:0, kind:'', quiz:null, draw:null, golf:null, uno:null}).then(() => toast(`${ROOM_NAMES[r]} ist wieder frei.`)).catch(e => onWriteError(e));
@@ -7310,8 +7320,8 @@ function viewRoom() {
         <button class="pick-big" type="button" data-act="room-kind" data-v="golf" style="--tc:#4ff08f"><span aria-hidden="true">⛳</span><b>Golf</b><small>Minigolf in 3D mit 30 Bahnen, von kurz und leicht bis extrem. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="mad" style="--tc:#ff9f5a"><span aria-hidden="true">🎲</span><b>Uncle Grandpa ärgere dich</b><small>Das Brettspiel für 2 bis 4: Würfeln, mit einer 6 rauskommen, Gegner rauswerfen und alle Figuren ins Ziel bringen.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="dt" style="--tc:#39d6f2"><span aria-hidden="true">🧱</span><b>Dicktris</b><small>Fallende Blöcke: Reihen voll machen, im Battle-Modus Müllzeilen an die anderen schicken. Alle spielen gleichzeitig.</small></button>
-        <button class="pick-big" type="button" data-act="room-kind" data-v="tt" style="--tc:#ff8a3d"><span aria-hidden="true">🏓</span><b>Tischtennis</b><small>Nur zu zweit: 1 gegen 1 an der Platte, auch gegen einen Bot. Jeder Schlag macht den Ball schneller.</small></button>
-        <button class="pick-big" type="button" data-act="room-kind" data-v="ah" style="--tc:#39d6f2"><span aria-hidden="true">🏒</span><b>Air-Hockey</b><small>Nur zu zweit: 1 gegen 1 am Tisch, auch gegen einen Bot. Schieß den Puck ins Tor.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="tt" style="--tc:#ff8a3d"><span aria-hidden="true">🏓</span><b>Tischtennis</b><small>1 gegen 1 an der Platte, auch gegen einen Bot. Sind mehr im Raum, schauen die anderen zu.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="ah" style="--tc:#39d6f2"><span aria-hidden="true">🏒</span><b>Air-Hockey</b><small>1 gegen 1 am Tisch, auch gegen einen Bot. Sind mehr im Raum, schauen die anderen zu.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="bw" style="--tc:#ff4f9a"><span aria-hidden="true">🎳</span><b>Bowling</b><small>Reihum werfen, mit Strikes, Spares und Effet. Für alle im Raum, auch mit Bots.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="bj" style="--tc:#2ecc71"><span aria-hidden="true">🂡</span><b>Blackjack</b><small>Alle gegen die Bank: Komm näher an 21 als die Bank. Mit Chips, Verdoppeln und Teilen. Auch allein spielbar.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="karten" style="--tc:#ffcf3f"><span aria-hidden="true">🃏</span><b>Kartenwahn</b><small>Das Ablegespiel für 2 bis 8: Farbe oder Zahl ablegen, +2, +4, Aussetzen, Richtungswechsel.</small></button>
@@ -9496,8 +9506,8 @@ function ttWrite(patch) { roomWrite(patch); }
 function ttStart(pl) {
   if (!ctl()) return;
   if (S.tt && S.tt.status === 'finished' && !S.tt.transferred) ttTransfer();
-  const L = lobby(), mem0 = roomMembers(L), mem = L.tour && mem0.length > 2 ? (D.duoSel || []).filter(id => mem0.includes(id)) : mem0;
-  if (mem.length !== 2) { toast(L.tour ? 'Wähle 2 Spieler aus.' : 'Tischtennis geht nur zu zweit. Hol dir einen Bot dazu!'); return; }
+  const L = lobby(), mem0 = roomMembers(L), mem = mem0.length > 2 ? (D.duoSel || []).filter(id => mem0.includes(id)) : mem0;
+  if (mem.length !== 2) { toast(mem0.length > 2 ? 'Wähle 2 Spieler aus.' : 'Tischtennis geht nur zu zweit. Hol dir einen Bot dazu!'); return; }
   let p = (pl || []).filter(id => mem.includes(id)).slice(0, 2);
   if (p.length < 2) p = mem.slice().sort((a, b) => isBot(a) - isBot(b));
   if (p.every(isBot)) { toast('Mindestens einer muss ein echter Spieler sein.'); return; }
@@ -9912,8 +9922,8 @@ function ahFaceoff(i) { return {x:.5, y:i === 0 ? AH_L * .27 : AH_L * .73}; }
 function ahStart() {
   if (!ctl()) return;
   if (S.ah && S.ah.status === 'finished' && !S.ah.transferred) ahTransfer();
-  const L = lobby(), mem0 = roomMembers(L), mem = L.tour && mem0.length > 2 ? (D.duoSel || []).filter(id => mem0.includes(id)) : mem0;
-  if (mem.length !== 2) { toast(L.tour ? 'Wähle 2 Spieler aus.' : 'Air-Hockey geht nur zu zweit. Hol dir einen Bot dazu!'); return; }
+  const L = lobby(), mem0 = roomMembers(L), mem = mem0.length > 2 ? (D.duoSel || []).filter(id => mem0.includes(id)) : mem0;
+  if (mem.length !== 2) { toast(mem0.length > 2 ? 'Wähle 2 Spieler aus.' : 'Air-Hockey geht nur zu zweit. Hol dir einen Bot dazu!'); return; }
   if (mem.every(isBot)) { toast('Mindestens einer muss ein echter Spieler sein.'); return; }
   const p = mem.slice().sort((a, b) => isBot(a) - isBot(b)), to = [5, 7, 10].includes(D.ahTo) ? D.ahTo : 7, f = Math.random() < .5 ? 0 : 1, fo = ahFaceoff(f);
   const M = {g:'ah', id:uid(), status:'running', to, p, sc:[0, 0], n:1, pk:{n:1, by:-1, x:fo.x, y:fo.y, vx:0, vy:0}, gl:null, startAt:Date.now() + 3500, win:-1, transferred:false, hits:0};
@@ -10219,15 +10229,15 @@ function duoSetupHTML(kind) {
     <p class="muted">${hostP ? `<b>${esc(hostP.name)}</b> ist Host und startet das Match.` : 'Gerade ist niemand Host.'}</p>
     ${hostStale(L) && L.members[myPid()] ? `<button class="btn btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}</div>${rules(false)}</section>`;
   const opts = kind === 'ah' ? AH_TO : TT_TO, cur = kind === 'ah' ? ([5, 7, 10].includes(D.ahTo) ? D.ahTo : 7) : ([5, 11, 21].includes(D.ttTo) ? D.ttTo : 11);
-  const pickMode = L.tour && mem.length > 2;
+  const pickMode = mem.length > 2;
   if (pickMode && (!D.duoSel || D.duoSel.some(id => !mem.includes(id)) || D.duoSel.length > 2)) D.duoSel = mem.slice(0, 2);
   const duo = pickMode ? D.duoSel : mem;
   const ok = duo.length === 2 && !duo.every(isBot);
   const slot = id => id ? `<div class="duo-p">${avatar(ghost(id), 56)}<b>${esc(ghost(id).name)}</b>${isBot(id) ? `<small>${botLvlName(botLvl(id))}</small>` : ''}</div>` : `<button class="duo-p duo-free" type="button" data-act="bot-open"><span>🤖</span><b>Bot dazuholen</b><small>oder auf einen Freund warten</small></button>`;
   return `<section class="section tsec"><div class="card k-setup">
     <span class="eyebrow">Du bist Host</span><h2 class="k-title-big">${nm}</h2>
-    <p class="muted">Ein Spiel nur für zwei: 1 gegen 1. Der Raum hat dafür genau 2 Plätze, auch ein Bot kann mitspielen.</p>
-    ${pickMode ? `<span class="lbl">Turnier-Lobby: Wer spielt jetzt? (2 auswählen, die anderen schauen zu)</span>
+    <p class="muted">Ein Spiel für zwei: 1 gegen 1, auch gegen einen Bot. Sind mehr im Raum, wählst du aus, wer spielt. Die anderen schauen zu.</p>
+    ${pickMode ? `<span class="lbl">Wer spielt jetzt gegeneinander? (2 auswählen, die anderen schauen zu)</span>
       <div class="chips">${mem.map(id => `<button class="chip pchip" type="button" data-act="duo-sel" data-pid="${esc(id)}" aria-pressed="${duo.includes(id)}">${avatar(ghost(id), 26)}${esc(ghost(id).name)}</button>`).join('')}</div>` : ''}
     <div class="duo">${slot(duo[0])}<span class="duo-vs">VS</span>${slot(duo[1])}</div>
     <span class="lbl">Gespielt wird</span><div class="chips">${opts.map(([v, l]) => `<button class="chip" type="button" data-act="${kind}-to" data-v="${v}" aria-pressed="${cur === v}">${l}</button>`).join('')}</div>
@@ -10666,10 +10676,14 @@ function bwPlayHTML(M) {
       <div class="k-head"><b>🎳 Bowling</b><small>${esc((lobby() || {}).name || '')} · Frame ${M.s.fr + 1}/${M.cfg.fr}</small></div>
       ${host ? `<button class="btn btn-sm btn-ghost k-endbtn" type="button" data-act="bw-end">Beenden</button>` : ''}
     </div>
-    <div class="tt-box"><canvas id="bw-cv" class="tt-cv bw-cv" aria-label="Bowlingbahn"></canvas></div>
+    <div class="bw-wrap">
+    <div class="tt-box bw-lane"><canvas id="bw-cv" class="tt-cv bw-cv" aria-label="Bowlingbahn"></canvas></div>
+    <div class="bw-left">
+    ${bwBoardHTML(M)}
     ${bwMeTurn(M) ? `<div class="bw-ctl"><span class="lbl">Effet</span><div class="chips">${BW_SPINS.map(([v, l]) => `<button class="chip" type="button" data-act="bw-spin" data-v="${v}" aria-pressed="${(D.bwSpin || 0) === v}">${l}</button>`).join('')}</div></div>
     <p class="muted tt-hint">Du bist dran! Kugel nach unten ziehen und loslassen, wie beim Minigolf. Tippen neben die Kugel verschiebt sie.</p>` : `<p class="muted tt-hint">${M.players.includes(me) ? `${esc(ghost(pid).name)} ist dran.` : '👀 Du schaust zu.'}</p>`}
-    ${bwBoardHTML(M)}
+    </div>
+    </div>
   </section>`;
 }
 function bwEndHTML(M) {
@@ -10733,7 +10747,7 @@ function botGameRunning(L) { return ['running'].includes(roomState(L)); }
 function botAdd(lvl) {
   const L = lobby(); if (!L || !ctl()) return;
   if (botGameRunning(L)) { toast('Bots kannst du zwischen den Spielen dazuholen.'); return; }
-  if (roomMembers(L).length >= roomMax(L)) { toast(DUO_KINDS.includes(L.kind) ? `${L.name} ist voll. ${L.kind === 'ah' ? 'Air-Hockey' : 'Tischtennis'} geht nur zu zweit.` : `${L.name} ist voll. Höchstens ${ROOM_MAX} Spieler.`); return; }
+  if (roomMembers(L).length >= roomMax(L)) { toast(`${L.name} ist voll. Höchstens ${ROOM_MAX} Spieler.`); return; }
   const used = new Set(Object.values(botsOf(L)).map(b => b.name));
   const name = BOT_NAMES.find(n => !used.has(n)) || 'Bot ' + (used.size + 1);
   const color = BOT_COLORS.find(c => !Object.values(botsOf(L)).some(b => b.color === c)) || BOT_COLORS[used.size % BOT_COLORS.length];
