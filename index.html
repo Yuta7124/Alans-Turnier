@@ -2529,8 +2529,14 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
 .nt-catacts button:disabled{opacity:.3}
 .nt-delbtn{color:var(--hp)}
 /* Uncle Grandpa ärgere dich */
-.md-wrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
-@media (max-width:860px){.md-wrap{grid-template-columns:1fr}}
+.md-wrap{display:grid;grid-template-columns:250px minmax(0,1fr) 250px;grid-template-areas:"l b r";gap:24px;align-items:start}
+.md-brd{grid-area:b;min-width:0}
+.md-wrap>.md-side{grid-area:l;position:sticky;top:14px}
+.md-right{grid-area:r;display:flex;flex-direction:column;gap:10px;position:sticky;top:14px}
+.md-h{font-family:var(--display);font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.mplay .mboard{max-width:min(860px,calc(100vh - 150px))}
+@media (max-width:1100px){.md-wrap{grid-template-columns:210px minmax(0,1fr) 210px;gap:16px}}
+@media (max-width:860px){.md-wrap{grid-template-columns:1fr;grid-template-areas:"b" "l" "r"}.md-wrap>.md-side,.md-right{position:static}.md-h{display:none}.mplay .mboard{max-width:min(640px,100%)}}
 /* Brett wie beim Klassiker: helles Holz, farbige Ecken, weiße Felder mit dunklem Rand. Flach von oben (2D). */
 .mb-3d{padding:0 0 10px}
 .mboard{position:relative;width:100%;max-width:min(640px,calc(100vh - 220px));aspect-ratio:1;margin:0 auto;border-radius:20px;padding:2.6%;
@@ -2598,7 +2604,7 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
   .md-side{display:grid;grid-template-columns:auto 1fr;gap:10px}
   .md-diebox{grid-row:span 2;padding:10px}
   .md-die.big{--ds:70px}
-  .md-pls{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}
+  .md-pls{display:grid;grid-template-columns:1fr 1fr}
   .md-pl{padding:6px 8px}
 }
 /* Blackjack */
@@ -4686,7 +4692,7 @@ function render() {
   const oldStand = m.querySelector('.stand');
   const oldKey = oldStand ? oldStand.dataset.key : null;
   const before = standCapture(oldStand);
-  m.classList.toggle('wide', /class="section (qsec|dsec|gsec|ksec|msec|bsec|tsec)"/.test(html));
+  m.classList.toggle('wide', /class="section (qsec|dsec|gsec|ksec|msec|bsec|tsec)[ "]/.test(html));
   renderSubnav();
   if (S.tab === 'malen' && !blocked() && S.mode === 'db' && S.loaded && dPartsOk(m)) dPatchParts();
   else {
@@ -8300,15 +8306,15 @@ function madPlayHTML(M) {
       ${host ? `<button class="btn btn-sm btn-ghost k-endbtn" type="button" data-act="mad-end">Beenden</button>` : ''}
     </div>
     <div class="md-wrap">
-      ${madBoardHTML(M, can)}
+      <div class="md-brd">${madBoardHTML(M, can)}</div>
       <div class="md-side">
         <div class="md-diebox ${canRoll ? 'can' : ''}" style="--mc:${MAD_HEX[s.col[tp]] || '#fff'}">
           ${canRoll ? `<button class="md-roll" type="button" data-act="mad-roll" aria-label="Würfeln">${madDieHTML(s.die || 6, 'big')}<b>Würfeln!</b></button>` : `<div class="md-roll off">${madDieHTML(mf.rolling ? mf.face : s.die, 'big' + (mf.rolling ? ' rolling' : ''))}</div>`}
         </div>
         <div class="k-status md-status ${mine ? 'mine' : ''}">${status}</div>
         <div class="k-log" aria-live="polite">${s.log.slice(-2).reverse().map((e, i) => `<span class="${i ? 'old' : ''}">${madLogText(e)}</span>`).join('')}</div>
-        <div class="md-pls">${players}</div>
       </div>
+      <div class="md-right"><span class="md-h">Spieler</span><div class="md-pls">${players}</div></div>
     </div>
   </section>`;
 }
