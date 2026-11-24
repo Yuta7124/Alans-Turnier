@@ -8108,7 +8108,8 @@ function madNormState(s) {
   return {order, col, pos, turn:Math.max(0, Math.min(order.length - 1, Math.round(num(s.turn)))), die:Math.max(0, Math.min(6, Math.round(num(s.die)))),
     rolled:s.rolled === true, tries:Math.max(0, Math.min(3, Math.round(num(s.tries)))), seq:Math.round(num(s.seq, 1)), turnAt:num(s.turnAt),
     log:Array.isArray(s.log) ? s.log.filter(e => e && typeof e === 'object').slice(-10) : [], win:typeof s.win === 'string' ? s.win : '',
-    done:s.done && typeof s.done === 'object' && !Array.isArray(s.done) ? s.done : {}};
+    done:s.done && typeof s.done === 'object' && !Array.isArray(s.done) ? s.done : {},
+    bag:Object.fromEntries(order.map(p => [p, s.bag && typeof s.bag[p] === 'string' && /^[1-6]{0,6}$/.test(s.bag[p]) ? s.bag[p] : '']))};
 }
 function madNorm(x) {
   if (!x || typeof x !== 'object' || x.g !== 'mad' || !['running', 'finished'].includes(x.status)) return null;
@@ -8170,7 +8171,11 @@ function madApply(s0, cfg, pid, req, rnd = Math.random, now = Date.now()) {
   }
   if (a === 'roll') {
     if (s.rolled) return null;
-    const d = 1 + Math.floor(rnd() * 6); s.die = d;
+    // Fairer Würfel: Jeder Spieler hat einen eigenen „Beutel“ mit 1 bis 6. Gezogen wird zufällig daraus, ist er leer,
+    // wird er neu gefüllt. So kommt jede Zahl gleich oft vor (nach je 6 Würfen genau einmal).
+    if (!s.bag) s.bag = {};
+    let bag = s.bag[pid] || ''; if (!bag) bag = '123456';
+    const k = Math.floor(rnd() * bag.length), d = Number(bag[k]); s.bag[pid] = bag.slice(0, k) + bag.slice(k + 1); s.die = d;
     madLog(s, {p:pid, a:'roll', d});
     const mv = madMoves(s, pid, d);
     if (mv.length) { s.rolled = true; s.turnAt = now; }
@@ -8332,6 +8337,7 @@ function madRulesHTML(open) {
       <li><b>Pflicht:</b> Bei einer 6 muss eine Figur raus, wenn noch eine im Haus ist. Dein Startfeld musst du danach als Erstes freimachen.</li>
       <li><b>Rauswerfen:</b> Landest du auf einem Gegner, muss er zurück ins Haus. Auf eigene Figuren darfst du nicht ziehen.</li>
       <li><b>Ziel:</b> Ins Ziel nur mit passender Zahl. Im Ziel darfst du nicht über eigene Figuren springen.</li>
+      <li><b>Fairer Würfel:</b> Jede Zahl von 1 bis 6 kommt gleich oft. In je 6 Würfen hat jeder Spieler jede Zahl genau einmal.</li>
       <li><b>Punkte:</b> Platz 1 bis 3 bekommen 3, 2 und 1 Punkt im Raum-Highscore. Die anderen werden nach ihrem Weg sortiert.</li>
     </ul></details>`;
 }
