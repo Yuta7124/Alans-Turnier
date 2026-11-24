@@ -2942,7 +2942,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=74"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=75"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -9746,16 +9746,6 @@ function ttDraw(M) {
   c.fillStyle = '#ddd'; c.fillRect(n1.x - 3, n1.y - nh - 2, 4, nh + 4); c.fillRect(n2.x - 1, n2.y - nh - 2, 4, nh + 4);
   if (!ballFar) drawBall();
   drawPad(nearI, ['#ff8a9b', '#d9223f']);
-  // Zeitring: schrumpft auf den Ball zu, wenn er bei mir ankommt – dann tippen
-  if (M.ball && me >= 0 && 1 - M.ball.by === me) {
-    const t = (now - tl.bStart) / M.ball.dur;
-    if (t > .45 && t < 1.08) {
-      const [vx, vy] = V(M.ball.tx, me === 0 ? 0 : 1), p = P(vx, vy < .5 ? -.02 : 1.02, .22), k = Math.max(0, (1 - t) / .55), base = 9 * p.s + 3;
-      const good = Math.abs(now - (tl.bStart + M.ball.dur)) < TT_PRE * .6;
-      c.strokeStyle = good ? 'rgba(79,240,143,.95)' : 'rgba(255,255,255,.7)'; c.lineWidth = good ? 4 : 2.5;
-      c.beginPath(); c.arc(p.x, p.y, base + k * 60 * p.s, 0, Math.PI * 2); c.stroke();
-    }
-  }
   // Treffer-Blitz
   if (tl.flash && now - tl.flash.t < 260) {
     const f = tl.flash, k = (now - f.t) / 260, [fx, fy] = V(f.wx, f.wy), p = P(fx, fy < .5 ? -.05 : 1.05, .22);
@@ -9836,7 +9826,7 @@ const ttActions = {
 function ttRulesHTML(open) {
   return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird gespielt</summary><ul>
     <li><b>Ziel:</b> Spiel den Ball zurück, bis der andere ihn verpasst. Wer zuerst die eingestellten Punkte hat (mit 2 Punkten Vorsprung), gewinnt.</li>
-    <li><b>Schlagen:</b> Du schlägst selbst! Stell den Schläger unter den Ball und tippe (Handy) bzw. klicke oder drück die Leertaste (PC), wenn der Ring um den Ball grün wird. Perfekt getroffen wird oft ein Schmetterball.</li>
+    <li><b>Schlagen:</b> Du schlägst selbst! Stell den Schläger unter den Ball und tippe (Handy) bzw. klicke oder drück die Leertaste (PC), kurz bevor der Ball bei dir ankommt. Perfekt getroffen wird oft ein Schmetterball.</li>
     <li><b>Bewegen:</b> Handy: Finger nach links und rechts ziehen. PC: Maus oder ← →. Tippen/Klicken ohne Ball schlägt auf.</li>
     <li><b>Tipp:</b> Triffst du den Ball mit dem Rand vom Schläger, fliegt er schräg und oft als schneller Schmetterball. Mit jedem Schlag wird der Ball schneller.</li>
     <li><b>Aufschlag:</b> wechselt alle 2 Punkte, ab Gleichstand jeden Punkt.</li>
@@ -9869,7 +9859,7 @@ function ttPlayHTML(M) {
     </div>
     <div class="tt-board" id="tt-score">${ttScoreHTML(M)}</div>
     <div class="tt-box"><canvas id="tt-cv" class="tt-cv" aria-label="Tischtennisplatte"></canvas></div>
-    <p class="muted tt-hint">${me >= 0 ? (isTouch() ? 'Finger hin- und herziehen. Tippen = schlagen (wenn der Ring grün ist) und Aufschlag.' : 'Maus bewegen oder ← →. Klick oder Leertaste = schlagen (wenn der Ring grün ist) und Aufschlag.') : '👀 Du schaust zu.'}</p>
+    <p class="muted tt-hint">${me >= 0 ? (isTouch() ? 'Finger hin- und herziehen. Tippen = schlagen (kurz bevor der Ball bei dir ist) und Aufschlag.' : 'Maus bewegen oder ← →. Klick oder Leertaste = schlagen (kurz bevor der Ball bei dir ist) und Aufschlag.') : '👀 Du schaust zu.'}</p>
   </section>`;
 }
 function ttEndHTML(M) {
