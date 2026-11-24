@@ -2577,9 +2577,14 @@ html[data-design="neon"] .sh-text{font-size:clamp(14px,1.9vw,21px)}
 .md-diebox{display:grid;place-items:center;padding:16px;border-radius:18px;background:var(--panel);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--mc) 60%,transparent)}
 .md-brd{position:relative}
 .mplay .mboard{transition:box-shadow .3s}
+.mplay:not(.mine) .mboard{box-shadow:0 0 0 4px var(--myc),0 0 34px -6px var(--myc),0 12px 0 var(--shadow)}
+.mplay:not(.mine) .md-status{color:var(--myc);font-weight:800;font-size:18px;text-align:center;padding:8px;border-radius:14px;box-shadow:inset 0 0 0 2px var(--myc)}
+.md-turnban.other{padding:12px 24px;gap:6px}
+.md-turnban.other b{font-size:clamp(20px,3.6vw,36px)}
+.md-turnban.other .av{box-shadow:0 0 0 3px var(--mc)}
 .mplay.mine .mboard{box-shadow:0 0 0 5px var(--myc),0 0 50px -4px var(--myc),0 12px 0 var(--shadow);animation:mdMine 1.4s ease-in-out infinite}
 @keyframes mdMine{50%{box-shadow:0 0 0 7px var(--myc),0 0 80px 4px var(--myc),0 12px 0 var(--shadow)}}
-.md-turnban{position:absolute;left:50%;top:50%;z-index:20;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;padding:18px 34px;border-radius:22px;
+.md-turnban{position:fixed;z-index:120;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;padding:18px 34px;border-radius:22px;
   background:rgba(12,8,26,.88);box-shadow:0 0 0 4px var(--mc),0 0 60px var(--mc);pointer-events:none;animation:mdBan 1.9s cubic-bezier(.2,1.4,.4,1) forwards;text-align:center;white-space:nowrap}
 .md-turnban b{font-family:var(--display);font-size:clamp(26px,5vw,52px);text-transform:uppercase;color:var(--mc);text-shadow:0 3px 0 rgba(0,0,0,.5)}
 .md-turnban small{font-weight:700;color:#fff;font-size:15px}
@@ -2935,7 +2940,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=72"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=73"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -8523,15 +8528,19 @@ function madTitleSync() {
   const want = S.tab === 'mad' && S.mad && S.mad.status === 'running' && madMyTurn() ? '🎲 Du bist dran! · ' + madTitleBase : madTitleBase;
   if (document.title !== want) document.title = want;
 }
-function madTurnBanner(delay = 0) {
+function madTurnBanner(delay = 0, other = '') {
   setTimeout(() => {
-    const b = document.querySelector('.md-brd'); if (!b || !madMyTurn()) return;
-    const old = b.querySelector('.md-turnban'); if (old) old.remove();
-    const M = S.mad, c = M && M.s ? MAD_HEX[M.s.col[myPid()]] : '#ffcf3f';
-    const el = document.createElement('div'); el.className = 'md-turnban'; el.style.setProperty('--mc', c); el.setAttribute('aria-hidden', 'true');
-    el.innerHTML = `<b>${tx('Du bist dran!')}</b><small>${tx('Tipp auf den Würfel')}</small>`;
-    b.appendChild(el); setTimeout(() => el.remove(), 1900);
-    try { if (navigator.vibrate) navigator.vibrate([90, 60, 90]); } catch (e) {}
+    const b = document.querySelector('.md-brd'), M = S.mad; if (!b || !M || !M.s || S.tab !== 'mad') return;
+    if (other ? madTurnPid(M.s) !== other : !madMyTurn()) return;
+    document.querySelectorAll('.md-turnban').forEach(x => x.remove());
+    // Liegt außerhalb des Bretts im DOM (das Brett wird oft neu gezeichnet), aber genau darüber
+    const r = b.getBoundingClientRect();
+    const pid = other || myPid(), c = MAD_HEX[M.s.col[pid]] || '#ffcf3f';
+    const el = document.createElement('div'); el.className = 'md-turnban' + (other ? ' other' : ''); el.style.setProperty('--mc', c); el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = other ? `${avatar(ghost(pid), 44)}<b>${esc(ghost(pid).name)}</b><small>${tx('ist jetzt dran')}</small>` : `<b>${tx('Du bist dran!')}</b><small>${tx('Tipp auf den Würfel')}</small>`;
+    el.style.left = (r.left + r.width / 2) + 'px'; el.style.top = (r.top + r.height * (other ? .16 : .5)) + 'px';
+    document.body.appendChild(el); setTimeout(() => el.remove(), other ? 1500 : 1900);
+    if (!other) try { if (navigator.vibrate) navigator.vibrate([90, 60, 90]); } catch (e) {}
   }, delay);
 }
 function madMount() {
@@ -8540,12 +8549,14 @@ function madMount() {
   if (M && M.s && M.s.win && mf.gid === M.id && !mf.end && S.tab === 'mad') { mf.end = true; kSnd(M.s.win === myPid() ? 'win' : 'lose', .5); }
   if (!M || !M.s || S.tab !== 'mad' || !document.querySelector('.mplay')) return;
   const s = M.s;
-  if (mf.gid !== M.id) { mf.gid = M.id; mf.seen = new Set(s.log.map(madKey)); mf.end = !!s.win; mf.turn = madMyTurn(); if (!s.log.length) kSnd('shuffle'); return; }
+  if (mf.gid !== M.id) { mf.gid = M.id; mf.seen = new Set(s.log.map(madKey)); mf.end = !!s.win; mf.turn = madMyTurn(); mf.tp = madTurnPid(s); if (!s.log.length) kSnd('shuffle'); return; }
   const fresh = s.log.filter(e => !mf.seen.has(madKey(e)));
   fresh.forEach(e => mf.seen.add(madKey(e)));
   const myT = madMyTurn();
   if (myT && !mf.turn) { kSnd('turn', fresh.length ? .9 : .05); madTurnBanner(fresh.length ? 900 : 50); }
-  mf.turn = myT;
+  const tpNow = madTurnPid(s) + ':' + s.seq;
+  if (!myT && madTurnPid(s) !== mf.tp && !s.win) madTurnBanner(fresh.length ? 900 : 50, madTurnPid(s));
+  mf.turn = myT; mf.tp = madTurnPid(s); void tpNow;
   if (!fresh.length) return;
   const rolls = fresh.filter(e => e.a === 'roll'), moves = fresh.filter(e => e.a === 'move');
   let delay = 0;
