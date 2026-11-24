@@ -2791,7 +2791,10 @@ body.icrop-open{overflow:hidden}
 .duo-vs{align-self:center;font-family:var(--display);font-size:26px;color:var(--coin)}
 @media (max-width:560px){.duo{gap:8px}.duo-vs{font-size:20px}.ah-cv{height:min(72vh,150vw)}}
 /* Bowling */
-.bw-cv{height:min(64vh,calc(min(100vw,720px) * 1.25));cursor:crosshair}
+.bw-cv{height:min(70vh,calc(min(100vw,720px) * 1.3));cursor:crosshair;touch-action:none}
+.bw-ctl{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.bw-ctl .chips{gap:6px}
+.bw-ctl .chip{min-height:34px;padding:6px 12px}
 .bw-board{overflow-x:auto;margin:4px auto 0;max-width:900px;width:100%;-webkit-overflow-scrolling:touch}
 .bw-board table{border-collapse:separate;border-spacing:3px;min-width:100%;font-variant-numeric:tabular-nums}
 .bw-board th{font-size:11px;color:var(--muted);font-weight:700;padding:2px}
@@ -2805,7 +2808,7 @@ body.icrop-open{overflow:hidden}
 .bw-rl i{font-style:normal;font-size:11px;font-weight:800;min-width:12px;color:var(--ink)}
 .bw-board td b{display:block;font-size:15px;min-height:18px}
 .bw-tot{font-family:var(--display);font-size:18px;color:var(--coin);vertical-align:middle!important}
-@media (max-width:560px){.bw-cv{height:min(60vh,120vw)}.bw-board td{min-width:36px}.bw-nm{min-width:80px!important}}
+@media (max-width:560px){.ttplay .tt-box:has(.bw-cv){margin:0 -12px;width:calc(100% + 24px);max-width:none}.bw-cv{height:min(74vh,165vw);border-radius:12px}.bw-board td{min-width:36px}.bw-nm{min-width:80px!important}}
 /* Tischtennis */
 .ttplay{display:flex;flex-direction:column;gap:10px}
 .tt-board{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px auto 0;max-width:720px;width:100%}
@@ -2881,7 +2884,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=63"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=64"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -10083,7 +10086,7 @@ function ahMount() {
    Wer dran ist (bei Bots der Host), rechnet den Wurf komplett durch und schreibt Wurf + Ergebnis + neuen Stand in einem Rutsch.
    Alle Geräte spielen den Wurf mit denselben Werten als Animation ab und zeigen den neuen Stand erst danach. */
 const BW_FR = [[3, '3 Frames'], [5, '5 Frames'], [10, '10 Frames']];
-const BW_BR = .105, BW_PR = .06, BW_LEN = 18.6, BW_HEAD = 16.8, BW_STEP = 1 / 240, BW_ALL = 1023;
+const BW_LANEW = .74, BW_BR = .105, BW_PR = .06, BW_LEN = 18.6, BW_HEAD = 16.8, BW_STEP = 1 / 240, BW_ALL = 1023;
 const BW_PINS = (() => { const sp = .29, dy = .25, p = []; for (let r = 0; r < 4; r++) for (let k = 0; k <= r; k++) p.push([(k - r / 2) * sp, BW_HEAD + r * dy]); return p; })();
 function bwNorm(x) {
   if (!x || typeof x !== 'object' || x.g !== 'bw' || !['running', 'finished'].includes(x.status)) return null;
@@ -10209,7 +10212,8 @@ function bwThrow(M, p, auto = false) {
 /* Bot zielt auf die „Tasche“ zwischen Pin 1 und 3 (bei stehenden Rest-Pins auf deren Mitte) */
 function bwBotParams(M, lvl) {
   const s = M.s, stand = BW_PINS.filter((_, i) => s.pins & (1 << i));
-  let tx = s.pins === BW_ALL ? .065 : stand.reduce((a, p) => a + p[0], 0) / Math.max(1, stand.length);
+  const cx = stand.reduce((a, p) => a + p[0], 0) / Math.max(1, stand.length), front = stand.slice().sort((a, b) => a[1] - b[1] || Math.abs(a[0] - cx) - Math.abs(b[0] - cx))[0];
+  let tx = s.pins === BW_ALL ? .065 : front ? front[0] + (cx - front[0]) * .35 : 0;
   const err = {e:.2, m:.07, h:.022}[lvl] || .07;
   tx += (Math.random() + Math.random() + Math.random() - 1.5) * err * 1.4;
   const v = {e:7, m:8.6, h:9.6}[lvl] * (1 + (Math.random() - .5) * {e:.25, m:.12, h:.05}[lvl]);
@@ -10264,9 +10268,9 @@ function bwDraw(M) {
   const now = performance.now(), A = bwAnimating(M) ? bl.anim : null;
   let fr = null;
   if (A) { const t = (now - bl.playStart) / 1000; fr = A.frames[Math.min(A.frames.length - 1, Math.max(0, Math.floor(t / (BW_STEP * 4))))]; }
-  const ballY = fr ? fr.b.y : 0, camY = Math.max(0, Math.min(10.5, ballY - 2.2)), z0 = 3.2;
-  const yB = H * .97, yT = H * .1, zN = z0, zF = BW_LEN + 1 - 0 + z0;
-  const bcoef = (yB - yT) / (1 / zN - 1 / zF), acoef = yB - bcoef / zN, laneW = W * .62;
+  const ballY = fr ? fr.b.y : 0, camY = Math.max(0, Math.min(10, ballY - 2.6)), z0 = 4.6;
+  const yB = H * .8, yT = H * .1, zN = z0, zF = BW_LEN + 1 - 0 + z0;
+  const bcoef = (yB - yT) / (1 / zN - 1 / zF), acoef = yB - bcoef / zN, laneW = Math.min(W * BW_LANEW, H * .62);
   const P = (x, y, h = 0) => { const z = Math.max(.6, y - camY + z0), sc = z0 / z; return {x:W / 2 + x * laneW * sc, y:acoef + bcoef / z - h * laneW * sc, s:sc, w:laneW * sc}; };
   // Hintergrund
   const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0d0a1c'); g.addColorStop(1, '#1d1538');
@@ -10292,16 +10296,22 @@ function bwDraw(M) {
   const items = [];
   const pinsNow = fr ? fr.p : BW_PINS.map((p, i) => M.s.pins & (1 << i) ? [p[0], p[1], 0] : null);
   pinsNow.forEach(p => { if (p) items.push({y:p[1], d:() => bwPin(c, P, p[0], p[1], p[2])}); });
-  const bx = fr ? fr.b.x : (bl.drag ? bl.drag.x : bl.aimX), by = fr ? fr.b.y : .2;
+  const bx = fr ? fr.b.x : bl.aimX, by = fr ? fr.b.y : .2;
+  if (!fr) { const bp0 = P(bx, by, BW_BR); bl.ballPx = {x:bp0.x, y:bp0.y, r:BW_BR * bp0.w}; }
   items.push({y:by, d:() => bwBall(c, P, bx, by, fr && fr.b.g, M, now)});
   items.sort((a, b) => b.y - a.y).forEach(it => it.d());
-  // Zielhilfe beim Ziehen
-  if (bl.drag && bl.drag.pts.length > 1 && !fr) {
-    const d = bl.drag, a = bwDragParams(d);
-    if (a) { c.strokeStyle = 'rgba(255,207,63,.85)'; c.lineWidth = 3; c.setLineDash([8, 8]); c.beginPath(); const p0 = P(a.x, .2); c.moveTo(p0.x, p0.y);
+  // Zielhilfe beim Ziehen: Gummiband zur Kugel und Linie, wohin sie rollt
+  if (bl.drag && bl.drag.mode === 'aim' && !fr) {
+    const d = bl.drag, a = bwDragParams(d), cvr = document.getElementById('bw-cv').getBoundingClientRect(), bp = bl.ballPx;
+    c.strokeStyle = 'rgba(255,255,255,.55)'; c.lineWidth = 3; c.beginPath(); c.moveTo(bp.x, bp.y); c.lineTo(d.cx - cvr.left, d.cy - cvr.top); c.stroke();
+    c.fillStyle = 'rgba(255,255,255,.8)'; c.beginPath(); c.arc(d.cx - cvr.left, d.cy - cvr.top, 6, 0, Math.PI * 2); c.fill();
+    if (a) {
+      c.strokeStyle = `rgba(255,${Math.round(207 - a.pw * 120)},63,.9)`; c.lineWidth = 3; c.setLineDash([8, 8]); c.beginPath(); const p0 = P(a.x, .2); c.moveTo(p0.x, p0.y);
       let x = a.x, vx = Math.sin(a.a) * a.v; const vy = Math.cos(a.a) * a.v;
-      for (let y = .2; y < 9; ) { const dt = .05; if (y > 6.5) vx += a.sp * 1.05 * dt; x += vx * dt; y += vy * dt; const q = P(x, y); c.lineTo(q.x, q.y); }
-      c.stroke(); c.setLineDash([]); }
+      for (let y = .2; y < 11; ) { const dt = .04; if (y > 6.5) vx += a.sp * 1.05 * dt; x += vx * dt; y += vy * dt; const q = P(x, y); c.lineTo(q.x, q.y); }
+      c.stroke(); c.setLineDash([]);
+      c.fillStyle = '#fff'; c.font = '800 13px system-ui,sans-serif'; c.textAlign = 'center'; c.fillText(`${Math.round(a.pw * 100)} %`, d.cx - cvr.left, d.cy - cvr.top + 24);
+    }
   }
   // Pin-Anzeige oben rechts
   const st = fr ? fr.p.map((p, i) => p && !p[2] ? 1 : 0) : BW_PINS.map((_, i) => M.s.pins & (1 << i) ? 1 : 0);
@@ -10323,7 +10333,7 @@ function bwDraw(M) {
   } else if (M.status === 'running') {
     const pid = M.players[M.s.turn], mine = bwMeTurn(M);
     c.textAlign = 'center'; c.fillStyle = 'rgba(255,255,255,.9)'; c.font = `700 ${Math.round(Math.min(W * .045, 18))}px system-ui,sans-serif`;
-    if (!bl.drag) c.fillText(mine ? tx(isTouch() ? 'Wisch nach oben, um zu werfen' : 'Mit der Maus nach oben ziehen und loslassen') : `${ghost(pid).name} ${tx('ist dran')}`, W / 2, H * .5);
+    if (!bl.drag) c.fillText(mine ? tx('Kugel nach unten ziehen und loslassen') : `${ghost(pid).name} ${tx('ist dran')}`, W / 2, H * .45);
   }
 }
 function bwPin(c, P, x, y, down) {
@@ -10356,33 +10366,32 @@ function bwSnd(n) {
   else if (n === 'strike') { tone(523, .1, 'square', .05, 0); tone(659, .1, 'square', .05, .1); tone(784, .1, 'square', .05, .2); tone(1046, .25, 'square', .05, .3); }
 }
 
-/* ----- Steuerung: Finger auf die Bahn, Startpunkt = Kugelposition, nach oben wischen = Wurf.
-   Richtung der Wischbewegung = Winkel, Tempo = Kraft, Bogen in der Bewegung = Effet. ----- */
+/* ----- Steuerung wie beim Minigolf: an der Kugel nach unten ziehen und loslassen.
+   Je weiter gezogen, desto härter; schräg ziehen lenkt in die Gegenrichtung. Woanders auf die Bahn tippen/ziehen verschiebt die Kugel.
+   Effet stellt man unter der Bahn ein. ----- */
+const BW_SPINS = [[-2, '↶↶'], [-1, '↶'], [0, 'Gerade'], [1, '↷'], [2, '↷↷']];
 function bwDragParams(d) {
-  const pts = d.pts; if (pts.length < 2) return null;
-  const a = pts[0], z = pts[pts.length - 1], dy = a.y - z.y, dx = z.x - a.x;
-  if (dy < 12) return null;
-  const tail = pts.filter(p => p.t >= z.t - 120), t0 = tail[0], dt = Math.max(16, z.t - t0.t), spd = Math.hypot(z.x - t0.x, z.y - t0.y) / dt * 1000;
-  const W = d.W, v = 4.5 + Math.min(1, spd / (W * 4.2)) * 8.5;
-  const ang = Math.max(-.12, Math.min(.12, Math.atan2(dx, dy) * .085));
-  // Bogen: wie weit die Mitte der Bewegung seitlich von der geraden Linie abweicht
-  const mid = pts[Math.floor(pts.length / 2)], len = Math.hypot(dx, dy) || 1, cross = ((mid.x - a.x) * dy - (mid.y - a.y) * -dx) / len;
-  const sp = Math.max(-1, Math.min(1, -cross / (W * .06)));
-  return {x:d.x, a:ang, v, sp};
+  if (!d || d.mode !== 'aim') return null;
+  const dx = d.cx - d.sx, dy = d.cy - d.sy, len = Math.hypot(dx, dy);
+  if (dy < 10 || len < 18) return null;
+  const pw = Math.min(1, len / (d.H * .3)), v = 4.5 + pw * 8.5;
+  const ang = Math.max(-.12, Math.min(.12, Math.atan2(-dx, dy) * .11));
+  return {x:d.x, a:ang, v, sp:(D.bwSpin || 0) * .32, pw};
 }
 (() => {
-  const lanePos = (e, cv) => { const r = cv.getBoundingClientRect(); return Math.max(-.42, Math.min(.42, (e.clientX - r.left - r.width / 2) / (r.width * .62))); };
+  const lanePos = (cx, cv) => { const r = cv.getBoundingClientRect(); return Math.max(-.42, Math.min(.42, (cx - r.left - r.width / 2) / (r.width * BW_LANEW))); };
   document.addEventListener('pointerdown', e => {
     const cv = e.target && e.target.id === 'bw-cv' ? e.target : null; if (!cv || S.tab !== 'bw') return;
     const M = S.bw; if (!bwMeTurn(M) || bwAnimating(M) || roomPaused()) return;
-    ensureAudio(); const r = cv.getBoundingClientRect();
-    bl.drag = {x:lanePos(e, cv), W:r.width, pts:[{x:e.clientX, y:e.clientY, t:performance.now()}]}; bl.aimX = bl.drag.x;
+    ensureAudio(); const r = cv.getBoundingClientRect(), bp = bl.ballPx;
+    const near = bp && Math.hypot(e.clientX - r.left - bp.x, e.clientY - r.top - bp.y) < Math.max(56, bp.r * 2.4);
+    bl.drag = {mode:near ? 'aim' : 'move', x:bl.aimX, sx:e.clientX, sy:e.clientY, cx:e.clientX, cy:e.clientY, H:r.height};
+    if (!near) { bl.aimX = lanePos(e.clientX, cv); bl.drag.x = bl.aimX; }
     try { cv.setPointerCapture(e.pointerId); } catch (er) {}
   });
   document.addEventListener('pointermove', e => {
-    if (!bl.drag) return; const d = bl.drag; d.pts.push({x:e.clientX, y:e.clientY, t:performance.now()}); if (d.pts.length > 240) d.pts.splice(1, 1);
-    // Solange nur seitlich gezogen wird, verschiebt das die Kugel
-    const a = d.pts[0]; if (a.y - e.clientY < 14) { const cv = document.getElementById('bw-cv'); if (cv) { d.x = lanePos(e, cv); bl.aimX = d.x; d.pts = [{x:e.clientX, y:e.clientY, t:performance.now()}]; } }
+    const d = bl.drag; if (!d) return; d.cx = e.clientX; d.cy = e.clientY;
+    if (d.mode === 'move') { const cv = document.getElementById('bw-cv'); if (cv) { bl.aimX = lanePos(e.clientX, cv); d.x = bl.aimX; } }
   });
   const up = () => {
     const d = bl.drag; if (!d) return; bl.drag = null;
@@ -10393,6 +10402,7 @@ function bwDragParams(d) {
 })();
 const bwActions = {
   'bw-fr': b => { D.bwFr = Number(b.dataset.v); render(); },
+  'bw-spin': b => { D.bwSpin = Number(b.dataset.v); render(); },
   'bw-start': () => {
     if (!ctl()) return; if (S.bw && S.bw.status === 'finished' && !S.bw.transferred) bwTransfer();
     const L = lobby(), players = roomMembers(L).slice(0, ROOM_MAX); if (!players.length) return;
@@ -10419,8 +10429,9 @@ function bwTransfer() {
 /* ----- Ansichten ----- */
 function bwRulesHTML(open) {
   return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird gespielt</summary><ul>
-    <li><b>Werfen:</b> Finger dort auf die Bahn legen, wo die Kugel starten soll, und nach oben wischen. Schneller wischen = härterer Wurf.</li>
-    <li><b>Richtung und Effet:</b> Schräg wischen lenkt die Kugel. Wischst du einen Bogen, bekommt die Kugel Effet und hakt hinten auf der Bahn ein.</li>
+    <li><b>Werfen:</b> Wie beim Minigolf: Kugel antippen, nach unten ziehen und loslassen. Weiter ziehen = härterer Wurf, schräg ziehen lenkt in die andere Richtung.</li>
+    <li><b>Kugel verschieben:</b> Neben die Kugel auf die Bahn tippen oder ziehen.</li>
+    <li><b>Effet:</b> Unter der Bahn einstellen (↶ links, ↷ rechts). Die Kugel hakt dann hinten auf der Bahn ein.</li>
     <li><b>Tipp:</b> Die meisten Strikes gibt es, wenn die Kugel knapp neben dem vordersten Pin in die „Tasche“ trifft.</li>
     <li><b>Punkte:</b> Pro Frame 2 Würfe. Strike (alle 10 im ersten Wurf) = 10 + die nächsten 2 Würfe, Spare (alle 10 mit 2 Würfen) = 10 + der nächste Wurf. Im letzten Frame gibt es nach Strike oder Spare einen Extrawurf.</li>
     <li><b>Highscore:</b> Platz 1 bekommt 3 Punkte im Raum-Highscore, Platz 2 bekommt 2, Platz 3 bekommt 1.</li></ul></details>`;
@@ -10460,7 +10471,8 @@ function bwPlayHTML(M) {
       ${host ? `<button class="btn btn-sm btn-ghost k-endbtn" type="button" data-act="bw-end">Beenden</button>` : ''}
     </div>
     <div class="tt-box"><canvas id="bw-cv" class="tt-cv bw-cv" aria-label="Bowlingbahn"></canvas></div>
-    <p class="muted tt-hint">${bwMeTurn(M) ? 'Du bist dran! Finger auf die Bahn, nach oben wischen. Ein Bogen gibt Effet.' : M.players.includes(me) ? `${esc(ghost(pid).name)} ist dran.` : '👀 Du schaust zu.'}</p>
+    ${bwMeTurn(M) ? `<div class="bw-ctl"><span class="lbl">Effet</span><div class="chips">${BW_SPINS.map(([v, l]) => `<button class="chip" type="button" data-act="bw-spin" data-v="${v}" aria-pressed="${(D.bwSpin || 0) === v}">${l}</button>`).join('')}</div></div>
+    <p class="muted tt-hint">Du bist dran! Kugel nach unten ziehen und loslassen, wie beim Minigolf. Tippen neben die Kugel verschiebt sie.</p>` : `<p class="muted tt-hint">${M.players.includes(me) ? `${esc(ghost(pid).name)} ist dran.` : '👀 Du schaust zu.'}</p>`}
     ${bwBoardHTML(M)}
   </section>`;
 }

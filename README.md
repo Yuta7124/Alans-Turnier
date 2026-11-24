@@ -145,7 +145,7 @@ ist im Team-Modus als „Team“ oder „Solo“ markiert. Punkte vergibt der Sp
 
 ## Bowling
 🎳 Bowling für alle im Raum (auch Bots), 3, 5 oder 10 Frames, echte Bowling-Wertung mit Strike, Spare und Extrawurf im letzten Frame.
-Werfen: Finger auf die Bahn (Startpunkt), nach oben wischen (Richtung, Tempo, Bogen = Effet). Wer dran ist, rechnet den Wurf
+Werfen wie beim Minigolf: Kugel nach unten ziehen und loslassen (Länge = Kraft, schräg = Richtung), Effet per Auswahl unter der Bahn. Wer dran ist, rechnet den Wurf
 mit fester Physik durch und schreibt Wurf + Ergebnis + neuen Stand auf einmal (`uno` mit `g:'bw'`); alle spielen ihn als Animation ab.
 Frames werden als Map gespeichert (`{"0":[…]}`), weil Firestore keine Listen in Listen erlaubt. Nach 45 s ohne Wurf wirft der Host automatisch.
 
