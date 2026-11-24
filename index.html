@@ -1615,6 +1615,7 @@ button.bcell[disabled]{cursor:default}
 .ti-auto{width:100%;max-width:420px;align-self:center;height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:18px}
 .ti-auto i{display:block;height:100%;width:100%;background:var(--coin);transform-origin:left;animation:tiAuto 15s linear forwards}
 @keyframes tiAuto{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.wm-go{display:block;margin-top:8px;font-weight:800;color:var(--coin)}
 .hub-admin{display:flex;justify-content:center;margin:8px 0 0}
 .hub-stop{background:rgba(255,79,109,.14);color:#ff9fb2;box-shadow:inset 0 0 0 2px rgba(255,79,109,.45)}
 .hub-stop:hover{background:rgba(255,79,109,.25)}
@@ -2898,7 +2899,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=69"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=70"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4252,7 +4253,8 @@ function normSettings(x) {
     prize, places, mode: x.mode === 'eur' ? 'eur' : 'pct', split, amounts,
     fmt: [1, 2, 3, 4].includes(Number(x.fmt)) ? Number(x.fmt) : 1, teams: normTeams(x.teams),
     afk: Math.min(30, Math.max(1, Math.round(Number(x.afk)) || 30)),
-    pshow: ['places', 'total', 'both'].includes(x.pshow) ? x.pshow : 'places'
+    pshow: ['places', 'total', 'both'].includes(x.pshow) ? x.pshow : 'places',
+    tgo: x.tgo && typeof x.tgo === 'object' && ROOMS.includes(x.tgo.room) ? {id:str(x.tgo.id, 40), room:x.tgo.room, kind:str(x.tgo.kind, 8), at:Number(x.tgo.at) || 0} : null
   };
 }
 function normTeams(a) {
@@ -5539,7 +5541,7 @@ function viewWheel() {
     ? `<div class="wheel-msg"><span class="eyebrow">Das Rad dreht sich</span><b class="wm-big">Daumen drücken …</b></div>`
     : done
       ? (() => { const it = w.items.find(x => x.id === w.spin.winner.id) || w.spin.winner;
-          return `<div class="wheel-msg win"><span class="eyebrow">Als Nächstes wird gespielt</span><b class="wm-big">${it.srv ? SRV_ICON[it.srv] + ' ' : ''}${esc(w.spin.winner.label)}</b>${teamMode() ? `<span class="wm-mode">${itemMode(it) === 'team' ? `👥 Im Team (${fmtName()})` : '⚔️ Jeder gegen jeden'}</span>` : ''}${it.srv ? `<button class="btn btn-sm" type="button" data-act="tab" data-tab="spiele">🎮 Zu den Spielräumen</button>` : ''}</div>`; })()
+          return `<div class="wheel-msg win"><span class="eyebrow">Als Nächstes wird gespielt</span><b class="wm-big">${it.srv ? SRV_ICON[it.srv] + ' ' : ''}${esc(w.spin.winner.label)}</b>${teamMode() ? `<span class="wm-mode">${itemMode(it) === 'team' ? `👥 Im Team (${fmtName()})` : '⚔️ Jeder gegen jeden'}</span>` : ''}${it.srv ? (tourKey() && S.settings.tgo && S.settings.tgo.id === w.spin.id && Date.now() < S.settings.tgo.at + 90000 ? `<span class="wm-go" data-cd-go="${S.settings.tgo.at}">🏆 ${Date.now() < S.settings.tgo.at ? `In ${Math.ceil((S.settings.tgo.at - Date.now()) / 1000)} s geht es in die Turnier-Lobby` : 'Ab in die Turnier-Lobby!'}</span><button class="btn btn-sm" type="button" data-act="tgo-join">Jetzt rein</button>` : tourKey() ? '<span class="wm-go">🏆 Die Turnier-Lobby wird vorbereitet …</span>' : `<button class="btn btn-sm" type="button" data-act="tab" data-tab="spiele">🎮 Zu den Spielräumen</button>`) : ''}</div>`; })()
       : `<div class="wheel-msg"><span class="eyebrow">Zufallsrad</span><b class="wm-big">${w.items.length ? 'Bereit zum Drehen' : 'Noch leer'}</b></div>`;
   const cols = segColors(w.items.length);
   const chips = w.items.length ? `<div class="witems">${w.items.map((it, i) => `<span class="wchip ${it.id === winnerId ? 'is-win' : ''}" style="--c:${cols[i]}"><i></i>${it.srv ? `<span class="wsrv-ic" title="Server-Spiel">${SRV_ICON[it.srv]}</span>` : ''}${esc(it.label)}${modeBadge(it, adm, spinning)}${adm ? `<button class="x" type="button" data-act="wheel-del" data-id="${esc(it.id)}" ${spinning ? 'disabled' : ''} aria-label="${esc(it.label)} aus dem Rad löschen">×</button>` : ''}</span>`).join('')}</div>`
@@ -6883,8 +6885,9 @@ const golfActions = {
 const ROOMS = ['r1', 'r2', 'r3'];
 const ROOM_MAX = 8;
 const DUO_KINDS = ['tt', 'ah'];
-function roomMax(L) { return L && DUO_KINDS.includes(L.kind) ? 2 : ROOM_MAX; }
+function roomMax(L) { return L && DUO_KINDS.includes(L.kind) && !L.tour ? 2 : ROOM_MAX; }
 const ROOM_NAMES = {r1:'Raum 1', r2:'Raum 2', r3:'Raum 3'};
+const TOUR_ROOM = 'TOUR';
 const HOST_STALE_MS = 60000, HOST_AUTO_MS = 90000;
 function normLobby(id, x) {
   x = x || {};
@@ -6893,7 +6896,8 @@ function normLobby(id, x) {
   for (const [pid, v] of Object.entries(m)) if (pid && pid.length <= 40 && v && typeof v === 'object') members[pid] = {at:Number(v.at) || 0, dev:str(v.dev, 60)};
   const host = x.host && typeof x.host === 'object' && x.host.dev ? {pid:str(x.host.pid, 40), dev:str(x.host.dev, 60)} : null;
   const inv = Object.fromEntries(Object.keys(x.inv && typeof x.inv === 'object' && !Array.isArray(x.inv) ? x.inv : {}).filter(k => k && k.length <= 40).slice(0, 40).map(k => [k, true]));
-  return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true, inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw'].includes(x.kind) ? x.kind : '',
+  const tour = x.name === TOUR_ROOM || x.tour === true;
+  return {id, name:tour ? '🏆 Turnier-Lobby' : ROOM_NAMES[id] || id, tour, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true, inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw'].includes(x.kind) ? x.kind : '',
     quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null, uno:x.uno && typeof x.uno === 'object' ? x.uno : null,
     hs:Object.fromEntries(Object.entries(x.hs && typeof x.hs === 'object' && !Array.isArray(x.hs) ? x.hs : {}).filter(([pid, v]) => pid.length <= 40 && Number.isFinite(Number(v))).map(([pid, v]) => [pid, Math.round(Number(v))])),
     bots:Object.fromEntries(Object.entries(x.bots && typeof x.bots === 'object' && !Array.isArray(x.bots) ? x.bots : {}).filter(([id, b]) => id.startsWith('bot_') && id.length <= 40 && b && typeof b === 'object').slice(0, ROOM_MAX)
@@ -7058,6 +7062,44 @@ document.addEventListener('visibilitychange', () => {
   const humans = pzPlayers(g).filter(id => !isBot(id));
   if (humans.length === 1 && humans[0] === myPid()) pzSet(true, true);
 });
+/* ---------- Turnier-Lobby ----------
+   Zieht das Zufallsrad im laufenden Turnier ein Server-Spiel, legt der Admin 10 Sekunden später eine eigene Lobby an
+   (ein freier Raum, Name „TOUR“, privat, eingeladen sind die Turnier-Spieler) und schreibt settings.tgo = {id, room, kind, at}.
+   Zum Zeitpunkt at wechseln alle Turnier-Spieler automatisch dorthin; der Admin ist Host und startet das Spiel. */
+const TGO_WAIT = 10000;
+function tourLobbyActive(r) { const t = S.settings.tgo; return !!(t && t.room === r && tourKey() && Date.now() - t.at < 4 * 3600000); }
+function tourPlayersForLobby() { const inL = tourIn(); return inL.length ? inL : S.players.filter(p => !isBot(p.id)).map(p => p.id); }
+function tourLobbyPick() {
+  const free = ROOMS.find(r => !roomHumans(lobby(r)).length);
+  return free || ROOMS.find(r => lobby(r).tour) || ROOMS[ROOMS.length - 1];
+}
+async function tourLobbyPrepare(t) {
+  const me = myPid(), inv = Object.fromEntries(tourPlayersForLobby().slice(0, 40).map(id => [id, true]));
+  const doc = {name:TOUR_ROOM, members:me ? {[me]:{at:Date.now(), dev:devId}} : {}, bots:{}, host:me ? {pid:me, dev:devId} : null, hostSeen:Date.now(),
+    kind:t.kind, quiz:null, draw:null, golf:null, uno:null, priv:true, inv};
+  if (me) inv[me] = true;
+  try { await roomRef(t.room).set(doc); } catch (e) { toast('Die Turnier-Lobby konnte nicht angelegt werden.'); }
+}
+function tourLobbyTick() {
+  document.querySelectorAll('[data-cd-go]').forEach(el => { const s = Math.ceil((+el.dataset.cdGo - Date.now()) / 1000); const t = s > 0 ? `🏆 In ${s} s geht es in die Turnier-Lobby` : '🏆 Ab in die Turnier-Lobby!'; if (el.textContent !== t) el.textContent = t; });
+  if (S.mode !== 'db' || !db) return;
+  const now = Date.now(), t = S.settings.tgo, w = S.wheel, sp = w && w.spin;
+  // Admin: Server-Spiel gezogen → Lobby vorbereiten und Startzeit festlegen
+  if (S.admin && tourKey() && sp && sp.winner && sp.winner.srv && !wheelSpinning() && (!t || t.id !== sp.id) && now - (sp.startedAt + sp.duration) < 30000 && D.tgoMade !== sp.id) {
+    D.tgoMade = sp.id;
+    const tg = {id:sp.id, room:tourLobbyPick(), kind:sp.winner.srv, at:Math.max(now, sp.startedAt + sp.duration) + TGO_WAIT};
+    tourLobbyPrepare(tg).then(() => ops.saveSettings(normSettings({...S.settings, tgo:tg})));
+    return;
+  }
+  // Alle: zur Startzeit in die Turnier-Lobby wechseln
+  if (!t || !tourKey() || now < t.at || now - t.at > 90000 || D.tgoDone === t.id) return;
+  const me = myPid(); if (!me) return;
+  const inL = tourIn(), ok = S.admin || (inL.length ? inL.includes(me) : groupOf(S.tab) === 'turnier');
+  D.tgoDone = t.id;
+  if (!ok) return;
+  if (S.room === t.room && lobby(t.room).members[me]) { setTab(roomView()); return; }
+  roomJoin(t.room).then(() => { if (S.room === t.room) { setTab(roomView()); toast(`🏆 Ab in die Turnier-Lobby: ${GAME_KIND_NAME[t.kind] || 'Spiel'}!`); } });
+}
 function roomApply() {
   const L = S.room ? S.lobbies[S.room] : null;
   const q = L && L.quiz ? migrateQuiz(clone(L.quiz)) : null;
@@ -7123,8 +7165,9 @@ async function roomJoin(r) {
   const old = myRoom();
   if (old && old !== r) await roomLeave(old, true);
   const patch = {members:{[me]:{at:Date.now(), dev:devId}}};
-  if (!roomHumans(L).length) {
+  if (!roomHumans(L).length && !(L.tour && tourLobbyActive(r))) {
     // Leerer Raum (höchstens übrig gebliebene Bots): frisch anfangen
+    if (L.tour) patch.name = '';
     patch.kind = ''; patch.quiz = null; patch.draw = null; patch.golf = null; patch.uno = null; patch.bots = {}; patch.priv = false; patch.inv = {};
     for (const id of Object.keys(L.members)) if (id !== me) patch.members[id] = FV().delete();
   }
@@ -7165,7 +7208,7 @@ function roomTake() {
   roomRef().update({host:{pid:me || '', dev:devId}, hostSeen:Date.now()}).then(() => toast('Du bist jetzt Host.')).catch(() => {});
 }
 function roomKind(k) { if (!ctl()) return;
-  if (DUO_KINDS.includes(k) && roomMembers(lobby()).length > 2) { toast(`${k === 'ah' ? 'Air-Hockey' : 'Tischtennis'} geht nur zu zweit. Im Raum sind gerade ${roomMembers(lobby()).length}. Wechselt in einen anderen Raum oder nehmt ein anderes Spiel.`); return; } D.dnew = false; S.lobbies[S.room] = {...lobby(), kind:k}; roomWrite({kind:k}); S.tab = roomView(); render(); }
+  if (DUO_KINDS.includes(k) && roomMembers(lobby()).length > 2 && !lobby().tour) { toast(`${k === 'ah' ? 'Air-Hockey' : 'Tischtennis'} geht nur zu zweit. Im Raum sind gerade ${roomMembers(lobby()).length}. Wechselt in einen anderen Raum oder nehmt ein anderes Spiel.`); return; } D.dnew = false; S.lobbies[S.room] = {...lobby(), kind:k}; roomWrite({kind:k}); S.tab = roomView(); render(); }
 function roomReset(r) {
   confirmBox(`${ROOM_NAMES[r]} zurücksetzen?`, 'Alle fliegen aus dem Raum und ein laufendes Spiel wird abgebrochen.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Zurücksetzen', cls:'btn-gold', fn:() => {
     db.collection('lobbies').doc(r).set({members:{}, bots:{}, host:null, hostSeen:0, kind:'', quiz:null, draw:null, golf:null, uno:null}).then(() => toast(`${ROOM_NAMES[r]} ist wieder frei.`)).catch(e => onWriteError(e));
@@ -9356,8 +9399,8 @@ function ttWrite(patch) { roomWrite(patch); }
 function ttStart(pl) {
   if (!ctl()) return;
   if (S.tt && S.tt.status === 'finished' && !S.tt.transferred) ttTransfer();
-  const L = lobby(), mem = roomMembers(L);
-  if (mem.length !== 2) { toast('Tischtennis geht nur zu zweit. Hol dir einen Bot dazu!'); return; }
+  const L = lobby(), mem0 = roomMembers(L), mem = L.tour && mem0.length > 2 ? (D.duoSel || []).filter(id => mem0.includes(id)) : mem0;
+  if (mem.length !== 2) { toast(L.tour ? 'Wähle 2 Spieler aus.' : 'Tischtennis geht nur zu zweit. Hol dir einen Bot dazu!'); return; }
   let p = (pl || []).filter(id => mem.includes(id)).slice(0, 2);
   if (p.length < 2) p = mem.slice().sort((a, b) => isBot(a) - isBot(b));
   if (p.every(isBot)) { toast('Mindestens einer muss ein echter Spieler sein.'); return; }
@@ -9761,8 +9804,8 @@ function ahFaceoff(i) { return {x:.5, y:i === 0 ? AH_L * .27 : AH_L * .73}; }
 function ahStart() {
   if (!ctl()) return;
   if (S.ah && S.ah.status === 'finished' && !S.ah.transferred) ahTransfer();
-  const L = lobby(), mem = roomMembers(L);
-  if (mem.length !== 2) { toast('Air-Hockey geht nur zu zweit. Hol dir einen Bot dazu!'); return; }
+  const L = lobby(), mem0 = roomMembers(L), mem = L.tour && mem0.length > 2 ? (D.duoSel || []).filter(id => mem0.includes(id)) : mem0;
+  if (mem.length !== 2) { toast(L.tour ? 'Wähle 2 Spieler aus.' : 'Air-Hockey geht nur zu zweit. Hol dir einen Bot dazu!'); return; }
   if (mem.every(isBot)) { toast('Mindestens einer muss ein echter Spieler sein.'); return; }
   const p = mem.slice().sort((a, b) => isBot(a) - isBot(b)), to = [5, 7, 10].includes(D.ahTo) ? D.ahTo : 7, f = Math.random() < .5 ? 0 : 1, fo = ahFaceoff(f);
   const M = {g:'ah', id:uid(), status:'running', to, p, sc:[0, 0], n:1, pk:{n:1, by:-1, x:fo.x, y:fo.y, vx:0, vy:0}, gl:null, startAt:Date.now() + 3500, win:-1, transferred:false, hits:0};
@@ -10035,6 +10078,7 @@ function ahSnd(n) {
 const ahActions = {
   'ah-to': b => { D.ahTo = Number(b.dataset.v); render(); },
   'ah-start': () => ahStart(),
+  'duo-sel': b => { const id = b.dataset.pid; let s2 = (D.duoSel || []).slice(); s2 = s2.includes(id) ? s2.filter(x => x !== id) : [...s2, id].slice(-2); D.duoSel = s2; render(); },
   'ah-end': () => confirmBox('Air-Hockey beenden?', 'Das Match wird abgebrochen. Es gibt keine Punkte für den Raum-Highscore.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => { if (!ctl()) return; S.ah = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); }}]),
   'ah-setup': () => { if (!ctl()) return; if (S.ah && S.ah.status === 'finished' && !S.ah.transferred) ahTransfer(); S.ah = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); }
 };
@@ -10056,14 +10100,19 @@ function duoSetupHTML(kind) {
     <p class="muted">${hostP ? `<b>${esc(hostP.name)}</b> ist Host und startet das Match.` : 'Gerade ist niemand Host.'}</p>
     ${hostStale(L) && L.members[myPid()] ? `<button class="btn btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}</div>${rules(false)}</section>`;
   const opts = kind === 'ah' ? AH_TO : TT_TO, cur = kind === 'ah' ? ([5, 7, 10].includes(D.ahTo) ? D.ahTo : 7) : ([5, 11, 21].includes(D.ttTo) ? D.ttTo : 11);
-  const ok = mem.length === 2 && !mem.every(isBot);
+  const pickMode = L.tour && mem.length > 2;
+  if (pickMode && (!D.duoSel || D.duoSel.some(id => !mem.includes(id)) || D.duoSel.length > 2)) D.duoSel = mem.slice(0, 2);
+  const duo = pickMode ? D.duoSel : mem;
+  const ok = duo.length === 2 && !duo.every(isBot);
   const slot = id => id ? `<div class="duo-p">${avatar(ghost(id), 56)}<b>${esc(ghost(id).name)}</b>${isBot(id) ? `<small>${botLvlName(botLvl(id))}</small>` : ''}</div>` : `<button class="duo-p duo-free" type="button" data-act="bot-open"><span>🤖</span><b>Bot dazuholen</b><small>oder auf einen Freund warten</small></button>`;
   return `<section class="section tsec"><div class="card k-setup">
     <span class="eyebrow">Du bist Host</span><h2 class="k-title-big">${nm}</h2>
     <p class="muted">Ein Spiel nur für zwei: 1 gegen 1. Der Raum hat dafür genau 2 Plätze, auch ein Bot kann mitspielen.</p>
-    <div class="duo">${slot(mem[0])}<span class="duo-vs">VS</span>${slot(mem[1])}</div>
+    ${pickMode ? `<span class="lbl">Turnier-Lobby: Wer spielt jetzt? (2 auswählen, die anderen schauen zu)</span>
+      <div class="chips">${mem.map(id => `<button class="chip pchip" type="button" data-act="duo-sel" data-pid="${esc(id)}" aria-pressed="${duo.includes(id)}">${avatar(ghost(id), 26)}${esc(ghost(id).name)}</button>`).join('')}</div>` : ''}
+    <div class="duo">${slot(duo[0])}<span class="duo-vs">VS</span>${slot(duo[1])}</div>
     <span class="lbl">Gespielt wird</span><div class="chips">${opts.map(([v, l]) => `<button class="chip" type="button" data-act="${kind}-to" data-v="${v}" aria-pressed="${cur === v}">${l}</button>`).join('')}</div>
-    <button class="btn btn-gold btn-big" type="button" data-act="${kind}-start" ${ok ? '' : 'disabled'}>${ok ? 'Match starten' : mem.length < 2 ? 'Es fehlt noch ein Gegner' : 'Mindestens ein echter Spieler'}</button>
+    <button class="btn btn-gold btn-big" type="button" data-act="${kind}-start" ${ok ? '' : 'disabled'}>${ok ? 'Match starten' : duo.length < 2 ? (pickMode ? 'Wähle 2 Spieler aus' : 'Es fehlt noch ein Gegner') : 'Mindestens ein echter Spieler'}</button>
   </div>${rules(true)}</section>`;
 }
 function ahPlayHTML(M) {
@@ -13241,6 +13290,7 @@ function selCats() { const c = (D.qc.cats || []).filter(i => i >= 0 && i < CATS.
 /* Timer tick */
 function tick() {
   bgmSync();
+  try { tourLobbyTick(); } catch (e) {}
   if (D.introAt && Date.now() - D.introAt > 15000 && document.querySelector('.tour-intro')) actions['tour-intro-ok']();
   if (!roomPaused()) drawTick();
   if (eventSync()) render();
@@ -13608,7 +13658,8 @@ const actions = {
     if (!S.admin) return;
     confirmBox('Turnier stoppen?', 'Alle sehen wieder den Wartebildschirm „Gleich geht’s los!“. Highscore und Punkte bleiben erhalten. Die Anmeldungen vom Check-in werden gelöscht.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Stoppen', cls:'btn-gold', fn:() => {
       tourClearCheckins(); D.tourEdit = false; D.tourIntro = false; D.ts = null;
-      ops.saveSettings(normSettings({...S.settings, status:'soon', date:'', time:'', liveAt:0, chk:''})); toast('Turnier gestoppt.');
+      const tg = S.settings.tgo; if (tg && lobby(tg.room).tour) roomRef(tg.room).set({name:'', priv:false, inv:{}}, {merge:true}).catch(() => {});
+      ops.saveSettings(normSettings({...S.settings, status:'soon', date:'', time:'', liveAt:0, chk:'', tgo:null})); toast('Turnier gestoppt.');
     }}]);
   },
   'tour-restart': () => {
@@ -13707,6 +13758,7 @@ const actions = {
     b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
     toast(`+1 Punkt für ${p.name}`);
   },
+  'tgo-join': () => { const t = S.settings.tgo; if (!t) return; D.tgoDone = t.id; roomJoin(t.room).then(() => { if (S.room === t.room) setTab(roomView()); }); },
   'pshow': b => { if (!S.admin) return; ops.saveSettings(normSettings({...S.settings, pshow:b.dataset.v})); toast('Gespeichert'); },
   'opt-sec': b => { D.optSec = b.dataset.s || ''; render(); scrollTo({top:0, behavior:'instant'}); },
   'bday-save': () => { const d = D.ep; if (!d) return; if (!d.bday) { toast(bdayMissingMsg(d)); return; } saveOwnPlayer(d); },
