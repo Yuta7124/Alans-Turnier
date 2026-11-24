@@ -9274,14 +9274,15 @@ function dtOnSnap() { if (ctl()) dtHostTick(); }
    so fällt die Verzögerung im Netz nicht auf. Ob der Ball zurückkommt, entscheidet nur das Gerät des Annehmenden
    (bei einem Bot der Host). pt = {n, w, why} ist der letzte Punkt. Aufschlag wechselt alle 2 Punkte, ab Gleichstand jeden Punkt. */
 const TT_TO = [[5, 'Bis 5'], [11, 'Bis 11'], [21, 'Bis 21']];
-const TT_PAD = .13, TT_BALL = .03, TT_DUR0 = 1550, TT_DURMIN = 560, TT_BOUNCE = .68;
+const TT_PAD = .12, TT_BALL = .03, TT_DUR0 = 1550, TT_DURMIN = 560, TT_BOUNCE = .68;
 const ttC = v => Math.max(0, Math.min(1, Number.isFinite(v) ? v : .5));
 function ttNorm(x) {
   if (!x || typeof x !== 'object' || x.g !== 'tt' || !['running', 'finished'].includes(x.status)) return null;
   const p = (Array.isArray(x.p) ? x.p : []).filter(v => typeof v === 'string').slice(0, 2); if (p.length !== 2) return null;
   const sc = Array.isArray(x.sc) ? [Math.max(0, Math.round(+x.sc[0]) || 0), Math.max(0, Math.round(+x.sc[1]) || 0)] : [0, 0];
-  const b = x.ball && typeof x.ball === 'object' ? {n:+x.ball.n || 0, by:x.ball.by ? 1 : 0, x:ttC(+x.ball.x), tx:ttC(+x.ball.tx), dur:Math.max(TT_DURMIN * .8, Math.min(3000, +x.ball.dur || TT_DUR0)), sm:x.ball.sm === true} : null;
-  const pt = x.pt && typeof x.pt === 'object' ? {n:+x.pt.n || 0, w:x.pt.w ? 1 : 0, why:str(x.pt.why, 20)} : null;
+  const b = x.ball && typeof x.ball === 'object' ? {n:+x.ball.n || 0, by:x.ball.by ? 1 : 0, x:ttC(+x.ball.x), tx:ttC(+x.ball.tx), dur:Math.max(TT_DURMIN * .8, Math.min(3000, +x.ball.dur || TT_DUR0)), sm:x.ball.sm === true,
+    px:Number.isFinite(+x.ball.px) ? ttC(+x.ball.px) : ttC(+x.ball.x), bw:x.ball.bw === 0 || x.ball.bw === 1 ? x.ball.bw : -1, bp:Number.isFinite(+x.ball.bp) && x.ball.bp != null ? ttC(+x.ball.bp) : -1} : null;
+  const pt = x.pt && typeof x.pt === 'object' ? {n:+x.pt.n || 0, w:x.pt.w ? 1 : 0, why:str(x.pt.why, 20), px:Number.isFinite(+x.pt.px) && +x.pt.px >= 0 ? ttC(+x.pt.px) : -1} : null;
   return {g:'tt', id:str(x.id, 40), status:x.status, to:[5, 11, 21].includes(+x.to) ? +x.to : 11, p, sc, s0:x.s0 ? 1 : 0, ball:b, pt, n:+x.n || 0,
     rally:Math.max(0, +x.rally || 0), best:Math.max(0, +x.best || 0), startAt:+x.startAt || 0, win:x.win === 0 || x.win === 1 ? x.win : -1, transferred:x.transferred === true};
 }
@@ -9308,50 +9309,74 @@ function ttTransfer() {
   lobbyAward({'uno.transferred':true}, [{playerId:M.p[M.win], delta:3}, {playerId:M.p[1 - M.win], delta:1}]);
 }
 
-/* ----- Ablauf (läuft auf jedem Gerät, jedes kümmert sich nur um seinen Teil) ----- */
-const tl = {gid:'', bn:-1, bStart:0, handled:-1, toN:-1, pn:-1, ptAt:0, serveAt:0, served:-1, mineN:-1, mineAt:0, pvx:.5, pvel:0, lastT:0, ox:.5, bounced:-1, raf:0, endSnd:'', keys:{l:false, r:false}};
+/* ----- Ablauf (läuft auf jedem Gerät, jedes kümmert sich nur um seinen Teil) -----
+   Damit der Gegner-Schläger zum Ergebnis passt, schickt jeder Schlag und jeder Fehler die echte Schlägerposition mit (px).
+   Für Bots wird beim Abschlag schon ausgewürfelt, ob sie treffen (bw) und wo ihr Schläger landet (bp):
+   so fährt der Bot-Schläger sichtbar zum Ball oder kommt sichtbar zu spät. */
+const tl = {gid:'', bn:-1, bStart:0, handled:-1, toN:-1, pn:-1, ptAt:0, serveAt:0, served:-1, mineN:-1, mineAt:0, pvx:.5, pvel:0, lastT:0, vp:[.5, .5], sw:[0, 0], bounced:-1, raf:0, endSnd:'', keys:{l:false, r:false},
+  lastBall:null, lastU:0, ghost:null, flash:null};
 function ttWorldPad(M) { return ttMeIdx(M) === 1 ? 1 - tl.pvx : tl.pvx; }
-function ttHitWrite(M, by, x, tx, dur, sm) {
-  const n = M.n + 1, ball = {n, by, x, tx, dur:Math.round(dur), sm};
+function ttBotOdds(M, ball, r) {
+  const lv = botLvl(M.p[r]), base = lv === 'h' ? .95 : lv === 'e' ? .72 : .86;
+  const fast = (TT_DUR0 - ball.dur) / (TT_DUR0 - TT_DURMIN);
+  return base - fast * (lv === 'h' ? .12 : .22) - (ball.sm ? .15 : 0) - Math.min(.1, M.rally * .004);
+}
+function ttHitWrite(M, by, x, tx, dur, sm, px) {
+  const n = M.n + 1, ball = {n, by, x, tx, dur:Math.round(dur), sm, px:ttC(px == null ? x : px)};
+  const r = 1 - by;
+  if (isBot(M.p[r])) {
+    ball.bw = Math.random() < ttBotOdds(M, ball, r) ? 1 : 0;
+    const side = tx > .5 ? -1 : 1;
+    ball.bp = ttC(ball.bw ? tx + (Math.random() - .5) * TT_PAD * 1.3 : tx + side * (TT_PAD + TT_BALL + .05 + Math.random() * .12));
+  }
   tl.mineN = n; tl.mineAt = performance.now();
   M.ball = ball; M.n = n; M.rally++;
   ttWrite({'uno.ball':ball, 'uno.n':n, 'uno.rally':M.rally});
 }
-function ttPoint(M, w, why) {
+function ttPoint(M, w, why, px) {
   const sc = M.sc.slice(); sc[w]++;
   const n = M.n + 1, over = sc[w] >= M.to && sc[w] - sc[1 - w] >= 2, best = Math.max(M.best, M.rally);
-  const patch = {'uno.ball':null, 'uno.sc':sc, 'uno.n':n, 'uno.pt':{n, w, why}, 'uno.rally':0, 'uno.best':best};
+  const pt = {n, w, why, px:px == null ? -1 : ttC(px)};
+  const patch = {'uno.ball':null, 'uno.sc':sc, 'uno.n':n, 'uno.pt':pt, 'uno.rally':0, 'uno.best':best};
   if (over) Object.assign(patch, {'uno.status':'finished', 'uno.win':w});
-  Object.assign(M, {ball:null, sc, n, pt:{n, w, why}, rally:0, best}); if (over) { M.status = 'finished'; M.win = w; }
+  Object.assign(M, {ball:null, sc, n, pt, rally:0, best}); if (over) { M.status = 'finished'; M.win = w; }
   ttWrite(patch);
 }
 function ttServe(M, s) {
-  const me = ttMeIdx(M), x = s === me ? ttWorldPad(M) : .5;
+  const me = ttMeIdx(M), x = s === me ? ttWorldPad(M) : tl.vp[s];
   tl.served = M.n;
-  ttHitWrite(M, s, ttC(x), .22 + Math.random() * .56, TT_DUR0, false);
+  ttHitWrite(M, s, ttC(x), .22 + Math.random() * .56, TT_DUR0, false, x);
 }
-function ttReturn(M, padX, vel, lvlMiss) {
+function ttReturn(M, padX, vel) {
   const b = M.ball, off = Math.max(-1, Math.min(1, (b.tx - padX) / TT_PAD));
   const sm = Math.abs(off) > .62 && Math.random() < .8;
-  const tx = Math.max(.05, Math.min(.95, b.tx + off * .42 + vel * .12 + (Math.random() - .5) * .14 + (lvlMiss || 0)));
+  const tx = Math.max(.05, Math.min(.95, b.tx + off * .42 + vel * .12 + (Math.random() - .5) * .14));
   const dur = Math.max(TT_DURMIN, b.dur * .94) * (sm ? .8 : 1);
-  ttHitWrite(M, 1 - b.by, b.tx, tx, dur, sm);
+  ttHitWrite(M, 1 - b.by, b.tx, tx, dur, sm, padX);
 }
 function ttLogic() {
   const M = S.tt; if (!M) return;
   const now = performance.now(), me = ttMeIdx(M), host = ctl();
-  if (tl.gid !== M.id) Object.assign(tl, {gid:M.id, bn:-1, handled:-1, toN:-1, pn:M.pt ? M.pt.n : -1, served:-1, bounced:-1, mineN:-1, ox:.5, endSnd:'', serveAt:now + Math.max(0, M.startAt - Date.now()) + 400});
-  if (M.status !== 'running') return;
+  if (tl.gid !== M.id) Object.assign(tl, {gid:M.id, bn:-1, handled:-1, toN:-1, pn:M.pt ? M.pt.n : -1, served:-1, bounced:-1, mineN:-1, vp:[.5, .5], sw:[0, 0], endSnd:'', lastBall:null, ghost:null, flash:null,
+    serveAt:now + Math.max(0, M.startAt - Date.now()) + 400});
+  if (M.status !== 'running' && !(M.pt && M.pt.n !== tl.pn)) return;
   // Neuer Schlag?
   if (M.ball && M.ball.n !== tl.bn) {
     tl.bn = M.ball.n; tl.bStart = tl.mineN === M.ball.n ? tl.mineAt : now;
+    tl.sw[M.ball.by] = now; tl.vp[M.ball.by] = M.ball.px; tl.ghost = null;
+    tl.flash = {wx:M.ball.x, wy:M.ball.by === 0 ? 0 : 1, t:now, sm:M.ball.sm};
     if (S.tab === 'tt') ttSnd(M.ball.sm ? 'smash' : 'hit');
   }
-  // Neuer Punkt?
+  if (M.ball) tl.lastBall = M.ball;
+  // Neuer Punkt? Der verpasste Ball fliegt sichtbar am Schläger vorbei weiter.
   if (M.pt && M.pt.n !== tl.pn) {
     tl.pn = M.pt.n; tl.ptAt = now; tl.serveAt = now + 1800;
+    const lb = tl.lastBall;
+    if (lb && lb.n === tl.bn && !M.ball) { tl.ghost = {b:lb, t0:now, u0:Math.max(1, tl.lastU || 1), bStart:tl.bStart}; }
+    tl.lastBall = null;
     if (S.tab === 'tt') ttSnd(me >= 0 ? (M.pt.w === me ? 'won' : 'lost') : 'won');
   }
+  if (M.status !== 'running') return;
   if (!M.ball) {
     const s = ttServer(M);
     if (tl.served !== M.n && now >= tl.serveAt && Date.now() >= M.startAt) {
@@ -9367,13 +9392,13 @@ function ttLogic() {
       tl.handled = b.n;
       const px = ttWorldPad(M);
       if (Math.abs(px - b.tx) <= TT_PAD + TT_BALL) ttReturn(M, px, me === 1 ? -tl.pvel : tl.pvel);
-      else ttPoint(M, b.by, 'daneben');
+      else ttPoint(M, b.by, 'daneben', px);
     } else if (host && isBot(M.p[r])) {
       tl.handled = b.n;
-      const lv = botLvl(M.p[r]), base = lv === 'h' ? .96 : lv === 'e' ? .72 : .87;
-      const fast = (TT_DUR0 - b.dur) / (TT_DUR0 - TT_DURMIN), p = base - fast * (lv === 'h' ? .12 : .22) - (b.sm ? .15 : 0) - Math.min(.1, M.rally * .004);
-      if (Math.random() < p) ttReturn(M, b.tx + (Math.random() - .5) * TT_PAD * (lv === 'h' ? 1.1 : 1.5), (Math.random() - .5) * 1.4);
-      else ttPoint(M, b.by, 'daneben');
+      const hit = b.bw === 1 || (b.bw !== 0 && Math.random() < ttBotOdds(M, b, r));
+      const bp = b.bp >= 0 ? b.bp : hit ? b.tx : ttC(b.tx + .25);
+      if (hit) ttReturn(M, bp, (Math.random() - .5) * 1.4);
+      else ttPoint(M, b.by, 'daneben', bp);
     }
   }
   // Antwortet der andere nicht (weg oder offline), bekommt der Schläger nach ein paar Sekunden den Punkt.
@@ -9400,16 +9425,23 @@ function ttProj(W, H, vx, vy, h = 0) {
   const e = vy, sy = yB - (yB - yT) * e, w = wB + (wT - wB) * e, s = w / wB;
   return {x:W / 2 + (vx - .5) * w, y:sy - h * H * .3 * s, s, w};
 }
+/* Ballbahn für einen Fortschritt u (0 = Abschlag, TT_BOUNCE = Aufprall, 1 = beim Annehmenden, >1 = vorbei). */
+function ttBallAt(b, u) {
+  const wx = b.x + (b.tx - b.x) * u;
+  const wy = b.by === 0 ? u : 1 - u;
+  let h;
+  if (u < TT_BOUNCE) { const s = u / TT_BOUNCE; h = (1 - s) * .2 + s * (1 - s) * (b.sm ? .5 : .95); }
+  else if (u <= 1) { const s = (u - TT_BOUNCE) / (1 - TT_BOUNCE); h = s * (2 - s) * .22; }
+  else { const k = (u - 1) * 2.2; h = Math.max(-.6, .22 + .05 * k - 2.4 * k * k); }
+  return {wx, wy, h, u};
+}
+/* Kommt der Ball beim Gegner an, wartet er kurz am Schläger, bis dessen Gerät sagt: getroffen oder verpasst. */
 function ttBallPos(M, now) {
   const b = M.ball; if (!b) return null;
-  const u = (now - tl.bStart) / b.dur, uu = Math.max(0, Math.min(1.25, u));
-  const wx = b.x + (b.tx - b.x) * Math.min(1, uu) + (uu > 1 ? (b.tx - b.x) * (uu - 1) : 0);
-  const wy = b.by === 0 ? uu : 1 - uu;
-  let h;
-  if (uu < TT_BOUNCE) { const s = uu / TT_BOUNCE; h = (1 - s) * .2 + s * (1 - s) * (b.sm ? .5 : .95); }
-  else if (uu <= 1) { const s = (uu - TT_BOUNCE) / (1 - TT_BOUNCE); h = s * (2 - s) * .22; }
-  else h = Math.max(0, .22 - (uu - 1) * 1.6);
-  return {wx, wy, h, u};
+  let u = (now - tl.bStart) / b.dur;
+  if (u > 1 && 1 - b.by !== ttMeIdx(M)) { const over = now - (tl.bStart + b.dur); u = over < 450 ? 1 : 1 + (over - 450) / b.dur; }
+  u = Math.max(0, Math.min(1.5, u)); tl.lastU = u;
+  return ttBallAt(b, u);
 }
 function ttDraw(M) {
   const cv = document.getElementById('tt-cv'); if (!cv) return;
@@ -9423,66 +9455,96 @@ function ttDraw(M) {
   // Boden
   const g = c.createRadialGradient(W / 2, H * .55, 10, W / 2, H * .55, H * .8); g.addColorStop(0, '#24184a'); g.addColorStop(1, '#0b0818');
   c.fillStyle = g; c.fillRect(0, 0, W, H);
-  // Tischbeine/Schatten
+  // Tisch: Schatten, Kante, Platte, Linien
   const a = P(0, 0), b2 = P(1, 0), cT = P(1, 1), d = P(0, 1);
   c.fillStyle = 'rgba(0,0,0,.45)'; c.beginPath(); c.moveTo(a.x + 6, a.y + 18); c.lineTo(b2.x + 6, b2.y + 18); c.lineTo(cT.x + 6, cT.y + 12); c.lineTo(d.x + 6, d.y + 12); c.closePath(); c.fill();
-  // Tischkante (Dicke)
   c.fillStyle = '#0a3d6e'; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b2.x, b2.y); c.lineTo(b2.x, b2.y + 10); c.lineTo(a.x, a.y + 10); c.closePath(); c.fill();
-  // Platte
   const tg = c.createLinearGradient(0, d.y, 0, a.y); tg.addColorStop(0, '#1560a8'); tg.addColorStop(1, '#1b74c9');
   c.fillStyle = tg; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b2.x, b2.y); c.lineTo(cT.x, cT.y); c.lineTo(d.x, d.y); c.closePath(); c.fill();
   c.strokeStyle = '#fff'; c.lineWidth = 3; c.stroke();
   const m1 = P(.5, 0), m2 = P(.5, 1); c.lineWidth = 1.5; c.beginPath(); c.moveTo(m1.x, m1.y); c.lineTo(m2.x, m2.y); c.stroke();
-  // Ball-Schatten und Ball (hinter dem Netz zuerst)
-  const bp = ttBallPos(M, now);
+
+  // Schläger-Positionen (Weltkoordinaten): eigener = echte Position, Gegner = zum Ergebnis passend animiert
+  for (const i of [0, 1]) {
+    if (i === me) { tl.vp[i] = ttWorldPad(M); continue; }
+    let tgt = tl.vp[i], k = .1;
+    const B = M.ball, gh = tl.ghost;
+    if (B && B.by === i) { tgt = B.px; k = .35; }
+    else if (B) {
+      const bot = isBot(M.p[i]) && B.bp >= 0, u = (now - tl.bStart) / B.dur;
+      tgt = bot ? B.bp : B.tx;
+      k = bot ? (B.bw ? .09 : (u > .55 ? .02 : .06)) : .08;
+    } else if (gh && 1 - gh.b.by === i && M.pt && M.pt.px >= 0) { tgt = M.pt.px; k = .25; }
+    tl.vp[i] += (tgt - tl.vp[i]) * k;
+  }
+  const flight = M.ball ? ttBallPos(M, now) : null;
+  let gst = null;
+  if (!M.ball && tl.ghost) {
+    const gb = tl.ghost, u = gb.u0 + (now - gb.t0) / gb.b.dur * 1.1;
+    if (now - gb.t0 < 900) gst = {...ttBallAt(gb.b, u), b:gb.b, al:1 - Math.max(0, (now - gb.t0 - 550) / 350)};
+    else tl.ghost = null;
+  }
+  const bp = flight ? {...flight, b:M.ball, al:1} : gst;
   const drawBall = () => {
     if (!bp) return;
     const [vx, vy] = V(bp.wx, bp.wy), sh = P(vx, vy, 0), pb = P(vx, vy, bp.h), r = Math.max(3, 7 * pb.s);
-    if (bp.u <= 1.05) { c.fillStyle = 'rgba(0,0,0,.35)'; c.beginPath(); c.ellipse(sh.x, sh.y, r * 1.1, r * .45, 0, 0, Math.PI * 2); c.fill(); }
-    if (M.ball.sm) { c.strokeStyle = 'rgba(255,207,63,.5)'; c.lineWidth = r; c.lineCap = 'round'; const pr = ttBallPos(M, now - 70); if (pr) { const [px, py] = V(pr.wx, pr.wy), q = P(px, py, pr.h); c.beginPath(); c.moveTo(q.x, q.y); c.lineTo(pb.x, pb.y); c.stroke(); } }
+    c.globalAlpha = Math.max(0, bp.al);
+    if (bp.h > -.05 && bp.u <= 1.1) { c.fillStyle = 'rgba(0,0,0,.35)'; c.beginPath(); c.ellipse(sh.x, sh.y, r * 1.1, r * .45, 0, 0, Math.PI * 2); c.fill(); }
+    if (bp.b.sm && flight) { c.strokeStyle = 'rgba(255,207,63,.5)'; c.lineWidth = r; c.lineCap = 'round'; const pr = ttBallAt(bp.b, Math.max(0, bp.u - 70 / bp.b.dur)); const [px, py] = V(pr.wx, pr.wy), q = P(px, py, pr.h); c.beginPath(); c.moveTo(q.x, q.y); c.lineTo(pb.x, pb.y); c.stroke(); }
     const bg = c.createRadialGradient(pb.x - r * .35, pb.y - r * .35, 1, pb.x, pb.y, r); bg.addColorStop(0, '#fff'); bg.addColorStop(1, '#ffb347');
     c.fillStyle = bg; c.beginPath(); c.arc(pb.x, pb.y, r, 0, Math.PI * 2); c.fill();
-    if (bp.u >= TT_BOUNCE && tl.bounced !== M.ball.n && bp.u < 1) { tl.bounced = M.ball.n; ttSnd('bounce'); }
+    c.globalAlpha = 1;
+    if (flight && bp.u >= TT_BOUNCE && tl.bounced !== M.ball.n && bp.u < 1) { tl.bounced = M.ball.n; ttSnd('bounce'); }
   };
+  // Schläger: so breit wie die Trefferzone, beim Schlag schwingt er nach vorn
+  const drawPad = (i, col) => {
+    const [vx, vyEnd] = V(tl.vp[i], i === 0 ? 0 : 1), near = vyEnd < .5;
+    const sk = Math.max(0, Math.min(1, (now - tl.sw[i]) / 230)), swing = tl.sw[i] && sk < 1 ? Math.sin(sk * Math.PI) : 0;
+    const vy0 = near ? -.07 + swing * .05 : 1.07 - swing * .05;
+    const p = P(vx, vy0, .2 + swing * .05), base = P(vx, vy0, 0), r = Math.max(9, (TT_PAD + TT_BALL * .4) * p.w * .82);
+    const rot = swing * (vx < .5 ? -.45 : .45) * (near ? 1 : -1);
+    c.fillStyle = 'rgba(0,0,0,.28)'; c.beginPath(); c.ellipse(base.x + 4, base.y + 6, r, r * .3, 0, 0, Math.PI * 2); c.fill();
+    c.save(); c.translate(p.x, p.y); c.rotate(rot);
+    c.fillStyle = '#7a4a22'; c.beginPath(); c.roundRect ? c.roundRect(-r * .16, r * .62, r * .32, r * .85, 4) : c.rect(-r * .16, r * .62, r * .32, r * .85); c.fill();
+    c.fillStyle = '#1b1b1b'; c.beginPath(); c.ellipse(0, 0, r + 2, r * .86 + 2, 0, 0, Math.PI * 2); c.fill();
+    const pg = c.createRadialGradient(-r * .3, -r * .3, 2, 0, 0, r); pg.addColorStop(0, col[0]); pg.addColorStop(1, col[1]);
+    c.fillStyle = pg; c.beginPath(); c.ellipse(0, 0, r, r * .86, 0, 0, Math.PI * 2); c.fill();
+    c.restore();
+  };
+  const oppI = me >= 0 ? 1 - me : 1, nearI = me >= 0 ? me : 0;
   const ballFar = bp && V(bp.wx, bp.wy)[1] > .5;
-  // Gegner-Schläger
-  const opp = me >= 0 ? 1 - me : 1;
-  if (M.ball && M.ball.by !== opp) tl.ox += (M.ball.tx - tl.ox) * .07;
-  else if (M.ball) tl.ox += (M.ball.x - tl.ox) * .35;
-  const drawPad = (wx, wy, col, vy0) => {
-    const [vx] = V(wx, wy), p = P(vx, vy0, .2), r = Math.max(10, 24 * p.s);
-    c.fillStyle = 'rgba(0,0,0,.3)'; c.beginPath(); c.ellipse(p.x + 4, P(vx, vy0, 0).y + 6, r, r * .35, 0, 0, Math.PI * 2); c.fill();
-    c.fillStyle = '#6b3f1e'; c.fillRect(p.x - r * .18, p.y + r * .7, r * .36, r * .9);
-    c.fillStyle = col; c.beginPath(); c.ellipse(p.x, p.y, r, r * .92, 0, 0, Math.PI * 2); c.fill();
-    c.strokeStyle = 'rgba(0,0,0,.35)'; c.lineWidth = 2; c.stroke();
-  };
-  const oppWy = opp === 0 ? 0 : 1;
-  const farPad = () => { const [, vyO] = V(.5, oppWy); drawPad(tl.ox, oppWy, '#39a0ff', vyO > .5 ? 1.07 : -.07); };
-  if (ballFar) { farPad(); drawBall(); } else farPad();
+  drawPad(oppI, ['#7cc4ff', '#1f6fd1']);
+  if (ballFar) drawBall();
   // Netz
   const n1 = P(-.04, .5), n2 = P(1.04, .5), nh = H * .3 * n1.s * .16;
   c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(n1.x, n1.y - nh, n2.x - n1.x, nh);
   c.strokeStyle = '#fff'; c.lineWidth = 2; c.beginPath(); c.moveTo(n1.x, n1.y - nh); c.lineTo(n2.x, n2.y - nh); c.stroke();
   c.fillStyle = '#ddd'; c.fillRect(n1.x - 3, n1.y - nh - 2, 4, nh + 4); c.fillRect(n2.x - 1, n2.y - nh - 2, 4, nh + 4);
   if (!ballFar) drawBall();
-  // Eigener Schläger (Zuschauer sehen Spieler A unten)
-  if (me >= 0) drawPad(ttWorldPad(M), me === 0 ? 0 : 1, '#ff4f6d', -.07);
-  else { const nearIdx = 0; const nx = M.ball && M.ball.by !== nearIdx ? M.ball.tx : M.ball ? M.ball.x : .5; tl.nx = (tl.nx == null ? .5 : tl.nx) + (nx - (tl.nx == null ? .5 : tl.nx)) * .08; drawPad(tl.nx, 0, '#ff4f6d', -.07); }
-  // Aufschlag: Ball liegt beim Aufschläger
-  if (!M.ball && M.status === 'running') {
-    const s = ttServer(M), wy = s === 0 ? 0 : 1, wx = s === me ? ttWorldPad(M) : me < 0 && s === 0 ? (tl.nx == null ? .5 : tl.nx) : tl.ox, [vx, vy] = V(wx, wy);
-    const p = P(vx, vy < .5 ? -.02 : 1.02, .45 + Math.sin(now / 180) * .05), r = Math.max(3, 7 * p.s);
+  drawPad(nearI, ['#ff8a9b', '#d9223f']);
+  // Treffer-Blitz
+  if (tl.flash && now - tl.flash.t < 260) {
+    const f = tl.flash, k = (now - f.t) / 260, [fx, fy] = V(f.wx, f.wy), p = P(fx, fy < .5 ? -.05 : 1.05, .22);
+    c.strokeStyle = f.sm ? `rgba(255,207,63,${1 - k})` : `rgba(255,255,255,${.9 - k * .9})`; c.lineWidth = 3;
+    for (let i = 0; i < 6; i++) { const an = i / 6 * Math.PI * 2 + .3, r1 = (8 + k * 20) * p.s, r2 = r1 + 8 * p.s; c.beginPath(); c.moveTo(p.x + Math.cos(an) * r1, p.y + Math.sin(an) * r1); c.lineTo(p.x + Math.cos(an) * r2, p.y + Math.sin(an) * r2); c.stroke(); }
+  }
+  // Aufschlag: Ball hüpft über dem Schläger des Aufschlägers
+  if (!M.ball && M.status === 'running' && !gst) {
+    const s = ttServer(M), [vx, vyEnd] = V(tl.vp[s], s === 0 ? 0 : 1);
+    const p = P(vx, vyEnd < .5 ? -.02 : 1.02, .45 + Math.abs(Math.sin(now / 260)) * .18), r = Math.max(3, 7 * p.s);
     c.fillStyle = '#fff'; c.beginPath(); c.arc(p.x, p.y, r, 0, Math.PI * 2); c.fill();
   }
   // Texte
   c.textAlign = 'center';
   if (Date.now() < M.startAt) { const n = Math.ceil((M.startAt - Date.now()) / 1000); c.fillStyle = 'rgba(0,0,0,.45)'; c.fillRect(0, 0, W, H); c.fillStyle = '#ffcf3f'; c.font = `900 ${Math.round(W * .2)}px system-ui,sans-serif`; c.fillText(Math.min(3, n), W / 2, H / 2); }
   else if (M.pt && now - tl.ptAt < 1500) {
-    const al = 1 - Math.max(0, (now - tl.ptAt - 900) / 600), wn = ghost(M.p[M.pt.w]).name;
-    c.globalAlpha = al; c.fillStyle = M.pt.w === me ? '#4ff08f' : me >= 0 ? '#ff4f6d' : '#ffcf3f'; c.font = `900 ${Math.round(Math.min(W * .075, 34))}px system-ui,sans-serif`;
-    c.fillText(M.pt.w === me ? tx('Punkt für dich!') : `${tx('Punkt für')} ${wn}`, W / 2, H * .5);
+    const k = (now - tl.ptAt) / 1500, al = 1 - Math.max(0, (now - tl.ptAt - 900) / 600), nm = ghost(M.p[M.pt.w]).name;
+    const sc = 1 + Math.max(0, .35 - k * 2.2);
+    c.save(); c.globalAlpha = al; c.translate(W / 2, H * .5); c.scale(sc, sc);
+    c.fillStyle = M.pt.w === me ? '#4ff08f' : me >= 0 ? '#ff4f6d' : '#ffcf3f'; c.font = `900 ${Math.round(Math.min(W * .075, 34))}px system-ui,sans-serif`;
+    c.fillText(M.pt.w === me ? tx('Punkt für dich!') : `${tx('Punkt für')} ${nm}`, 0, 0);
     c.font = `600 ${Math.round(Math.min(W * .04, 16))}px system-ui,sans-serif`; c.fillStyle = '#fff';
-    c.fillText(M.pt.why === 'weg' ? tx('Keine Antwort') : tx('Daneben!'), W / 2, H * .5 + 26); c.globalAlpha = 1;
+    c.fillText(M.pt.why === 'weg' ? tx('Keine Antwort') : tx('Daneben!'), 0, 26); c.restore();
   } else if (!M.ball && M.status === 'running') {
     const s = ttServer(M);
     c.fillStyle = 'rgba(255,255,255,.85)'; c.font = `700 ${Math.round(Math.min(W * .045, 18))}px system-ui,sans-serif`;
