@@ -8401,18 +8401,19 @@ document.addEventListener('change', e => {
 const bmad = {key:'', at:0, think:0};
 function botMadPick(s, pid, lvl) {
   const mv = madMoves(s, pid, s.die); if (!mv.length) return null;
-  if (lvl === 'e' && Math.random() < .6) return mv[Math.floor(Math.random() * mv.length)];
+  if (lvl === 'e' && Math.random() < .25) return mv[Math.floor(Math.random() * mv.length)];
+  const hard = lvl !== 'e';
   const c = s.col[pid];
   const danger = (r) => { if (r < 0 || r > 39) return 0; const ab = madAbs(c, r); let d = 0;
     for (const q of s.order) if (q !== pid) for (const rr of s.pos[q]) if (rr >= 0 && rr <= 39) { const dist = (ab - madAbs(s.col[q], rr) + 40) % 40; if (dist >= 1 && dist <= 6) d++; } return d; };
   const score = m => {
     let sc = 0;
-    if (madCapturable(s, pid, m)) sc += lvl === 'h' ? 60 : 35;
+    if (madCapturable(s, pid, m)) sc += hard ? 60 : 40;
     if (m.from < 0) sc += 40;
     if (m.to >= 40) sc += 30;
-    sc += danger(m.from) * (lvl === 'h' ? 14 : 6) - danger(m.to) * (lvl === 'h' ? 16 : 6);
-    sc += m.to * .3;
-    return sc + Math.random() * (lvl === 'h' ? 2 : 10);
+    sc += danger(m.from) * (hard ? 14 : 8) - danger(m.to) * (hard ? 18 : 8);
+    sc += m.to * (lvl === 'h' ? .5 : .3);
+    return sc + Math.random() * {e:6, m:3, h:.3}[lvl];
   };
   return mv.slice().sort((a, b) => score(b) - score(a))[0];
 }
@@ -8890,8 +8891,7 @@ const bjActions = {
 const bbj = {key:'', at:0, think:0};
 function botBjMove(s, pid, lvl) {
   const x = s.pl[pid], h = s.pl[pid].hands[s.tp.h], v = bjVal(h.c), up = bjPts(s.dl[0]);
-  if (lvl === 'e') return v.t < 15 || Math.random() < .2 && v.t < 18 ? 'hit' : 'stand';
-  if (lvl === 'm') return v.t < 17 && !(v.t >= 13 && up <= 6) ? 'hit' : 'stand';
+  if (lvl === 'e') return v.t < 17 && !(v.t >= 13 && up <= 6) ? 'hit' : 'stand';
   const two = h.c.length === 2;
   if (two && x.hands.length === 1 && bjPts(h.c[0]) === bjPts(h.c[1]) && x.chips >= h.bet) {
     const pv = bjPts(h.c[0]);
@@ -9317,9 +9317,9 @@ const tl = {gid:'', bn:-1, bStart:0, handled:-1, toN:-1, pn:-1, ptAt:0, serveAt:
   lastBall:null, lastU:0, ghost:null, flash:null};
 function ttWorldPad(M) { return ttMeIdx(M) === 1 ? 1 - tl.pvx : tl.pvx; }
 function ttBotOdds(M, ball, r) {
-  const lv = botLvl(M.p[r]), base = lv === 'h' ? .95 : lv === 'e' ? .72 : .86;
-  const fast = (TT_DUR0 - ball.dur) / (TT_DUR0 - TT_DURMIN);
-  return base - fast * (lv === 'h' ? .12 : .22) - (ball.sm ? .15 : 0) - Math.min(.1, M.rally * .004);
+  const lv = botLvl(M.p[r]), base = {e:.87, m:.95, h:.995}[lv] || .95;
+  const fast = Math.max(0, (TT_DUR0 - ball.dur) / (TT_DUR0 - TT_DURMIN));
+  return base - fast * {e:.16, m:.07, h:.02}[lv] - (ball.sm ? {e:.14, m:.06, h:.015}[lv] : 0) - Math.min({e:.06, m:.03, h:0}[lv], M.rally * .002);
 }
 function ttHitWrite(M, by, x, tx, dur, sm, px) {
   const n = M.n + 1, ball = {n, by, x, tx, dur:Math.round(dur), sm, px:ttC(px == null ? x : px)};
@@ -9345,7 +9345,18 @@ function ttPoint(M, w, why, px) {
 function ttServe(M, s) {
   const me = ttMeIdx(M), x = s === me ? ttWorldPad(M) : tl.vp[s];
   tl.served = M.n;
-  ttHitWrite(M, s, ttC(x), .22 + Math.random() * .56, TT_DUR0, false, x);
+  const bot = isBot(M.p[s]), lv = bot ? botLvl(M.p[s]) : '';
+  const tx = bot && Math.random() < {e:.3, m:.6, h:.85}[lv] ? (Math.random() < .5 ? .1 + Math.random() * .12 : .78 + Math.random() * .12) : .22 + Math.random() * .56;
+  ttHitWrite(M, s, ttC(x), tx, bot ? TT_DUR0 * {e:1, m:.93, h:.85}[lv] : TT_DUR0, false, x);
+}
+/* Bot schlägt zurück: zielt in die Ecke, weg vom Gegner-Schläger, und schmettert je nach Stufe öfter. */
+function ttBotReturn(M, padX) {
+  const b = M.ball, r = 1 - b.by, lv = botLvl(M.p[r]), opp = tl.vp[b.by];
+  const away = opp < .5 ? .78 + Math.random() * .16 : .06 + Math.random() * .16;
+  const aim = {e:.35, m:.7, h:.92}[lv], tx = Math.random() < aim ? away : .15 + Math.random() * .7;
+  const sm = Math.random() < {e:.06, m:.2, h:.38}[lv];
+  const dur = Math.max(TT_DURMIN, b.dur * {e:.95, m:.92, h:.89}[lv]) * (sm ? .78 : 1);
+  ttHitWrite(M, r, b.tx, ttC(tx), dur, sm, padX);
 }
 function ttReturn(M, padX, vel) {
   const b = M.ball, off = Math.max(-1, Math.min(1, (b.tx - padX) / TT_PAD));
@@ -9397,7 +9408,7 @@ function ttLogic() {
       tl.handled = b.n;
       const hit = b.bw === 1 || (b.bw !== 0 && Math.random() < ttBotOdds(M, b, r));
       const bp = b.bp >= 0 ? b.bp : hit ? b.tx : ttC(b.tx + .25);
-      if (hit) ttReturn(M, bp, (Math.random() - .5) * 1.4);
+      if (hit) ttBotReturn(M, bp);
       else ttPoint(M, b.by, 'daneben', bp);
     }
   }
@@ -9741,22 +9752,23 @@ const botR = (a, b) => a + Math.random() * (b - a);
 const bk = {key:'', at:0, think:0, catches:{}};
 function botKMove(s, cfg, pid, lvl) {
   const h = s.hands[pid] || [], pl = kPlayable(s, cfg, pid);
-  const callP = lvl === 'h' ? 1 : lvl === 'm' ? .85 : .5;
+  const callP = lvl === 'h' ? 1 : lvl === 'm' ? .97 : .8;
   const pick = c => { const rest = h.slice(); rest.splice(rest.indexOf(c), 1);
     return {a:'play', c, col:kWild(c) ? (lvl === 'e' ? K_COLORS[Math.floor(Math.random() * 4)] : kBestColor(rest, Math.random)) : undefined, call:h.length === 2 && Math.random() < callP * .5}; };
-  if (s.pend > 0) return pl.length && (lvl !== 'e' || Math.random() < .5) ? pick(pl.find(c => kVal(c) === 'D') || pl[0]) : {a:'take'};
+  if (s.pend > 0) return pl.length && (lvl !== 'e' || Math.random() < .8) ? pick(pl.find(c => kVal(c) === 'D') || pl[0]) : {a:'take'};
   if (s.drewN) return pl.length ? pick(pl[0]) : {a:'pass'};
   if (!pl.length) return {a:'draw'};
-  if (lvl === 'e') return pick(pl[Math.floor(Math.random() * pl.length)]);
+  if (lvl === 'e' && Math.random() < .3) return pick(pl[Math.floor(Math.random() * pl.length)]);
   const n = s.order.length, nx = s.order[((s.turn + s.dir) % n + n) % n], nxN = (s.hands[nx] || []).length;
   const score = c => {
     const v = kVal(c); let sc = 0;
     if (kWild(c)) sc -= nxN <= 2 && v === 'F' ? -40 : 30;
     if (!kWild(c)) sc += h.filter(x => kCol(x) === kCol(c)).length * 2;
-    if ((v === 'D' || v === 'S') && nxN <= 3) sc += lvl === 'h' ? 25 : 10;
+    if ((v === 'D' || v === 'S') && nxN <= 3) sc += lvl === 'e' ? 12 : 25;
+    if ((v === 'D' || v === 'S' || v === 'F') && nxN <= 1) sc += lvl === 'e' ? 10 : 40;
     if (v === 'R' && nxN <= 2 && n > 2) sc += 12;
-    sc += kPts(c) * (lvl === 'h' ? .4 : .2);
-    return sc + Math.random() * (lvl === 'h' ? 1 : 5);
+    sc += kPts(c) * (lvl === 'e' ? .2 : .4);
+    return sc + Math.random() * {e:4, m:1.5, h:.3}[lvl];
   };
   return pick(pl.slice().sort((a, b) => score(b) - score(a))[0]);
 }
@@ -9767,7 +9779,7 @@ function botKarten(L) {
   for (const x of Object.keys(s.unc)) {
     if (!isBot(x)) continue;
     const key = x + ':' + s.unc[x];
-    if (bk.catches[key] === undefined) { const lv = botLvl(x); bk.catches[key] = Math.random() < {h:1, m:.85, e:.55}[lv] ? now + botR(500, {h:1500, m:2300, e:2700}[lv]) : 0; }
+    if (bk.catches[key] === undefined) { const lv = botLvl(x); bk.catches[key] = Math.random() < {h:1, m:.97, e:.8}[lv] ? now + botR(350, {h:900, m:1500, e:2200}[lv]) : 0; }
     if (bk.catches[key] && now >= bk.catches[key]) { bk.catches[key] = 0; kHostApply([[x, {a:'call'}]]); return; }
   }
   if (!isBot(tp)) return;
@@ -9793,7 +9805,7 @@ function gBotLeft(H, hi, x, y) {
   return Math.min(best, Math.hypot(x - H.cup[0], y - H.cup[1]) * (best < 400 ? 1 : 9));
 }
 function botGolfAim(H, hi, x, y, t, lvl) {
-  const n = {e:10, m:28, h:70}[lvl], noiseA = {e:.11, m:.045, h:.015}[lvl], noiseP = {e:.16, m:.07, h:.025}[lvl];
+  const n = {e:24, m:60, h:140}[lvl], noiseA = {e:.055, m:.022, h:.007}[lvl], noiseP = {e:.08, m:.035, h:.01}[lvl];
   let best = null;
   for (let i = 0; i < n; i++) {
     const a = Math.random() * Math.PI * 2, p = .1 + Math.random() * .9, v = gShotSpeed(p);
@@ -9844,14 +9856,14 @@ function botQuiz() {
   bq.at = now + 600000;
   if (q.phase === 'ready') {
     const free = freeCells(q); if (!free.length) return;
-    const w = i => { const l = q.board[i].lvl; return lvl === 'e' ? 5 - l : lvl === 'h' ? 1 + l : 3; };
+    const w = i => { const l = q.board[i].lvl; return lvl === 'e' ? 3 : lvl === 'h' ? 1 + l * 2 : 1 + l; };
     let tot = free.reduce((s, i) => s + w(i), 0), r = Math.random() * tot, pick = free[0];
     for (const i of free) { r -= w(i); if (r <= 0) { pick = i; break; } }
     quizPick(pick);
     return;
   }
   const cell = q.board[q.cell], cur = cell && cell.q; if (!cur) return;
-  const pRight = Math.max(.1, {e:.45, m:.68, h:.88}[lvl] - cell.lvl * .06), ok = Math.random() < pRight;
+  const pRight = Math.max(.2, {e:.62, m:.82, h:.96}[lvl] - cell.lvl * {e:.05, m:.035, h:.015}[lvl]), ok = Math.random() < pRight;
   if (cur.type === 'est') {
     const span = cur.max - cur.min, err = ok ? (Math.random() * 2 - 1) * cur.tol * .9 : (Math.random() < .5 ? -1 : 1) * (cur.tol * 1.2 + Math.random() * span * .25);
     let v = Math.max(cur.min, Math.min(cur.max, cur.ans + err));
@@ -9882,7 +9894,7 @@ function botMalen() {
     if (!isBot(pid) || st.guessed[pid]) continue;
     let b = bm[pid];
     if (!b || b.key !== key) {
-      const f = {e:[.45, 1.4], m:[.25, .95], h:[.12, .6]}[botLvl(pid)];
+      const f = {e:[.3, .95], m:[.15, .6], h:[.06, .32]}[botLvl(pid)];
       b = bm[pid] = {key, hitAt:st.phaseAt + total * botR(f[0], f[1]), nextAt:now + botR(3500, 8000)};
     }
     if (now >= b.hitAt) { b.hitAt = Infinity; botDact(pid, 'guess', st.word); continue; }
