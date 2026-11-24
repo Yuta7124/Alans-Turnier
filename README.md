@@ -143,6 +143,12 @@ Teams stehen in `meta/settings` (`fmt`, `teams`), Team-Punkte als Punkte-Einträ
 Ins Zufallsrad können auch die Server-Spiele (Quiz, Minigolf, Blackjack usw.) aufgenommen werden. Jedes Spiel im Rad
 ist im Team-Modus als „Team“ oder „Solo“ markiert. Punkte vergibt der Spielleiter wie gewohnt mit +/−.
 
+## Bowling
+🎳 Bowling für alle im Raum (auch Bots), 3, 5 oder 10 Frames, echte Bowling-Wertung mit Strike, Spare und Extrawurf im letzten Frame.
+Werfen: Finger auf die Bahn (Startpunkt), nach oben wischen (Richtung, Tempo, Bogen = Effet). Wer dran ist, rechnet den Wurf
+mit fester Physik durch und schreibt Wurf + Ergebnis + neuen Stand auf einmal (`uno` mit `g:'bw'`); alle spielen ihn als Animation ab.
+Frames werden als Map gespeichert (`{"0":[…]}`), weil Firestore keine Listen in Listen erlaubt. Nach 45 s ohne Wurf wirft der Host automatisch.
+
 ## Air-Hockey und 2er-Spiele
 🏒 Air-Hockey: 1 gegen 1 (auch gegen einen Bot), bis 5, 7 oder 10 Tore. Gespeichert im Raum-Feld `uno` mit `g:'ah'`.
 Der Puck läuft auf jedem Gerät mit festen Rechenschritten gleich weiter. Treffer und Tore auf einer Hälfte schreibt nur deren

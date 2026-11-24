@@ -2790,6 +2790,22 @@ body.icrop-open{overflow:hidden}
 .duo-free:hover{border-color:var(--coin)}
 .duo-vs{align-self:center;font-family:var(--display);font-size:26px;color:var(--coin)}
 @media (max-width:560px){.duo{gap:8px}.duo-vs{font-size:20px}.ah-cv{height:min(72vh,150vw)}}
+/* Bowling */
+.bw-cv{height:min(64vh,calc(min(100vw,720px) * 1.25));cursor:crosshair}
+.bw-board{overflow-x:auto;margin:4px auto 0;max-width:900px;width:100%;-webkit-overflow-scrolling:touch}
+.bw-board table{border-collapse:separate;border-spacing:3px;min-width:100%;font-variant-numeric:tabular-nums}
+.bw-board th{font-size:11px;color:var(--muted);font-weight:700;padding:2px}
+.bw-board td{background:var(--panel);border-radius:8px;padding:3px 4px;text-align:center;min-width:44px;vertical-align:top}
+.bw-board td.cur{box-shadow:inset 0 0 0 2px var(--coin)}
+.bw-board tr.on .bw-nm{box-shadow:inset 0 0 0 2px var(--coin)}
+.bw-board tr.me .bw-nm span{color:var(--coin)}
+.bw-nm{display:flex;align-items:center;gap:6px;text-align:left!important;min-width:96px!important;max-width:140px}
+.bw-nm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;font-size:13px}
+.bw-rl{display:flex;justify-content:flex-end;gap:2px;min-height:16px}
+.bw-rl i{font-style:normal;font-size:11px;font-weight:800;min-width:12px;color:var(--ink)}
+.bw-board td b{display:block;font-size:15px;min-height:18px}
+.bw-tot{font-family:var(--display);font-size:18px;color:var(--coin);vertical-align:middle!important}
+@media (max-width:560px){.bw-cv{height:min(60vh,120vw)}.bw-board td{min-width:36px}.bw-nm{min-width:80px!important}}
 /* Tischtennis */
 .ttplay{display:flex;flex-direction:column;gap:10px}
 .tt-board{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px auto 0;max-width:720px;width:100%}
@@ -2865,7 +2881,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=62"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=63"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -3877,7 +3893,7 @@ function normTicker(x) {
   };
 }
 const COLORS = ['#f5b83d', '#3fd49c', '#ff8080', '#6ea8ff', '#c493ff', '#ff9f5a', '#5fdde3', '#f58fb8'];
-const SRV_ICON = {quiz:'❓', malen:'🎨', golf:'⛳', karten:'🃏', mad:'🎲', bj:'♠️', dt:'🧱', tt:'🏓', ah:'🏒'};
+const SRV_ICON = {quiz:'❓', malen:'🎨', golf:'⛳', karten:'🃏', mad:'🎲', bj:'♠️', dt:'🧱', tt:'🏓', ah:'🏒', bw:'🎳'};
 const FMTS = [[1, 'Alle gegen alle', '⚔️'], [2, 'Duos', '👥'], [3, 'Trios', '👥'], [4, 'Squads', '👥']];
 const TEAM_COLS = ['#ffcf3f', '#39d6f2', '#ff4f6d', '#4ff08f', '#c493ff', '#ff9f5a', '#6ea8ff', '#f58fb8'];
 const LETTERS = ['A', 'B', 'C', 'D'];
@@ -3901,7 +3917,7 @@ function groupPick(g) {
   return GROUPS[g].some(x => x[0] === last) ? last : GROUPS[g][0][0];
 }
 /* Ansichten: "Spiele" ist der Ober-Tab für Quiz und Malen */
-const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'support', 'einstellungen'];
+const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'support', 'einstellungen'];
 const HUB = ['quiz', 'malen'];
 const viewOk = t => VIEWS.includes(t);
 /* Im Turnier entscheidet nur der Spielleiter, ob alle den Highscore oder das Zufallsrad sehen (settings.tview) */
@@ -3913,7 +3929,7 @@ function viewFor(t) {
   if (t === 'vg') return 'spieler';
   if (t === 'liste') t = 'rad'; // Spieleliste gibt es im Turnier nicht mehr
   if (!S.admin && (t === 'turnier' || t === 'rangliste' || t === 'rad')) return S.settings.tview;
-  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf' || t === 'karten' || t === 'mad' || t === 'bj' || t === 'dt' || t === 'tt' || t === 'ah') return S.room ? roomView() : 'spiele';
+  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf' || t === 'karten' || t === 'mad' || t === 'bj' || t === 'dt' || t === 'tt' || t === 'ah' || t === 'bw') return S.room ? roomView() : 'spiele';
   return GROUPS[t] ? groupPick(t) : viewOk(t) ? t : 'start';
 }
 
@@ -4651,7 +4667,7 @@ function render() {
   else if (S.mode === 'lock') html = lockHTML();
   else if (blocked()) html = `<div style="min-height:70vh"></div>`;
   else if (S.tab === 'spiele-pick') html = `<div class="loading">${COIN(48, 'spin')}</div>`;
-  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, mad:viewMad, bj:viewBj, dt:viewDt, tt:viewTt, ah:viewAh, support:viewSupport, einstellungen:viewSettings}[S.tab] || viewStart)();
+  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, mad:viewMad, bj:viewBj, dt:viewDt, tt:viewTt, ah:viewAh, bw:viewBw, support:viewSupport, einstellungen:viewSettings}[S.tab] || viewStart)();
   if (groupOf(S.tab) === 'turnier' && tourLocked()) html = tourCheckin() && !D.tourPeek ? tourCheckinHTML() : tourPreviewHTML();
   else if (groupOf(S.tab) === 'turnier' && tourKey() && !tourCheckin() && (D.tourIntro || lsGet('turnier-intro', '') !== tourKey())) html = tourIntroHTML();
   else if (groupOf(S.tab) === 'turnier' && S.admin && D.tourEdit && !['live', 'today'].includes(tourState().k)) html = `<div class="tour-editbar"><span>✏️ Bearbeitungsmodus: Nur du siehst das so. Für die Spieler ist das Turnier noch gesperrt.</span><button class="btn btn-sm" type="button" data-act="tour-preview">Zur Vorschau</button></div>` + html;
@@ -4675,6 +4691,7 @@ function render() {
   dtMount();
   ttMount();
   ahMount();
+  bwMount();
   renderFlySite();
   const newStand = m.querySelector('.stand');
   if (oldStand && newStand && newStand.dataset.key === oldKey) newStand.replaceWith(oldStand);
@@ -4694,7 +4711,7 @@ function render() {
 function tabsHidden() { return S.mode === 'loading' || S.mode === 'setup' || S.mode === 'lock' || S.mode === 'firstrun' || (S.mode === 'db' && !S.loaded) || blocked(); }
 function inGame() {
   if (tabsHidden() || S.mode !== 'db') return false;
-  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running') || (S.tab === 'karten' && !!S.uno && S.uno.status === 'running') || (S.tab === 'mad' && !!S.mad && S.mad.status === 'running') || (S.tab === 'bj' && !!S.bj && S.bj.status === 'running') || (S.tab === 'dt' && !!S.dt && S.dt.status === 'running') || (S.tab === 'tt' && !!S.tt && S.tt.status === 'running') || (S.tab === 'ah' && !!S.ah && S.ah.status === 'running');
+  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running') || (S.tab === 'karten' && !!S.uno && S.uno.status === 'running') || (S.tab === 'mad' && !!S.mad && S.mad.status === 'running') || (S.tab === 'bj' && !!S.bj && S.bj.status === 'running') || (S.tab === 'dt' && !!S.dt && S.dt.status === 'running') || (S.tab === 'tt' && !!S.tt && S.tt.status === 'running') || (S.tab === 'ah' && !!S.ah && S.ah.status === 'running') || (S.tab === 'bw' && !!S.bw && S.bw.status === 'running');
 }
 const isTouch = () => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } };
 const canFull = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
@@ -4721,7 +4738,7 @@ function renderSubnav() {
     h = `<div class="hub" style="--n:${list.length}" role="group" aria-label="Turnier">${list.map(([k, i, l]) => `<button class="hub-btn" type="button" data-act="tab" data-tab="${k}" aria-pressed="${S.tab === k}"><span class="hub-ico" aria-hidden="true">${i}</span><span class="hub-txt"><b>${l}</b>${sub(k)}</span></button>`).join('')}</div>`;
   } else if (!hide && inRoom) {
     h = roomBarHTML();
-    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf' && S.tab !== 'karten' && S.tab !== 'mad' && S.tab !== 'bj' && S.tab !== 'dt' && S.tab !== 'tt' && S.tab !== 'ah') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
+    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf' && S.tab !== 'karten' && S.tab !== 'mad' && S.tab !== 'bj' && S.tab !== 'dt' && S.tab !== 'tt' && S.tab !== 'ah' && S.tab !== 'bw') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
   }
   el.setAttribute('aria-label', tx(inRoom ? 'Raum' : 'Turnier'));
   el.classList.toggle('wide', (!!grp || inRoom) && $('#main').classList.contains('wide'));
@@ -5399,7 +5416,7 @@ function wheelFollow() {
   else if (sp.id === wheelSeenSpin) return;
   wheelSeenSpin = sp.id;
   if (!wheelSpinning(w) || S.tab === 'rad') return;
-  const busy = roomTabs.includes(S.tab) && S.tab !== 'raum' && ((S.uno && S.uno.status === 'running') || (S.mad && S.mad.status === 'running') || (S.bj && S.bj.status === 'running') || (S.dt && S.dt.status === 'running') || (S.tt && S.tt.status === 'running') || (S.ah && S.ah.status === 'running') || (S.golf && S.golf.status === 'running') || (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running'));
+  const busy = roomTabs.includes(S.tab) && S.tab !== 'raum' && ((S.uno && S.uno.status === 'running') || (S.mad && S.mad.status === 'running') || (S.bj && S.bj.status === 'running') || (S.dt && S.dt.status === 'running') || (S.tt && S.tt.status === 'running') || (S.ah && S.ah.status === 'running') || (S.bw && S.bw.status === 'running') || (S.golf && S.golf.status === 'running') || (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running'));
   if (busy) { toast('🎡 Das Zufallsrad dreht sich! Schau im Turnier vorbei.'); return; }
   if (S.modal) closeModal();
   setTab('rad');
@@ -6855,7 +6872,7 @@ function normLobby(id, x) {
   for (const [pid, v] of Object.entries(m)) if (pid && pid.length <= 40 && v && typeof v === 'object') members[pid] = {at:Number(v.at) || 0, dev:str(v.dev, 60)};
   const host = x.host && typeof x.host === 'object' && x.host.dev ? {pid:str(x.host.pid, 40), dev:str(x.host.dev, 60)} : null;
   const inv = Object.fromEntries(Object.keys(x.inv && typeof x.inv === 'object' && !Array.isArray(x.inv) ? x.inv : {}).filter(k => k && k.length <= 40).slice(0, 40).map(k => [k, true]));
-  return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true, inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah'].includes(x.kind) ? x.kind : '',
+  return {id, name:ROOM_NAMES[id] || id, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true, inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw'].includes(x.kind) ? x.kind : '',
     quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null, uno:x.uno && typeof x.uno === 'object' ? x.uno : null,
     hs:Object.fromEntries(Object.entries(x.hs && typeof x.hs === 'object' && !Array.isArray(x.hs) ? x.hs : {}).filter(([pid, v]) => pid.length <= 40 && Number.isFinite(Number(v))).map(([pid, v]) => [pid, Math.round(Number(v))])),
     bots:Object.fromEntries(Object.entries(x.bots && typeof x.bots === 'object' && !Array.isArray(x.bots) ? x.bots : {}).filter(([id, b]) => id.startsWith('bot_') && id.length <= 40 && b && typeof b === 'object').slice(0, ROOM_MAX)
@@ -6887,6 +6904,8 @@ function lobbyAutoAward() {
   if (TTM && TTM.status === 'finished' && !TTM.transferred && !lhsDone.has('p' + TTM.id)) { lhsDone.add('p' + TTM.id); ttTransfer(); }
   const AHM = S.ah;
   if (AHM && AHM.status === 'finished' && !AHM.transferred && !lhsDone.has('h' + AHM.id)) { lhsDone.add('h' + AHM.id); ahTransfer(); }
+  const BWM = S.bw;
+  if (BWM && BWM.status === 'finished' && !BWM.transferred && !lhsDone.has('w' + BWM.id)) { lhsDone.add('w' + BWM.id); bwTransfer(); }
 }
 function lobbyHsHTML(L = lobby(), max = 10, inModal = false) {
   if (!L) return '';
@@ -6935,19 +6954,19 @@ function roomInviteModalHTML() {
 function hostStale(L) { return !L || !L.host || Date.now() - (L.hostSeen || 0) > HOST_STALE_MS; }
 function roomState(L) {
   if (!L) return 'free';
-  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : L.kind === 'karten' ? (L.uno && !L.uno.g ? L.uno : null) : L.kind === 'mad' ? (L.uno && L.uno.g === 'mad' ? L.uno : null) : L.kind === 'bj' ? (L.uno && L.uno.g === 'bj' ? L.uno : null) : L.kind === 'dt' ? (L.uno && L.uno.g === 'dt' ? L.uno : null) : L.kind === 'tt' ? (L.uno && L.uno.g === 'tt' ? L.uno : null) : L.kind === 'ah' ? (L.uno && L.uno.g === 'ah' ? L.uno : null) : null;
+  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : L.kind === 'karten' ? (L.uno && !L.uno.g ? L.uno : null) : L.kind === 'mad' ? (L.uno && L.uno.g === 'mad' ? L.uno : null) : L.kind === 'bj' ? (L.uno && L.uno.g === 'bj' ? L.uno : null) : L.kind === 'dt' ? (L.uno && L.uno.g === 'dt' ? L.uno : null) : L.kind === 'tt' ? (L.uno && L.uno.g === 'tt' ? L.uno : null) : L.kind === 'ah' ? (L.uno && L.uno.g === 'ah' ? L.uno : null) : L.kind === 'bw' ? (L.uno && L.uno.g === 'bw' ? L.uno : null) : null;
   if (g && g.status === 'running') return 'running';
   if (g && g.status === 'finished') return 'finished';
   return roomMembers(L).length ? 'waiting' : 'free';
 }
-function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : L.kind === 'karten' ? 'karten' : L.kind === 'mad' ? 'mad' : L.kind === 'bj' ? 'bj' : L.kind === 'dt' ? 'dt' : L.kind === 'tt' ? 'tt' : L.kind === 'ah' ? 'ah' : 'raum'; }
-const roomTabs = ['raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah'];
+function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : L.kind === 'karten' ? 'karten' : L.kind === 'mad' ? 'mad' : L.kind === 'bj' ? 'bj' : L.kind === 'dt' ? 'dt' : L.kind === 'tt' ? 'tt' : L.kind === 'ah' ? 'ah' : L.kind === 'bw' ? 'bw' : 'raum'; }
+const roomTabs = ['raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw'];
 const FV = () => window.firebase && firebase.firestore && firebase.firestore.FieldValue;
 function roomRef(r = S.room) { return db.collection('lobbies').doc(r); }
 function roomSet(r, spectate = false) {
   if (S.room === r && S.spectate === spectate) return;
   S.room = r; S.spectate = !!(r && spectate);
-  S.quiz = null; S.draw = null; S.golf = null; S.uno = null; S.mad = null; ml.pend = null; ml.n = 0; S.bj = null; bjl.pend = null; bjl.n = 0; S.dt = null; S.tt = null; S.ah = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false; kl.pend = null; kl.n = 0;
+  S.quiz = null; S.draw = null; S.golf = null; S.uno = null; S.mad = null; ml.pend = null; ml.n = 0; S.bj = null; bjl.pend = null; bjl.n = 0; S.dt = null; S.tt = null; S.ah = null; S.bw = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false; kl.pend = null; kl.n = 0;
   roomApply();
 }
 /* ---------- Pause für alle Raum-Spiele ----------
@@ -6955,7 +6974,7 @@ function roomSet(r, spectate = false) {
    Während der Pause laufen keine Zeiten, Host-Abläufe und Bots. Beim Weiterspielen schiebt der, der „Weiter“ drückt,
    die gespeicherten Zeitpunkte um die Pausenlänge nach hinten; jedes Gerät verschiebt seine eigenen Zähler genauso.
    Spielt man allein (nur Bots oder niemand sonst), pausiert das Spiel automatisch, wenn man die Seite verlässt. */
-const PZ_FIELD = {quiz:'quiz', malen:'draw', golf:'golf', karten:'uno', mad:'uno', bj:'uno', dt:'uno', tt:'uno', ah:'uno'};
+const PZ_FIELD = {quiz:'quiz', malen:'draw', golf:'golf', karten:'uno', mad:'uno', bj:'uno', dt:'uno', tt:'uno', ah:'uno', bw:'uno'};
 function pzField(L = lobby()) { return (L && PZ_FIELD[L.kind]) || ''; }
 function pzGame(L = lobby()) { const f = pzField(L), g = f && L[f]; return g && g.status === 'running' && (L.kind !== 'karten' || !g.g) ? g : null; }
 function roomPaused(L = lobby()) { const g = pzGame(L); return g && g.pz && g.pz.at ? g.pz : null; }
@@ -6975,6 +6994,7 @@ function pzSet(on, auto = false) {
   else if (L.kind === 'malen') sh('phaseAt', g.phaseAt);
   else if (L.kind === 'karten' || L.kind === 'mad') { sh('s.turnAt', g.s && g.s.turnAt); if (L.kind === 'karten' && g.s && g.s.unc) for (const [pid, v] of Object.entries(g.s.unc)) sh('s.unc.' + pid, v); }
   else if (L.kind === 'bj') sh('s.at', g.s && g.s.at);
+  else if (L.kind === 'bw') sh('s.turnAt', g.s && g.s.turnAt);
   else if (L.kind === 'dt' || L.kind === 'tt' || L.kind === 'ah') sh('startAt', g.startAt);
   else if (L.kind === 'golf') sh('holeAt', g.holeAt);
   const ng = clone(g); delete ng.pz;
@@ -7035,6 +7055,7 @@ function roomApply() {
   dtOnSnap();
   S.tt = L && L.kind === 'tt' && L.uno ? ttNorm(L.uno) : null;
   S.ah = L && L.kind === 'ah' && L.uno ? ahNorm(L.uno) : null;
+  S.bw = L && L.kind === 'bw' && L.uno ? bwNorm(L.uno) : null;
   handleAnswers();
   if (S.room && roomTabs.includes(S.tab)) { const v = roomView(); if (S.tab !== v) { S.tab = v; try { history.replaceState(null, '', '#' + v); } catch (e) {} } }
   if (!S.room && roomTabs.includes(S.tab)) S.tab = 'spiele';
@@ -7134,7 +7155,7 @@ const ROOM_STATE = {free:['Frei', '#4ff08f'], waiting:['Wartet', '#ffcf3f'], run
 function roomCardHTML(r) {
   const L = lobby(r), mem = roomMembers(L), n = mem.length, me = myPid(), mine = !!(me && L.members[me]);
   const st = roomState(L), sl = ROOM_STATE[st];
-  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : L.kind === 'karten' ? ['🃏', 'Kartenwahn'] : L.kind === 'mad' ? ['🎲', 'Uncle Grandpa ärgere dich'] : L.kind === 'bj' ? ['🂡', 'Blackjack'] : L.kind === 'dt' ? ['🧱', 'Dicktris'] : L.kind === 'tt' ? ['🏓', 'Tischtennis'] : L.kind === 'ah' ? ['🏒', 'Air-Hockey'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
+  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : L.kind === 'karten' ? ['🃏', 'Kartenwahn'] : L.kind === 'mad' ? ['🎲', 'Uncle Grandpa ärgere dich'] : L.kind === 'bj' ? ['🂡', 'Blackjack'] : L.kind === 'dt' ? ['🧱', 'Dicktris'] : L.kind === 'tt' ? ['🏓', 'Tischtennis'] : L.kind === 'ah' ? ['🏒', 'Air-Hockey'] : L.kind === 'bw' ? ['🎳', 'Bowling'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
   const hostP = L.host && playerById(L.host.pid);
   const slots = Array.from({length:roomMax(L)}, (_, i) => mem[i] ? `<span class="rc-slot" title="${esc(ghost(mem[i]).name)}">${avatar(ghost(mem[i]), 34)}</span>` : '<span class="rc-slot empty"></span>').join('');
   const priv = roomPriv(L), invd = !mine && priv && !!(me && L.inv[me]);
@@ -7157,7 +7178,7 @@ function roomCardHTML(r) {
 function viewRooms() {
   const me = myPid();
   return `<section class="section">
-    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack, Dicktris, Tischtennis und Air-Hockey könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
+    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack, Dicktris, Tischtennis, Air-Hockey und Bowling könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
     ${me ? '' : `<div class="card rooms-hint"><p class="m-text">Damit du mitspielen kannst, brauchst du einen eigenen Spieler. Den erstellst du unter <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button>.</p></div>`}
     <div class="rooms">${ROOMS.map(roomCardHTML).join('')}</div>
     <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack oder Dicktris, stellt alles ein und startet.</li><li><b>Privat:</b> Wollt ihr unter euch bleiben, stellt der Host den Raum auf privat und lädt seine Freunde ein. Andere können dann nicht beitreten.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
@@ -7176,6 +7197,7 @@ function viewRoom() {
         <button class="pick-big" type="button" data-act="room-kind" data-v="dt" style="--tc:#39d6f2"><span aria-hidden="true">🧱</span><b>Dicktris</b><small>Fallende Blöcke: Reihen voll machen, im Battle-Modus Müllzeilen an die anderen schicken. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="tt" style="--tc:#ff8a3d"><span aria-hidden="true">🏓</span><b>Tischtennis</b><small>Nur zu zweit: 1 gegen 1 an der Platte, auch gegen einen Bot. Jeder Schlag macht den Ball schneller.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="ah" style="--tc:#39d6f2"><span aria-hidden="true">🏒</span><b>Air-Hockey</b><small>Nur zu zweit: 1 gegen 1 am Tisch, auch gegen einen Bot. Schieß den Puck ins Tor.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="bw" style="--tc:#ff4f9a"><span aria-hidden="true">🎳</span><b>Bowling</b><small>Reihum werfen, mit Strikes, Spares und Effet. Für alle im Raum, auch mit Bots.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="bj" style="--tc:#2ecc71"><span aria-hidden="true">🂡</span><b>Blackjack</b><small>Alle gegen die Bank: Komm näher an 21 als die Bank. Mit Chips, Verdoppeln und Teilen. Auch allein spielbar.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="karten" style="--tc:#ffcf3f"><span aria-hidden="true">🃏</span><b>Kartenwahn</b><small>Das Ablegespiel für 2 bis 8: Farbe oder Zahl ablegen, +2, +4, Aussetzen, Richtungswechsel.</small></button>
       </div>
@@ -7189,7 +7211,7 @@ function roomBarHTML() {
   const L = lobby(); if (!L) return '';
   const mem = roomMembers(L), me = myPid(), member = !!(me && L.members[me]), host = ctl();
   const st = roomState(L);
-  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : L.kind === 'mad' ? '🎲 Uncle Grandpa ärgere dich' : L.kind === 'bj' ? '🂡 Blackjack' : L.kind === 'dt' ? '🧱 Dicktris' : L.kind === 'tt' ? '🏓 Tischtennis' : L.kind === 'ah' ? '🏒 Air-Hockey' : 'Spiel wird gewählt';
+  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : L.kind === 'mad' ? '🎲 Uncle Grandpa ärgere dich' : L.kind === 'bj' ? '🂡 Blackjack' : L.kind === 'dt' ? '🧱 Dicktris' : L.kind === 'tt' ? '🏓 Tischtennis' : L.kind === 'ah' ? '🏒 Air-Hockey' : L.kind === 'bw' ? '🎳 Bowling' : 'Spiel wird gewählt';
   const chips = mem.map(pid => { const p = ghost(pid), isHost = L.host && L.host.pid === pid, bot = isBot(pid);
     return `<span class="rb-mem ${pid === me ? 'me' : ''} ${bot ? 'bot' : ''}">${avatar(p, 26)}<span>${esc(p.name)}</span>${bot ? `<small class="rb-lvl">${botLvlName(p.lvl)}</small>` : ''}${isHost ? '<i title="Host" aria-label="Host">👑</i>' : ''}${(host || S.admin) && pid !== me ? `<button class="x" type="button" data-act="room-kick" data-pid="${esc(pid)}" aria-label="${esc(p.name)} aus dem Raum werfen" title="Rauswerfen">×</button>` : ''}</span>`; }).join('');
   return `<div class="roombar">
@@ -10054,6 +10076,412 @@ function ahMount() {
   if (M && S.tab === 'ah') ahDraw(M);
 }
 
+/* ---------- Bowling: reihum werfen, 3, 5 oder 10 Frames (auch mit Bots) ----------
+   Gespeichert im Raum-Feld uno (mit g:'bw'): {g, id, status, cfg:{fr}, players, s, transferred}.
+   s = {seq, turn, fr, roll, pins, rolls:{pid:[[w1, w2, (w3)], …]}, th, turnAt}: pins = stehende Pins als Bitmaske (10 Bit),
+   th = letzter Wurf {seq, pid, x, a, v, sp, pins (vorher), down (Bitmaske der gefallenen), dur}.
+   Wer dran ist (bei Bots der Host), rechnet den Wurf komplett durch und schreibt Wurf + Ergebnis + neuen Stand in einem Rutsch.
+   Alle Geräte spielen den Wurf mit denselben Werten als Animation ab und zeigen den neuen Stand erst danach. */
+const BW_FR = [[3, '3 Frames'], [5, '5 Frames'], [10, '10 Frames']];
+const BW_BR = .105, BW_PR = .06, BW_LEN = 18.6, BW_HEAD = 16.8, BW_STEP = 1 / 240, BW_ALL = 1023;
+const BW_PINS = (() => { const sp = .29, dy = .25, p = []; for (let r = 0; r < 4; r++) for (let k = 0; k <= r; k++) p.push([(k - r / 2) * sp, BW_HEAD + r * dy]); return p; })();
+function bwNorm(x) {
+  if (!x || typeof x !== 'object' || x.g !== 'bw' || !['running', 'finished'].includes(x.status)) return null;
+  const players = (Array.isArray(x.players) ? x.players : []).filter(p => typeof p === 'string').slice(0, ROOM_MAX); if (!players.length) return null;
+  const s = x.s && typeof x.s === 'object' ? x.s : {}, rolls = {};
+  const asArr = v => Array.isArray(v) ? v : v && typeof v === 'object' ? Object.keys(v).filter(k => /^\d+$/.test(k)).sort((a, b) => a - b).map(k => v[k]) : [];
+  for (const id of players) rolls[id] = asArr(s.rolls && s.rolls[id]).slice(0, 10).map(f => (Array.isArray(f) ? f : []).slice(0, 3).map(v => Math.max(0, Math.min(10, Math.round(+v) || 0))));
+  const t = s.th && typeof s.th === 'object' ? s.th : null;
+  const th = t ? {seq:+t.seq || 0, pid:str(t.pid, 40), x:+t.x || 0, a:+t.a || 0, v:+t.v || 8, sp:+t.sp || 0, pins:(+t.pins || 0) & BW_ALL, down:(+t.down || 0) & BW_ALL, dur:Math.max(800, Math.min(9000, +t.dur || 3000)), auto:t.auto === true} : null;
+  const fr = [3, 5, 10].includes(+(x.cfg && x.cfg.fr)) ? +x.cfg.fr : 5;
+  return {g:'bw', id:str(x.id, 40), status:x.status, cfg:{fr}, players, transferred:x.transferred === true,
+    s:{seq:+s.seq || 0, turn:Math.max(0, Math.min(players.length - 1, +s.turn || 0)), fr:Math.max(0, Math.min(fr - 1, +s.fr || 0)), roll:Math.max(0, Math.min(2, +s.roll || 0)),
+      pins:Number.isFinite(+s.pins) ? (+s.pins & BW_ALL) : BW_ALL, rolls, th, turnAt:+s.turnAt || 0}};
+}
+/* Firestore kann keine Listen in Listen speichern: Frames werden als {"0":[…], "1":[…]} geschrieben. */
+function bwDbS(st) { return {...st, rolls:Object.fromEntries(Object.entries(st.rolls).map(([k, fr]) => [k, Object.fromEntries(fr.map((f, i) => [String(i), f]))]))}; }
+function bwMeTurn(M) { const me = myPid(), L = lobby(); return !!(M && M.status === 'running' && me && !S.spectate && L && L.members[me] && M.players[M.s.turn] === me); }
+const bwCount = m => { let n = 0; for (let i = 0; i < 10; i++) if (m & (1 << i)) n++; return n; };
+
+/* ----- Punkte (normale Bowling-Regeln: Strike = 10 + nächste 2 Würfe, Spare = 10 + nächster Wurf) ----- */
+function bwScore(frames, nFr) {
+  const flat = [], start = [];
+  frames.forEach(f => { start.push(flat.length); flat.push(...f); });
+  const out = []; let tot = 0;
+  for (let i = 0; i < frames.length; i++) {
+    const f = frames[i], j = start[i], last = i === nFr - 1;
+    let v = null;
+    if (last) { if (f.length === 3 || (f.length === 2 && f[0] + f[1] < 10)) v = f.reduce((a, b) => a + b, 0); }
+    else if (f[0] === 10) { if (flat.length >= j + 3) v = 10 + flat[j + 1] + flat[j + 2]; }
+    else if (f.length === 2) { if (f[0] + f[1] === 10) { if (flat.length >= j + 3) v = 10 + flat[j + 2]; } else v = f[0] + f[1]; }
+    if (v == null) { out.push(null); continue; }
+    tot += v; out.push(tot);
+  }
+  return out;
+}
+function bwTotal(frames, nFr) { const c = bwScore(frames, nFr).filter(v => v != null); return c.length ? c[c.length - 1] : 0; }
+function bwMarks(f, last) {
+  const num = v => v == null ? '' : v === 0 ? '–' : String(v), X = v => v === 10 ? 'X' : num(v);
+  if (!last) return f[0] === 10 ? ['', 'X'] : [num(f[0]), f.length > 1 ? (f[0] + f[1] === 10 ? '/' : num(f[1])) : ''];
+  const m = [X(f[0])];
+  if (f.length > 1) m.push(f[0] === 10 ? X(f[1]) : f[0] + f[1] === 10 ? '/' : num(f[1]));
+  if (f.length > 2) m.push((f[0] === 10 && f[1] === 10) || (f[0] !== 10 && f[0] + f[1] === 10) ? X(f[2]) : f[1] + f[2] === 10 ? '/' : num(f[2]));
+  return m;
+}
+/* Nächster Stand nach einem Wurf mit `down` gefallenen Pins */
+function bwAfter(M, down) {
+  const s = M.s, pid = M.players[s.turn], n = bwCount(down), last = s.fr === M.cfg.fr - 1;
+  const rolls = {...s.rolls, [pid]:s.rolls[pid].map(f => f.slice())};
+  const fr = rolls[pid]; if (!fr[s.fr]) fr[s.fr] = [];
+  fr[s.fr].push(n);
+  const f = fr[s.fr], left = s.pins & ~down;
+  let done = false, pins = left, roll = s.roll + 1;
+  if (!last) done = f[0] === 10 || f.length === 2;
+  else if (f.length === 1) pins = f[0] === 10 ? BW_ALL : left;
+  else if (f.length === 2) {
+    if (f[0] === 10) pins = f[1] === 10 ? BW_ALL : left;
+    else if (f[0] + f[1] === 10) pins = BW_ALL;
+    else done = true;
+  } else done = true;
+  let turn = s.turn, frI = s.fr, status = M.status;
+  if (done) {
+    pins = BW_ALL; roll = 0; turn = s.turn + 1;
+    if (turn >= M.players.length) { turn = 0; frI++; }
+    if (frI >= M.cfg.fr) { status = 'finished'; frI = M.cfg.fr - 1; }
+  }
+  return {s:{seq:s.seq + 1, turn, fr:frI, roll, pins, rolls, th:null, turnAt:Date.now()}, status};
+}
+
+/* ----- Physik: Kugel mit Effet, Pins als Kreise, alles in festen Schritten (überall gleich) ----- */
+function bwSim(th, rec) {
+  const ball = {x:th.x, y:.2, vx:Math.sin(th.a) * th.v, vy:Math.cos(th.a) * th.v, gut:false};
+  const pins = BW_PINS.map((p, i) => ({i, x:p[0], y:p[1], vx:0, vy:0, up:!!(th.pins & (1 << i)), down:false, on:!!(th.pins & (1 << i))}));
+  const frames = []; let t = 0, quiet = 0;
+  const out = () => { let m = 0; pins.forEach(p => { if (p.on && p.down) m |= 1 << p.i; }); return m; };
+  for (let k = 0; k < 240 * 7; k++) {
+    t += BW_STEP;
+    // Kugel: Effet greift erst im trockenen hinteren Teil der Bahn
+    if (!ball.gut) {
+      if (ball.y > 6.5 && ball.y < BW_HEAD) ball.vx += th.sp * 1.05 * BW_STEP;
+      ball.x += ball.vx * BW_STEP; ball.y += ball.vy * BW_STEP;
+      if (Math.abs(ball.x) > .5 + BW_BR * .2 && ball.y < BW_HEAD - .2) { ball.gut = true; ball.x = Math.sign(ball.x) * .58; ball.vx = 0; }
+    } else ball.y += ball.vy * BW_STEP;
+    // Stöße
+    if (!ball.gut) for (const p of pins) if (p.on) bwHit(ball, p, BW_BR + BW_PR, 6, 1);
+    for (let a = 0; a < 10; a++) for (let b = a + 1; b < 10; b++) if (pins[a].on && pins[b].on) bwHit(pins[a], pins[b], BW_PR * 2, 1, 1);
+    let moving = 0;
+    for (const p of pins) if (p.on) {
+      p.x += p.vx * BW_STEP; p.y += p.vy * BW_STEP;
+      const f = Math.exp(-(p.down ? 1.6 : 4) * BW_STEP); p.vx *= f; p.vy *= f;
+      const sp = Math.hypot(p.vx, p.vy);
+      if (sp > .35 && !p.down) p.down = true;
+      if (Math.abs(p.x) > .62 || p.y > BW_LEN + .3) { p.down = true; p.vx = p.vy = 0; p.x = Math.sign(p.x || 1) * Math.min(Math.abs(p.x), .7); }
+      if (sp > .05) moving++;
+    }
+    if (rec && k % 4 === 0) frames.push({t, b:{x:ball.x, y:ball.y, g:ball.gut}, p:pins.map(p => p.on ? [p.x, p.y, p.down ? 1 : 0] : null)});
+    if (ball.y > BW_LEN + .5) { quiet = moving ? 0 : quiet + 1; if (quiet > 60 || t > BW_LEN / Math.max(1, th.v) + 1.5) break; }
+  }
+  return {down:out(), dur:Math.round(t * 1000) + 300, frames};
+}
+function bwHit(a, b, R, ma, mb) {
+  const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy);
+  if (d >= R || d < 1e-9) return;
+  const nx = dx / d, ny = dy / d, ov = R - d, tm = ma + mb;
+  a.x -= nx * ov * mb / tm; a.y -= ny * ov * mb / tm; b.x += nx * ov * ma / tm; b.y += ny * ov * ma / tm;
+  const rv = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny; if (rv >= 0) return;
+  const j = -(1 + .75) * rv / (1 / ma + 1 / mb);
+  a.vx -= j * nx / ma; a.vy -= j * ny / ma; b.vx += j * nx / mb; b.vy += j * ny / mb;
+  // ein kräftiger Stoß wirft den Pin um
+  if (b.down !== undefined && Math.abs(j) > .25) b.down = true;
+  if (a.down !== undefined && ma === 1 && Math.abs(j) > .25) a.down = true;
+}
+
+/* ----- Werfen ----- */
+function bwThrow(M, p, auto = false) {
+  const s = M.s, th0 = {seq:s.seq + 1, pid:M.players[s.turn], x:Math.max(-.42, Math.min(.42, p.x)), a:Math.max(-.12, Math.min(.12, p.a)), v:Math.max(4.5, Math.min(13, p.v)), sp:Math.max(-1, Math.min(1, p.sp)), pins:s.pins};
+  const r = bwSim(th0, false), th = {...th0, down:r.down, dur:r.dur, auto};
+  const nx = bwAfter(M, r.down); nx.s.th = th;
+  bl.mineSeq = th.seq; bl.mineAt = performance.now();
+  const patch = {'uno.s':bwDbS(nx.s)}; if (nx.status !== M.status) patch['uno.status'] = nx.status;
+  M.s = nx.s; M.status = nx.status;
+  roomWrite(patch);
+}
+/* Bot zielt auf die „Tasche“ zwischen Pin 1 und 3 (bei stehenden Rest-Pins auf deren Mitte) */
+function bwBotParams(M, lvl) {
+  const s = M.s, stand = BW_PINS.filter((_, i) => s.pins & (1 << i));
+  let tx = s.pins === BW_ALL ? .065 : stand.reduce((a, p) => a + p[0], 0) / Math.max(1, stand.length);
+  const err = {e:.2, m:.07, h:.022}[lvl] || .07;
+  tx += (Math.random() + Math.random() + Math.random() - 1.5) * err * 1.4;
+  const v = {e:7, m:8.6, h:9.6}[lvl] * (1 + (Math.random() - .5) * {e:.25, m:.12, h:.05}[lvl]);
+  const sp = s.pins === BW_ALL ? -{e:.2, m:.45, h:.6}[lvl] : 0, x = s.pins === BW_ALL ? .18 + (Math.random() - .5) * .1 : Math.max(-.3, Math.min(.3, tx * .5));
+  // Ohne Pins vorrechnen, wo die Kugel mit Winkel 0 ankommt, dann Winkel anpassen
+  const ball = {x, y:.2, vx:0, vy:v}; for (let t = 0; t < 5 && ball.y < BW_HEAD; t += BW_STEP) { if (ball.y > 6.5) ball.vx += sp * 1.05 * BW_STEP; ball.x += ball.vx * BW_STEP; ball.y += ball.vy * BW_STEP; }
+  const a = Math.atan2(tx - ball.x, BW_HEAD - .2);
+  return {x, a, v, sp};
+}
+
+/* ----- Ablauf ----- */
+const bl = {gid:'', seq:-1, playStart:0, anim:null, mineSeq:-1, mineAt:0, drag:null, aimX:0, raf:0, endSnd:'', lastSnd:'', botKey:'', botAt:0, autoKey:''};
+function bwAnimating(M) { return !!(bl.anim && performance.now() < bl.playStart + bl.anim.dur); }
+function bwLogic() {
+  const M = S.bw; if (!M) return;
+  const now = performance.now();
+  if (bl.gid !== M.id) Object.assign(bl, {gid:M.id, seq:M.s.th ? M.s.th.seq : -1, anim:null, endSnd:'', botKey:'', autoKey:''});
+  const th = M.s.th;
+  if (th && th.seq !== bl.seq) {
+    bl.seq = th.seq; bl.anim = {...bwSim(th, true), th}; bl.playStart = bl.mineSeq === th.seq ? bl.mineAt : now; bl.rolled = false; bl.hitSnd = false;
+  }
+  if (M.status !== 'running' || bwAnimating(M) || roomPaused()) return;
+  const pid = M.players[M.s.turn], host = ctl();
+  // Bot wirft (Host)
+  if (host && isBot(pid)) {
+    const key = M.s.seq + ':' + pid;
+    if (bl.botKey !== key) { bl.botKey = key; bl.botAt = now + botR(1100, 2200); return; }
+    if (now >= bl.botAt) { bl.botAt = Infinity; bwThrow(M, bwBotParams(M, botLvl(pid))); }
+    return;
+  }
+  // Wer zu lange nicht wirft (45 s), bekommt einen automatischen Wurf vom Host
+  if (host && M.s.turnAt && Date.now() - M.s.turnAt > 45000 && bl.autoKey !== M.s.seq + '') {
+    bl.autoKey = M.s.seq + ''; bwThrow(M, {x:(Math.random() - .5) * .5, a:(Math.random() - .5) * .06, v:6 + Math.random() * 2, sp:0}, true);
+  }
+}
+function bwLoop(t) {
+  bl.raf = requestAnimationFrame(bwLoop);
+  const M = S.bw; if (!M || S.tab !== 'bw') return;
+  bwLogic();
+  bwDraw(M);
+  const ok = !bwAnimating(M), k = M.s.seq + ':' + ok;
+  if (bl.uiKey !== k) { bl.uiKey = k; if (ok) render(); }
+}
+
+/* ----- Zeichnen: Bahn in Perspektive, Kamera fährt mit der Kugel ----- */
+function bwDraw(M) {
+  const cv = document.getElementById('bw-cv'); if (!cv) return;
+  const c = cv.getContext('2d'), W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
+  if (!W || !H) return;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
+  const now = performance.now(), A = bwAnimating(M) ? bl.anim : null;
+  let fr = null;
+  if (A) { const t = (now - bl.playStart) / 1000; fr = A.frames[Math.min(A.frames.length - 1, Math.max(0, Math.floor(t / (BW_STEP * 4))))]; }
+  const ballY = fr ? fr.b.y : 0, camY = Math.max(0, Math.min(10.5, ballY - 2.2)), z0 = 3.2;
+  const yB = H * .97, yT = H * .1, zN = z0, zF = BW_LEN + 1 - 0 + z0;
+  const bcoef = (yB - yT) / (1 / zN - 1 / zF), acoef = yB - bcoef / zN, laneW = W * .62;
+  const P = (x, y, h = 0) => { const z = Math.max(.6, y - camY + z0), sc = z0 / z; return {x:W / 2 + x * laneW * sc, y:acoef + bcoef / z - h * laneW * sc, s:sc, w:laneW * sc}; };
+  // Hintergrund
+  const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0d0a1c'); g.addColorStop(1, '#1d1538');
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+  const yEnd = BW_LEN + .6;
+  const quad = (x0, x1, y0, y1, col) => { const a = P(x0, y0), b = P(x1, y0), cc = P(x1, y1), d = P(x0, y1); c.fillStyle = col; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.lineTo(cc.x, cc.y); c.lineTo(d.x, d.y); c.closePath(); c.fill(); };
+  const y0 = Math.max(-1, camY - 2);
+  quad(-.75, .75, y0, yEnd, '#2b2147');
+  quad(-.62, -.5, y0, yEnd, '#3a3a52'); quad(.5, .62, y0, yEnd, '#3a3a52');
+  // Holzbahn mit Dielen
+  const lg = c.createLinearGradient(0, P(0, yEnd).y, 0, P(0, y0).y); lg.addColorStop(0, '#c89a5f'); lg.addColorStop(1, '#e8c38a');
+  { const a = P(-.5, y0), b = P(.5, y0), cc = P(.5, yEnd), d = P(-.5, yEnd); c.fillStyle = lg; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.lineTo(cc.x, cc.y); c.lineTo(d.x, d.y); c.closePath(); c.fill(); }
+  c.strokeStyle = 'rgba(120,80,40,.18)'; c.lineWidth = 1;
+  for (let k = -4; k <= 4; k++) { const a = P(k / 9, y0), b = P(k / 9, yEnd); c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke(); }
+  // Pfeile und Foul-Linie
+  c.fillStyle = 'rgba(160,40,40,.55)';
+  for (let k = -2; k <= 2; k++) { const p = P(k * .2, 5 + Math.abs(k) * .35); c.beginPath(); c.moveTo(p.x, p.y - 7 * p.s * 2); c.lineTo(p.x - 4 * p.s * 2, p.y + 4 * p.s * 2); c.lineTo(p.x + 4 * p.s * 2, p.y + 4 * p.s * 2); c.closePath(); c.fill(); }
+  { const a = P(-.5, 0), b = P(.5, 0); c.strokeStyle = '#b3243a'; c.lineWidth = 3; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke(); }
+  // Rückwand
+  { const a = P(-.75, yEnd), b = P(.75, yEnd), h = 1.1; const a2 = P(-.75, yEnd, h), b2 = P(.75, yEnd, h); c.fillStyle = '#141024'; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.lineTo(b2.x, b2.y); c.lineTo(a2.x, a2.y); c.closePath(); c.fill();
+    c.fillStyle = '#ffcf3f'; c.font = `900 ${Math.max(8, Math.round(26 * a.s))}px system-ui,sans-serif`; c.textAlign = 'center'; c.fillText('DARKIME', (a.x + b.x) / 2, (a.y + a2.y) / 2 + 8 * a.s); }
+  // Pins und Kugel von hinten nach vorn
+  const items = [];
+  const pinsNow = fr ? fr.p : BW_PINS.map((p, i) => M.s.pins & (1 << i) ? [p[0], p[1], 0] : null);
+  pinsNow.forEach(p => { if (p) items.push({y:p[1], d:() => bwPin(c, P, p[0], p[1], p[2])}); });
+  const bx = fr ? fr.b.x : (bl.drag ? bl.drag.x : bl.aimX), by = fr ? fr.b.y : .2;
+  items.push({y:by, d:() => bwBall(c, P, bx, by, fr && fr.b.g, M, now)});
+  items.sort((a, b) => b.y - a.y).forEach(it => it.d());
+  // Zielhilfe beim Ziehen
+  if (bl.drag && bl.drag.pts.length > 1 && !fr) {
+    const d = bl.drag, a = bwDragParams(d);
+    if (a) { c.strokeStyle = 'rgba(255,207,63,.85)'; c.lineWidth = 3; c.setLineDash([8, 8]); c.beginPath(); const p0 = P(a.x, .2); c.moveTo(p0.x, p0.y);
+      let x = a.x, vx = Math.sin(a.a) * a.v; const vy = Math.cos(a.a) * a.v;
+      for (let y = .2; y < 9; ) { const dt = .05; if (y > 6.5) vx += a.sp * 1.05 * dt; x += vx * dt; y += vy * dt; const q = P(x, y); c.lineTo(q.x, q.y); }
+      c.stroke(); c.setLineDash([]); }
+  }
+  // Pin-Anzeige oben rechts
+  const st = fr ? fr.p.map((p, i) => p && !p[2] ? 1 : 0) : BW_PINS.map((_, i) => M.s.pins & (1 << i) ? 1 : 0);
+  const ox = W - 58, oy = 16;
+  c.fillStyle = 'rgba(0,0,0,.45)'; c.beginPath(); c.roundRect ? c.roundRect(ox - 10, oy - 8, 62, 56, 10) : c.rect(ox - 10, oy - 8, 62, 56); c.fill();
+  BW_PINS.forEach((p, i) => { const px = ox + 21 + p[0] / .29 * 12, py = oy + 38 - (p[1] - BW_HEAD) / .25 * 11; c.fillStyle = st[i] ? '#fff' : 'rgba(255,255,255,.15)'; c.beginPath(); c.arc(px, py, 4.2, 0, Math.PI * 2); c.fill(); });
+  // Ergebnis-Text am Ende des Wurfs
+  if (A) {
+    const t = now - bl.playStart, n = bwCount(A.th.down), all = A.th.pins === BW_ALL;
+    if (!bl.hitSnd && fr && fr.b.y > BW_HEAD - .3 && !fr.b.g) { bl.hitSnd = true; bwSnd(n >= 7 ? 'crash' : n ? 'hit' : 'roll'); }
+    if (t > A.dur - 1400) {
+      const txt = n === 10 && all ? tx('STRIKE!') : n === bwCount(A.th.pins) && n > 0 ? tx('SPARE!') : n === 0 ? (fr && fr.b.g ? tx('Rinne!') : tx('Daneben')) : `${n} ${n === 1 ? tx('Pin') : tx('Pins')}`;
+      const k = Math.min(1, (t - (A.dur - 1400)) / 300), big = n === 10 || txt === tx('SPARE!');
+      c.save(); c.globalAlpha = k; c.translate(W / 2, H * .42); c.scale(.8 + k * .2, .8 + k * .2); c.textAlign = 'center';
+      c.font = `900 ${Math.round(Math.min(W * (big ? .14 : .09), big ? 64 : 40))}px system-ui,sans-serif`; c.lineWidth = 6; c.strokeStyle = 'rgba(0,0,0,.6)'; c.strokeText(txt, 0, 0);
+      c.fillStyle = big ? '#ffcf3f' : '#fff'; c.fillText(txt, 0, 0); c.restore();
+      if (big && bl.lastSnd !== A.th.seq + 'big') { bl.lastSnd = A.th.seq + 'big'; bwSnd('strike'); }
+    }
+  } else if (M.status === 'running') {
+    const pid = M.players[M.s.turn], mine = bwMeTurn(M);
+    c.textAlign = 'center'; c.fillStyle = 'rgba(255,255,255,.9)'; c.font = `700 ${Math.round(Math.min(W * .045, 18))}px system-ui,sans-serif`;
+    if (!bl.drag) c.fillText(mine ? tx(isTouch() ? 'Wisch nach oben, um zu werfen' : 'Mit der Maus nach oben ziehen und loslassen') : `${ghost(pid).name} ${tx('ist dran')}`, W / 2, H * .5);
+  }
+}
+function bwPin(c, P, x, y, down) {
+  const b = P(x, y), r = Math.max(2, BW_PR * b.w * .95), h = r * 4.6;
+  if (down) { c.save(); c.globalAlpha = .75; c.translate(b.x, b.y - r * .6); c.rotate((x > 0 ? 1 : -1) * 1.35); }
+  else { c.save(); c.translate(b.x, b.y); }
+  c.fillStyle = 'rgba(0,0,0,.25)'; if (!down) { c.beginPath(); c.ellipse(r * .3, 0, r * 1.2, r * .45, 0, 0, Math.PI * 2); c.fill(); }
+  c.fillStyle = '#f7f4ee';
+  c.beginPath(); c.ellipse(0, -h * .28, r, h * .3, 0, 0, Math.PI * 2); c.fill();
+  c.beginPath(); c.ellipse(0, -h * .72, r * .55, h * .14, 0, 0, Math.PI * 2); c.fill();
+  c.fillRect(-r * .38, -h * .7, r * .76, h * .3);
+  c.beginPath(); c.arc(0, -h * .9, r * .5, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#d9223f'; c.fillRect(-r * .44, -h * .66, r * .88, h * .05); c.fillRect(-r * .42, -h * .58, r * .84, h * .04);
+  c.restore();
+}
+function bwBall(c, P, x, y, gut, M, now) {
+  const p = P(x, y, BW_BR), r = Math.max(3, BW_BR * p.w);
+  const sh = P(x, y); c.fillStyle = 'rgba(0,0,0,.3)'; c.beginPath(); c.ellipse(sh.x, sh.y, r * 1.05, r * .35, 0, 0, Math.PI * 2); c.fill();
+  const pid = bl.anim && bwAnimating(M) ? bl.anim.th.pid : M.players[M.s.turn], col = ghost(pid).color || '#39d6f2';
+  const g = c.createRadialGradient(p.x - r * .35, p.y - r * .4, r * .1, p.x, p.y, r); g.addColorStop(0, '#fff'); g.addColorStop(.25, col); g.addColorStop(1, '#0c0a18');
+  c.fillStyle = g; c.beginPath(); c.arc(p.x, p.y, r, 0, Math.PI * 2); c.fill();
+  const rot = y * 2.2; c.fillStyle = 'rgba(0,0,0,.55)';
+  for (const [dx, dy] of [[-.25, -.2], [.15, -.3], [.05, .05]]) { const a = Math.cos(rot) * dx - Math.sin(rot) * dy, b = Math.sin(rot) * dx + Math.cos(rot) * dy; c.beginPath(); c.arc(p.x + a * r, p.y + b * r, r * .1, 0, Math.PI * 2); c.fill(); }
+}
+function bwSnd(n) {
+  if (!actx || muted) return;
+  if (n === 'roll') kNoise(.9, 180, 120, .05, 0, .7);
+  else if (n === 'hit') { kNoise(.12, 2400, 600, .12, 0, 2); tone(300, .06, 'triangle', .06, 0); }
+  else if (n === 'crash') { kNoise(.5, 3000, 500, .16, 0, 1.4); kNoise(.3, 1800, 700, .1, .08, 2); tone(220, .1, 'triangle', .07, 0); }
+  else if (n === 'strike') { tone(523, .1, 'square', .05, 0); tone(659, .1, 'square', .05, .1); tone(784, .1, 'square', .05, .2); tone(1046, .25, 'square', .05, .3); }
+}
+
+/* ----- Steuerung: Finger auf die Bahn, Startpunkt = Kugelposition, nach oben wischen = Wurf.
+   Richtung der Wischbewegung = Winkel, Tempo = Kraft, Bogen in der Bewegung = Effet. ----- */
+function bwDragParams(d) {
+  const pts = d.pts; if (pts.length < 2) return null;
+  const a = pts[0], z = pts[pts.length - 1], dy = a.y - z.y, dx = z.x - a.x;
+  if (dy < 12) return null;
+  const tail = pts.filter(p => p.t >= z.t - 120), t0 = tail[0], dt = Math.max(16, z.t - t0.t), spd = Math.hypot(z.x - t0.x, z.y - t0.y) / dt * 1000;
+  const W = d.W, v = 4.5 + Math.min(1, spd / (W * 4.2)) * 8.5;
+  const ang = Math.max(-.12, Math.min(.12, Math.atan2(dx, dy) * .085));
+  // Bogen: wie weit die Mitte der Bewegung seitlich von der geraden Linie abweicht
+  const mid = pts[Math.floor(pts.length / 2)], len = Math.hypot(dx, dy) || 1, cross = ((mid.x - a.x) * dy - (mid.y - a.y) * -dx) / len;
+  const sp = Math.max(-1, Math.min(1, -cross / (W * .06)));
+  return {x:d.x, a:ang, v, sp};
+}
+(() => {
+  const lanePos = (e, cv) => { const r = cv.getBoundingClientRect(); return Math.max(-.42, Math.min(.42, (e.clientX - r.left - r.width / 2) / (r.width * .62))); };
+  document.addEventListener('pointerdown', e => {
+    const cv = e.target && e.target.id === 'bw-cv' ? e.target : null; if (!cv || S.tab !== 'bw') return;
+    const M = S.bw; if (!bwMeTurn(M) || bwAnimating(M) || roomPaused()) return;
+    ensureAudio(); const r = cv.getBoundingClientRect();
+    bl.drag = {x:lanePos(e, cv), W:r.width, pts:[{x:e.clientX, y:e.clientY, t:performance.now()}]}; bl.aimX = bl.drag.x;
+    try { cv.setPointerCapture(e.pointerId); } catch (er) {}
+  });
+  document.addEventListener('pointermove', e => {
+    if (!bl.drag) return; const d = bl.drag; d.pts.push({x:e.clientX, y:e.clientY, t:performance.now()}); if (d.pts.length > 240) d.pts.splice(1, 1);
+    // Solange nur seitlich gezogen wird, verschiebt das die Kugel
+    const a = d.pts[0]; if (a.y - e.clientY < 14) { const cv = document.getElementById('bw-cv'); if (cv) { d.x = lanePos(e, cv); bl.aimX = d.x; d.pts = [{x:e.clientX, y:e.clientY, t:performance.now()}]; } }
+  });
+  const up = () => {
+    const d = bl.drag; if (!d) return; bl.drag = null;
+    const M = S.bw, p = bwDragParams(d); if (!p || !bwMeTurn(M) || bwAnimating(M)) return;
+    bwThrow(M, p);
+  };
+  document.addEventListener('pointerup', up); document.addEventListener('pointercancel', () => { bl.drag = null; });
+})();
+const bwActions = {
+  'bw-fr': b => { D.bwFr = Number(b.dataset.v); render(); },
+  'bw-start': () => {
+    if (!ctl()) return; if (S.bw && S.bw.status === 'finished' && !S.bw.transferred) bwTransfer();
+    const L = lobby(), players = roomMembers(L).slice(0, ROOM_MAX); if (!players.length) return;
+    if (players.every(isBot)) { toast('Mindestens einer muss ein echter Spieler sein.'); return; }
+    const fr = [3, 5, 10].includes(D.bwFr) ? D.bwFr : 5, rolls = Object.fromEntries(players.map(id => [id, []]));
+    const M = {g:'bw', id:uid(), status:'running', cfg:{fr}, players, transferred:false, s:{seq:0, turn:0, fr:0, roll:0, pins:BW_ALL, rolls, th:null, turnAt:Date.now()}};
+    S.lobbies[S.room] = {...L, uno:M}; S.bw = bwNorm(M); roomWrite({uno:{...M, s:bwDbS(M.s)}}); render();
+  },
+  'bw-end': () => confirmBox('Bowling beenden?', 'Das Spiel wird abgebrochen. Es gibt keine Punkte für den Raum-Highscore.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => { if (!ctl()) return; S.bw = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); }}]),
+  'bw-setup': () => { if (!ctl()) return; if (S.bw && S.bw.status === 'finished' && !S.bw.transferred) bwTransfer(); S.bw = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); }
+};
+function bwRank(M) {
+  const rows = M.players.map(id => ({id, sc:bwTotal(M.s.rolls[id] || [], M.cfg.fr)})).sort((a, b) => b.sc - a.sc);
+  rows.forEach((r, i) => { r.rank = i && rows[i - 1].sc === r.sc ? rows[i - 1].rank : i + 1; });
+  return rows;
+}
+function bwTransfer() {
+  const M = S.bw; if (!ctl() || !M || M.status !== 'finished' || M.transferred) return;
+  const rows = bwRank(M);
+  const entries = rows.length >= 2 ? rows.filter(r => r.rank <= 3 && r.sc > 0 && playerById(r.id)).map(r => ({playerId:r.id, delta:K_PLACE_PTS[r.rank - 1]})) : rows.filter(r => r.sc >= 100).map(r => ({playerId:r.id, delta:1}));
+  lobbyAward({'uno.transferred':true}, entries);
+}
+
+/* ----- Ansichten ----- */
+function bwRulesHTML(open) {
+  return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird gespielt</summary><ul>
+    <li><b>Werfen:</b> Finger dort auf die Bahn legen, wo die Kugel starten soll, und nach oben wischen. Schneller wischen = härterer Wurf.</li>
+    <li><b>Richtung und Effet:</b> Schräg wischen lenkt die Kugel. Wischst du einen Bogen, bekommt die Kugel Effet und hakt hinten auf der Bahn ein.</li>
+    <li><b>Tipp:</b> Die meisten Strikes gibt es, wenn die Kugel knapp neben dem vordersten Pin in die „Tasche“ trifft.</li>
+    <li><b>Punkte:</b> Pro Frame 2 Würfe. Strike (alle 10 im ersten Wurf) = 10 + die nächsten 2 Würfe, Spare (alle 10 mit 2 Würfen) = 10 + der nächste Wurf. Im letzten Frame gibt es nach Strike oder Spare einen Extrawurf.</li>
+    <li><b>Highscore:</b> Platz 1 bekommt 3 Punkte im Raum-Highscore, Platz 2 bekommt 2, Platz 3 bekommt 1.</li></ul></details>`;
+}
+function bwBoardHTML(M) {
+  const A = bwAnimating(M) ? bl.anim : null, n = M.cfg.fr;
+  return `<div class="bw-board"><table><thead><tr><th></th>${Array.from({length:n}, (_, i) => `<th>${i + 1}</th>`).join('')}<th>Σ</th></tr></thead><tbody>${M.players.map((id, pi) => {
+    let fr = (M.s.rolls[id] || []).map(f => f.slice());
+    if (A && A.th.pid === id) { for (let i = fr.length - 1; i >= 0; i--) if (fr[i] && fr[i].length) { fr[i].pop(); if (!fr[i].length) fr.splice(i, 1); break; } }
+    const cum = bwScore(fr, n), tot = cum.filter(v => v != null).pop() || 0, turn = M.status === 'running' && !A && M.s.turn === pi;
+    return `<tr class="${turn ? 'on' : ''} ${id === myPid() ? 'me' : ''}"><td class="bw-nm">${avatar(ghost(id), 22)}<span>${esc(ghost(id).name)}</span></td>${Array.from({length:n}, (_, i) => {
+      const f = fr[i] || [], mk = bwMarks(f, i === n - 1);
+      return `<td class="${turn && M.s.fr === i ? 'cur' : ''}"><div class="bw-rl">${(i === n - 1 ? [0, 1, 2] : [0, 1]).map(k => `<i>${mk[k] || ''}</i>`).join('')}</div><b>${cum[i] != null ? cum[i] : ''}</b></td>`;
+    }).join('')}<td class="bw-tot">${tot}</td></tr>`;
+  }).join('')}</tbody></table></div>`;
+}
+function bwSetupHTML() {
+  const L = lobby(), hostP = L && L.host && playerById(L.host.pid), mem = roomMembers(L);
+  if (!ctl()) return `<section class="section tsec"><div class="card waiting">${COIN(56, 'spin')}<span class="eyebrow">${esc(L ? L.name : '')} · 🎳 Bowling</span><h2>Gleich geht's los</h2>
+    <p class="muted">${hostP ? `<b>${esc(hostP.name)}</b> ist Host und startet das Spiel.` : 'Gerade ist niemand Host.'}</p>
+    ${hostStale(L) && L.members[myPid()] ? `<button class="btn btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}</div>${bwRulesHTML(false)}</section>`;
+  const fr = [3, 5, 10].includes(D.bwFr) ? D.bwFr : 5;
+  return `<section class="section tsec"><div class="card k-setup">
+    <span class="eyebrow">Du bist Host</span><h2 class="k-title-big">🎳 Bowling</h2>
+    <p class="muted">Alle im Raum werfen reihum, auch Bots. Wer am Ende die meisten Punkte hat, gewinnt.</p>
+    <div class="chips">${mem.map(id => `<span class="chip pchip" aria-pressed="true">${avatar(ghost(id), 26)}${esc(ghost(id).name)}</span>`).join('')}</div>
+    <span class="lbl">Länge</span><div class="chips">${BW_FR.map(([v, l]) => `<button class="chip" type="button" data-act="bw-fr" data-v="${v}" aria-pressed="${fr === v}">${l}</button>`).join('')}</div>
+    <button class="btn btn-gold btn-big" type="button" data-act="bw-start">Los geht's (${mem.length} ${mem.length === 1 ? 'Spieler' : 'Spieler'})</button>
+  </div>${bwRulesHTML(true)}</section>`;
+}
+function bwPlayHTML(M) {
+  const host = ctl(), me = myPid(), pid = M.players[M.s.turn];
+  return `<section class="section tsec ttplay">
+    <div class="k-top">
+      <button class="gmenu" type="button" data-act="gmenu" aria-label="Menü anzeigen" title="Menü">☰</button>
+      <div class="k-head"><b>🎳 Bowling</b><small>${esc((lobby() || {}).name || '')} · Frame ${M.s.fr + 1}/${M.cfg.fr}</small></div>
+      ${host ? `<button class="btn btn-sm btn-ghost k-endbtn" type="button" data-act="bw-end">Beenden</button>` : ''}
+    </div>
+    <div class="tt-box"><canvas id="bw-cv" class="tt-cv bw-cv" aria-label="Bowlingbahn"></canvas></div>
+    <p class="muted tt-hint">${bwMeTurn(M) ? 'Du bist dran! Finger auf die Bahn, nach oben wischen. Ein Bogen gibt Effet.' : M.players.includes(me) ? `${esc(ghost(pid).name)} ist dran.` : '👀 Du schaust zu.'}</p>
+    ${bwBoardHTML(M)}
+  </section>`;
+}
+function bwEndHTML(M) {
+  const host = ctl(), rows = bwRank(M), w = ghost(rows[0].id);
+  return `<section class="section tsec"><div class="card k-end">
+    <span class="eyebrow">🎳 Bowling</span>
+    <div class="k-winner">${avatar(w, 72)}<h2>${esc(w.name)} gewinnt!</h2></div>
+    <p class="tt-final"><b>${rows[0].sc}</b> Punkte</p>
+    ${M.transferred ? `<p class="okline">✓ Steht im Highscore von ${esc((lobby() || {}).name || 'diesem Raum')}.</p>` : ''}
+    ${host ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="bw-start">Nochmal</button><button class="btn" type="button" data-act="bw-setup">Zurück</button></div>` : '<p class="muted">Der Host kann ein neues Spiel starten.</p>'}
+  </div>${bwBoardHTML(M)}${lobbyHsHTML()}</section>`;
+}
+function viewBw() { try { bwLogic(); } catch (e) {} const M = S.bw; if (!M) return bwSetupHTML(); return M.status === 'finished' && !bwAnimating(M) ? bwEndHTML(M) : bwPlayHTML(M); }
+function bwMount() {
+  const M = S.bw;
+  if (M && M.status === 'finished' && !bwAnimating(M) && bl.endSnd !== M.id && S.tab === 'bw') { bl.endSnd = M.id; kSnd('win', .3); }
+  if (!bl.raf) bl.raf = requestAnimationFrame(bwLoop);
+  if (M && S.tab === 'bw') bwDraw(M);
+}
+
 
 /* ---------- Dicktris ENDE ---------- */
 
@@ -10902,7 +11330,7 @@ async function vgmLinkSubmit() {
 /* ---------- Spieler-Profile im Steam-Stil ----------
    Der Tab „Spieler“ zeigt alle Spieler. Ein Tipp auf einen Spieler öffnet sein Profil: Kopfbereich mit Level und Status,
    Lieblingsspiel, Screenshots, kürzliche Aktivität, Spielebibliothek; daneben Abzeichen, Zahlen und die anderen Spieler. */
-const GAME_KIND_NAME = {quiz:'Quiz', malen:'Malen', golf:'Minigolf', karten:'Kartenwahn', mad:'Uncle Grandpa ärgere dich', bj:'Blackjack', dt:'Dicktris', tt:'Tischtennis', ah:'Air-Hockey'};
+const GAME_KIND_NAME = {quiz:'Quiz', malen:'Malen', golf:'Minigolf', karten:'Kartenwahn', mad:'Uncle Grandpa ärgere dich', bj:'Blackjack', dt:'Dicktris', tt:'Tischtennis', ah:'Air-Hockey', bw:'Bowling'};
 /* Status wie bei Steam: im Spiel (in einem Raum mit laufendem Spiel), online oder offline */
 function spStatus(pid) {
   const now = Date.now();
@@ -11157,7 +11585,7 @@ const TK_TYPES = [
 ];
 const TK_AREAS = [
   ['menu', 'Main-Menü', '🏠'], ['turnier', 'Turnier', '🏆'], ['raeume', 'Spiele-Räume', '🚪'], ['quiz', 'Quiz', '❔'], ['malen', 'Malen', '🎨'],
-  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['mad', 'Uncle Grandpa ärgere dich', '🎲'], ['bj', 'Blackjack', '🂡'], ['dt', 'Dicktris', '🧱'], ['tt', 'Tischtennis', '🏓'], ['ah', 'Air-Hockey', '🏒'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
+  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['mad', 'Uncle Grandpa ärgere dich', '🎲'], ['bj', 'Blackjack', '🂡'], ['dt', 'Dicktris', '🧱'], ['tt', 'Tischtennis', '🏓'], ['ah', 'Air-Hockey', '🏒'], ['bw', 'Bowling', '🎳'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
   ['support', 'Support', '🛟'], ['musik', 'Musik und Sound', '🎵'], ['optionen', 'Optionen', '⚙️'], ['login', 'Login und Einladungen', '🔑'], ['handy', 'Handy-Ansicht', '📱'], ['other', 'Sonstiges', '🧩']
 ];
 const TK_SUB = {
@@ -11230,7 +11658,7 @@ function tkContext() {
   const t = S.tab, L = typeof lobby === 'function' ? lobby() : null, me = myPid();
   const map = {start:'menu', turnier:'turnier', rangliste:'turnier', rad:'turnier', liste:'turnier', spiele:'raeume', raum:'raeume', spieler:'profile', einstellungen:'optionen'};
   let area = map[t] || '', hole = 0, sub = '';
-  if (['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah'].includes(t)) area = t;
+  if (['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw'].includes(t)) area = t;
   if (t === 'spieler' && D.vgP) area = 'games';
   if (area === 'golf' && S.golf && S.golf.status === 'running') { const p = S.golf.pos && S.golf.pos[me]; hole = (Array.isArray(p) ? p[3] : S.golf.hi) + 1 || 0; }
   if (area === 'turnier') sub = {rangliste:'Rangliste', rad:'Glücksrad', liste:'Spieleliste'}[t] || '';
@@ -12801,6 +13229,7 @@ function tick() {
     dtHostTick();
     try { ttLogic(); } catch (e) {}
     try { ahLogic(); } catch (e) {}
+    try { bwLogic(); } catch (e) {}
     botTick();
   }
   lobbyAutoAward();
@@ -13346,7 +13775,7 @@ const actions = {
   'quiz-again': () => { const base = clone(S.quiz); withPending(() => quizStart(base)); },
   'quiz-new': () => withPending(() => quizDiscard())
 };
-Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions, dtActions, ttActions, ahActions);
+Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions, dtActions, ttActions, ahActions, bwActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
   if (e.target.classList && e.target.classList.contains('scrim')) { if (!(S.modal && S.modal.type === 'bday-ask')) closeModal(); return; }
@@ -14861,7 +15290,7 @@ function boot() {
   if (!S.deco) S.deco = normDeco(null);
   renderBgm();
   const h = (location.hash || '').slice(1);
-  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah'].includes(h) ? 'spiele-pick' : viewFor(h);
+  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw'].includes(h) ? 'spiele-pick' : viewFor(h);
   const fc = CFG && CFG.firebase;
   if (!fc || !fc.apiKey || /HIER_EINTRAGEN/.test(fc.apiKey) || /DEIN-PROJEKT/.test(fc.projectId || '') || !window.firebase) {
     S.mode = 'setup'; S.loaded = true;
