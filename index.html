@@ -2004,6 +2004,8 @@ button.bcell[disabled]{cursor:default}
 .rb-mem{display:inline-flex;align-items:center;gap:6px;background:var(--bg-2);padding:3px 8px 3px 3px;font-weight:700;font-size:14px;box-shadow:0 0 0 2px var(--shadow)}
 .rb-mem.me{box-shadow:0 0 0 2px var(--xp)}
 .rb-mem i{font-style:normal}
+.rb-crown{border:1px dashed rgba(255,207,63,.6);background:rgba(255,207,63,.1);border-radius:8px;min-width:34px;height:26px;color:var(--coin);font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:1px;padding:0;cursor:pointer;font-size:14px;line-height:1;opacity:.75}
+.rb-crown:hover{opacity:1;background:rgba(255,207,63,.3)}
 .rb-mem .x{width:26px;height:26px;min-height:0;font-size:16px}
 .rb-spec{font-family:var(--pixel);font-size:9px;color:var(--xp);text-transform:uppercase}
 @media (max-width:680px){.rb-acts{margin-left:0;width:100%}.rb-name{font-size:20px}.rb-mem{font-size:13px}}
@@ -2940,7 +2942,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=73"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=74"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -7326,7 +7328,7 @@ function roomBarHTML() {
   const st = roomState(L);
   const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : L.kind === 'mad' ? '🎲 Uncle Grandpa ärgere dich' : L.kind === 'bj' ? '🂡 Blackjack' : L.kind === 'dt' ? '🧱 Dicktris' : L.kind === 'tt' ? '🏓 Tischtennis' : L.kind === 'ah' ? '🏒 Air-Hockey' : L.kind === 'bw' ? '🎳 Bowling' : 'Spiel wird gewählt';
   const chips = mem.map(pid => { const p = ghost(pid), isHost = L.host && L.host.pid === pid, bot = isBot(pid);
-    return `<span class="rb-mem ${pid === me ? 'me' : ''} ${bot ? 'bot' : ''}">${avatar(p, 26)}<span>${esc(p.name)}</span>${bot ? `<small class="rb-lvl">${botLvlName(p.lvl)}</small>` : ''}${isHost ? '<i title="Host" aria-label="Host">👑</i>' : ''}${(host || S.admin) && pid !== me ? `<button class="x" type="button" data-act="room-kick" data-pid="${esc(pid)}" aria-label="${esc(p.name)} aus dem Raum werfen" title="Rauswerfen">×</button>` : ''}</span>`; }).join('');
+    return `<span class="rb-mem ${pid === me ? 'me' : ''} ${bot ? 'bot' : ''}">${avatar(p, 26)}<span>${esc(p.name)}</span>${bot ? `<small class="rb-lvl">${botLvlName(p.lvl)}</small>` : ''}${isHost ? '<i title="Host" aria-label="Host">👑</i>' : ''}${(host || S.admin) && !bot && !isHost && pid !== me ? `<button class="rb-crown" type="button" data-act="room-host" data-pid="${esc(pid)}" aria-label="${esc(p.name)} zum Host machen" title="Zum Host machen">👑<b>+</b></button>` : ''}${(host || S.admin) && pid !== me ? `<button class="x" type="button" data-act="room-kick" data-pid="${esc(pid)}" aria-label="${esc(p.name)} aus dem Raum werfen" title="Rauswerfen">×</button>` : ''}</span>`; }).join('');
   return `<div class="roombar">
     <div class="rb-top">
       <b class="rb-name">${esc(L.name)}</b><span class="rb-kind">${kind}</span><span class="rb-count">${mem.length}/${roomMax(L)}</span>
@@ -7336,7 +7338,7 @@ function roomBarHTML() {
         ${host && st !== 'running' && mem.length < roomMax(L) ? `<button class="btn btn-sm" type="button" data-act="bot-open">🤖 Bot dazu</button>` : ''}
         ${host ? `<button class="btn btn-sm ${L.priv ? 'btn-gold' : ''}" type="button" data-act="room-priv" aria-pressed="${L.priv}">${L.priv ? '🔒 Privat' : '🔓 Öffentlich'}</button>` : ''}
         ${host && L.priv ? `<button class="btn btn-sm" type="button" data-act="room-invite-open">💌 Einladen</button>` : ''}
-        ${!host && (member || S.admin) && hostStale(L) ? `<button class="btn btn-sm btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}
+        ${!host && (member || S.admin) && (hostStale(L) || S.admin) ? `<button class="btn btn-sm btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}
         <button class="btn btn-sm" type="button" data-act="lhs-open">🏆 Highscore</button>
         <button class="btn btn-sm" type="button" data-act="rooms">Alle Räume</button>
         ${member ? `<button class="btn btn-sm btn-ghost" type="button" data-act="room-leave" data-room="${S.room}">Verlassen</button>` : `<button class="btn btn-sm btn-ghost" type="button" data-act="room-unview">Zurück</button>`}
@@ -7360,6 +7362,13 @@ const roomActions = {
   'room-kind': b => roomKind(b.dataset.v),
   'room-kick': b => roomKick(b.dataset.pid),
   'room-take': () => roomTake(),
+  'room-host': b => {
+    const L = lobby(), pid = b.dataset.pid; if (!L || !(ctl() || S.admin) || !L.members[pid] || isBot(pid)) return;
+    const nm = ghost(pid).name;
+    confirmBox(`${nm} zum Host machen?`, `${nm} steuert dann das Spiel in ${L.name}: Spiel auswählen, starten, Bots dazuholen. Du kannst das jederzeit wieder ändern.`, [{label:'Abbrechen', cls:'btn-ghost'}, {label:'👑 Host machen', cls:'btn-gold', fn:() => {
+      roomRef().update({host:{pid, dev:L.members[pid].dev || ''}, hostSeen:Date.now()}).then(() => toast(`${nm} ist jetzt Host.`)).catch(() => toast('Das hat nicht geklappt.'));
+    }}]);
+  },
   'room-reset': b => roomReset(b.dataset.room),
   'room-priv': () => roomPrivToggle(),
   'room-invite-open': () => { if (ctl()) openModal({type:'roominv'}); },
