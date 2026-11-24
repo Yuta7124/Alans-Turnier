@@ -2833,13 +2833,19 @@ body.icrop-open{overflow:hidden}
 .tt-cv.bw-cv:active{cursor:grabbing}
 .bw-wrap{display:flex;flex-direction:column;gap:10px}
 @media (min-width:901px){
-  .bw-wrap{display:grid;grid-template-columns:minmax(360px,1fr) minmax(0,1.25fr);grid-template-areas:"l c";gap:22px;align-items:start}
-  .bw-left{grid-area:l;display:flex;flex-direction:column;gap:12px;position:sticky;top:12px}
+  .bw-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1fr);grid-template-areas:"l c r";gap:18px;align-items:start}
+  .bw-left{grid-area:l;position:sticky;top:12px;min-width:0}
+  .bw-right{grid-area:r;display:flex;flex-direction:column;gap:12px;position:sticky;top:12px;min-width:0}
+  .bw-left .bw-board td{min-width:0;padding:3px 2px}
+  .bw-left .bw-board .bw-nm{min-width:0!important;max-width:110px}
+  .bw-left .bw-board .bw-rl i{font-size:10px;min-width:9px}
+  .bw-left .bw-board td b{font-size:13px}
+  .bw-left .bw-board .bw-tot{font-size:15px}
   .bw-lane{grid-area:c;max-width:none!important}
   .tt-cv.bw-cv{height:calc(100vh - 120px);min-height:520px}
   .bw-left .bw-board{margin:0}
-  .bw-left .tt-hint{text-align:left}
-  .bw-left .bw-ctl{justify-content:flex-start}
+  .bw-right .tt-hint{text-align:left}
+  .bw-right .bw-ctl{justify-content:flex-start}
 }
 .bw-ctl{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
 .bw-ctl .chips{gap:6px}
@@ -10678,8 +10684,8 @@ function bwPlayHTML(M) {
     </div>
     <div class="bw-wrap">
     <div class="tt-box bw-lane"><canvas id="bw-cv" class="tt-cv bw-cv" aria-label="Bowlingbahn"></canvas></div>
-    <div class="bw-left">
-    ${bwBoardHTML(M)}
+    <div class="bw-left">${bwBoardHTML(M)}</div>
+    <div class="bw-right">
     ${bwMeTurn(M) ? `<div class="bw-ctl"><span class="lbl">Effet</span><div class="chips">${BW_SPINS.map(([v, l]) => `<button class="chip" type="button" data-act="bw-spin" data-v="${v}" aria-pressed="${(D.bwSpin || 0) === v}">${l}</button>`).join('')}</div></div>
     <p class="muted tt-hint">Du bist dran! Kugel nach unten ziehen und loslassen, wie beim Minigolf. Tippen neben die Kugel verschiebt sie.</p>` : `<p class="muted tt-hint">${M.players.includes(me) ? `${esc(ghost(pid).name)} ist dran.` : '👀 Du schaust zu.'}</p>`}
     </div>
