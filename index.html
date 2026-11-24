@@ -9703,7 +9703,7 @@ function ahNorm(x) {
   const sc = Array.isArray(x.sc) ? [Math.max(0, Math.round(+x.sc[0]) || 0), Math.max(0, Math.round(+x.sc[1]) || 0)] : [0, 0];
   const k = x.pk && typeof x.pk === 'object' ? x.pk : null;
   const pk = k ? {n:+k.n || 0, by:k.by === 0 || k.by === 1 ? k.by : -1, x:ahC(+k.x, AH_PR, 1 - AH_PR), y:ahC(+k.y, 0, AH_L), vx:ahC(+k.vx, -AH_MAXV, AH_MAXV), vy:ahC(+k.vy, -AH_MAXV, AH_MAXV),
-    mx:Number.isFinite(+k.mx) && k.mx != null ? ahC(+k.mx, 0, 1) : -1, my:Number.isFinite(+k.my) && k.my != null ? ahC(+k.my, 0, AH_L) : -1} : null;
+    mx:Number.isFinite(+k.mx) && k.mx != null ? ahC(+k.mx, 0, 1) : -1, my:Number.isFinite(+k.my) && k.my != null ? ahC(+k.my, 0, AH_L) : -1, sn:k.sn === 0 ? 0 : 1} : null;
   const gl = x.gl && typeof x.gl === 'object' ? {n:+x.gl.n || 0, w:x.gl.w ? 1 : 0} : null;
   return {g:'ah', id:str(x.id, 40), status:x.status, to:[5, 7, 10].includes(+x.to) ? +x.to : 7, p, sc, n:+x.n || 0, pk, gl,
     startAt:+x.startAt || 0, win:x.win === 0 || x.win === 1 ? x.win : -1, transferred:x.transferred === true, hits:Math.max(0, +x.hits || 0)};
@@ -9732,11 +9732,11 @@ function ahTransfer() {
 }
 
 /* ----- Ablauf ----- */
-const al = {cd:[0, 0], aim:[.5, .5], aimN:[-1, -1], gid:'', pn:-1, gn:-1, glAt:0, sim:null, simT:0, wait:false, mineN:-1, mineAt:0,
+const al = {cd:[0, 0], bh:[0, 0], dirty:null, tgt:null, aim:[.5, .5], aimN:[-1, -1], gid:'', pn:-1, gn:-1, glAt:0, sim:null, simT:0, wait:false, mineN:-1, mineAt:0,
   me:{x:.5, y:.16, px:.5, py:.16, vx:0, vy:0, t:0}, ml:[{x:.5, y:.16}, {x:.5, y:AH_L - .16}], keys:{l:0, r:0, u:0, d:0}, raf:0, lastT:0, lastW:0, endSnd:'', flash:null, idleN:-1, idleAt:0};
 function ahWrite(patch) { roomWrite(patch); }
-function ahHitWrite(M, by, s, m) {
-  const n = M.n + 1, pk = {n, by, x:+s.x.toFixed(4), y:+s.y.toFixed(4), vx:+s.vx.toFixed(4), vy:+s.vy.toFixed(4), mx:+m.x.toFixed(3), my:+m.y.toFixed(3)};
+function ahHitWrite(M, by, s, m, hit = true) {
+  const n = M.n + 1, pk = {n, by, x:+s.x.toFixed(4), y:+s.y.toFixed(4), vx:+s.vx.toFixed(4), vy:+s.vy.toFixed(4), mx:+m.x.toFixed(3), my:+m.y.toFixed(3), sn:hit ? 1 : 0};
   M.pk = pk; M.n = n; M.hits++; al.mineN = n; al.mineAt = performance.now(); al.lastW = al.mineAt;
   ahWrite({'uno.pk':pk, 'uno.n':n, 'uno.hits':M.hits});
 }
@@ -9756,12 +9756,13 @@ function ahBotMove(M, i, s, dt) {
   const v = Math.hypot(s.vx, s.vy), mine = ahSide(s.y) === i, coming = s.vy * dir < -.05, R = AH_MR + AH_PR;
   const defD = {e:.15, m:.19, h:.21}[L] || .19, front = (s.y - m.y) * dir > .01;
   let tx, ty;
-  if (mine && front && (!coming || v < 1.4)) {
+  const cool = performance.now() - (al.bh[i] || 0) < {e:500, m:380, h:300}[L];
+  if (!cool && mine && front && (!coming || v < 1.4)) {
     // Angriff: hinter den Puck und Richtung gegnerisches Tor stoßen (schwer zielt in die Torecken)
     if (al.aimN[i] !== M.n) { al.aimN[i] = M.n; al.aim[i] = L === 'h' ? .5 + (Math.random() < .5 ? -1 : 1) * (.06 + Math.random() * .07) : L === 'm' ? .5 + (Math.random() - .5) * .12 : .5 + (Math.random() - .5) * .4; }
     const ox = al.aim[i], oy = i === 0 ? AH_L : 0, dx = ox - s.x, dy = oy - s.y, d = Math.hypot(dx, dy) || 1;
     tx = s.x - dx / d * R * .55; ty = s.y - dy / d * R * .55;
-  } else if (mine && !front && v < 1.4) {
+  } else if (!cool && mine && !front && v < 1.4) {
     // Puck liegt hinter dem Schläger: außen herum zurück
     tx = s.x + (s.x < .5 ? 1 : -1) * R * 1.1; ty = s.y - dir * R * 1.1;
   } else {
@@ -9780,15 +9781,25 @@ function ahBotMove(M, i, s, dt) {
   const r = {x:nx, y:ny, vx:dt > 0 ? (nx - m.x) / dt : 0, vy:dt > 0 ? (ny - m.y) / dt : 0};
   al.ml[i] = {x:nx, y:ny}; return r;
 }
+/* Stoß Puck–Schläger: Überlappung wird immer aufgelöst (nie durch den Schläger durch), Abprall nur, wenn sie aufeinander zu laufen.
+   Rückgabe: 'hit' (echter Schlag), 'push' (nur weggeschoben) oder ''. */
 function ahCollide(s, m) {
-  const dx = s.x - m.x, dy = s.y - m.y, d = Math.hypot(dx, dy), R = AH_PR + AH_MR;
-  if (d >= R || d < 1e-6) return false;
-  const nx = dx / d, ny = dy / d, rvx = s.vx - m.vx, rvy = s.vy - m.vy, rn = rvx * nx + rvy * ny;
-  if (rn >= -.05) return false;
-  s.x = m.x + nx * (R + .002); s.y = m.y + ny * (R + .002);
-  s.vx -= 1.85 * rn * nx; s.vy -= 1.85 * rn * ny;
+  let dx = s.x - m.x, dy = s.y - m.y, d = Math.hypot(dx, dy);
+  const R = AH_PR + AH_MR;
+  if (d >= R) return '';
+  if (d < 1e-6) { dx = 0; dy = s.y < AH_L / 2 ? 1 : -1; d = 1; }
+  const nx = dx / d, ny = dy / d, rvx = s.vx - (m.vx || 0), rvy = s.vy - (m.vy || 0), rn = rvx * nx + rvy * ny;
+  s.x = m.x + nx * (R + .001); s.y = m.y + ny * (R + .001);
+  let res = 'push';
+  if (rn < 0) { s.vx -= 1.9 * rn * nx; s.vy -= 1.9 * rn * ny; if (rn < -.08) res = 'hit'; }
+  // an der Bande eingeklemmt: Puck bleibt im Feld und rutscht seitlich weg
+  if (s.x < AH_PR) { s.x = AH_PR; s.vx = Math.abs(s.vx); s.vy += (s.y > m.y ? 1 : -1) * .5; }
+  else if (s.x > 1 - AH_PR) { s.x = 1 - AH_PR; s.vx = -Math.abs(s.vx); s.vy += (s.y > m.y ? 1 : -1) * .5; }
+  const inMouth = Math.abs(s.x - .5) < AH_GW - AH_PR * .4;
+  if (!inMouth && s.y < AH_PR) { s.y = AH_PR; s.vy = Math.abs(s.vy); s.vx += (s.x > m.x ? 1 : -1) * .5; }
+  else if (!inMouth && s.y > AH_L - AH_PR) { s.y = AH_L - AH_PR; s.vy = -Math.abs(s.vy); s.vx += (s.x > m.x ? 1 : -1) * .5; }
   const v = Math.hypot(s.vx, s.vy); if (v > AH_MAXV) { s.vx *= AH_MAXV / v; s.vy *= AH_MAXV / v; }
-  return true;
+  return res;
 }
 /* Ein Rechenschritt. Gibt 'goal0'/'goal1' zurück, wenn der Puck in ein Tor geht (0 = Tor von A), 'wall' bei Bande. */
 function ahPhys(s, dt) {
@@ -9806,41 +9817,49 @@ function ahLogic(nowArg) {
   const M = S.ah; if (!M) return;
   const now = nowArg || performance.now(), me = ahMeIdx(M), host = ctl();
   if (al.gid !== M.id) {
-    Object.assign(al, {gid:M.id, pn:-1, gn:M.gl ? M.gl.n : -1, sim:null, wait:false, mineN:-1, endSnd:'', flash:null, idleN:-1});
+    Object.assign(al, {gid:M.id, pn:-1, gn:M.gl ? M.gl.n : -1, sim:null, wait:false, mineN:-1, endSnd:'', flash:null, idleN:-1, dirty:null, tgt:null, lastW:0});
     al.ml = [ahHome(0), ahHome(1)];
     if (me >= 0) { const h = ahHome(me); Object.assign(al.me, {x:h.x, y:h.y, px:h.x, py:h.y, vx:0, vy:0}); }
   }
   if (M.gl && M.gl.n !== al.gn) { al.gn = M.gl.n; al.glAt = now; if (S.tab === 'ah') ahSnd(me < 0 || M.gl.w === me ? 'goal' : 'conceded'); }
   if (M.status !== 'running') return;
   if (M.pk && M.pk.n !== al.pn) {
-    al.pn = M.pk.n; al.sim = {...M.pk}; al.wait = false;
+    al.pn = M.pk.n; al.sim = {...M.pk}; al.wait = false; if (al.mineN !== M.pk.n) al.dirty = null;
     al.simT = al.mineN === M.pk.n ? al.mineAt : now;
-    if (M.pk.by >= 0) { al.flash = {x:M.pk.x, y:M.pk.y, t:now}; if (M.pk.by !== me && M.pk.mx >= 0) al.ml[M.pk.by] = {x:M.pk.mx, y:M.pk.my}; if (S.tab === 'ah' && al.mineN !== M.pk.n) ahSnd('hit'); }
+    if (M.pk.by >= 0 && al.mineN !== M.pk.n) { if (M.pk.sn) { al.flash = {x:M.pk.x, y:M.pk.y, t:now}; if (S.tab === 'ah') ahSnd('hit'); } if (M.pk.by !== me && !isBot(M.p[M.pk.by]) && M.pk.mx >= 0) al.ml[M.pk.by] = {x:M.pk.mx, y:M.pk.my}; }
     if (M.pk.by < 0) al.simT = Math.max(al.simT, now + (M.gl ? 1200 : 0));
   }
   const s = al.sim; if (!s) return;
   if (Date.now() < M.startAt) { al.simT = now; return; }
-  // eigener Schläger: von der letzten Position zur aktuellen, damit schnelle Wischer nicht durch den Puck gehen
+  // Eigener Schläger: von der letzten zur aktuellen Position, damit schnelle Wischer nicht durch den Puck gehen.
+  // Jeder entscheidet über Stöße mit dem eigenen Schläger (Bots: der Host), egal auf welcher Hälfte der Puck ist.
   const mm = al.me, steps = Math.max(0, Math.min(60, Math.floor((now - al.simT) / 1000 / AH_STEP)));
   const mvx = steps ? (mm.x - mm.px) / (steps * AH_STEP) : 0, mvy = steps ? (mm.y - mm.py) / (steps * AH_STEP) : 0;
   if (steps >= 60) al.simT = now - 60 * AH_STEP * 1000;
   for (let k = 0; k < steps && !al.wait; k++) {
-    const t = (k + 1) / steps, side = ahSide(s.y), owner = side;
-    // Bots bewegen sich auf allen Geräten
-    for (const i of [0, 1]) if (isBot(M.p[i])) { const bm = ahBotMove(M, i, s, AH_STEP); if (owner === i && host && now - (al.cd[i] || 0) > 140 && ahCollide(s, bm)) { al.cd[i] = now; ahHitWrite(M, i, s, bm); al.simT += AH_STEP * 1000 * (k + 1); al.pn = M.pk.n; return; } }
-    if (owner === me) {
-      const m = {x:mm.px + (mm.x - mm.px) * t, y:mm.py + (mm.y - mm.py) * t, vx:ahC(mvx, -6, 6), vy:ahC(mvy, -6, 6)};
-      if (now - (al.cd[me] || 0) > 140 && ahCollide(s, m)) { al.cd[me] = now; ahHitWrite(M, me, s, m); al.pn = M.pk.n; al.simT += (k + 1) * AH_STEP * 1000; mm.px = mm.x; mm.py = mm.y; if (S.tab === 'ah') ahSnd('hit'); return; }
+    const t = (k + 1) / steps;
+    for (const i of [0, 1]) {
+      let m = null;
+      if (isBot(M.p[i])) { m = ahBotMove(M, i, s, AH_STEP); if (!host) m = null; }
+      else if (i === me) m = {x:mm.px + (mm.x - mm.px) * t, y:mm.py + (mm.y - mm.py) * t, vx:ahC(mvx, -7, 7), vy:ahC(mvy, -7, 7)};
+      if (!m) continue;
+      const r = ahCollide(s, m);
+      if (!r) continue;
+      al.dirty = {by:i, m:{x:m.x, y:m.y}, hit:al.dirty && al.dirty.hit || r === 'hit'};
+      if (r === 'hit' && isBot(M.p[i])) al.bh[i] = now;
+      if (r === 'hit' && now - (al.cd[i] || 0) > 90) { al.cd[i] = now; al.flash = {x:s.x, y:s.y, t:now}; if (S.tab === 'ah') ahSnd('hit'); }
     }
     const ev = ahPhys(s, AH_STEP);
     if (ev === 'wall' && S.tab === 'ah' && Math.hypot(s.vx, s.vy) > .4) ahSnd('wall');
     if (ev === 'goal0' || ev === 'goal1') {
       const g = ev === 'goal0' ? 0 : 1;
-      if (g === me || (host && isBot(M.p[g]))) { ahGoal(M, 1 - g); return; }
+      if (g === me || (host && isBot(M.p[g]))) { al.dirty = null; al.simT += (k + 1) * AH_STEP * 1000; mm.px = mm.x; mm.py = mm.y; ahGoal(M, 1 - g); return; }
       al.wait = true; s.vx = s.vy = 0;
     }
   }
   al.simT += steps * AH_STEP * 1000; mm.px = mm.x; mm.py = mm.y;
+  // Neuen Puck-Zustand nach einem Stoß senden (höchstens alle 110 ms, ein Schieben wird mitgeschickt)
+  if (al.dirty && (now - al.lastW > 350 || al.dirty.hit && now - al.lastW > 150)) { const d = al.dirty; al.dirty = null; ahHitWrite(M, d.by, s, d.m, d.hit); al.pn = M.pk.n; al.simT = now; }
   // Gegner-Schläger (Mensch) für die Anzeige: folgt dem Puck auf seiner Hälfte, sonst zurück zum Tor
   for (const i of [0, 1]) if (i !== me && !isBot(M.p[i])) {
     const h = ahHome(i), tgt = ahSide(s.y) === i ? ahClampMallet(i, s.x, h.y + (i === 0 ? .08 : -.08)) : h, m = al.ml[i];
@@ -9857,12 +9876,18 @@ function ahLoop(t) {
   const me = ahMeIdx(M);
   if (me >= 0 && (al.keys.l || al.keys.r || al.keys.u || al.keys.d)) {
     const k = al.keys, dir = me === 1 ? -1 : 1, sp = 1.8 * dt;
-    ahSetMallet(al.me.x + (k.r - k.l) * sp * dir, al.me.y + (k.u - k.d) * sp * dir);
+    ahSetMallet(al.me.x + (k.r - k.l) * sp * dir * 1.2, al.me.y + (k.u - k.d) * sp * dir * 1.2);
   }
-  if (!roomPaused()) ahLogic(t);
+  if (!roomPaused()) { ahMoveMallet(dt); ahLogic(t); }
   ahDraw(M);
 }
-function ahSetMallet(x, y) { const M = S.ah, me = ahMeIdx(M); if (me < 0) return; const c = ahClampMallet(me, x, y); al.me.x = c.x; al.me.y = c.y; }
+function ahSetMallet(x, y) { const M = S.ah, me = ahMeIdx(M); if (me < 0) return; al.tgt = ahClampMallet(me, x, y); }
+/* Der Schläger folgt Finger/Maus sehr schnell, aber nicht sofort: kein Wegbeamen durch den Puck. */
+function ahMoveMallet(dt) {
+  const t = al.tgt; if (!t) return;
+  const m = al.me, dx = t.x - m.x, dy = t.y - m.y, d = Math.hypot(dx, dy), mv = Math.min(d, 7 * dt);
+  if (d > 1e-6) { m.x += dx / d * mv; m.y += dy / d * mv; }
+}
 
 /* ----- Zeichnen (von oben, eigene Seite unten) ----- */
 function ahDraw(M) {
