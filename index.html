@@ -2806,7 +2806,8 @@ body.icrop-open{overflow:hidden}
 .duo-vs{align-self:center;font-family:var(--display);font-size:26px;color:var(--coin)}
 @media (max-width:560px){.duo{gap:8px}.duo-vs{font-size:20px}.ah-cv{height:min(72vh,150vw)}}
 /* Bowling */
-.bw-cv{height:min(70vh,calc(min(100vw,720px) * 1.3));cursor:crosshair;touch-action:none}
+.tt-cv.bw-cv{height:min(70vh,calc(min(100vw,720px) * 1.3));cursor:grab;touch-action:none}
+.tt-cv.bw-cv:active{cursor:grabbing}
 .bw-ctl{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
 .bw-ctl .chips{gap:6px}
 .bw-ctl .chip{min-height:34px;padding:6px 12px}
@@ -2823,7 +2824,7 @@ body.icrop-open{overflow:hidden}
 .bw-rl i{font-style:normal;font-size:11px;font-weight:800;min-width:12px;color:var(--ink)}
 .bw-board td b{display:block;font-size:15px;min-height:18px}
 .bw-tot{font-family:var(--display);font-size:18px;color:var(--coin);vertical-align:middle!important}
-@media (max-width:560px){.ttplay .tt-box:has(.bw-cv){margin:0 -12px;width:calc(100% + 24px);max-width:none}.bw-cv{height:min(74vh,165vw);border-radius:12px}.bw-board td{min-width:36px}.bw-nm{min-width:80px!important}}
+@media (max-width:560px){.ttplay .tt-box:has(.bw-cv){margin:0 -12px;width:calc(100% + 24px);max-width:none}.tt-cv.bw-cv{height:min(74vh,165vw);border-radius:12px}.bw-board td{min-width:36px}.bw-nm{min-width:80px!important}}
 /* Tischtennis */
 .ttplay{display:flex;flex-direction:column;gap:10px}
 .tt-board{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px auto 0;max-width:720px;width:100%}
@@ -2899,7 +2900,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=70"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=71"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4424,7 +4425,7 @@ function subscribe() {
   U(db.collection('pics').onSnapshot(sn => { S.pics = sn.docs.map(d => normPic(d.id, d.data())).filter(x => x.img).sort((a, b) => a.ts - b.ts); got('pics', sn); }, fail));
   U(db.collection('games').onSnapshot(sn => { S.games = sn.docs.map(d => normGame(d.id, d.data())).filter(g => g.name); got('games', sn); }, fail));
   U(db.collection('gvotes').onSnapshot(sn => { S.gvotes = sn.docs.map(d => { const x = d.data() || {}; return {id:d.id, gid:str(x.gid, 40), voter:str(x.voter, 40)}; }).filter(v => v.gid); got('gvotes', sn); }, fail));
-  U(db.collection('lobbies').onSnapshot(sn => { onLobbies(sn); got('lobbies', sn); }, fail));
+  U(db.collection('lobbies').onSnapshot(sn => { onLobbies(sn); const fk = fastGameKey(); if (fk && fk === fastKeyLast && S.loaded) { need.delete('lobbies'); return; } fastKeyLast = fk; got('lobbies', sn); }, fail));
   U(db.doc('meta/dwords').onSnapshot(d => { S.dwords = normDwords(d.exists ? d.data() : null); got('dwords', d); }, fail));
   U(db.doc('meta/wheel').onSnapshot(d => { S.wheel = normWheel(d.exists ? d.data() : null); wheelFollow(); got('wheel', d); }, fail));
   U(db.doc('meta/gate').onSnapshot(d => { const g = d.exists ? d.data() : null; S.gate = {open: !!(g && g.open), openAt: Number(g && g.openAt) || 0}; got('gate', d); }, fail));
@@ -7100,6 +7101,14 @@ function tourLobbyTick() {
   if (S.room === t.room && lobby(t.room).members[me]) { setTab(roomView()); return; }
   roomJoin(t.room).then(() => { if (S.room === t.room) { setTab(roomView()); toast(`🏆 Ab in die Turnier-Lobby: ${GAME_KIND_NAME[t.kind] || 'Spiel'}!`); } });
 }
+/* Tischtennis/Air-Hockey: Reine Ball-/Puck-Updates zeichnet die Spielschleife selbst. Die ganze Seite wird nur neu aufgebaut,
+   wenn sich etwas Sichtbares außerhalb des Spielfelds ändert (Stand, Spieler, Pause …). Das verhindert Ruckler am Handy. */
+var fastKeyLast = '';
+function fastGameKey() {
+  const L = S.room ? S.lobbies[S.room] : null, M = S.tab === 'tt' ? S.tt : S.tab === 'ah' ? S.ah : null;
+  if (!L || !M || M.status !== 'running') return '';
+  return JSON.stringify([S.tab, Object.keys(L.members).sort(), L.host && L.host.pid, L.kind, M.id, M.sc, M.status, (M.pt || M.gl || {}).n, !!roomPaused(L)]);
+}
 function roomApply() {
   const L = S.room ? S.lobbies[S.room] : null;
   const q = L && L.quiz ? migrateQuiz(clone(L.quiz)) : null;
@@ -9379,14 +9388,14 @@ function dtOnSnap() { if (ctl()) dtHostTick(); }
    so fällt die Verzögerung im Netz nicht auf. Ob der Ball zurückkommt, entscheidet nur das Gerät des Annehmenden
    (bei einem Bot der Host). pt = {n, w, why} ist der letzte Punkt. Aufschlag wechselt alle 2 Punkte, ab Gleichstand jeden Punkt. */
 const TT_TO = [[5, 'Bis 5'], [11, 'Bis 11'], [21, 'Bis 21']];
-const TT_PAD = .12, TT_BALL = .03, TT_DUR0 = 1550, TT_DURMIN = 560, TT_BOUNCE = .68;
+const TT_PRE = 280, TT_POST = 110, TT_PAD = .12, TT_BALL = .03, TT_DUR0 = 1550, TT_DURMIN = 560, TT_BOUNCE = .68;
 const ttC = v => Math.max(0, Math.min(1, Number.isFinite(v) ? v : .5));
 function ttNorm(x) {
   if (!x || typeof x !== 'object' || x.g !== 'tt' || !['running', 'finished'].includes(x.status)) return null;
   const p = (Array.isArray(x.p) ? x.p : []).filter(v => typeof v === 'string').slice(0, 2); if (p.length !== 2) return null;
   const sc = Array.isArray(x.sc) ? [Math.max(0, Math.round(+x.sc[0]) || 0), Math.max(0, Math.round(+x.sc[1]) || 0)] : [0, 0];
   const b = x.ball && typeof x.ball === 'object' ? {n:+x.ball.n || 0, by:x.ball.by ? 1 : 0, x:ttC(+x.ball.x), tx:ttC(+x.ball.tx), dur:Math.max(TT_DURMIN * .8, Math.min(3000, +x.ball.dur || TT_DUR0)), sm:x.ball.sm === true,
-    px:Number.isFinite(+x.ball.px) ? ttC(+x.ball.px) : ttC(+x.ball.x), bw:x.ball.bw === 0 || x.ball.bw === 1 ? x.ball.bw : -1, bp:Number.isFinite(+x.ball.bp) && x.ball.bp != null ? ttC(+x.ball.bp) : -1} : null;
+    px:Number.isFinite(+x.ball.px) ? ttC(+x.ball.px) : ttC(+x.ball.x), bw:x.ball.bw === 0 || x.ball.bw === 1 ? x.ball.bw : -1, bp:Number.isFinite(+x.ball.bp) && x.ball.bp != null ? ttC(+x.ball.bp) : -1, t:+x.ball.t || 0} : null;
   const pt = x.pt && typeof x.pt === 'object' ? {n:+x.pt.n || 0, w:x.pt.w ? 1 : 0, why:str(x.pt.why, 20), px:Number.isFinite(+x.pt.px) && +x.pt.px >= 0 ? ttC(+x.pt.px) : -1} : null;
   return {g:'tt', id:str(x.id, 40), status:x.status, to:[5, 11, 21].includes(+x.to) ? +x.to : 11, p, sc, s0:x.s0 ? 1 : 0, ball:b, pt, n:+x.n || 0,
     rally:Math.max(0, +x.rally || 0), best:Math.max(0, +x.best || 0), startAt:+x.startAt || 0, win:x.win === 0 || x.win === 1 ? x.win : -1, transferred:x.transferred === true};
@@ -9427,7 +9436,7 @@ function ttBotOdds(M, ball, r) {
   return base - fast * {e:.16, m:.07, h:.02}[lv] - (ball.sm ? {e:.14, m:.06, h:.015}[lv] : 0) - Math.min({e:.06, m:.03, h:0}[lv], M.rally * .002);
 }
 function ttHitWrite(M, by, x, tx, dur, sm, px) {
-  const n = M.n + 1, ball = {n, by, x, tx, dur:Math.round(dur), sm, px:ttC(px == null ? x : px)};
+  const n = M.n + 1, ball = {n, by, x, tx, dur:Math.round(dur), sm, px:ttC(px == null ? x : px), t:Date.now()};
   const r = 1 - by;
   if (isBot(M.p[r])) {
     ball.bw = Math.random() < ttBotOdds(M, ball, r) ? 1 : 0;
@@ -9463,9 +9472,9 @@ function ttBotReturn(M, padX) {
   const dur = Math.max(TT_DURMIN, b.dur * {e:.95, m:.92, h:.89}[lv]) * (sm ? .78 : 1);
   ttHitWrite(M, r, b.tx, ttC(tx), dur, sm, padX);
 }
-function ttReturn(M, padX, vel) {
-  const b = M.ball, off = Math.max(-1, Math.min(1, (b.tx - padX) / TT_PAD));
-  const sm = Math.abs(off) > .62 && Math.random() < .8;
+function ttReturn(M, padX, vel, late) {
+  const b = M.ball, off = Math.max(-1, Math.min(1, (b.tx - padX) / TT_PAD)), perfect = late != null && late < 70;
+  const sm = (Math.abs(off) > .62 && Math.random() < .8) || (perfect && Math.random() < .6);
   const tx = Math.max(.05, Math.min(.95, b.tx + off * .42 + vel * .12 + (Math.random() - .5) * .14));
   const dur = Math.max(TT_DURMIN, b.dur * .94) * (sm ? .8 : 1);
   ttHitWrite(M, 1 - b.by, b.tx, tx, dur, sm, padX);
@@ -9478,7 +9487,8 @@ function ttLogic() {
   if (M.status !== 'running' && !(M.pt && M.pt.n !== tl.pn)) return;
   // Neuer Schlag?
   if (M.ball && M.ball.n !== tl.bn) {
-    tl.bn = M.ball.n; tl.bStart = tl.mineN === M.ball.n ? tl.mineAt : now;
+    const lag = M.ball.t ? Date.now() - M.ball.t : 0;
+    tl.bn = M.ball.n; tl.bStart = tl.mineN === M.ball.n ? tl.mineAt : now - (lag > 0 && lag < 350 ? lag : 0);
     tl.sw[M.ball.by] = now; tl.vp[M.ball.by] = M.ball.px; tl.ghost = null;
     tl.flash = {wx:M.ball.x, wy:M.ball.by === 0 ? 0 : 1, t:now, sm:M.ball.sm};
     if (S.tab === 'tt') ttSnd(M.ball.sm ? 'smash' : 'hit');
@@ -9496,19 +9506,22 @@ function ttLogic() {
   if (!M.ball) {
     const s = ttServer(M);
     if (tl.served !== M.n && now >= tl.serveAt && Date.now() >= M.startAt) {
-      if (s === me && (tl.serveNow || now >= tl.serveAt + 3500)) { tl.serveNow = false; ttServe(M, s); }
+      if (s === me && (tl.serveNow || now >= tl.serveAt + 10000)) { tl.serveNow = false; ttServe(M, s); }
       else if (host && isBot(M.p[s]) && now >= tl.serveAt + 500) ttServe(M, s);
     }
     tl.serveNow = false;
     return;
   }
   const b = M.ball, r = 1 - b.by, at = tl.bStart + b.dur;
+  // Selbst schlagen: Tippen/Klicken/Leertaste kurz bevor der Ball ankommt (bis 280 ms vorher, 110 ms danach).
+  if (r === me && tl.handled !== b.n && now >= at) {
+    const sw = tl.swingAt || 0, inWin = sw >= at - TT_PRE && sw <= at + TT_POST, px = ttWorldPad(M), cover = Math.abs(px - b.tx) <= TT_PAD + TT_BALL;
+    if (inWin) { tl.handled = b.n; if (cover) ttReturn(M, px, me === 1 ? -tl.pvel : tl.pvel, Math.abs(sw - at)); else ttPoint(M, b.by, 'daneben', px); }
+    else if (now >= at + TT_POST) { tl.handled = b.n; ttPoint(M, b.by, cover ? 'noswing' : 'daneben', px); }
+  }
   if (now >= at && tl.handled !== b.n) {
     if (r === me) {
-      tl.handled = b.n;
-      const px = ttWorldPad(M);
-      if (Math.abs(px - b.tx) <= TT_PAD + TT_BALL) ttReturn(M, px, me === 1 ? -tl.pvel : tl.pvel);
-      else ttPoint(M, b.by, 'daneben', px);
+      // wird oben entschieden
     } else if (host && isBot(M.p[r])) {
       tl.handled = b.n;
       const hit = b.bw === 1 || (b.bw !== 0 && Math.random() < ttBotOdds(M, b, r));
@@ -9528,6 +9541,13 @@ function ttLoop(t) {
   else tl.pvel *= .85;
   if (!roomPaused()) ttLogic();
   ttDraw(M);
+}
+/* Schlag auslösen: ohne Ball = Aufschlag, sonst Schwung (zählt nur, wenn der Ball gleich ankommt) */
+function ttSwing() {
+  const M = S.tt; if (!M || M.status !== 'running') return;
+  const me = ttMeIdx(M); if (me < 0) return;
+  if (!M.ball) { tl.serveNow = true; return; }
+  const now = performance.now(); tl.swingAt = now; tl.sw[me] = now;
 }
 function ttMovePad(v, dt) {
   const nv = Math.max(-.04, Math.min(1.04, v));
@@ -9638,6 +9658,16 @@ function ttDraw(M) {
   c.fillStyle = '#ddd'; c.fillRect(n1.x - 3, n1.y - nh - 2, 4, nh + 4); c.fillRect(n2.x - 1, n2.y - nh - 2, 4, nh + 4);
   if (!ballFar) drawBall();
   drawPad(nearI, ['#ff8a9b', '#d9223f']);
+  // Zeitring: schrumpft auf den Ball zu, wenn er bei mir ankommt – dann tippen
+  if (M.ball && me >= 0 && 1 - M.ball.by === me) {
+    const t = (now - tl.bStart) / M.ball.dur;
+    if (t > .45 && t < 1.08) {
+      const [vx, vy] = V(M.ball.tx, me === 0 ? 0 : 1), p = P(vx, vy < .5 ? -.02 : 1.02, .22), k = Math.max(0, (1 - t) / .55), base = 9 * p.s + 3;
+      const good = Math.abs(now - (tl.bStart + M.ball.dur)) < TT_PRE * .6;
+      c.strokeStyle = good ? 'rgba(79,240,143,.95)' : 'rgba(255,255,255,.7)'; c.lineWidth = good ? 4 : 2.5;
+      c.beginPath(); c.arc(p.x, p.y, base + k * 60 * p.s, 0, Math.PI * 2); c.stroke();
+    }
+  }
   // Treffer-Blitz
   if (tl.flash && now - tl.flash.t < 260) {
     const f = tl.flash, k = (now - f.t) / 260, [fx, fy] = V(f.wx, f.wy), p = P(fx, fy < .5 ? -.05 : 1.05, .22);
@@ -9660,7 +9690,7 @@ function ttDraw(M) {
     c.fillStyle = M.pt.w === me ? '#4ff08f' : me >= 0 ? '#ff4f6d' : '#ffcf3f'; c.font = `900 ${Math.round(Math.min(W * .075, 34))}px system-ui,sans-serif`;
     c.fillText(M.pt.w === me ? tx('Punkt für dich!') : `${tx('Punkt für')} ${nm}`, 0, 0);
     c.font = `600 ${Math.round(Math.min(W * .04, 16))}px system-ui,sans-serif`; c.fillStyle = '#fff';
-    c.fillText(M.pt.why === 'weg' ? tx('Keine Antwort') : tx('Daneben!'), 0, 26); c.restore();
+    c.fillText(M.pt.why === 'weg' ? tx('Keine Antwort') : M.pt.why === 'noswing' ? tx('Nicht geschlagen!') : tx('Daneben!'), 0, 26); c.restore();
   } else if (!M.ball && M.status === 'running') {
     const s = ttServer(M);
     c.fillStyle = 'rgba(255,255,255,.85)'; c.font = `700 ${Math.round(Math.min(W * .045, 18))}px system-ui,sans-serif`;
@@ -9694,13 +9724,13 @@ function ttSnd(n) {
     const t = performance.now(), dt = lastT ? (t - lastT) / 1000 : 0; lastT = t;
     ttMovePad(.5 + (e.clientX - r.left - W / 2) / wB, dt);
   };
-  document.addEventListener('pointerdown', e => { if (!e.target || e.target.id !== 'tt-cv') return; down = true; lastT = 0; at(e); ensureAudio(); tl.serveNow = true; });
+  document.addEventListener('pointerdown', e => { if (!e.target || e.target.id !== 'tt-cv') return; down = true; lastT = 0; at(e); ensureAudio(); ttSwing(); });
   document.addEventListener('pointermove', e => { if (S.tab !== 'tt') return; if (down || (e.pointerType === 'mouse' && e.target && e.target.id === 'tt-cv')) at(e); });
   ['pointerup', 'pointercancel'].forEach(n => document.addEventListener(n, () => { down = false; }));
   document.addEventListener('keydown', e => {
     if (S.tab !== 'tt' || !S.tt) return; const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
     if (e.key === 'ArrowLeft' || e.key === 'a') tl.keys.l = true; else if (e.key === 'ArrowRight' || e.key === 'd') tl.keys.r = true;
-    else if (e.key === ' ') tl.serveNow = true; else return;
+    else if (e.key === ' ') ttSwing(); else return;
     e.preventDefault(); ensureAudio();
   });
   document.addEventListener('keyup', e => { if (e.key === 'ArrowLeft' || e.key === 'a') tl.keys.l = false; if (e.key === 'ArrowRight' || e.key === 'd') tl.keys.r = false; });
@@ -9718,8 +9748,8 @@ const ttActions = {
 function ttRulesHTML(open) {
   return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird gespielt</summary><ul>
     <li><b>Ziel:</b> Spiel den Ball zurück, bis der andere ihn verpasst. Wer zuerst die eingestellten Punkte hat (mit 2 Punkten Vorsprung), gewinnt.</li>
-    <li><b>Handy:</b> Finger auf dem Tisch nach links und rechts ziehen. Tippen schlägt auf.</li>
-    <li><b>PC:</b> Maus über den Tisch bewegen oder ← → drücken. Klick oder Leertaste schlägt auf.</li>
+    <li><b>Schlagen:</b> Du schlägst selbst! Stell den Schläger unter den Ball und tippe (Handy) bzw. klicke oder drück die Leertaste (PC), wenn der Ring um den Ball grün wird. Perfekt getroffen wird oft ein Schmetterball.</li>
+    <li><b>Bewegen:</b> Handy: Finger nach links und rechts ziehen. PC: Maus oder ← →. Tippen/Klicken ohne Ball schlägt auf.</li>
     <li><b>Tipp:</b> Triffst du den Ball mit dem Rand vom Schläger, fliegt er schräg und oft als schneller Schmetterball. Mit jedem Schlag wird der Ball schneller.</li>
     <li><b>Aufschlag:</b> wechselt alle 2 Punkte, ab Gleichstand jeden Punkt.</li>
     <li><b>Highscore:</b> Der Sieger bekommt 3 Punkte im Raum-Highscore, der Verlierer 1.</li></ul></details>`;
@@ -9751,7 +9781,7 @@ function ttPlayHTML(M) {
     </div>
     <div class="tt-board" id="tt-score">${ttScoreHTML(M)}</div>
     <div class="tt-box"><canvas id="tt-cv" class="tt-cv" aria-label="Tischtennisplatte"></canvas></div>
-    <p class="muted tt-hint">${me >= 0 ? (isTouch() ? 'Finger auf dem Tisch hin- und herziehen. Tippen = Aufschlag.' : 'Maus über den Tisch bewegen oder ← →. Klick oder Leertaste = Aufschlag.') : '👀 Du schaust zu.'}</p>
+    <p class="muted tt-hint">${me >= 0 ? (isTouch() ? 'Finger hin- und herziehen. Tippen = schlagen (wenn der Ring grün ist) und Aufschlag.' : 'Maus bewegen oder ← →. Klick oder Leertaste = schlagen (wenn der Ring grün ist) und Aufschlag.') : '👀 Du schaust zu.'}</p>
   </section>`;
 }
 function ttEndHTML(M) {
@@ -9780,7 +9810,7 @@ function ttMount() {
    Der Puck läuft auf jedem Gerät gleich weiter (feste Rechenschritte, Bande, Reibung). Für jede Hälfte entscheidet nur ihr Besitzer
    (bei einem Bot der Host): Schlägertreffer und Tore auf seiner Seite schreibt er als neues Puck-Ereignis. So reicht ein
    Schreibvorgang pro Schlag. Nach einem Tor liegt der Puck ruhig in der Hälfte dessen, der das Tor bekommen hat. */
-const AH_L = 1.6, AH_PR = .034, AH_MR = .078, AH_GW = .2, AH_MAXV = 3.4, AH_FR = .22, AH_STEP = 1 / 120;
+const AH_L = 1.6, AH_PR = .034, AH_MR = .078, AH_GW = .2, AH_MAXV = 2.5, AH_FR = .3, AH_STEP = 1 / 120;
 const AH_TO = [[5, 'Bis 5'], [7, 'Bis 7'], [10, 'Bis 10']];
 const ahC = (v, a, b) => Math.max(a, Math.min(b, Number.isFinite(v) ? v : (a + b) / 2));
 function ahNorm(x) {
@@ -9789,7 +9819,7 @@ function ahNorm(x) {
   const sc = Array.isArray(x.sc) ? [Math.max(0, Math.round(+x.sc[0]) || 0), Math.max(0, Math.round(+x.sc[1]) || 0)] : [0, 0];
   const k = x.pk && typeof x.pk === 'object' ? x.pk : null;
   const pk = k ? {n:+k.n || 0, by:k.by === 0 || k.by === 1 ? k.by : -1, x:ahC(+k.x, AH_PR, 1 - AH_PR), y:ahC(+k.y, 0, AH_L), vx:ahC(+k.vx, -AH_MAXV, AH_MAXV), vy:ahC(+k.vy, -AH_MAXV, AH_MAXV),
-    mx:Number.isFinite(+k.mx) && k.mx != null ? ahC(+k.mx, 0, 1) : -1, my:Number.isFinite(+k.my) && k.my != null ? ahC(+k.my, 0, AH_L) : -1, sn:k.sn === 0 ? 0 : 1} : null;
+    mx:Number.isFinite(+k.mx) && k.mx != null ? ahC(+k.mx, 0, 1) : -1, my:Number.isFinite(+k.my) && k.my != null ? ahC(+k.my, 0, AH_L) : -1, sn:k.sn === 0 ? 0 : 1, t:+k.t || 0} : null;
   const gl = x.gl && typeof x.gl === 'object' ? {n:+x.gl.n || 0, w:x.gl.w ? 1 : 0} : null;
   return {g:'ah', id:str(x.id, 40), status:x.status, to:[5, 7, 10].includes(+x.to) ? +x.to : 7, p, sc, n:+x.n || 0, pk, gl,
     startAt:+x.startAt || 0, win:x.win === 0 || x.win === 1 ? x.win : -1, transferred:x.transferred === true, hits:Math.max(0, +x.hits || 0)};
@@ -9818,17 +9848,17 @@ function ahTransfer() {
 }
 
 /* ----- Ablauf ----- */
-const al = {cd:[0, 0], bh:[0, 0], dirty:null, tgt:null, aim:[.5, .5], aimN:[-1, -1], gid:'', pn:-1, gn:-1, glAt:0, sim:null, simT:0, wait:false, mineN:-1, mineAt:0,
+const al = {mlT:[null, null], off:null, rp:null, cd:[0, 0], bh:[0, 0], dirty:null, tgt:null, aim:[.5, .5], aimN:[-1, -1], gid:'', pn:-1, gn:-1, glAt:0, sim:null, simT:0, wait:false, mineN:-1, mineAt:0,
   me:{x:.5, y:.16, px:.5, py:.16, vx:0, vy:0, t:0}, ml:[{x:.5, y:.16}, {x:.5, y:AH_L - .16}], keys:{l:0, r:0, u:0, d:0}, raf:0, lastT:0, lastW:0, endSnd:'', flash:null, idleN:-1, idleAt:0};
 function ahWrite(patch) { roomWrite(patch); }
 function ahHitWrite(M, by, s, m, hit = true) {
-  const n = M.n + 1, pk = {n, by, x:+s.x.toFixed(4), y:+s.y.toFixed(4), vx:+s.vx.toFixed(4), vy:+s.vy.toFixed(4), mx:+m.x.toFixed(3), my:+m.y.toFixed(3), sn:hit ? 1 : 0};
+  const n = M.n + 1, pk = {n, by, x:+s.x.toFixed(4), y:+s.y.toFixed(4), vx:+s.vx.toFixed(4), vy:+s.vy.toFixed(4), mx:+m.x.toFixed(3), my:+m.y.toFixed(3), sn:hit ? 1 : 0, t:Date.now()};
   M.pk = pk; M.n = n; M.hits++; al.mineN = n; al.mineAt = performance.now(); al.lastW = al.mineAt;
   ahWrite({'uno.pk':pk, 'uno.n':n, 'uno.hits':M.hits});
 }
 function ahGoal(M, w) {
   const sc = M.sc.slice(); sc[w]++;
-  const n = M.n + 1, over = sc[w] >= M.to, fo = ahFaceoff(1 - w), pk = {n, by:-1, x:fo.x, y:fo.y, vx:0, vy:0};
+  const n = M.n + 1, over = sc[w] >= M.to, fo = ahFaceoff(1 - w), pk = {n, by:-1, x:fo.x, y:fo.y, vx:0, vy:0, t:Date.now()};
   const patch = {'uno.sc':sc, 'uno.n':n, 'uno.gl':{n, w}, 'uno.pk':pk};
   if (over) Object.assign(patch, {'uno.status':'finished', 'uno.win':w});
   Object.assign(M, {sc, n, gl:{n, w}, pk}); if (over) { M.status = 'finished'; M.win = w; }
@@ -9877,7 +9907,7 @@ function ahCollide(s, m) {
   const nx = dx / d, ny = dy / d, rvx = s.vx - (m.vx || 0), rvy = s.vy - (m.vy || 0), rn = rvx * nx + rvy * ny;
   s.x = m.x + nx * (R + .001); s.y = m.y + ny * (R + .001);
   let res = 'push';
-  if (rn < 0) { s.vx -= 1.9 * rn * nx; s.vy -= 1.9 * rn * ny; if (rn < -.08) res = 'hit'; }
+  if (rn < 0) { s.vx -= 1.7 * rn * nx; s.vy -= 1.7 * rn * ny; if (rn < -.08) res = 'hit'; }
   // an der Bande eingeklemmt: Puck bleibt im Feld und rutscht seitlich weg
   if (s.x < AH_PR) { s.x = AH_PR; s.vx = Math.abs(s.vx); s.vy += (s.y > m.y ? 1 : -1) * .5; }
   else if (s.x > 1 - AH_PR) { s.x = 1 - AH_PR; s.vx = -Math.abs(s.vx); s.vy += (s.y > m.y ? 1 : -1) * .5; }
@@ -9910,9 +9940,15 @@ function ahLogic(nowArg) {
   if (M.gl && M.gl.n !== al.gn) { al.gn = M.gl.n; al.glAt = now; if (S.tab === 'ah') ahSnd(me < 0 || M.gl.w === me ? 'goal' : 'conceded'); }
   if (M.status !== 'running') return;
   if (M.pk && M.pk.n !== al.pn) {
-    al.pn = M.pk.n; al.sim = {...M.pk}; al.wait = false; if (al.mineN !== M.pk.n) al.dirty = null;
-    al.simT = al.mineN === M.pk.n ? al.mineAt : now;
-    if (M.pk.by >= 0 && al.mineN !== M.pk.n) { if (M.pk.sn) { al.flash = {x:M.pk.x, y:M.pk.y, t:now}; if (S.tab === 'ah') ahSnd('hit'); } if (M.pk.by !== me && !isBot(M.p[M.pk.by]) && M.pk.mx >= 0) al.ml[M.pk.by] = {x:M.pk.mx, y:M.pk.my}; }
+    const remote = al.mineN !== M.pk.n, rp = al.rp;
+    al.pn = M.pk.n; al.sim = {...M.pk}; al.wait = false; if (remote) al.dirty = null;
+    al.simT = remote ? now : al.mineAt;
+    // Netz-Verzögerung ausgleichen: der Puck ist beim Gegner schon so lange unterwegs (höchstens 350 ms)
+    const lag = remote && M.pk.t ? Date.now() - M.pk.t : 0;
+    if (remote && M.pk.by >= 0 && lag > 0 && lag < 350) al.simT = now - lag;
+    // Kein Sprung: die Anzeige gleitet in 150 ms von der alten zur neuen Position
+    al.off = remote && M.pk.by >= 0 && rp && Math.hypot(rp.x - M.pk.x, rp.y - M.pk.y) < .5 ? {x:rp.x - M.pk.x, y:rp.y - M.pk.y, t:now} : null;
+    if (M.pk.by >= 0 && remote) { if (M.pk.sn) { al.flash = {x:M.pk.x, y:M.pk.y, t:now}; if (S.tab === 'ah') ahSnd('hit'); } if (M.pk.by !== me && !isBot(M.p[M.pk.by]) && M.pk.mx >= 0) al.mlT[M.pk.by] = {x:M.pk.mx, y:M.pk.my, t:now}; }
     if (M.pk.by < 0) al.simT = Math.max(al.simT, now + (M.gl ? 1200 : 0));
   }
   const s = al.sim; if (!s) return;
@@ -9927,7 +9963,7 @@ function ahLogic(nowArg) {
     for (const i of [0, 1]) {
       let m = null;
       if (isBot(M.p[i])) { m = ahBotMove(M, i, s, AH_STEP); if (!host) m = null; }
-      else if (i === me) m = {x:mm.px + (mm.x - mm.px) * t, y:mm.py + (mm.y - mm.py) * t, vx:ahC(mvx, -7, 7), vy:ahC(mvy, -7, 7)};
+      else if (i === me) m = {x:mm.px + (mm.x - mm.px) * t, y:mm.py + (mm.y - mm.py) * t, vx:ahC(mvx, -5, 5), vy:ahC(mvy, -5, 5)};
       if (!m) continue;
       const r = ahCollide(s, m);
       if (!r) continue;
@@ -9945,11 +9981,13 @@ function ahLogic(nowArg) {
   }
   al.simT += steps * AH_STEP * 1000; mm.px = mm.x; mm.py = mm.y;
   // Neuen Puck-Zustand nach einem Stoß senden (höchstens alle 110 ms, ein Schieben wird mitgeschickt)
-  if (al.dirty && (now - al.lastW > 350 || al.dirty.hit && now - al.lastW > 150)) { const d = al.dirty; al.dirty = null; ahHitWrite(M, d.by, s, d.m, d.hit); al.pn = M.pk.n; al.simT = now; }
+  if (al.dirty && (now - al.lastW > 600 || al.dirty.hit && now - al.lastW > 150)) { const d = al.dirty; al.dirty = null; ahHitWrite(M, d.by, s, d.m, d.hit); al.pn = M.pk.n; al.simT = now; }
   // Gegner-Schläger (Mensch) für die Anzeige: folgt dem Puck auf seiner Hälfte, sonst zurück zum Tor
   for (const i of [0, 1]) if (i !== me && !isBot(M.p[i])) {
-    const h = ahHome(i), tgt = ahSide(s.y) === i ? ahClampMallet(i, s.x, h.y + (i === 0 ? .08 : -.08)) : h, m = al.ml[i];
-    al.ml[i] = {x:m.x + (tgt.x - m.x) * .08, y:m.y + (tgt.y - m.y) * .08};
+    const h = ahHome(i), m = al.ml[i], hit = al.mlT[i] && now - al.mlT[i].t < 450 ? al.mlT[i] : null;
+    const tgt = hit || (ahSide(s.y) === i ? ahClampMallet(i, s.x, h.y + (i === 0 ? .1 : -.1)) : {x:.5 + (s.x - .5) * .4, y:h.y});
+    const k = hit ? .3 : .06;
+    al.ml[i] = {x:m.x + (tgt.x - m.x) * k, y:m.y + (tgt.y - m.y) * k};
   }
   // Hängt der Puck zu lange (jemand ist weg), stößt der Host ihn zur Mitte an.
   if (al.idleN !== M.n) { al.idleN = M.n; al.idleAt = now; }
@@ -9971,7 +10009,7 @@ function ahSetMallet(x, y) { const M = S.ah, me = ahMeIdx(M); if (me < 0) return
 /* Der Schläger folgt Finger/Maus sehr schnell, aber nicht sofort: kein Wegbeamen durch den Puck. */
 function ahMoveMallet(dt) {
   const t = al.tgt; if (!t) return;
-  const m = al.me, dx = t.x - m.x, dy = t.y - m.y, d = Math.hypot(dx, dy), mv = Math.min(d, 7 * dt);
+  const m = al.me, dx = t.x - m.x, dy = t.y - m.y, d = Math.hypot(dx, dy), mv = Math.min(d, 6 * dt);
   if (d > 1e-6) { m.x += dx / d * mv; m.y += dy / d * mv; }
 }
 
@@ -10025,8 +10063,11 @@ function ahDraw(M) {
   // Puck
   const s = al.sim;
   if (s && M.status === 'running') {
-    const px = X(s.x), py = Y(s.y), r = AH_PR * sc, v = Math.hypot(s.vx, s.vy);
-    if (v > 1.2) { c.strokeStyle = `rgba(255,207,63,${Math.min(.6, (v - 1.2) / 3)})`; c.lineWidth = r * 1.4; c.lineCap = 'round'; c.beginPath(); c.moveTo(px, py); c.lineTo(X(s.x - s.vx * .05), Y(s.y - s.vy * .05)); c.stroke(); }
+    let rx = s.x, ry = s.y;
+    if (al.off) { const k = (now - al.off.t) / 150; if (k >= 1) al.off = null; else { rx += al.off.x * (1 - k); ry += al.off.y * (1 - k); } }
+    al.rp = {x:rx, y:ry};
+    const px = X(rx), py = Y(ry), r = AH_PR * sc, v = Math.hypot(s.vx, s.vy);
+    if (v > 1.2) { c.strokeStyle = `rgba(255,207,63,${Math.min(.6, (v - 1.2) / 3)})`; c.lineWidth = r * 1.4; c.lineCap = 'round'; c.beginPath(); c.moveTo(px, py); c.lineTo(X(rx - s.vx * .05), Y(ry - s.vy * .05)); c.stroke(); }
     c.fillStyle = 'rgba(0,0,0,.2)'; c.beginPath(); c.arc(px + 2, py + 3, r, 0, Math.PI * 2); c.fill();
     c.fillStyle = '#1b1b2e'; c.beginPath(); c.arc(px, py, r, 0, Math.PI * 2); c.fill();
     c.strokeStyle = '#ffcf3f'; c.lineWidth = 2; c.beginPath(); c.arc(px, py, r * .62, 0, Math.PI * 2); c.stroke();
@@ -10367,6 +10408,12 @@ function bwDraw(M) {
   if (!fr) { const bp0 = P(bx, by, BW_BR); bl.ballPx = {x:bp0.x, y:bp0.y, r:BW_BR * bp0.w}; }
   items.push({y:by, d:() => bwBall(c, P, bx, by, fr && fr.b.g, M, now)});
   items.sort((a, b) => b.y - a.y).forEach(it => it.d());
+  // Wo man anfassen muss: pulsierender Ring um die Kugel, solange man dran ist
+  if (!fr && !bl.drag && bwMeTurn(M) && bl.ballPx) {
+    const bp = bl.ballPx, k = (Math.sin(now / 260) + 1) / 2;
+    c.strokeStyle = `rgba(255,207,63,${.45 + k * .45})`; c.lineWidth = 3; c.setLineDash([6, 6]);
+    c.beginPath(); c.arc(bp.x, bp.y, bp.r * (1.35 + k * .2), 0, Math.PI * 2); c.stroke(); c.setLineDash([]);
+  }
   // Zielhilfe beim Ziehen: Gummiband zur Kugel und Linie, wohin sie rollt
   if (bl.drag && bl.drag.mode === 'aim' && !fr) {
     const d = bl.drag, a = bwDragParams(d), cvr = document.getElementById('bw-cv').getBoundingClientRect(), bp = bl.ballPx;
@@ -10439,10 +10486,14 @@ function bwSnd(n) {
 const BW_SPINS = [[-2, '↶↶'], [-1, '↶'], [0, 'Gerade'], [1, '↷'], [2, '↷↷']];
 function bwDragParams(d) {
   if (!d || d.mode !== 'aim') return null;
-  const dx = d.cx - d.sx, dy = d.cy - d.sy, len = Math.hypot(dx, dy);
+  // Richtung von der Kugelmitte zum Mauszeiger/Finger; fast senkrecht (bis 6°) zählt als gerade
+  const ox = d.bx != null ? d.bx : d.sx, oy = d.by != null ? d.by : d.sy;
+  const dx = d.cx - ox, dy = d.cy - oy, len = Math.hypot(dx, dy);
   if (dy < 10 || len < 18) return null;
   const pw = Math.min(1, len / (d.H * .3)), v = 4.5 + pw * 8.5;
-  const ang = Math.max(-.12, Math.min(.12, Math.atan2(-dx, dy) * .11));
+  let th = Math.atan2(-dx, dy); const dead = .105;
+  th = Math.abs(th) < dead ? 0 : th - Math.sign(th) * dead;
+  const ang = Math.max(-.12, Math.min(.12, th * .08));
   return {x:d.x, a:ang, v, sp:(D.bwSpin || 0) * .32, pw};
 }
 (() => {
@@ -10452,7 +10503,7 @@ function bwDragParams(d) {
     const M = S.bw; if (!bwMeTurn(M) || bwAnimating(M) || roomPaused()) return;
     ensureAudio(); const r = cv.getBoundingClientRect(), bp = bl.ballPx;
     const near = bp && Math.hypot(e.clientX - r.left - bp.x, e.clientY - r.top - bp.y) < Math.max(56, bp.r * 2.4);
-    bl.drag = {mode:near ? 'aim' : 'move', x:bl.aimX, sx:e.clientX, sy:e.clientY, cx:e.clientX, cy:e.clientY, H:r.height};
+    bl.drag = {mode:near ? 'aim' : 'move', x:bl.aimX, sx:e.clientX, sy:e.clientY, cx:e.clientX, cy:e.clientY, H:r.height, bx:bp ? r.left + bp.x : null, by:bp ? r.top + bp.y : null};
     if (!near) { bl.aimX = lanePos(e.clientX, cv); bl.drag.x = bl.aimX; }
     try { cv.setPointerCapture(e.pointerId); } catch (er) {}
   });
