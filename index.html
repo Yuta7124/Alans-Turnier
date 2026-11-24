@@ -8928,8 +8928,8 @@ function bjCardHTML(c, key, hidden) {
   const r = bjRank(c), su = c[1], red = su === 'H' || su === 'D', rr = r === 'T' ? '10' : r;
   return `<span class="bjc ${red ? 'red' : ''} ${isNew && !flip ? 'bj-new' : ''} ${flip ? 'bj-flip' : ''}" aria-label="${esc(rr + ' ' + {S:'Pik', H:'Herz', D:'Karo', C:'Kreuz'}[su])}"><b>${rr}<small>${BJ_SUIT[su]}</small></b><i>${BJ_SUIT[su]}</i></span>`;
 }
-function bjHandHTML(cards, keyBase, hideSecond) {
-  return `<div class="bj-cards">${cards.map((c, i) => bjCardHTML(c, keyBase + ':' + i, hideSecond && i === 1)).join('')}</div>`;
+function bjHandHTML(cards, keyBase, hideSecond, hideAll) {
+  return `<div class="bj-cards">${cards.map((c, i) => bjCardHTML(c, keyBase + ':' + i, hideAll || (hideSecond && i === 1))).join('')}</div>`;
 }
 function bjChipHTML(v, cls = '') { return `<span class="bj-chip v${v} ${cls}"><b>${v}</b></span>`; }
 const BJ_RES = {win:['Gewonnen', 'win'], lose:['Verloren', 'lose'], push:['Gleichstand', 'push'], bj:['Blackjack!', 'bj']};
@@ -8971,7 +8971,7 @@ function bjLogText(e) {
   if (e.a === 'deal') return `Runde ${e.rnd}: Karten werden ausgeteilt.`;
   if (e.a === 'hit') return `${n} nimmt eine Karte.`;
   if (e.a === 'stand') return `${n} bleibt.`;
-  if (e.a === 'bust') return `${n} ist über 21!`;
+  if (e.a === 'bust') return e.p === myPid() ? `${n} ist über 21!` : `${n} ist fertig.`;
   if (e.a === 'double') return `${n} verdoppelt.`;
   if (e.a === 'split') return `${n} teilt.`;
   if (e.a === 'reveal') return 'Die Bank deckt auf.';
@@ -8991,10 +8991,12 @@ function bjPlayHTML(B) {
   const T = s.ph === 'bet' ? BJ_BET_MS / 1000 : B.cfg.time;
   const seats = s.order.map((pid, pi) => {
     const x = s.pl[pid], p = ghost(pid), turnP = cur && cur.pid === pid;
+    /* Karten der anderen bleiben verdeckt, bis die Runde vorbei ist */
+    const hid = pid !== me && s.ph !== 'result';
     const hands = x.hands.map((h, hi) => {
       const v = bjVal(h.c), on = turnP && s.tp.h === hi, res = s.ph === 'result' && BJ_RES[h.res];
-      return `<div class="bj-hand ${on ? 'on' : ''} ${h.st === 'bust' ? 'bust' : ''}">${bjHandHTML(h.c, `${B.id}:${s.rnd}:${pid}:${hi}`)}
-        <div class="bj-hv"><b>${v.t}${v.soft && v.t < 21 && h.c.length ? ` <small>(${v.t - 10})</small>` : ''}</b>${h.st === 'bj' ? '<em class="bj-tag bj">Blackjack</em>' : h.st === 'bust' ? '<em class="bj-tag lose">Über 21</em>' : h.st === 'dbl' ? '<em class="bj-tag">×2</em>' : ''}${res && h.st !== 'bust' ? `<em class="bj-tag ${res[1]}">${res[0]}${h.pay && h.res !== 'push' ? ` +${h.pay}` : ''}</em>` : ''}</div>
+      return `<div class="bj-hand ${on ? 'on' : ''} ${h.st === 'bust' && !hid ? 'bust' : ''}">${bjHandHTML(h.c, `${B.id}:${s.rnd}:${pid}:${hi}`, false, hid)}
+        <div class="bj-hv">${hid ? `<b>?</b>${h.st === 'dbl' ? '<em class="bj-tag">×2</em>' : ''}` : `<b>${v.t}${v.soft && v.t < 21 && h.c.length ? ` <small>(${v.t - 10})</small>` : ''}</b>${h.st === 'bj' ? '<em class="bj-tag bj">Blackjack</em>' : h.st === 'bust' ? '<em class="bj-tag lose">Über 21</em>' : h.st === 'dbl' ? '<em class="bj-tag">×2</em>' : ''}`}${res && h.st !== 'bust' ? `<em class="bj-tag ${res[1]}">${res[0]}${h.pay && h.res !== 'push' ? ` +${h.pay}` : ''}</em>` : ''}</div>
         <div class="bj-hb">${bjChipHTML(h.bet >= 500 ? 500 : h.bet >= 100 ? 100 : h.bet >= 50 ? 50 : h.bet >= 25 ? 25 : 10, 'sm')}<span>${h.bet}</span></div></div>`;
     }).join('');
     const betInfo = s.ph === 'bet' ? (x.out ? '<small class="muted">Keine Chips mehr</small>' : x.bet ? `<div class="bj-hb">${bjChipHTML(10, 'sm')}<span>${x.bet}</span> ✓</div>` : '<small class="muted">setzt …</small>') : '';
