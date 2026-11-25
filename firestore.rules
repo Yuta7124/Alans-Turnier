@@ -229,7 +229,7 @@ service cloud.firestore {
           && (!('md' in d) || (d.md is list && d.md.size() <= 4))
           && (!('st' in d) || d.st in ['done', 'play', 'drop', 'endless'])
           && (!('fsk' in d) || d.fsk in [0, 6, 12, 16, 18])
-          && (!('fav' in d) || (d.fav is int && d.fav >= 0 && d.fav <= 3))
+          && (!('fav' in d) || (d.fav is int && d.fav >= 0 && d.fav <= 10))
           && (!('hrsp' in d) || d.hrsp is bool)
           && (!('ms' in d) || (d.ms is int && d.ms >= 0 && d.ms <= 99))
           && (!('mv' in d) || (d.mv is int && d.mv >= 0 && d.mv <= 99))
