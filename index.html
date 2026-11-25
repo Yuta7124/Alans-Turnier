@@ -1616,6 +1616,9 @@ button.bcell[disabled]{cursor:default}
 .ti-auto i{display:block;height:100%;width:100%;background:var(--coin);transform-origin:left;animation:tiAuto 15s linear forwards}
 @keyframes tiAuto{from{transform:scaleX(1)}to{transform:scaleX(0)}}
 .wm-go{display:block;margin-top:8px;font-weight:800;color:var(--coin)}
+.ah-lockhint{display:none;position:absolute;left:50%;top:10px;transform:translateX(-50%);background:rgba(0,0,0,.65);color:#fff;font-size:.85rem;padding:6px 12px;border-radius:999px;pointer-events:none;white-space:nowrap;z-index:2}
+@media (pointer:fine){.ah-lockhint{display:block}}
+body.ah-locked .ah-lockhint{display:none}
 .wm-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .hub-admin{display:flex;justify-content:center;margin:8px 0 0}
 .hub-stop{background:rgba(255,79,109,.14);color:#ff9fb2;box-shadow:inset 0 0 0 2px rgba(255,79,109,.45)}
@@ -2959,7 +2962,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=78"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=79"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -9985,7 +9988,7 @@ function ahTransfer() {
 }
 
 /* ----- Ablauf ----- */
-const al = {mlT:[null, null], off:null, rp:null, cd:[0, 0], bh:[0, 0], dirty:null, tgt:null, aim:[.5, .5], aimN:[-1, -1], gid:'', pn:-1, gn:-1, glAt:0, sim:null, simT:0, wait:false, mineN:-1, mineAt:0,
+const al = {vp:{x:0, y:0}, lockQuiet:false, mlT:[null, null], off:null, rp:null, cd:[0, 0], bh:[0, 0], dirty:null, tgt:null, aim:[.5, .5], aimN:[-1, -1], gid:'', pn:-1, gn:-1, glAt:0, sim:null, simT:0, wait:false, mineN:-1, mineAt:0,
   me:{x:.5, y:.16, px:.5, py:.16, vx:0, vy:0, t:0}, ml:[{x:.5, y:.16}, {x:.5, y:AH_L - .16}], keys:{l:0, r:0, u:0, d:0}, raf:0, lastT:0, lastW:0, endSnd:'', flash:null, idleN:-1, idleAt:0};
 function ahWrite(patch) { roomWrite(patch); }
 function ahHitWrite(M, by, s, m, hit = true) {
@@ -10254,6 +10257,24 @@ function ahSnd(n) {
   else if (n === 'goal') { tone(523, .1, 'square', .06, 0); tone(659, .1, 'square', .06, .1); tone(784, .22, 'square', .06, .2); }
   else if (n === 'conceded') { tone(220, .3, 'sawtooth', .05, 0); tone(165, .35, 'sawtooth', .05, .12); }
 }
+/* Maus fangen (Pointer Lock, nur PC): virtueller Zeiger al.vp in Bildschirm-Koordinaten, immer über dem eigenen Schläger-Bereich */
+/* Gefangen wird die ganze Seite (nicht der Canvas): Neu-Zeichnen der Ansicht ersetzt den Canvas und würde sonst die Maus loslassen */
+function ahLocked() { return document.pointerLockElement === document.documentElement; }
+function ahLockable() { const M = S.ah, g = pzGame(); return !!(M && M.status === 'running' && ahMeIdx(M) >= 0 && !(g && g.pz && g.pz.at) && document.getElementById('ah-cv') && !!document.documentElement.requestPointerLock); }
+function ahLock(e) {
+  const cv = document.getElementById('ah-cv'); if (!cv || ahLocked()) return;
+  al.vp = {x:e && e.clientX != null ? e.clientX : 0, y:e && e.clientY != null ? e.clientY : 0};
+  if (!e) { const r = cv.getBoundingClientRect(); al.vp = {x:r.left + r.width / 2, y:r.top + r.height * .8}; ahVpClamp(); }
+  try { const pr = document.documentElement.requestPointerLock(); if (pr && pr.catch) pr.catch(() => {}); } catch (_) {}
+}
+/* Virtuellen Zeiger an den erlaubten Bereich (eigene Hälfte) heften, damit er nicht weit raus „wandert“ */
+function ahVpClamp() {
+  const cv = document.getElementById('ah-cv'), v = al.view, t = al.tgt; if (!cv || !v || !t) return;
+  const r = cv.getBoundingClientRect(), lx = v.flip ? 1 - t.x : t.x, ly = v.flip ? t.y : AH_L - t.y;
+  al.vp = {x:r.left + v.ox + lx * v.sc, y:r.top + v.oy + ly * v.sc};
+}
+/* Maus freigeben, ohne zu pausieren (Spielende, anderer Tab, Pause durch Knopf/Mitspieler) */
+function ahUnlockQuiet() { if (!ahLocked()) return; al.lockQuiet = true; try { document.exitPointerLock(); } catch (_) {} }
 /* Steuerung: Finger/Maus bewegt den Schläger direkt (nur eigene Hälfte), Pfeiltasten/WASD */
 (() => {
   const at = e => {
@@ -10263,16 +10284,34 @@ function ahSnd(n) {
     ahSetMallet(x, y + (e.pointerType === 'touch' ? (v.flip ? -.09 : .09) : 0));
   };
   let down = false;
-  document.addEventListener('pointerdown', e => { if (!e.target || e.target.id !== 'ah-cv') return; down = true; ensureAudio(); try { e.target.setPointerCapture(e.pointerId); } catch (_) {} at(e); });
+  document.addEventListener('pointerdown', e => {
+    if (!e.target || e.target.id !== 'ah-cv') return; down = true; ensureAudio();
+    if (e.pointerType === 'mouse' && ahLockable()) ahLock(e); else { try { e.target.setPointerCapture(e.pointerId); } catch (_) {} }
+    if (!ahLocked()) at(e);
+  });
   // Maus: überall auf der Seite (nicht nur über dem Tisch). Außerhalb bleibt der Schläger am Rand der eigenen Hälfte.
+  // PC: Nach dem Klick auf den Tisch ist die Maus gefangen (bewegt nur den Schläger, verlässt das Spielfeld nicht). Esc = loslassen und Pause.
   document.addEventListener('pointermove', e => {
     if (S.tab !== 'ah') return;
+    if (ahLocked()) { al.vp.x += e.movementX || 0; al.vp.y += e.movementY || 0; at({clientX:al.vp.x, clientY:al.vp.y, pointerType:'mouse'}); ahVpClamp(); return; }
     const free = e.pointerType === 'mouse' && S.ah && S.ah.status === 'running' && !(e.target && e.target.closest && e.target.closest('#modal-root'));
     if (down || free) at(e);
   });
+  document.addEventListener('pointerlockchange', () => {
+    const on = ahLocked(); document.body.classList.toggle('ah-locked', on);
+    if (on) return;
+    al.unlockAt = Date.now();
+    // Losgelassen per Esc (nicht von uns): Spiel pausieren
+    if (al.lockQuiet) { al.lockQuiet = false; return; }
+    if (S.tab === 'ah' && S.ah && S.ah.status === 'running' && pzCanUse() && !pzGame().pz) pzSet(true);
+  });
   ['pointerup', 'pointercancel'].forEach(n => document.addEventListener(n, () => { down = false; }));
+  setInterval(() => { const M = S.ah, g = S.tab === 'ah' && pzGame(); if (ahLocked() && (S.tab !== 'ah' || !M || M.status !== 'running' || (g && g.pz && g.pz.at) || S.modal)) ahUnlockQuiet(); }, 250);
   const map = {ArrowLeft:'l', a:'l', ArrowRight:'r', d:'r', ArrowUp:'u', w:'u', ArrowDown:'d', s:'d'};
-  document.addEventListener('keydown', e => { if (S.tab !== 'ah' || !S.ah) return; const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return; const k = map[e.key]; if (!k) return; al.keys[k] = 1; e.preventDefault(); ensureAudio(); });
+  document.addEventListener('keydown', e => { if (S.tab !== 'ah' || !S.ah) return; const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
+    // Esc: Pause an/aus. Hat dieselbe Esc gerade die gefangene Maus losgelassen, nur pausieren (nicht gleich wieder fortsetzen)
+    if (e.key === 'Escape' && !S.modal && S.ah.status === 'running' && pzCanUse()) { const g = pzGame(), was = ahLocked() || Date.now() - (al.unlockAt || 0) < 600; pzSet(was ? true : !(g && g.pz && g.pz.at)); e.preventDefault(); return; }
+    const k = map[e.key]; if (!k) return; al.keys[k] = 1; e.preventDefault(); ensureAudio(); });
   document.addEventListener('keyup', e => { const k = map[e.key]; if (k) al.keys[k] = 0; });
 })();
 const ahActions = {
@@ -10324,7 +10363,7 @@ function ahPlayHTML(M) {
       ${host ? `<button class="btn btn-sm btn-ghost k-endbtn" type="button" data-act="ah-end">Beenden</button>` : ''}
     </div>
     <div class="tt-board" id="ah-score">${ahScoreHTML(M)}</div>
-    <div class="tt-box"><canvas id="ah-cv" class="tt-cv ah-cv" aria-label="Air-Hockey-Tisch"></canvas></div>
+    <div class="tt-box"><canvas id="ah-cv" class="tt-cv ah-cv" aria-label="Air-Hockey-Tisch"></canvas>${M.status === 'running' && ahMeIdx(M) >= 0 && !(pzGame() && pzGame().pz) ? '<div class="ah-lockhint">🖱️ Klick auf den Tisch: Die Maus bleibt im Spielfeld. Esc = Pause</div>' : ''}</div>
     <p class="muted tt-hint">${me >= 0 ? (isTouch() ? 'Finger auf deiner Hälfte bewegen.' : 'Maus über deine Hälfte bewegen oder Pfeiltasten / WASD.') : '👀 Du schaust zu.'}</p>
   </section>`;
 }
@@ -13877,8 +13916,8 @@ const actions = {
   'fs-toggle': () => fsToggle(),
   'lhs-open': () => openModal({type:'lhs'}),
   'lhs-reset': () => { const L = lobby(); if (!L || !S.admin) return; confirmBox(`Highscore von ${L.name} zurücksetzen?`, 'Alle Punkte in diesem Raum werden gelöscht. Der Turnier-Highscore bleibt.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Zurücksetzen', cls:'btn-gold', fn:() => roomWrite({hs:{}})}]); },
-  'pz-on': () => { ensureAudio(); pzSet(true); },
-  'pz-off': () => { ensureAudio(); pzSet(false); },
+  'pz-on': () => { ensureAudio(); ahUnlockQuiet(); pzSet(true); },
+  'pz-off': () => { ensureAudio(); pzSet(false); if (S.tab === 'ah' && matchMedia('(pointer: fine)').matches && ahLockable()) ahLock(null); },
   'gmenu': () => {
     // Das ☰ zum Schließen sitzt genau dort, wo das ☰ im Spiel ist
     const gb = [...document.querySelectorAll('#main .gmenu')].find(e => e.offsetParent), bs = document.body.style;
