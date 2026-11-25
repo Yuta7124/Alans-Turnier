@@ -912,28 +912,27 @@ body.is-bday .tab[aria-selected="true"]{box-shadow:0 0 0 2px #ff6fb5,0 0 18px rg
 .sp-search{margin:0 0 14px}
 .sp-search .input{width:100%;max-width:520px}
 .sp-list{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
-.sp-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 20px;background:var(--card,rgba(20,14,40,.75));box-shadow:inset 0 0 0 2px var(--edge,rgba(255,255,255,.08));border-radius:12px}
+.sp-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:20px 24px;background:var(--card,rgba(20,14,40,.75));box-shadow:inset 0 0 0 2px var(--edge,rgba(255,255,255,.08));border-radius:12px}
 .sp-row.is-me{box-shadow:inset 0 0 0 2px var(--coin)}
 .sp-row.add{justify-content:space-between}
-.sp-rowopen{display:flex;align-items:center;gap:14px;flex:1;min-width:220px;border:0;background:none;color:var(--ink);font:inherit;cursor:pointer;padding:4px 0;text-align:left}
+.sp-rowopen{display:flex;flex-direction:column;align-items:stretch;gap:14px;flex:1;min-width:220px;border:0;background:none;color:var(--ink);font:inherit;cursor:pointer;padding:4px 0;text-align:left}
+.sp-rowhead{display:flex;align-items:center;gap:16px;min-width:0}
 .sp-rowopen .pc-av{transition:transform .12s}
 .sp-rowopen:hover .pc-av,.sp-rowopen:focus-visible .pc-av{transform:scale(1.06)}
 .sp-rowtxt{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
-.sp-row .pc-name{font-size:26px;line-height:1.1}
-.sp-row .motto{font-size:14px}
-.sp-rowtop{display:flex;flex-direction:column;gap:5px;min-width:200px;max-width:280px;flex:0 1 260px}
-.sp-rowtop>small{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.sp-rowtg{display:grid;grid-template-columns:14px 30px minmax(0,1fr);gap:8px;align-items:center;font-size:14px;font-weight:700}
+.sp-row .pc-name{font-size:30px;line-height:1.1}
+.sp-row .motto{font-size:15px}
+.sp-rowtop{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.sp-rowtg{display:flex;gap:8px;align-items:center;font-size:15px;font-weight:700;min-width:0;max-width:230px}
 .sp-rowtg>b{color:var(--coin);font-size:12px}
 .sp-rowtg>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.vg-cover.rt{width:30px;height:40px;flex:none;box-shadow:0 0 0 2px var(--shadow)}
+.vg-cover.rt{width:36px;height:48px;flex:none;box-shadow:0 0 0 2px var(--shadow)}
 .vg-noimg.rt{font-size:8px}
 .sp-rowline{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;font-weight:700}
 .sp-du{font-size:11px;padding:2px 6px;border-radius:6px;background:var(--coin);color:#1a1208;vertical-align:middle}
 .sp-rowgo{font-size:28px;color:var(--muted);padding:0 4px}
 .sp-rowadm{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-@media (max-width:700px){.sp-rowopen{flex-wrap:wrap}.sp-rowtop{flex-basis:100%;max-width:none;padding-left:98px}}
-@media (max-width:560px){.sp-rowadm{width:100%;justify-content:flex-end}.sp-row .pc-name{font-size:20px}.sp-row{padding:12px 14px}.sp-rowtop{padding-left:0}}
+@media (max-width:560px){.sp-rowadm{width:100%;justify-content:flex-end}.sp-row .pc-name{font-size:20px}.sp-row{padding:14px 14px}.sp-rowtop{gap:8px 14px}.sp-rowtg{max-width:100%}}
 .sp-acts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:-8px 0 4px}
 .sp-acts .uid-mini{margin-top:0}
 .sp-lvside{display:flex;flex-direction:column;gap:12px}
@@ -11945,11 +11944,11 @@ function spCardsHTML() {
     const l = vgOf(p.id), lv = spLevel(p, l), s = spStatus(p.id);
     return `<div class="sp-row ${p.id === meId ? 'is-me' : ''}">
       <button class="sp-rowopen" type="button" data-act="vg-open" data-pid="${esc(p.id)}" aria-label="Profil von ${esc(p.name)} öffnen">
-        <span class="sp-avw">${avatar(p, 84, 'pc-av')}<i class="sp-dot ${s.k}" aria-hidden="true"></i></span>
+        <span class="sp-rowhead"><span class="sp-avw">${avatar(p, 96, 'pc-av')}<i class="sp-dot ${s.k}" aria-hidden="true"></i></span>
         <span class="sp-rowtxt"><span class="pc-name">${nameHTML(p)}${p.id === meId ? ' <small class="sp-du">Du</small>' : ''}</span>${mottoHTML(p)}
           <span class="sp-rowline">${spLvHTML(lv.l, 'sm')}<span class="sp-st ${s.k}">${esc(s.t)}</span><span class="muted">${l.length ? `${l.length} ${l.length === 1 ? 'Spiel' : 'Spiele'}` : 'Noch keine Spiele'}${p.wins > 0 ? ` · 🏆 ${p.wins}` : ''}</span></span></span>
-        ${(() => { const t = vgTop3(l, 3); return t.length ? `<span class="sp-rowtop"><small>Top 3</small>${t.map((g, i) => `<span class="sp-rowtg"><b>${i + 1}</b>${vgCoverHTML(g, 'rt')}<span>${esc(g.title)}</span></span>`).join('')}</span>` : ''; })()}
-        <span class="sp-rowgo" aria-hidden="true">›</span>
+        <span class="sp-rowgo" aria-hidden="true">›</span></span>
+        ${(() => { const t = vgTop3(l, 3); return t.length ? `<span class="sp-rowtop">${t.map((g, i) => `<span class="sp-rowtg"><b>${i + 1}</b>${vgCoverHTML(g, 'rt')}<span>${esc(g.title)}</span></span>`).join('')}</span>` : ''; })()}
       </button>
       ${adm ? `<div class="sp-rowadm"><span class="pc-wins sp-wins"><span class="pw-edit"><button class="x" type="button" data-act="win-add" data-pid="${esc(p.id)}" data-d="-1" ${p.wins > 0 ? '' : 'disabled'} aria-label="Einen Turniersieg weniger für ${esc(p.name)}">−</button><b>🏆 ${p.wins || 0}</b><button class="x" type="button" data-act="win-add" data-pid="${esc(p.id)}" data-d="1" aria-label="Einen Turniersieg mehr für ${esc(p.name)}">+</button></span></span><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Bearbeiten</button><button class="btn btn-sm btn-ghost danger" type="button" data-act="delete-player" data-pid="${esc(p.id)}">Löschen</button></div>`
         : ownEdit(p) ? `<div class="sp-rowadm"><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Bearbeiten</button></div>` : ''}
