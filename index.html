@@ -10422,48 +10422,106 @@ function bwAfter(M, down) {
   return {s:{seq:s.seq + 1, turn, fr:frI, roll, pins, rolls, th:null, turnAt:Date.now()}, status};
 }
 
-/* ----- Physik: Kugel mit Effet, Pins als Kreise, alles in festen Schritten (überall gleich) ----- */
-function bwSim(th, rec) {
-  const ball = {x:th.x, y:.2, vx:Math.sin(th.a) * th.v, vy:Math.cos(th.a) * th.v, gut:false};
-  const pins = BW_PINS.map((p, i) => ({i, x:p[0], y:p[1], vx:0, vy:0, up:!!(th.pins & (1 << i)), down:false, on:!!(th.pins & (1 << i))}));
-  const frames = []; let t = 0, quiet = 0;
-  const out = () => { let m = 0; pins.forEach(p => { if (p.on && p.down) m |= 1 << p.i; }); return m; };
-  for (let k = 0; k < 240 * 7; k++) {
-    t += BW_STEP;
-    // Kugel: Effet greift erst im trockenen hinteren Teil der Bahn
-    if (!ball.gut) {
-      if (ball.y > 6.5 && ball.y < BW_HEAD) ball.vx += th.sp * 1.05 * BW_STEP;
-      ball.x += ball.vx * BW_STEP; ball.y += ball.vy * BW_STEP;
-      if (Math.abs(ball.x) > .5 + BW_BR * .2 && ball.y < BW_HEAD - .2) { ball.gut = true; ball.x = Math.sign(ball.x) * .58; ball.vx = 0; }
-    } else ball.y += ball.vy * BW_STEP;
-    // Stöße
-    if (!ball.gut) for (const p of pins) if (p.on) bwHit(ball, p, BW_BR + BW_PR, 6, 1);
-    for (let a = 0; a < 10; a++) for (let b = a + 1; b < 10; b++) if (pins[a].on && pins[b].on) bwHit(pins[a], pins[b], BW_PR * 2, 1, 1);
-    let moving = 0;
-    for (const p of pins) if (p.on) {
-      p.x += p.vx * BW_STEP; p.y += p.vy * BW_STEP;
-      const f = Math.exp(-(p.down ? 1.6 : 4) * BW_STEP); p.vx *= f; p.vy *= f;
-      const sp = Math.hypot(p.vx, p.vy);
-      if (sp > .35 && !p.down) p.down = true;
-      if (Math.abs(p.x) > .62 || p.y > BW_LEN + .3) { p.down = true; p.vx = p.vy = 0; p.x = Math.sign(p.x || 1) * Math.min(Math.abs(p.x), .7); }
-      if (sp > .05) moving++;
-    }
-    if (rec && k % 4 === 0) frames.push({t, b:{x:ball.x, y:ball.y, g:ball.gut}, p:pins.map(p => p.on ? [p.x, p.y, p.down ? 1 : 0] : null)});
-    if (ball.y > BW_LEN + .5) { quiet = moving ? 0 : quiet + 1; if (quiet > 60 || t > BW_LEN / Math.max(1, th.v) + 1.5) break; }
-  }
-  return {down:out(), dur:Math.round(t * 1000) + 300, frames};
+/* ----- Physik (in festen Schritten, auf allen Geräten gleich) -----
+   Kugel: vorne auf dem Öl rutscht sie fast gerade, hinten auf trockenem Holz greift das Effet und sie hakt; dabei wird sie etwas langsamer.
+   Pins: stehend ein Kreis. Ein kräftiger Stoß kippt sie in Stoßrichtung um; beim Kippen und Liegen sind sie ein Stab (0,36 lang),
+   der weitere Pins mitreißt. Harte Treffer lassen sie hochspringen und sich drehen, an den Seitenwänden prallen sie zurück.
+   Leichte Stöße lassen einen Pin nur wackeln. */
+const BW_PL = .36, BW_LR = .05, BW_WALL = .66, BW_G = 9.3;
+function bwBallStep(b, sp, dt) {
+  const y = b.y, k = y < 10 ? .15 : y < 12.5 ? .15 + (y - 10) / 2.5 * 1.15 : 1.3;
+  b.vx += sp * k * dt;
+  b.vy = Math.max(1, b.vy - (y < 10 ? .25 : .6) * dt);
+  b.x += b.vx * dt; b.y += b.vy * dt;
 }
-function bwHit(a, b, R, ma, mb) {
-  const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy);
+function bwPinSeg(p) { const l = Math.sin(p.tilt * Math.PI / 2) * BW_PL; return [p.x, p.y, p.x + Math.cos(p.ang) * l, p.y + Math.sin(p.ang) * l]; }
+/* Nächste Punkte zweier Strecken (eine Strecke darf ein Punkt sein) */
+function bwClosest(p, q) {
+  const d1x = p[2] - p[0], d1y = p[3] - p[1], d2x = q[2] - q[0], d2y = q[3] - q[1], rx = p[0] - q[0], ry = p[1] - q[1];
+  const a = d1x * d1x + d1y * d1y, e = d2x * d2x + d2y * d2y, f = d2x * rx + d2y * ry, E = 1e-9;
+  let sv = 0, tv = 0;
+  if (a <= E && e <= E) { sv = tv = 0; }
+  else if (a <= E) { tv = Math.max(0, Math.min(1, f / e)); }
+  else {
+    const c = d1x * rx + d1y * ry;
+    if (e <= E) sv = Math.max(0, Math.min(1, -c / a));
+    else {
+      const b = d1x * d2x + d1y * d2y, den = a * e - b * b;
+      sv = den > E ? Math.max(0, Math.min(1, (b * f - c * e) / den)) : 0;
+      tv = (b * sv + f) / e;
+      if (tv < 0) { tv = 0; sv = Math.max(0, Math.min(1, -c / a)); } else if (tv > 1) { tv = 1; sv = Math.max(0, Math.min(1, (b - c) / a)); }
+    }
+  }
+  return [p[0] + d1x * sv, p[1] + d1y * sv, q[0] + d2x * tv, q[1] + d2y * tv];
+}
+function bwFall(p, j) {
+  if (p.down) return;
+  p.down = true; p.ang = Math.atan2(p.vy, p.vx); p.trate = 3 + Math.min(6, Math.hypot(p.vx, p.vy) * .5);
+  if (j > 1.2) p.vz = Math.min(2.4, (j - 1.2) * .15);
+}
+/* Stoß zwischen a und b (Kugel oder Pin); Masse ma/mb, Rückprall e */
+function bwHit(a, b, ma, mb, e) {
+  const sa = a.pin ? bwPinSeg(a) : [a.x, a.y, a.x, a.y], sb = bwPinSeg(b);
+  const R = (a.pin ? (a.tilt > .5 ? BW_LR : BW_PR) : BW_BR) + (b.tilt > .5 ? BW_LR : BW_PR);
+  const [ax, ay, bx, by] = bwClosest(sa, sb), dx = bx - ax, dy = by - ay, d = Math.hypot(dx, dy);
   if (d >= R || d < 1e-9) return;
   const nx = dx / d, ny = dy / d, ov = R - d, tm = ma + mb;
   a.x -= nx * ov * mb / tm; a.y -= ny * ov * mb / tm; b.x += nx * ov * ma / tm; b.y += ny * ov * ma / tm;
   const rv = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny; if (rv >= 0) return;
-  const j = -(1 + .75) * rv / (1 / ma + 1 / mb);
+  const j = -(1 + e) * rv / (1 / ma + 1 / mb);
   a.vx -= j * nx / ma; a.vy -= j * ny / ma; b.vx += j * nx / mb; b.vy += j * ny / mb;
-  // ein kräftiger Stoß wirft den Pin um
-  if (b.down !== undefined && Math.abs(j) > .25) b.down = true;
-  if (a.down !== undefined && ma === 1 && Math.abs(j) > .25) a.down = true;
+  // Drehen: Stoß neben dem Fuß eines liegenden Pins dreht ihn
+  const tq = (p, cx, cy, s) => { if (p.tilt > .3) p.w += s * ((cx - p.x) * ny - (cy - p.y) * nx) * j * 9 / (1 + p.tilt); };
+  tq(b, bx, by, 1); if (a.pin) tq(a, ax, ay, -1);
+  for (const [p, jj] of [[b, j], [a, j]]) if (p.pin) {
+    if (jj > .25 || Math.hypot(p.vx, p.vy) > .35) bwFall(p, jj);
+    else if (!p.down) p.wob = Math.min(1, p.wob + jj * 3);
+  }
+}
+function bwSim(th, rec) {
+  const ball = {x:th.x, y:.2, vx:Math.sin(th.a) * th.v, vy:Math.cos(th.a) * th.v, gut:false};
+  const pins = BW_PINS.map((p, i) => ({pin:true, i, x:p[0], y:p[1], vx:0, vy:0, z:0, vz:0, tilt:0, trate:0, ang:Math.PI / 2, w:0, wob:0, down:false, pit:false, on:!!(th.pins & (1 << i))}));
+  const frames = []; let t = 0, quiet = 0;
+  const out = () => { let m = 0; pins.forEach(p => { if (p.on && p.down) m |= 1 << p.i; }); return m; };
+  const live = pins.filter(p => p.on);
+  for (let k = 0; k < 240 * 7; k++) {
+    t += BW_STEP;
+    if (!ball.gut) {
+      bwBallStep(ball, th.sp, BW_STEP);
+      if (Math.abs(ball.x) > .5 + BW_BR * .2 && ball.y < BW_HEAD - .2) { ball.gut = true; ball.vx = 0; }
+      if (ball.y >= BW_HEAD - .2 && Math.abs(ball.x) > BW_WALL - BW_BR) { ball.x = Math.sign(ball.x) * (BW_WALL - BW_BR); ball.vx *= -.3; }
+    } else { ball.x += (Math.sign(ball.x) * .565 - ball.x) * Math.min(1, 14 * BW_STEP); ball.y += ball.vy * BW_STEP; }
+    // Stöße
+    if (!ball.gut) for (const p of live) if (!p.pit && p.z < .2) bwHit(ball, p, 6, 1, .7);
+    for (let a = 0; a < live.length; a++) for (let b = a + 1; b < live.length; b++) if (!live[a].pit && !live[b].pit && Math.abs(live[a].z - live[b].z) < .25) bwHit(live[a], live[b], 1, 1, .65);
+    let moving = 0;
+    for (const p of live) {
+      if (p.pit) continue;
+      p.x += p.vx * BW_STEP; p.y += p.vy * BW_STEP;
+      if (!p.down) {
+        // Stehende Pins rutschen nicht, sie wackeln nur
+        const f = Math.exp(-14 * BW_STEP); p.vx *= f; p.vy *= f;
+        if (Math.abs(p.x) > .52) { p.vx += Math.sign(p.x) * .4; bwFall(p, 0); }
+      } else {
+        if (p.tilt < 1) p.tilt = Math.min(1, p.tilt + p.trate * BW_STEP);
+        p.ang += p.w * BW_STEP;
+        if (p.z > 0 || p.vz > 0) { p.vz -= BW_G * BW_STEP; p.z += p.vz * BW_STEP; if (p.z <= 0) { p.z = 0; p.vz = p.vz < -.6 ? -p.vz * .3 : 0; } }
+        if (p.z <= 0) {
+          const sp = Math.hypot(p.vx, p.vy), f = Math.exp(-1.3 * BW_STEP), g = sp > 1e-6 ? Math.max(0, sp - .5 * BW_STEP) / sp : 0;
+          p.vx *= f * g; p.vy *= f * g; p.w *= Math.exp(-2.5 * BW_STEP);
+        }
+      }
+      p.wob *= Math.exp(-3 * BW_STEP);
+      // Seitenwände am Pin-Deck: Pins prallen zurück
+      if (p.y > BW_HEAD - .4 && Math.abs(p.x) > BW_WALL) { p.x = Math.sign(p.x) * BW_WALL; if (p.vx * p.x > 0) p.vx = -p.vx * .45; p.w += p.vy * 2; }
+      // Hinten in den Schacht
+      if (p.y > BW_LEN + .2) { p.pit = true; p.down = true; p.tilt = 1; p.vx = p.vy = p.vz = 0; p.z = -.15; }
+      if (Math.hypot(p.vx, p.vy) > .05 || (p.down && p.tilt < 1) || p.z > 0 || p.wob > .05) moving++;
+    }
+    if (rec && k % 4 === 0) frames.push({t, b:{x:ball.x, y:ball.y, g:ball.gut}, p:pins.map(p => p.on ? [p.x, p.y, p.down ? 1 : 0, p.tilt, p.ang, p.z, p.wob] : null)});
+    if (ball.y > BW_LEN + .5) { quiet = moving ? 0 : quiet + 1; if (quiet > 60 || t > BW_LEN / Math.max(1, th.v) + 2.5) break; }
+  }
+  return {down:out(), dur:Math.round(t * 1000) + 300, frames};
 }
 
 /* ----- Werfen ----- */
@@ -10486,7 +10544,7 @@ function bwBotParams(M, lvl) {
   const v = {e:7, m:8.6, h:9.6}[lvl] * (1 + (Math.random() - .5) * {e:.25, m:.12, h:.05}[lvl]);
   const sp = s.pins === BW_ALL ? -{e:.2, m:.45, h:.6}[lvl] : 0, x = s.pins === BW_ALL ? .18 + (Math.random() - .5) * .1 : Math.max(-.3, Math.min(.3, tx * .5));
   // Ohne Pins vorrechnen, wo die Kugel mit Winkel 0 ankommt, dann Winkel anpassen
-  const ball = {x, y:.2, vx:0, vy:v}; for (let t = 0; t < 5 && ball.y < BW_HEAD; t += BW_STEP) { if (ball.y > 6.5) ball.vx += sp * 1.05 * BW_STEP; ball.x += ball.vx * BW_STEP; ball.y += ball.vy * BW_STEP; }
+  const ball = {x, y:.2, vx:0, vy:v}; for (let t = 0; t < 5 && ball.y < BW_HEAD; t += BW_STEP) bwBallStep(ball, sp, BW_STEP);
   const a = Math.atan2(tx - ball.x, BW_HEAD - .2);
   return {x, a, v, sp};
 }
@@ -10562,7 +10620,7 @@ function bwDraw(M) {
   // Pins und Kugel von hinten nach vorn
   const items = [];
   const pinsNow = fr ? fr.p : BW_PINS.map((p, i) => M.s.pins & (1 << i) ? [p[0], p[1], 0] : null);
-  pinsNow.forEach(p => { if (p) items.push({y:p[1], d:() => bwPin(c, P, p[0], p[1], p[2])}); });
+  pinsNow.forEach(p => { if (p) items.push({y:p[1] + (p[3] ? Math.sin(p[4]) * Math.sin((p[3] || 0) * Math.PI / 2) * BW_PL * .5 : 0), d:() => bwPin(c, P, p, now)}); });
   const bx = fr ? fr.b.x : bl.aimX, by = fr ? fr.b.y : .2;
   if (!fr) { const bp0 = P(bx, by, BW_BR); bl.ballPx = {x:bp0.x, y:bp0.y, r:BW_BR * bp0.w}; }
   items.push({y:by, d:() => bwBall(c, P, bx, by, fr && fr.b.g, M, now)});
@@ -10580,8 +10638,8 @@ function bwDraw(M) {
     c.fillStyle = 'rgba(255,255,255,.8)'; c.beginPath(); c.arc(d.cx - cvr.left, d.cy - cvr.top, 6, 0, Math.PI * 2); c.fill();
     if (a) {
       c.strokeStyle = `rgba(255,${Math.round(207 - a.pw * 120)},63,.9)`; c.lineWidth = 3; c.setLineDash([8, 8]); c.beginPath(); const p0 = P(a.x, .2); c.moveTo(p0.x, p0.y);
-      let x = a.x, vx = Math.sin(a.a) * a.v; const vy = Math.cos(a.a) * a.v;
-      for (let y = .2; y < 11; ) { const dt = .04; if (y > 6.5) vx += a.sp * 1.05 * dt; x += vx * dt; y += vy * dt; const q = P(x, y); c.lineTo(q.x, q.y); }
+      const x = a.x, vx = Math.sin(a.a) * a.v, vy = Math.cos(a.a) * a.v;
+      const gb = {x, y:.2, vx, vy}; while (gb.y < 11) { bwBallStep(gb, a.sp, .04); const q = P(gb.x, gb.y); c.lineTo(q.x, q.y); }
       c.stroke(); c.setLineDash([]);
       c.fillStyle = '#fff'; c.font = '800 13px system-ui,sans-serif'; c.textAlign = 'center'; c.fillText(`${Math.round(a.pw * 100)} %`, d.cx - cvr.left, d.cy - cvr.top + 24);
     }
@@ -10609,27 +10667,38 @@ function bwDraw(M) {
     if (!bl.drag) c.fillText(mine ? tx('Kugel nach unten ziehen und loslassen') : `${ghost(pid).name} ${tx('ist dran')}`, W / 2, H * .45);
   }
 }
-function bwPin(c, P, x, y, down) {
-  const b = P(x, y), r = Math.max(2, BW_PR * b.w * .95), h = r * 4.6;
-  if (down) { c.save(); c.globalAlpha = .75; c.translate(b.x, b.y - r * .6); c.rotate((x > 0 ? 1 : -1) * 1.35); }
-  else { c.save(); c.translate(b.x, b.y); }
-  c.fillStyle = 'rgba(0,0,0,.25)'; if (!down) { c.beginPath(); c.ellipse(r * .3, 0, r * 1.2, r * .45, 0, 0, Math.PI * 2); c.fill(); }
+/* Pin in Perspektive: Achse vom Fuß zur Spitze, kippt in Fallrichtung (p = [x, y, down, tilt, ang, z, wob]) */
+function bwPin(c, P, p, now) {
+  const [x, y, , tilt = 0, ang = Math.PI / 2, z = 0, wob = 0] = p;
+  let th = tilt * Math.PI / 2, a = ang;
+  if (!tilt && wob > .02) { th = wob * .22 * Math.abs(Math.sin(now / 55)); a = (y * 7 + x * 13) % 6.283; }
+  const lift = Math.sin(th) * BW_LR, base = P(x, y, z + lift), sl = Math.sin(th) * BW_PL, ch = Math.cos(th) * BW_PL;
+  const tip = P(x + Math.cos(a) * sl, y + Math.sin(a) * sl, z + lift + ch);
+  const r = Math.max(2, BW_PR * base.w * .95), dx = tip.x - base.x, dy = tip.y - base.y, h = Math.max(r * 1.2, Math.hypot(dx, dy));
+  const sh = P(x + Math.cos(a) * sl * .5, y + Math.sin(a) * sl * .5);
+  c.save(); c.fillStyle = 'rgba(0,0,0,.25)'; c.beginPath(); c.ellipse(sh.x, sh.y, r * 1.2 + Math.abs(dx) * .5, r * .45 + Math.abs(dy) * .25, 0, 0, Math.PI * 2); c.fill();
+  c.translate(base.x, base.y); c.rotate(Math.atan2(dx, -dy));
   c.fillStyle = '#f7f4ee';
   c.beginPath(); c.ellipse(0, -h * .28, r, h * .3, 0, 0, Math.PI * 2); c.fill();
   c.beginPath(); c.ellipse(0, -h * .72, r * .55, h * .14, 0, 0, Math.PI * 2); c.fill();
   c.fillRect(-r * .38, -h * .7, r * .76, h * .3);
   c.beginPath(); c.arc(0, -h * .9, r * .5, 0, Math.PI * 2); c.fill();
   c.fillStyle = '#d9223f'; c.fillRect(-r * .44, -h * .66, r * .88, h * .05); c.fillRect(-r * .42, -h * .58, r * .84, h * .04);
+  if (th > .3) { c.fillStyle = 'rgba(0,0,0,.12)'; c.beginPath(); c.ellipse(r * .35, -h * .45, r * .35, h * .42, 0, 0, Math.PI * 2); c.fill(); }
   c.restore();
 }
 function bwBall(c, P, x, y, gut, M, now) {
-  const p = P(x, y, BW_BR), r = Math.max(3, BW_BR * p.w);
-  const sh = P(x, y); c.fillStyle = 'rgba(0,0,0,.3)'; c.beginPath(); c.ellipse(sh.x, sh.y, r * 1.05, r * .35, 0, 0, Math.PI * 2); c.fill();
+  // Hinter dem Pin-Deck fällt die Kugel in den Schacht
+  const drop = Math.max(0, (y - BW_LEN) * 1.6); if (drop > BW_BR * 2) return;
+  const p = P(x, y, BW_BR - drop), r = Math.max(3, BW_BR * p.w);
+  c.save(); c.globalAlpha = 1 - drop / (BW_BR * 2);
+  if (!drop) { const sh = P(x, y); c.fillStyle = 'rgba(0,0,0,.3)'; c.beginPath(); c.ellipse(sh.x, sh.y, r * 1.05, r * .35, 0, 0, Math.PI * 2); c.fill(); }
   const pid = bl.anim && bwAnimating(M) ? bl.anim.th.pid : M.players[M.s.turn], col = ghost(pid).color || '#39d6f2';
   const g = c.createRadialGradient(p.x - r * .35, p.y - r * .4, r * .1, p.x, p.y, r); g.addColorStop(0, '#fff'); g.addColorStop(.25, col); g.addColorStop(1, '#0c0a18');
   c.fillStyle = g; c.beginPath(); c.arc(p.x, p.y, r, 0, Math.PI * 2); c.fill();
   const rot = y * 2.2; c.fillStyle = 'rgba(0,0,0,.55)';
   for (const [dx, dy] of [[-.25, -.2], [.15, -.3], [.05, .05]]) { const a = Math.cos(rot) * dx - Math.sin(rot) * dy, b = Math.sin(rot) * dx + Math.cos(rot) * dy; c.beginPath(); c.arc(p.x + a * r, p.y + b * r, r * .1, 0, Math.PI * 2); c.fill(); }
+  c.restore();
 }
 function bwSnd(n) {
   if (!actx || muted) return;

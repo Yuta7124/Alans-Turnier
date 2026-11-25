@@ -161,6 +161,9 @@ Während eines laufenden Spiels bleiben sie still. Pro Gerät abschaltbar unter 
 Werfen wie beim Minigolf: Kugel nach unten ziehen und loslassen (Länge = Kraft, schräg = Richtung), Effet per Auswahl unter der Bahn. Wer dran ist, rechnet den Wurf
 mit fester Physik durch und schreibt Wurf + Ergebnis + neuen Stand auf einmal (`uno` mit `g:'bw'`); alle spielen ihn als Animation ab.
 Frames werden als Map gespeichert (`{"0":[…]}`), weil Firestore keine Listen in Listen erlaubt. Nach 45 s ohne Wurf wirft der Host automatisch.
+Physik: Die Kugel rutscht vorne auf dem Öl fast gerade und hakt hinten auf trockenem Holz (Effet), dabei wird sie etwas langsamer.
+Pins kippen in Stoßrichtung um und sind beim Kippen/Liegen ein Stab, der Nachbarn mitreißt; harte Treffer lassen sie springen und drehen,
+an den Seitenwänden prallen sie zurück, leichte Stöße lassen sie nur wackeln. Alles in festen Schritten, damit alle Geräte dasselbe sehen.
 
 ## Air-Hockey und 2er-Spiele
 🏒 Air-Hockey: 1 gegen 1 (auch gegen einen Bot), bis 5, 7 oder 10 Tore. Gespeichert im Raum-Feld `uno` mit `g:'ah'`.
