@@ -5088,14 +5088,14 @@ function viewStart() {
         <p class="sh-text">Willkommen auf meinem Server.<br>Genießt die Zeit und habt viel Spaß!</p>
       </div>
     </div>
+    ${(lastTourK = tourState().k, ['plan', 'today', 'live'].includes(lastTourK)) ? `<div class="start-group start-tour">
+      <h3 class="start-h" style="--tc:#ffcf3f">Turnier</h3>
+      ${tourCardHTML()}
+    </div>` : ''}
     <div class="start-group start-news">
       <div class="start-hrow"><h3 class="start-h" style="--tc:#c493ff">Ankündigungen</h3>${adm ? `<button class="btn btn-sm" type="button" data-act="news-open">${D.newsOpen ? 'Schließen' : '+ Neue Ankündigung'}</button>` : ''}</div>
       ${adm && D.newsOpen ? newsFormHTML() : ''}
       <div class="news-list">${newsCardsHTML()}</div>
-    </div>
-    <div class="start-group">
-      <h3 class="start-h" style="--tc:#ffcf3f">Turnier</h3>
-      ${tourCardHTML()}
     </div>
   </section>`;
 }
