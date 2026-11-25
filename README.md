@@ -152,6 +152,14 @@ Nochmal klicken holt Nachzügler. Die Firestore-Regel erlaubt `rt` nur dem Admin
 Ist die neue Regel noch nicht veröffentlicht, nimmt der Admin wie früher einen freien Raum 1 bis 3.
 Bei Tischtennis/Air-Hockey wählt der Host dort 2 Spieler aus, die anderen schauen zu. „Turnier stoppen“ leert die Lobby.
 
+
+## User-ID (Handy und PC)
+Jeder Spieler hat eine User-ID (16 Zeichen, z. B. `K7QD-M2XA-9PRT-HW4C`). Am Spieler steht nur ihr SHA-256 (`kh`), die ID selbst in
+`rooms/{raum}/pk/{spieler}` – lesen darf das nur der Admin. Wer etwas Geschütztes ändert (Profil, Videogames, Tickets), schreibt im selben
+Vorgang `pk` mit `t = Serverzeit`; die Regel prüft, dass der Hash der ID zu `kh` passt (`pkOk`). Die ID wechselt dabei nicht, deshalb
+klappt es auf mehreren Geräten. Im eigenen Profil sieht man die eigene ID (Zeigen/Kopieren), auf einem anderen Gerät gibt man sie ein
+(„Mit deiner User-ID verbinden“, auch unter Spieler ohne eigenen Spieler). Admin: Optionen → User-IDs zeigt alle, „Neu vergeben“ macht die
+alte ungültig. Alte Geräte-Schlüssel (48 Hex-Zeichen, wechselten bei jedem Speichern) werden beim nächsten Speichern zu einer User-ID.
 ## Klick-Sounds
 Leise Bestätigungstöne für Knöpfe, Reiter und Auswahl-Chips (eigene Töne für Reiter, An/Aus, Hauptknöpfe und Schließen).
 Während eines laufenden Spiels bleiben sie still. Pro Gerät abschaltbar unter Optionen → Musik und Sounds (`turnier-uisnd`).

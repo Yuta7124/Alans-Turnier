@@ -1626,7 +1626,16 @@ body.ah-locked .ah-lockhint{display:none}
 .t10-row .tiny{width:36px;height:48px}
 .t10-sel{min-width:0;width:100%}
 .t10-mv{display:flex;gap:2px}
-.wm-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.uid-box{display:flex;flex-direction:column;gap:6px;margin-top:10px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.uid-box small{color:var(--muted)}
+.uid-row,.uid-li{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.uid-code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1rem;letter-spacing:.06em;padding:4px 8px;border-radius:6px;background:rgba(0,0,0,.35);user-select:all}
+.uid-list{display:flex;flex-direction:column;gap:8px;margin:8px 0}
+.uid-li b{min-width:90px}
+.uid-in{text-transform:uppercase;font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.05em}
+.uid-ask summary{cursor:pointer;font-weight:700}
+.wm-btns{
+display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .hub-admin{display:flex;justify-content:center;margin:8px 0 0}
 .hub-stop{background:rgba(255,79,109,.14);color:#ff9fb2;box-shadow:inset 0 0 0 2px rgba(255,79,109,.45)}
 .hub-stop:hover{background:rgba(255,79,109,.25)}
@@ -2969,7 +2978,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=80"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=81"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -5314,11 +5323,15 @@ function viewSettings() {
     ['freunde', '🔗', 'Freunde einladen', 'Link und Einladung'],
     ['lobby', '⏱️', 'Lobby', `Rauswurf nach ${S.settings.afk || 30} Min.`],
     ['sprache', '🌐', 'Sprache', LANG === 'en' ? 'English' : 'Deutsch'],
+    ['ids', '🔑', 'User-IDs', 'IDs aller Spieler'],
     ['reset', '🧹', 'Zurücksetzen', 'Punkte und Spieler löschen']
   ];
   const sec = secs.some(x => x[0] === D.optSec) ? D.optSec : '';
   const cur = secs.find(x => x[0] === sec);
   const parts = {
+    ids: () => { pkLoad(); const ps = S.players.filter(x => !isBot(x.id)); return `<div class="card share-card"><h3>🔑 User-IDs</h3><p class="m-text">Mit seiner User-ID kann jeder Spieler sein Profil und seine Spiele auf Handy und PC benutzen. Jeder sieht nur seine eigene, du als Admin siehst alle.</p>
+      ${!D.pkAll ? '<p class="muted">Lädt …</p>' : `<div class="uid-list">${ps.map(x => `<div class="uid-li">${avatar(x, 28)}<b>${esc(x.name)}</b>${D.pkAll[x.id] ? `<code class="uid-code">${esc(D.pkAll[x.id])}</code><button class="btn btn-sm" type="button" data-act="uid-copy" data-v="${esc(D.pkAll[x.id])}">Kopieren</button>` : '<span class="muted">Noch keine</span>'}<button class="btn btn-sm btn-ghost" type="button" data-act="uid-new" data-pid="${esc(x.id)}">${D.pkAll[x.id] ? 'Neu' : 'Vergeben'}</button></div>`).join('')}</div>
+      <p class="muted">„Noch keine“: Der Spieler hat seine ID noch nicht erstellt. Sie entsteht automatisch, wenn er das nächste Mal etwas speichert, oder du vergibst eine.</p>`}</div>`; },
     turnier: () => `    <div class="card share-card ts-card"><h3>🏆 Turnier</h3><p class="m-text">Steht noch kein Turnier an, sehen alle im Turnier-Tab den Wartebildschirm. Hier stellst du ein, was dort steht: kein Turnier geplant, bald, oder ein fester Termin mit Countdown.</p>${tourStatusFormHTML(false)}
       <div class="chips"><button class="btn btn-sm" type="button" data-act="gate-preview">Wartebildschirm ansehen</button></div>
       ${tourKey() ? `<div class="ts-run"><span><b>🟢 Das Turnier läuft gerade</b><small>${tourCheckin() ? `Check-in läuft · ${tourIn().length} angemeldet` : 'Gestartet, alle sind drin.'}</small></span>
@@ -11205,7 +11218,57 @@ function vgHow(p) {
 const vgCan = p => !!vgHow(p);
 /* Eigener Spieler, aber der geheime Spieler-Schlüssel liegt auf einem anderen Gerät: Eintragen geht hier nicht */
 const vgNoKey = p => !!(p && S.mode === 'db' && p.kh && !pkeyOf(p.id).length && lsGet('turnier-me', '') === p.id);
-const VG_NOKEY = '<p class="muted vg-nokey">🔑 Auf diesem Gerät kannst du keine Spiele eintragen. Das geht nur auf dem Gerät, mit dem du deinen Spieler erstellt oder zuletzt bearbeitet hast.</p>';
+/* User-ID-Box im Profil: eigene ID (nur auf eigenem Gerät), Verbinden-Feld (eigener Spieler ohne ID auf diesem Gerät),
+   und für den Spielleiter die ID jedes Spielers (aus pk, nur er darf sie lesen). */
+function uidLinkHTML(pid) {
+  return `<div class="uid-box"><b>🔑 Mit deiner User-ID verbinden</b><small>Gib die User-ID ein, die auf deinem anderen Gerät im Profil steht. Danach kannst du deine Sachen auch hier ändern.</small>
+    <div class="wadd"><input class="input uid-in" id="uid-in-${esc(pid || 'x')}" maxlength="24" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn btn-gold" type="button" data-act="uid-link" data-pid="${esc(pid || '')}">Verbinden</button></div></div>`;
+}
+function uidBoxHTML(p) {
+  if (!p || S.mode !== 'db' || isBot(p.id)) return '';
+  const mine = lsGet('turnier-me', '') === p.id, id = myUserId(p.id);
+  let out = '';
+  if (mine && id) out = `<div class="uid-box"><b>🔑 Deine User-ID</b><small>Nur du siehst sie. Gib sie auf deinem Handy oder PC ein, dann kannst du dort auch alles ändern. Gib sie niemandem weiter.</small>
+    <div class="uid-row"><code class="uid-code">${D.uidShow ? esc(id) : '••••-••••-••••-' + esc(id.slice(-4))}</code><button class="btn btn-sm" type="button" data-act="uid-show">${D.uidShow ? 'Verbergen' : 'Zeigen'}</button><button class="btn btn-sm" type="button" data-act="uid-copy" data-pid="${esc(p.id)}">Kopieren</button></div></div>`;
+  else if (mine && p.kh && pkeyOf(p.id).length) out = `<div class="uid-box"><b>🔑 User-ID</b><small>Erstelle deine User-ID, dann kannst du deinen Spieler auch auf anderen Geräten benutzen.</small><div class="chips"><button class="btn btn-sm btn-gold" type="button" data-act="uid-make" data-pid="${esc(p.id)}">User-ID erstellen</button></div></div>`;
+  else if (mine && p.kh) out = uidLinkHTML(p.id);
+  if (S.admin) {
+    const a = D.pkAll && D.pkAll[p.id];
+    out += `<div class="uid-box uid-adm"><b>🛡️ User-ID von ${esc(p.name)}</b><small>Nur du als Admin siehst sie.</small>
+      <div class="uid-row">${!D.pkAll ? '<span class="muted">Lädt …</span>' : a ? `<code class="uid-code">${esc(a)}</code><button class="btn btn-sm" type="button" data-act="uid-copy" data-v="${esc(a)}">Kopieren</button>` : '<span class="muted">Noch keine</span>'}<button class="btn btn-sm" type="button" data-act="uid-new" data-pid="${esc(p.id)}">${a ? 'Neu vergeben' : 'User-ID vergeben'}</button></div></div>`;
+    pkLoad();
+  }
+  return out;
+}
+/* Spielleiter: alle User-IDs einmal laden */
+let pkLoading = false;
+function pkLoad(force) {
+  if (!S.admin || !db || pkLoading || (D.pkAll && !force)) return;
+  pkLoading = true;
+  db.collection('pk').get().then(sn => { const o = {}; sn.docs.forEach(d => { const k = d.data().kp; if (isUserId(k)) o[d.id] = k; }); D.pkAll = o; })
+    .catch(() => { D.pkAll = {}; }).finally(() => { pkLoading = false; render(); });
+}
+async function uidAdminNew(pid) {
+  const p = playerById(pid); if (!S.admin || !p || !db) return;
+  const go = async () => {
+    const id = newUserId();
+    try {
+      const b = fs.batch(); b.update(db.collection('players').doc(pid), {kh:await sha256hex(id)}); pkSet(b, pid, id); await b.commit();
+      D.pkAll = {...(D.pkAll || {}), [pid]:id};
+      if (lsGet('turnier-me', '') === pid) pkeyPut(pid, [id]);
+      toast(`Neue User-ID für ${p.name}: ${id}`); render();
+    } catch (e) { toast(e && e.code === 'permission-denied' ? 'Das ist noch nicht freigeschaltet. Die neuen Datenbank-Regeln fehlen.' : 'Das hat nicht geklappt. Prüf dein Internet.'); }
+  };
+  if (D.pkAll && D.pkAll[pid]) confirmBox('Neue User-ID vergeben?', `Die alte ID von ${p.name} gilt dann nicht mehr. ${p.name} muss die neue auf allen Geräten eingeben.`, [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Neu vergeben', cls:'btn-gold', fn:go}]);
+  else go();
+}
+const uidActions = {
+  'uid-show': () => { D.uidShow = !D.uidShow; render(); },
+  'uid-copy': b => { const v = b.dataset.v || myUserId(b.dataset.pid); if (!v) return; try { navigator.clipboard.writeText(v).then(() => toast('User-ID kopiert.'), () => toast(v)); } catch (e) { toast(v); } },
+  'uid-link': b => { const pid = b.dataset.pid || '', el = document.getElementById('uid-in-' + (pid || 'x')); userIdLink(el ? el.value : '', pid); },
+  'uid-make': async b => { try { await vgCommit(b.dataset.pid, () => {}); toast('Deine User-ID ist erstellt.'); render(); } catch (e) { vgErr(e); } },
+  'uid-new': b => uidAdminNew(b.dataset.pid)
+};
 /* Spielzeit mit „+“, wenn es mindestens so viele Stunden sind (z. B. 5.000+) */
 const vgHrs = (h, plus) => `${h.toLocaleString(LOC)}${plus ? '+' : ''}`;
 const vgNum = n => EN ? n.toFixed(1) : n.toFixed(1).replace('.', ',');
@@ -11380,20 +11443,27 @@ async function toVgCover(file) {
     throw new Error('big');
   } finally { URL.revokeObjectURL(url); }
 }
-/* Schreiben mit Schlüsselwechsel des Spielers im selben Vorgang */
+/* Geschützt schreiben: im selben Vorgang die User-ID vorzeigen (pk mit Serverzeit).
+   Hat das Gerät noch einen alten Geräte-Schlüssel, wird er dabei gegen eine User-ID getauscht. */
 async function vgCommit(pid, fn) {
   const p = playerById(pid);
   if (!fs || !db || !p) throw Object.assign(new Error('x'), {code:'permission-denied'});
   const how = vgHow(p), ref = db.collection('players').doc(pid);
   if (!how) throw Object.assign(new Error('x'), {code:'permission-denied'});
   if (how === 'claim') {
-    const k = newKey(); pkeyPut(pid, [k]);
-    const b = fs.batch(); b.update(ref, {kh:await sha256hex(k)}); fn(b); await b.commit(); return;
+    const id = newUserId(); pkeyPut(pid, [id]);
+    const b = fs.batch(); b.update(ref, {kh:await sha256hex(id)}); pkSet(b, pid, id); fn(b); await b.commit(); return;
   }
-  const keys = pkeyOf(pid), next = newKey(), nh = await sha256hex(next);
+  const keys = pkeyOf(pid), uk = keys.find(isUserId);
+  if (uk) {
+    try { const b = fs.batch(); pkSet(b, pid, uk); fn(b); await b.commit(); return; }
+    catch (e) { if (e && e.code === 'permission-denied' && p.kh && p.kh !== await sha256hex(uk)) { pkeyPut(pid, keys.filter(k => k !== uk)); toast('Deine User-ID wurde geändert. Gib die neue ein.'); } throw e; }
+  }
+  // Alter Geräte-Schlüssel: einmal vorzeigen und dabei eine User-ID festlegen
+  const id = newUserId(), nh = await sha256hex(id);
   for (const k of keys) {
-    pkeyPut(pid, [k, next]);
-    try { const b = fs.batch(); b.update(ref, {kp:k, kh:nh}); fn(b); await b.commit(); pkeyPut(pid, [next]); return; }
+    pkeyPut(pid, [k, id]);
+    try { const b = fs.batch(); b.update(ref, {kp:k, kh:nh}); pkSet(b, pid, id); fn(b); await b.commit(); pkeyPut(pid, [id]); return; }
     catch (e) { if (!e || e.code !== 'permission-denied') throw e; }
   }
   pkeyPut(pid, keys);
@@ -11882,7 +11952,8 @@ function viewPlayers() {
   const me = playerById(myPid());
   return `<section class="section">
     <div class="sec-head"><h2 class="h">Spieler <span class="count">${S.players.length} Spieler</span></h2><span class="muted">Tipp auf einen Spieler, um sein Profil mit Spielen, Abzeichen und Screenshots zu sehen.</span></div>
-    ${me && S.mode === 'db' ? `<div class="card vg-cta sp-cta">${avatar(me, 48)}<div><b>Dein Profil</b><span>Level ${spLevel(me, vgOf(me.id)).l} · ${vgOf(me.id).length} ${vgOf(me.id).length === 1 ? 'Spiel' : 'Spiele'}</span></div><button class="btn" type="button" data-act="vg-open" data-pid="${esc(me.id)}">Profil öffnen</button>${vgCan(me) ? `<button class="btn btn-gold" type="button" data-act="vg-new" data-pid="${esc(me.id)}">+ Spiel eintragen</button>` : ''}${vgNoKey(me) ? VG_NOKEY : ''}</div>` : ''}
+    ${me && S.mode === 'db' ? `<div class="card vg-cta sp-cta">${avatar(me, 48)}<div><b>Dein Profil</b><span>Level ${spLevel(me, vgOf(me.id)).l} · ${vgOf(me.id).length} ${vgOf(me.id).length === 1 ? 'Spiel' : 'Spiele'}</span></div><button class="btn" type="button" data-act="vg-open" data-pid="${esc(me.id)}">Profil öffnen</button>${vgCan(me) ? `<button class="btn btn-gold" type="button" data-act="vg-new" data-pid="${esc(me.id)}">+ Spiel eintragen</button>` : ''}</div>${vgNoKey(me) ? uidLinkHTML(me.id) : ''}` : ''}
+    ${!me && S.mode === 'db' && S.players.some(x => x.kh) ? `<details class="card uid-ask"><summary>🔑 Du hast schon einen Spieler? Mit deiner User-ID verbinden</summary>${uidLinkHTML('')}</details>` : ''}
     <div class="pgrid sp-grid">${spCardsHTML()}</div>
     ${!S.players.length ? '<div class="empty-box"><strong>Noch keine Spieler</strong></div>' : ''}
     ${S.mode === 'db' && S.vg ? spCommunityHTML() : ''}
@@ -11932,7 +12003,7 @@ function spProfileHTML(p) {
           <div class="sp-lvrow"><span class="sp-lvlbl">Level</span>${spLvHTML(lv.l, 'big')}</div>
           <div class="sp-xp"><span class="vg-bt"><i style="width:${Math.round(lv.into / lv.span * 100)}%;--c:${spLvCol(lv.l)}"></i></span><small>${lv.xp} XP · noch ${lv.next - lv.xp} bis Level ${lv.l + 1}</small></div>
           ${got.length ? `<div class="sp-feat" title="${esc(got[got.length - 1].d)}"><span>${got[got.length - 1].i}</span><div><b>${esc(got[got.length - 1].n)}</b><small>${esc(got[got.length - 1].d)}</small></div></div>` : ''}
-          <div class="sp-btns">${editable ? `<button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Profil bearbeiten</button><button class="btn btn-sm" type="button" data-act="pbg-edit" data-pid="${esc(p.id)}">🖼️ Hintergrund</button>${pbgNorm(p.pbg) !== 'none' && (bgG || pbgNorm(p.pbg) === 'img') ? `<button class="btn btn-sm" type="button" data-act="pbg-quick" data-pid="${esc(p.id)}">✂️ Ausschnitt</button>` : ''}` : ''}${can ? `<button class="btn btn-sm btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}</div>${vgNoKey(p) ? VG_NOKEY : ''}
+          <div class="sp-btns">${editable ? `<button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Profil bearbeiten</button><button class="btn btn-sm" type="button" data-act="pbg-edit" data-pid="${esc(p.id)}">🖼️ Hintergrund</button>${pbgNorm(p.pbg) !== 'none' && (bgG || pbgNorm(p.pbg) === 'img') ? `<button class="btn btn-sm" type="button" data-act="pbg-quick" data-pid="${esc(p.id)}">✂️ Ausschnitt</button>` : ''}` : ''}${can ? `<button class="btn btn-sm btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}</div>${uidBoxHTML(p)}
         </div>
       </div>
     </div>
@@ -14274,7 +14345,7 @@ const actions = {
   'quiz-again': () => { const base = clone(S.quiz); withPending(() => quizStart(base)); },
   'quiz-new': () => withPending(() => quizDiscard())
 };
-Object.assign(actions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions, dtActions, ttActions, ahActions, bwActions);
+Object.assign(actions, uidActions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions, dtActions, ttActions, ahActions, bwActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
   if (e.target.classList && e.target.classList.contains('scrim')) { if (!(S.modal && S.modal.type === 'bday-ask')) closeModal(); return; }
@@ -15118,10 +15189,13 @@ async function createGuestPlayer() {
   if (!D.gp.bday) { toast(bdayMissingMsg(D.gp)); const el = document.querySelector('[data-bd="gp"]'); if (el) el.focus(); return; }
   const id = uid();
   const avatar = await shrinkImg(D.gp.avatar, 120, .7);
-  const key = newKey();
+  const key = newUserId();
   try {
     pkeyPut(id, [key]);
-    await db.collection('players').doc(id).set({name, color:D.gp.color || COLORS[0], avatar, createdAt:Date.now(), byGuest:true, kh:await sha256hex(key), ...dbP(styleFields(D.gp))});
+    const b = fs.batch();
+    b.set(db.collection('players').doc(id), {name, color:D.gp.color || COLORS[0], avatar, createdAt:Date.now(), byGuest:true, kh:await sha256hex(key), ...dbP(styleFields(D.gp))});
+    pkSet(b, id, key);
+    await b.commit();
     lsSet('turnier-me', id);
     D.gp = blankPlayer('');
     closeModal(); render();
@@ -15137,6 +15211,24 @@ const PKEYS = 'darkime-pkeys';
 function pkeyAll() { try { return JSON.parse(lsGet(PKEYS, '{}')) || {}; } catch (e) { return {}; } }
 const pkeyOf = id => pkeyAll()[id] || [];
 function pkeyPut(id, keys) { const o = pkeyAll(); if (keys && keys.length) o[id] = keys; else delete o[id]; lsSet(PKEYS, JSON.stringify(o)); }
+/* User-ID: 16 Zeichen (ohne 0/O/1/I), z. B. K7QD-M2XA-9PRT-HW4C. Ihr SHA-256 steht als kh am Spieler, die ID selbst in pk/{Spieler}
+   (liest nur der Spielleiter). Wer sie kennt, kann seinen Spieler auf jedem Gerät benutzen. Ältere Geräte-Schlüssel (48 Hex-Zeichen)
+   werden beim nächsten Speichern automatisch in eine User-ID umgewandelt. */
+const UID_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const isUserId = k => /^[A-HJ-NP-Z2-9]{4}(-[A-HJ-NP-Z2-9]{4}){3}$/.test(k || '');
+function newUserId() { const a = new Uint8Array(16); crypto.getRandomValues(a); return [...a].map(b => UID_ABC[b & 31]).join('').match(/.{4}/g).join('-'); }
+function normUserId(t) { const c = String(t || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/O/g, '0').replace(/I/g, '1'); return c.length === 16 && /^[A-HJ-NP-Z2-9]+$/.test(c) ? c.match(/.{4}/g).join('-') : ''; }
+const myUserId = pid => pkeyOf(pid).find(isUserId) || '';
+const pkSet = (b, pid, id) => b.set(db.collection('pk').doc(pid), {kp:id, t:FV().serverTimestamp()});
+/* Gerät mit einer User-ID verbinden: passenden Spieler suchen (über kh), Schlüssel merken, als „ich“ setzen */
+async function userIdLink(raw, pid) {
+  const id = normUserId(raw);
+  if (!id) { toast('Die User-ID hat 16 Zeichen, z. B. K7QD-M2XA-9PRT-HW4C.'); return false; }
+  const h = await sha256hex(id), p = pid ? playerById(pid) : S.players.find(x => x.kh === h);
+  if (!p || p.kh !== h) { toast('Diese User-ID passt zu keinem Spieler.'); return false; }
+  pkeyPut(p.id, [id]); lsSet('turnier-me', p.id);
+  toast(`Verbunden: Du bist ${p.name}.`); render(); return true;
+}
 function newKey() { const a = new Uint8Array(24); crypto.getRandomValues(a); return [...a].map(b => b.toString(16).padStart(2, '0')).join(''); }
 async function sha256hex(t) { const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, '0')).join(''); }
 /* own: Schlüssel liegt auf diesem Gerät. claim: älterer Gast-Spieler ohne Schlüssel, dieses Gerät ist dieser Spieler. */
@@ -15153,22 +15245,8 @@ async function saveOwnPlayer(d) {
   const fields = dbP({name, color:d.color || old.color, avatar:await shrinkImg(d.avatar || '', 120, .7), ...styleFields(d)});
   const ref = db.collection('players').doc(d.id);
   try {
-    let keys = pkeyOf(d.id);
-    if (how === 'claim') {
-      const k = newKey(); pkeyPut(d.id, [k]);
-      await ref.update({kh:await sha256hex(k)});
-      keys = [k];
-    }
-    // Neuen Schlüssel vorher merken: Kommt die Antwort nicht an, obwohl gespeichert wurde, klappt es beim nächsten Mal damit.
-    const next = newKey();
-    let ok = false;
-    for (const k of keys) {
-      pkeyPut(d.id, [k, next]);
-      try { await ref.update({...fields, kp:k, kh:await sha256hex(next)}); ok = true; break; }
-      catch (e) { if (!e || e.code !== 'permission-denied') throw e; }
-    }
-    if (!ok) { pkeyPut(d.id, keys); toast('Diesen Spieler kann nur der Spielleiter ändern.'); return; }
-    pkeyPut(d.id, [next]);
+    try { await vgCommit(d.id, b => b.update(ref, fields)); }
+    catch (e) { if (e && e.code === 'permission-denied') { toast('Diesen Spieler kann nur der Spielleiter ändern.'); return; } throw e; }
     await pbnSave(d);
     closeModal(); toast('Gespeichert.');
   } catch (e) { toast('Speichern hat nicht geklappt. Prüfe die Verbindung und versuch es nochmal.'); }

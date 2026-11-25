@@ -66,6 +66,9 @@ service cloud.firestore {
       // Gäste dürfen eigene Spieler anlegen (Name, Farbe, kleines Foto, Schrift, Farbverlauf, Rahmen, Spruch)
       // und später selbst ändern: Nur das Gerät, das den geheimen Schlüssel kennt, dessen SHA-256-Wert in kh steht.
       // Beim Ändern zeigt es den Schlüssel vor (kp) und legt einen neuen kh fest. Siege, Datum usw. bleiben unberührt.
+      // User-ID-Nachweis (siehe pk weiter unten)
+      function pkPath(pid) { return /databases/$(database)/documents/rooms/$(room)/pk/$(pid); }
+      function pkOk(pid) { return existsAfter(pkPath(pid)) && getAfter(pkPath(pid)).data.get('t', null) == request.time; }
       function playerOk(d) {
         return d.name is string && d.name.size() > 0 && d.name.size() <= 40
           && d.color is string && d.color.size() <= 9
@@ -88,8 +91,14 @@ service cloud.firestore {
           && request.resource.data.byGuest == true
           && (!('kh' in request.resource.data) || (request.resource.data.kh is string && request.resource.data.kh.size() == 64))
         );
-        // Der Spielleiter darf alles ändern, nur einen vorhandenen Schlüssel (kh) nicht austauschen.
-        allow update: if (isAdmin() && (resource.data.get('kh', '') == '' || request.resource.data.get('kh', '') == resource.data.get('kh', ''))) || (
+        // Der Spielleiter darf alles ändern (auch eine neue User-ID vergeben).
+        // Spieler: mit ihrer User-ID (pkOk, siehe unten), oder älter mit wechselndem Geräte-Schlüssel (kp).
+        allow update: if isAdmin() || (
+          pkOk(id)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'color', 'avatar', 'font', 'grad', 'frame', 'motto', 'shape', 'pbg', 'pblur', 'pdim', 'kh'])
+          && (request.resource.data.get('kh', '') == resource.data.get('kh', '') || (resource.data.get('kh', '') == '' && resource.data.get('byGuest', false) == true))
+          && playerOk(request.resource.data)
+        ) || (
           'kh' in resource.data
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'color', 'avatar', 'font', 'grad', 'frame', 'motto', 'shape', 'pbg', 'pblur', 'pdim', 'kh', 'kp'])
           && request.resource.data.kp is string && request.resource.data.kp.size() <= 100
@@ -102,6 +111,21 @@ service cloud.firestore {
           !('kh' in resource.data) && resource.data.byGuest == true
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['kh'])
           && request.resource.data.kh is string && request.resource.data.kh.size() == 64
+        );
+        allow delete: if isAdmin();
+      }
+
+      // User-ID eines Spielers (pk/{Spieler}): Mit ihr kann er seine Sachen auf jedem Gerät ändern (Handy und PC).
+      // Lesen darf nur der Spielleiter. Schreiben darf, wer die ID kennt: Ihr SHA-256 muss zu kh des Spielers passen.
+      // Wer etwas Geschütztes ändert, schreibt im selben Vorgang pk mit t = Serverzeit; pkOk prüft genau das.
+      match /pk/{pid} {
+        allow read: if isAdmin();
+        allow create, update: if isAdmin() || (
+          request.resource.data.keys().hasOnly(['kp', 't'])
+          && request.resource.data.kp is string && request.resource.data.kp.size() == 19
+          && request.resource.data.t == request.time
+          && existsAfter(/databases/$(database)/documents/rooms/$(room)/players/$(pid))
+          && hashing.sha256(request.resource.data.kp).toHexString().lower() == getAfter(/databases/$(database)/documents/rooms/$(room)/players/$(pid)).data.get('kh', '')
         );
         allow delete: if isAdmin();
       }
@@ -246,7 +270,7 @@ service cloud.firestore {
       // Hat ein Spieler noch keinen Schlüssel, darf er (bzw. bei selbst angelegten Spielern der Spielleiter) ihn dabei festlegen.
       function vgPl(pid) { return /databases/$(database)/documents/rooms/$(room)/players/$(pid); }
       function vgOwner(pid) {
-        return exists(vgPl(pid)) && ((
+        return exists(vgPl(pid)) && pkOk(pid) || exists(vgPl(pid)) && ((
             get(vgPl(pid)).data.get('kh', '') != ''
             && getAfter(vgPl(pid)).data.get('kh', '') != get(vgPl(pid)).data.get('kh', '')
             && getAfter(vgPl(pid)).data.get('kp', '') is string
