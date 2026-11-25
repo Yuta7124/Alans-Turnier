@@ -2959,7 +2959,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=77"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=78"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -10492,8 +10492,8 @@ function bwSim(th, rec) {
       if (ball.y >= BW_HEAD - .2 && Math.abs(ball.x) > BW_WALL - BW_BR) { ball.x = Math.sign(ball.x) * (BW_WALL - BW_BR); ball.vx *= -.3; }
     } else { ball.x += (Math.sign(ball.x) * .565 - ball.x) * Math.min(1, 14 * BW_STEP); ball.y += ball.vy * BW_STEP; }
     // Stöße
-    if (!ball.gut) for (const p of live) if (!p.pit && p.z < .2) bwHit(ball, p, 6, 1, .7);
-    for (let a = 0; a < live.length; a++) for (let b = a + 1; b < live.length; b++) if (!live[a].pit && !live[b].pit && Math.abs(live[a].z - live[b].z) < .25) bwHit(live[a], live[b], 1, 1, .65);
+    if (!ball.gut) for (const p of live) if (!p.pit && p.z < .2) bwHit(ball, p, 4.7, 1, .6);
+    for (let a = 0; a < live.length; a++) for (let b = a + 1; b < live.length; b++) if (!live[a].pit && !live[b].pit && Math.abs(live[a].z - live[b].z) < .25) bwHit(live[a], live[b], 1, 1, .5);
     let moving = 0;
     for (const p of live) {
       if (p.pit) continue;
@@ -10513,7 +10513,7 @@ function bwSim(th, rec) {
       }
       p.wob *= Math.exp(-3 * BW_STEP);
       // Seitenwände am Pin-Deck: Pins prallen zurück
-      if (p.y > BW_HEAD - .4 && Math.abs(p.x) > BW_WALL) { p.x = Math.sign(p.x) * BW_WALL; if (p.vx * p.x > 0) p.vx = -p.vx * .45; p.w += p.vy * 2; }
+      if (p.y > BW_HEAD - .4 && Math.abs(p.x) > BW_WALL) { p.x = Math.sign(p.x) * BW_WALL; if (p.vx * p.x > 0) p.vx = -p.vx * .2; p.w += p.vy * 2; }
       // Hinten in den Schacht
       if (p.y > BW_LEN + .2) { p.pit = true; p.down = true; p.tilt = 1; p.vx = p.vy = p.vz = 0; p.z = -.15; }
       if (Math.hypot(p.vx, p.vy) > .05 || (p.down && p.tilt < 1) || p.z > 0 || p.wob > .05) moving++;
@@ -10756,6 +10756,8 @@ function bwDragParams(d) {
     const d = bl.drag; if (!d) return; bl.drag = null;
     const M = S.bw, p = bwDragParams(d); if (!p || !bwMeTurn(M) || bwAnimating(M)) return;
     p.sp += bwFlickSpin(d) + bwNaturalSpin();
+    // Mit voller Kraft wird der Wurf ungenauer (wie in echt): Richtungsfehler wächst stark mit der Kraft
+    p.a += (Math.random() + Math.random() + Math.random() - 1.5) * .006 * Math.pow(p.pw, 2.5);
     bwThrow(M, p);
   };
   document.addEventListener('pointerup', up); document.addEventListener('pointercancel', () => { bl.drag = null; });
@@ -10835,7 +10837,7 @@ function bwPlayHTML(M) {
     <div class="bw-left">${bwBoardHTML(M)}</div>
     <div class="bw-right">
     ${bwMeTurn(M) ? `<div class="bw-ctl"><span class="lbl">Effet</span><div class="chips">${BW_SPINS.map(([v, l]) => `<button class="chip" type="button" data-act="bw-spin" data-v="${v}" aria-pressed="${(D.bwSpin || 0) === v}">${l}</button>`).join('')}</div></div>
-    <p class="muted tt-hint">Du bist dran! Kugel nach unten ziehen und loslassen, wie beim Minigolf. Tippen neben die Kugel verschiebt sie.<br>Tipp: Beim Loslassen seitlich wischen gibt der Kugel Drehung in diese Richtung.</p>` : `<p class="muted tt-hint">${M.players.includes(me) ? `${esc(ghost(pid).name)} ist dran.` : '👀 Du schaust zu.'}</p>`}
+    <p class="muted tt-hint">Du bist dran! Kugel nach unten ziehen und loslassen, wie beim Minigolf. Tippen neben die Kugel verschiebt sie.<br>Tipp: Beim Loslassen seitlich wischen gibt der Kugel Drehung in diese Richtung.<br>Volle Kraft ist schneller, aber ungenauer.</p>` : `<p class="muted tt-hint">${M.players.includes(me) ? `${esc(ghost(pid).name)} ist dran.` : '👀 Du schaust zu.'}</p>`}
     </div>
     </div>
   </section>`;
