@@ -909,6 +909,8 @@ body.is-bday .tab[aria-selected="true"]{box-shadow:0 0 0 2px #ff6fb5,0 0 18px rg
 .sp-id .sp-st{font-size:15px}
 .sp-since{font-size:13px;color:var(--muted)}
 .sp-lvbox{display:flex;flex-direction:column;gap:12px;padding:16px;background:rgba(7,5,15,.55);box-shadow:inset 0 0 0 2px rgba(255,255,255,.06)}
+.sp-actbox{align-self:start}
+.sp-lvside{display:flex;flex-direction:column;gap:12px}
 .sp-lvrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .sp-lvlbl{font-family:var(--display);font-size:24px;text-transform:uppercase}
 .sp-xp{display:flex;flex-direction:column;gap:6px}
@@ -2980,7 +2982,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=82"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=83"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -11996,12 +11998,7 @@ function spProfileHTML(p) {
           ${spSince(p) ? `<span class="sp-since">Dabei seit ${esc(spSince(p))}</span>` : ''}
           ${all.length ? `<span class="sp-t3h">Top 10 Lieblingsspiele${vgCan(p) ? ` <button class="btn btn-sm btn-ghost" type="button" data-act="t10-open" data-pid="${esc(p.id)}">✎ Ordnen</button>` : ''}</span>${spTop3HTML(all, 10)}` : ''}
         </div>
-        <div class="sp-lvbox">
-          <div class="sp-lvrow"><span class="sp-lvlbl">Level</span>${spLvHTML(lv.l, 'big')}</div>
-          <div class="sp-xp"><span class="vg-bt"><i style="width:${Math.round(lv.into / lv.span * 100)}%;--c:${spLvCol(lv.l)}"></i></span><small>${lv.xp} XP · noch ${lv.next - lv.xp} bis Level ${lv.l + 1}</small></div>
-          ${got.length ? `<div class="sp-feat" title="${esc(got[got.length - 1].d)}"><span>${got[got.length - 1].i}</span><div><b>${esc(got[got.length - 1].n)}</b><small>${esc(got[got.length - 1].d)}</small></div></div>` : ''}
-          <div class="sp-btns">${editable ? `<button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Profil bearbeiten</button><button class="btn btn-sm" type="button" data-act="pbg-edit" data-pid="${esc(p.id)}">🖼️ Hintergrund</button>${pbgNorm(p.pbg) !== 'none' && (bgG || pbgNorm(p.pbg) === 'img') ? `<button class="btn btn-sm" type="button" data-act="pbg-quick" data-pid="${esc(p.id)}">✂️ Ausschnitt</button>` : ''}` : ''}${can ? `<button class="btn btn-sm btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}</div>${vgNoKey(p) ? `<details class="uid-ask uid-mini"><summary>🔑 Mit User-ID verbinden</summary>${uidLinkHTML(p.id)}</details>` : ''}
-        </div>
+        ${editable || can ? `<div class="sp-lvbox sp-actbox"><div class="sp-btns">${editable ? `<button class="btn btn-sm" type="button" data-act="pbg-edit" data-pid="${esc(p.id)}">🖼️ Hintergrund</button>` : ''}${can ? `<button class="btn btn-sm btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}</div>${vgNoKey(p) ? `<details class="uid-ask uid-mini"><summary>🔑 Mit User-ID verbinden</summary>${uidLinkHTML(p.id)}</details>` : ''}</div>` : `<div>${vgNoKey(p) ? `<details class="uid-ask uid-mini"><summary>🔑 Mit User-ID verbinden</summary>${uidLinkHTML(p.id)}</details>` : ''}</div>`}
       </div>
     </div>
     <div class="sp-cols">
@@ -12037,6 +12034,12 @@ function spProfileHTML(p) {
         </div>` : ''}
       </div>
       <aside class="sp-side">
+        <div class="sp-box sp-lvside">
+          <div class="sp-lvrow"><span class="sp-lvlbl">Level</span>${spLvHTML(lv.l, 'big')}</div>
+          <div class="sp-xp"><span class="vg-bt"><i style="width:${Math.round(lv.into / lv.span * 100)}%;--c:${spLvCol(lv.l)}"></i></span><small>${lv.xp} XP · noch ${lv.next - lv.xp} bis Level ${lv.l + 1}</small></div>
+          ${got.length ? `<div class="sp-feat" title="${esc(got[got.length - 1].d)}"><span>${got[got.length - 1].i}</span><div><b>${esc(got[got.length - 1].n)}</b><small>${esc(got[got.length - 1].d)}</small></div></div>` : ''}
+          ${editable ? `<div class="sp-btns"><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Profil bearbeiten</button></div>` : ''}
+        </div>
         <div class="sp-box sp-nums">
           ${stat(st.n, st.n === 1 ? 'Spiel' : 'Spiele')}${stat(st.done, 'Durchgespielt')}${stat(st.all, 'Auf 100 %')}${stat(st.avg >= 0 ? vgNum(st.avg) : '–', 'Ø Bewertung')}${stat(shots, 'Screenshots')}${stat(clips, 'Clips')}${stat(vgHrs(st.hrs, st.hrsp), 'Stunden')}${stat(p.wins || 0, p.wins === 1 ? 'Turniersieg' : 'Turniersiege')}
           ${favPlat || favGen ? `<div class="sp-favs">${favPlat ? `<span><small>Lieblingsplattform</small><b>${esc(vgLbl(VG_PLAT, favPlat[0]))}</b></span>` : ''}${favGen ? `<span><small>Lieblingsgenre</small><b>${esc(vgLbl(VG_GEN, favGen[0]))}</b></span>` : ''}</div>` : ''}
@@ -13952,6 +13955,7 @@ function modalPbg() {
   return `
     <div class="m-head"><h2 id="m-title">🖼️ Profil-Hintergrund</h2><button class="x" type="button" data-act="modal-close" aria-label="Schließen">×</button></div>
     <p class="m-text">Lade ein eigenes Bild hoch oder nimm eins deiner Spiele. Mit den Reglern stellst du ein, wie unscharf und wie deutlich es zu sehen ist.</p>
+    ${D.ep && pbgNorm((playerById(D.ep.id) || {}).pbg) !== 'none' ? `<div class="chips"><button class="btn btn-sm" type="button" data-act="pbg-quick" data-pid="${esc(D.ep.id)}">✂️ Ausschnitt wählen</button></div>` : ''}
     <form class="stack" data-form="edit-player">${pfBgHTML('ep', D.ep)}
       <div class="m-foot"><button class="btn btn-ghost" type="button" data-act="modal-close">Abbrechen</button><button class="btn btn-gold" type="submit">Speichern</button></div>
     </form>`;
@@ -14237,6 +14241,7 @@ const actions = {
   'photo-clear': b => { const t = D[b.dataset.target]; if (!t) return; t.avatar = ''; S.modal ? renderModal() : render(); },
   'pbg-quick': async b => {
     const p = playerById(b.dataset.pid); if (!p) return;
+    if (S.modal) closeModal();
     const d = {...p, crop:null}, img = pbgImgOf(d, vgOf(p.id).filter(g => g.img));
     if (!img) { toast('Wähl zuerst unter „🖼️ Hintergrund“ ein Bild.'); return; }
     const hero = document.querySelector('.sp-hero'), r = hero ? hero.offsetWidth / Math.max(1, hero.offsetHeight) : 3;
