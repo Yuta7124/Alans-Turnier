@@ -2959,7 +2959,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=76"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=77"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -7175,7 +7175,7 @@ function tgoMsgHTML(spinId, kind) {
   const me = myPid(), L = lobby(t.room), inside = !!(me && L.members[me]);
   if (S.admin) return t.go
     ? `<span class="wm-go">🏆 Alle sind auf dem Weg in die Turnier-Lobby.</span><div class="wm-btns">${inside ? `<button class="btn btn-sm btn-gold" type="button" data-act="tgo-join">Zur Turnier-Lobby</button>` : ''}<button class="btn btn-sm" type="button" data-act="tgo-go">🔁 Nachzügler nochmal holen</button></div>`
-    : `<span class="wm-go">🏆 Die Turnier-Lobby für ${esc(nm)} ist bereit. Klick, dann wechseln alle gleichzeitig.</span><button class="btn btn-gold" type="button" data-act="tgo-go">🏆 Alle rüber: ${esc(nm)}</button>`;
+    : `<span class="wm-go">🏆 Die Turnier-Lobby ist bereit: <b>${esc(nm)}</b></span><small class="muted">Klick auf den Knopf, dann wechseln alle gleichzeitig.</small><button class="btn btn-gold" type="button" data-act="tgo-go">🏆 Alle rüber: <b>${esc(nm)}</b></button>`;
   if (!L.inv[me]) return '';
   return t.go ? `<span class="wm-go">🏆 Ab in die Turnier-Lobby!</span>${inside ? '' : `<button class="btn btn-sm" type="button" data-act="tgo-join">Jetzt rein</button>`}`
     : '<span class="wm-go">🏆 Gleich geht\'s los: Der Admin schickt alle gleichzeitig in die Turnier-Lobby.</span>';
@@ -10546,7 +10546,7 @@ function bwBotParams(M, lvl) {
   // Ohne Pins vorrechnen, wo die Kugel mit Winkel 0 ankommt, dann Winkel anpassen
   const ball = {x, y:.2, vx:0, vy:v}; for (let t = 0; t < 5 && ball.y < BW_HEAD; t += BW_STEP) bwBallStep(ball, sp, BW_STEP);
   const a = Math.atan2(tx - ball.x, BW_HEAD - .2);
-  return {x, a, v, sp};
+  return {x, a, v, sp:sp + (Math.random() + Math.random() - 1) * {e:.12, m:.07, h:.03}[lvl]};
 }
 
 /* ----- Ablauf ----- */
@@ -10712,6 +10712,18 @@ function bwSnd(n) {
    Je weiter gezogen, desto härter; schräg ziehen lenkt in die Gegenrichtung. Woanders auf die Bahn tippen/ziehen verschiebt die Kugel.
    Effet stellt man unter der Bahn ein. ----- */
 const BW_SPINS = [[-2, '↶↶'], [-1, '↶'], [0, 'Gerade'], [1, '↷'], [2, '↷↷']];
+/* Drehung wie in echt: Seitlich wischen beim Loslassen gibt Drehung in Wischrichtung,
+   und jeder Wurf hat eine kleine natürliche Drehung (manchmal etwas mehr). Wird im Wurf gespeichert, alle sehen dasselbe. */
+function bwFlickSpin(d) {
+  const tr = d && d.tr; if (!tr || tr.length < 2) return 0;
+  const a = tr[0], b = tr[tr.length - 1], dt = (b[1] - a[1]) / 1000; if (dt < .02) return 0;
+  const cv = document.getElementById('bw-cv'), w = cv ? cv.getBoundingClientRect().width : 400, f = (b[0] - a[0]) / dt / w;
+  return Math.abs(f) < .5 ? 0 : Math.max(-.55, Math.min(.55, (f - Math.sign(f) * .5) * .3));
+}
+function bwNaturalSpin() {
+  const r = Math.random() + Math.random() - 1;
+  return r * .14 + (Math.random() < .3 ? (Math.random() < .5 ? -1 : 1) * (.1 + Math.random() * .15) : 0);
+}
 function bwDragParams(d) {
   if (!d || d.mode !== 'aim') return null;
   // Richtung von der Kugelmitte zum Mauszeiger/Finger; fast senkrecht (bis 6°) zählt als gerade
@@ -10737,11 +10749,13 @@ function bwDragParams(d) {
   });
   document.addEventListener('pointermove', e => {
     const d = bl.drag; if (!d) return; d.cx = e.clientX; d.cy = e.clientY;
+    if (d.mode === 'aim') { const tn = performance.now(); (d.tr = d.tr || []).push([e.clientX, tn]); while (d.tr.length > 2 && tn - d.tr[0][1] > 110) d.tr.shift(); }
     if (d.mode === 'move') { const cv = document.getElementById('bw-cv'); if (cv) { bl.aimX = lanePos(e.clientX, cv); d.x = bl.aimX; } }
   });
   const up = () => {
     const d = bl.drag; if (!d) return; bl.drag = null;
     const M = S.bw, p = bwDragParams(d); if (!p || !bwMeTurn(M) || bwAnimating(M)) return;
+    p.sp += bwFlickSpin(d) + bwNaturalSpin();
     bwThrow(M, p);
   };
   document.addEventListener('pointerup', up); document.addEventListener('pointercancel', () => { bl.drag = null; });
@@ -10821,7 +10835,7 @@ function bwPlayHTML(M) {
     <div class="bw-left">${bwBoardHTML(M)}</div>
     <div class="bw-right">
     ${bwMeTurn(M) ? `<div class="bw-ctl"><span class="lbl">Effet</span><div class="chips">${BW_SPINS.map(([v, l]) => `<button class="chip" type="button" data-act="bw-spin" data-v="${v}" aria-pressed="${(D.bwSpin || 0) === v}">${l}</button>`).join('')}</div></div>
-    <p class="muted tt-hint">Du bist dran! Kugel nach unten ziehen und loslassen, wie beim Minigolf. Tippen neben die Kugel verschiebt sie.</p>` : `<p class="muted tt-hint">${M.players.includes(me) ? `${esc(ghost(pid).name)} ist dran.` : '👀 Du schaust zu.'}</p>`}
+    <p class="muted tt-hint">Du bist dran! Kugel nach unten ziehen und loslassen, wie beim Minigolf. Tippen neben die Kugel verschiebt sie.<br>Tipp: Beim Loslassen seitlich wischen gibt der Kugel Drehung in diese Richtung.</p>` : `<p class="muted tt-hint">${M.players.includes(me) ? `${esc(ghost(pid).name)} ist dran.` : '👀 Du schaust zu.'}</p>`}
     </div>
     </div>
   </section>`;
