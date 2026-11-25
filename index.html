@@ -909,6 +909,23 @@ body.is-bday .tab[aria-selected="true"]{box-shadow:0 0 0 2px #ff6fb5,0 0 18px rg
 .sp-id .sp-st{font-size:15px}
 .sp-since{font-size:13px;color:var(--muted)}
 .sp-lvbox{display:flex;flex-direction:column;gap:12px;padding:16px;background:rgba(7,5,15,.55);box-shadow:inset 0 0 0 2px rgba(255,255,255,.06)}
+.sp-search{margin:0 0 14px}
+.sp-search .input{width:100%;max-width:520px}
+.sp-list{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.sp-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 14px;background:var(--card,rgba(20,14,40,.75));box-shadow:inset 0 0 0 2px var(--edge,rgba(255,255,255,.08));border-radius:12px}
+.sp-row.is-me{box-shadow:inset 0 0 0 2px var(--coin)}
+.sp-row.add{justify-content:space-between}
+.sp-rowopen{display:flex;align-items:center;gap:14px;flex:1;min-width:220px;border:0;background:none;color:var(--ink);font:inherit;cursor:pointer;padding:4px 0;text-align:left}
+.sp-rowopen .pc-av{transition:transform .12s}
+.sp-rowopen:hover .pc-av,.sp-rowopen:focus-visible .pc-av{transform:scale(1.06)}
+.sp-rowtxt{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.sp-row .pc-name{font-size:20px;line-height:1.1}
+.sp-row .motto{font-size:12px}
+.sp-rowline{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.sp-du{font-size:11px;padding:2px 6px;border-radius:6px;background:var(--coin);color:#1a1208;vertical-align:middle}
+.sp-rowgo{font-size:28px;color:var(--muted);padding:0 4px}
+.sp-rowadm{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+@media (max-width:560px){.sp-rowadm{width:100%;justify-content:flex-end}.sp-row .pc-name{font-size:17px}}
 .sp-acts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:-8px 0 4px}
 .sp-acts .uid-mini{margin-top:0}
 .sp-lvside{display:flex;flex-direction:column;gap:12px}
@@ -2983,7 +3000,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=83"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=84"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -11910,24 +11927,23 @@ function spShotOpen(pid, i) {
 
 /* Spielerübersicht im Tab „Spieler“ */
 function spCardsHTML() {
-  const adm = S.admin, meId = myPid();
-  const byCreated = S.players.slice().sort((a, b) => (b.id === meId) - (a.id === meId) || a.createdAt - b.createdAt);
+  const adm = S.admin, meId = myPid(), q = String(D.spQ || '').trim().toLowerCase();
+  const byCreated = S.players.slice().sort((a, b) => (b.id === meId) - (a.id === meId) || a.createdAt - b.createdAt)
+    .filter(p => !q || p.name.toLowerCase().includes(q) || String(p.motto || '').toLowerCase().includes(q));
   const mine = playerById(meId);
-  const add = mine ? '' : `<div class="pcard add codecard"><span class="ptag">Mitspielen</span><p class="m-text" style="margin-top:14px">Erstell deinen eigenen Spieler mit Foto. Du bist sofort dabei.</p><button class="btn btn-gold" type="button" data-act="gplayer-open">Eigenen Spieler erstellen</button></div>`;
+  const add = mine || q ? '' : `<div class="sp-row add"><div class="sp-rowtxt"><b>Mitspielen</b><span class="muted">Erstell deinen eigenen Spieler mit Foto. Du bist sofort dabei.</span></div><button class="btn btn-gold" type="button" data-act="gplayer-open">Spieler erstellen</button></div>`;
+  if (q && !byCreated.length) return `<div class="empty-box"><strong>Kein Spieler gefunden</strong><span>Niemand heißt „${esc(D.spQ)}“.</span></div>`;
   return add + byCreated.map(p => {
     const l = vgOf(p.id), lv = spLevel(p, l), s = spStatus(p.id);
-    return `<div class="pcard sp-pcard ${p.wins > 0 ? 'has-wins' : ''} ${p.id === meId ? 'is-me' : ''}">
-      ${p.id === meId ? '<span class="ptag">Du</span>' : ''}
-      <button class="sp-open" type="button" data-act="vg-open" data-pid="${esc(p.id)}" aria-label="Profil von ${esc(p.name)} öffnen">
-        <span class="sp-avw">${avatar(p, 112, 'pc-av')}<i class="sp-dot ${s.k}" aria-hidden="true"></i></span>
-        <span class="pc-name">${nameHTML(p)}</span>${mottoHTML(p)}
-        <span class="sp-cardline">${spLvHTML(lv.l, 'sm')}<span class="sp-st ${s.k}">${esc(s.t)}</span></span>
-        <span class="sp-cardline muted">${l.length ? `${l.length} ${l.length === 1 ? 'Spiel' : 'Spiele'}` : 'Noch keine Spiele'}${p.wins > 0 ? ` · 🏆 ${p.wins}` : ''}</span>
-        ${spTop3HTML(l, 3)}
+    return `<div class="sp-row ${p.id === meId ? 'is-me' : ''}">
+      <button class="sp-rowopen" type="button" data-act="vg-open" data-pid="${esc(p.id)}" aria-label="Profil von ${esc(p.name)} öffnen">
+        <span class="sp-avw">${avatar(p, 56, 'pc-av')}<i class="sp-dot ${s.k}" aria-hidden="true"></i></span>
+        <span class="sp-rowtxt"><span class="pc-name">${nameHTML(p)}${p.id === meId ? ' <small class="sp-du">Du</small>' : ''}</span>${mottoHTML(p)}
+          <span class="sp-rowline">${spLvHTML(lv.l, 'sm')}<span class="sp-st ${s.k}">${esc(s.t)}</span><span class="muted">${l.length ? `${l.length} ${l.length === 1 ? 'Spiel' : 'Spiele'}` : 'Noch keine Spiele'}${p.wins > 0 ? ` · 🏆 ${p.wins}` : ''}</span></span></span>
+        <span class="sp-rowgo" aria-hidden="true">›</span>
       </button>
-      ${adm ? `<div class="pc-wins sp-wins"><span class="pw-edit"><button class="x" type="button" data-act="win-add" data-pid="${esc(p.id)}" data-d="-1" ${p.wins > 0 ? '' : 'disabled'} aria-label="Einen Turniersieg weniger für ${esc(p.name)}">−</button><b>${p.wins}</b> 🏆<button class="x" type="button" data-act="win-add" data-pid="${esc(p.id)}" data-d="1" aria-label="Einen Turniersieg mehr für ${esc(p.name)}">+</button></span></div>` : ''}
-      ${adm ? `<div class="pc-actions"><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Bearbeiten</button><button class="btn btn-sm btn-ghost danger" type="button" data-act="delete-player" data-pid="${esc(p.id)}">Löschen</button></div>`
-        : ownEdit(p) ? `<div class="pc-actions"><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Bearbeiten</button></div>` : ''}
+      ${adm ? `<div class="sp-rowadm"><span class="pc-wins sp-wins"><span class="pw-edit"><button class="x" type="button" data-act="win-add" data-pid="${esc(p.id)}" data-d="-1" ${p.wins > 0 ? '' : 'disabled'} aria-label="Einen Turniersieg weniger für ${esc(p.name)}">−</button><b>🏆 ${p.wins || 0}</b><button class="x" type="button" data-act="win-add" data-pid="${esc(p.id)}" data-d="1" aria-label="Einen Turniersieg mehr für ${esc(p.name)}">+</button></span></span><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Bearbeiten</button><button class="btn btn-sm btn-ghost danger" type="button" data-act="delete-player" data-pid="${esc(p.id)}">Löschen</button></div>`
+        : ownEdit(p) ? `<div class="sp-rowadm"><button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Bearbeiten</button></div>` : ''}
     </div>`;
   }).join('');
 }
@@ -11939,7 +11955,7 @@ function spCommunityHTML() {
   const me = myPid(), sel = owners.find(p => p.id === D.spTopP) || owners.find(p => p.id === me) || owners[0];
   const top = sel ? vgTop3(vgOf(sel.id), 10) : [];
   const recent = all.slice().sort((a, b) => Math.max(b.ts, b.up) - Math.max(a.ts, a.up)).slice(0, 8);
-  return `${sel ? `<h3 class="vg-h3">🏅 Top 10 Spiele</h3>
+  return `${sel ? `<h3 class="vg-h3">🏅 Top 10 Spiele${vgCan(sel) && vgOf(sel.id).length ? ` <button class="btn btn-sm btn-ghost" type="button" data-act="t10-open" data-pid="${esc(sel.id)}">✎ Ordnen</button>` : ''}</h3>
     <div class="chips sp-topsel" role="tablist" aria-label="Spieler wählen">${owners.map(p => `<button class="chip pchip" type="button" role="tab" data-act="sp-top" data-pid="${esc(p.id)}" aria-pressed="${p === sel}" aria-selected="${p === sel}">${avatar(p, 24)}${esc(p.name)}${p.id === me ? ' <small>(du)</small>' : ''}</button>`).join('')}</div>
     <ol class="vg-top">${top.map((g, i) => `<li><button type="button" data-act="vg-show" data-id="${esc(g.id)}"><span class="vg-rank">${i + 1}</span>${vgCoverHTML(g, 'tiny')}<span class="vg-tt"><b>${esc(g.title)}</b><small>${g.r >= 0 ? `⭐ ${g.r}/10` : 'Noch nicht bewertet'}${g.fav ? ` · ❤️ Favorit ${g.fav}` : ''}${g.hrs ? ` · ⏱ ${vgHrs(g.hrs, g.hrsp)} Std.` : ''} · ${VG_ST_SHORT[g.st] || ''}</small></span></button></li>`).join('')}</ol>
     ${top.length < 10 ? `<p class="muted sp-tophint">${esc(sel.name)} hat ${top.length === 1 ? '1 Spiel' : top.length + ' Spiele'} eingetragen.</p>` : ''}` : ''}
@@ -11953,7 +11969,8 @@ function viewPlayers() {
   return `<section class="section">
     <div class="sec-head"><h2 class="h">Spieler <span class="count">${S.players.length} Spieler</span></h2><span class="muted">Tipp auf einen Spieler, um sein Profil mit Spielen, Abzeichen und Screenshots zu sehen.</span></div>
     ${!me && S.mode === 'db' && S.players.some(x => x.kh) ? `<details class="card uid-ask"><summary>🔑 Du hast schon einen Spieler? Mit deiner User-ID verbinden</summary>${uidLinkHTML('')}</details>` : ''}
-    <div class="pgrid sp-grid">${spCardsHTML()}</div>
+    ${S.players.length > 1 ? `<div class="sp-search"><input class="input" type="search" id="sp-q" data-draft="spQ" value="${esc(D.spQ || '')}" placeholder="🔍 Spieler suchen …" autocomplete="off" aria-label="Spieler suchen"></div>` : ''}
+    <div class="sp-list">${spCardsHTML()}</div>
     ${!S.players.length ? '<div class="empty-box"><strong>Noch keine Spieler</strong></div>' : ''}
     ${S.mode === 'db' && S.vg ? spCommunityHTML() : ''}
   </section>`;
@@ -11996,11 +12013,10 @@ function spProfileHTML(p) {
           ${mottoHTML(p)}
           <span class="sp-st ${s.k}">${esc(s.t)}</span>
           ${spSince(p) ? `<span class="sp-since">Dabei seit ${esc(spSince(p))}</span>` : ''}
-          ${all.length ? `<span class="sp-t3h">Top 10 Lieblingsspiele${vgCan(p) ? ` <button class="btn btn-sm btn-ghost" type="button" data-act="t10-open" data-pid="${esc(p.id)}">✎ Ordnen</button>` : ''}</span>${spTop3HTML(all, 10)}` : ''}
         </div>
       </div>
     </div>
-    ${editable || can || vgNoKey(p) ? `<div class="sp-acts">${editable ? `<button class="btn btn-sm" type="button" data-act="pbg-edit" data-pid="${esc(p.id)}">🖼️ Hintergrund</button>` : ''}${can ? `<button class="btn btn-sm btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}${vgNoKey(p) ? `<details class="uid-ask uid-mini"><summary>🔑 Mit User-ID verbinden</summary>${uidLinkHTML(p.id)}</details>` : ''}</div>` : ''}
+    ${editable || can || vgNoKey(p) ? `<div class="sp-acts">${editable ? `<button class="btn btn-sm" type="button" data-act="pbg-edit" data-pid="${esc(p.id)}">🖼️ Hintergrund</button>` : ''}${can ? `<button class="btn btn-sm btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}${can && all.length ? `<button class="btn btn-sm" type="button" data-act="t10-open" data-pid="${esc(p.id)}">✎ Top 10 ordnen</button>` : ''}${vgNoKey(p) ? `<details class="uid-ask uid-mini"><summary>🔑 Mit User-ID verbinden</summary>${uidLinkHTML(p.id)}</details>` : ''}</div>` : ''}
     <div class="sp-cols">
       <div class="sp-main">
         ${fav ? `<div class="sp-box sp-favbox"><h3 class="sp-h">${fav.fav === 1 ? 'Lieblingsspiel' : 'Bestes Spiel'}</h3>
@@ -14372,7 +14388,7 @@ document.addEventListener('input', e => {
     if (t.id === 'nt-text') { ntSaveSoon(); ntCount(); }
     if (t.id === 'vg-title' && D.vgF && !D.vgF.img) { clearTimeout(vgCs.t); vgCs.t = setTimeout(() => { if (D.vgF && !D.vgF.img && document.getElementById('vg-cs')) vgCsRun(D.vgF.title); }, 900); }
     if (t.dataset.draft.startsWith('tkF.')) { tkDraftSave(); if (t.id === 'tk-title') { const c = $('#tk-tcnt'); if (c) c.textContent = t.value.length + '/100'; } }
-    if (t.id === 'tk-q') render();
+    if (t.id === 'tk-q' || t.id === 'sp-q') render();
     if (t.dataset.live && live[t.dataset.live]) live[t.dataset.live](t);
   }
 });
