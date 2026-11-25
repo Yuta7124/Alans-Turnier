@@ -2082,7 +2082,12 @@ display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .pick-big{min-width:0;box-sizing:border-box}
 .pick-big b{max-width:100%;overflow-wrap:anywhere;hyphens:auto;line-height:1.1}
 .pick-big small{max-width:100%;overflow-wrap:anywhere}
-@media (max-width:560px){.rc-pick{grid-template-columns:minmax(0,1fr);gap:14px;width:100%}.room-choose{padding:22px 12px}.pick-big{margin:4px 6px;padding:18px 12px}.pick-big b{font-size:clamp(20px,7vw,28px)}.pick-big span{font-size:42px}.pick-big small{font-size:13px}}
+.rc-pick{width:min(920px,100%);gap:16px}
+.rc-pick .pick-big{justify-content:center;gap:10px;padding:18px 12px}
+.rc-pick .pick-big small{display:none}
+.rc-pick .pick-big span{font-size:76px}
+.rc-pick .pick-big b{font-size:30px;hyphens:none;overflow-wrap:normal;word-break:normal}
+@media (max-width:560px){.rc-pick{grid-template-columns:minmax(0,1fr);gap:14px;width:100%}.room-choose{padding:22px 12px}.pick-big{margin:4px 6px;padding:18px 12px}.pick-big b{font-size:clamp(20px,7vw,28px)}.pick-big span{font-size:42px}.rc-pick .pick-big span{font-size:60px}.rc-pick .pick-big b{font-size:clamp(24px,8vw,32px)}.pick-big small{font-size:13px}}
 
 /* Wortwahl-Fenster */
 #dpick-root:empty{display:none}
