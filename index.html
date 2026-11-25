@@ -933,6 +933,19 @@ body.is-bday .tab[aria-selected="true"]{box-shadow:0 0 0 2px #ff6fb5,0 0 18px rg
 .sp-rowgo{font-size:28px;color:var(--muted);padding:0 4px}
 .sp-rowadm{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 @media (max-width:560px){.sp-rowadm{width:100%;justify-content:flex-end}.sp-row .pc-name{font-size:20px}.sp-row{padding:14px 14px}.sp-rowtop{gap:8px 14px}.sp-rowtg{max-width:100%}}
+.t10-all{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;margin:0 4px 20px;align-items:start}
+.t10-card{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:12px;background:var(--panel);box-shadow:inset 0 0 0 2px var(--edge,rgba(255,255,255,.08))}
+.t10-card.is-me{box-shadow:inset 0 0 0 2px var(--coin)}
+.t10-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.t10-who{display:flex;align-items:center;gap:10px;border:0;background:none;color:var(--ink);font:inherit;cursor:pointer;padding:0;min-width:0}
+.t10-who b{font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t10-ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.t10-ol button{width:100%;display:flex;align-items:center;gap:10px;border:0;cursor:pointer;color:var(--ink);font:inherit;text-align:left;padding:4px 6px;border-radius:8px;background:none}
+.t10-ol button:hover{background:var(--panel-2)}
+.t10-ol .vg-rank{min-width:20px;text-align:center}
+.t10-tt{display:flex;flex-direction:column;min-width:0}
+.t10-tt b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t10-tt small{font-size:12px;color:var(--muted)}
 .sp-acts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:-8px 0 4px}
 .sp-acts .uid-mini{margin-top:0}
 .sp-lvside{display:flex;flex-direction:column;gap:12px}
@@ -11955,17 +11968,20 @@ function spCardsHTML() {
     </div>`;
   }).join('');
 }
+/* Top 10 aller Spieler auf einen Blick: pro Spieler eine Spalte (selbst geordnet, sonst beste Bewertung). Die Suche oben filtert mit. */
 function spCommunityHTML() {
   const all = (S.vg || []).filter(g => playerById(g.pid));
   if (!all.length) return '';
-  // Top 10 pro Spieler: oben wählt man den Spieler, darunter stehen seine Lieblingsspiele (selbst geordnet, sonst beste Bewertung)
-  const owners = S.players.filter(p => all.some(g => g.pid === p.id));
-  const me = myPid(), sel = owners.find(p => p.id === D.spTopP) || owners.find(p => p.id === me) || owners[0];
-  const top = sel ? vgTop3(vgOf(sel.id), 10) : [];
-  return `${sel ? `<h3 class="vg-h3">🏅 Top 10 Spiele${vgCan(sel) && vgOf(sel.id).length ? ` <button class="btn btn-sm btn-ghost" type="button" data-act="t10-open" data-pid="${esc(sel.id)}">✎ Ordnen</button>` : ''}</h3>
-    <div class="chips sp-topsel" role="tablist" aria-label="Spieler wählen">${owners.map(p => `<button class="chip pchip" type="button" role="tab" data-act="sp-top" data-pid="${esc(p.id)}" aria-pressed="${p === sel}" aria-selected="${p === sel}">${avatar(p, 24)}${esc(p.name)}${p.id === me ? ' <small>(du)</small>' : ''}</button>`).join('')}</div>
-    <ol class="vg-top">${top.map((g, i) => `<li><button type="button" data-act="vg-show" data-id="${esc(g.id)}"><span class="vg-rank">${i + 1}</span>${vgCoverHTML(g, 'tiny')}<span class="vg-tt"><b>${esc(g.title)}</b><small>${g.r >= 0 ? `⭐ ${g.r}/10` : 'Noch nicht bewertet'}${g.fav ? ` · ❤️ Favorit ${g.fav}` : ''}${g.hrs ? ` · ⏱ ${vgHrs(g.hrs, g.hrsp)} Std.` : ''} · ${VG_ST_SHORT[g.st] || ''}</small></span></button></li>`).join('')}</ol>
-    ${top.length < 10 ? `<p class="muted sp-tophint">${esc(sel.name)} hat ${top.length === 1 ? '1 Spiel' : top.length + ' Spiele'} eingetragen.</p>` : ''}` : ''}`;
+  const me = myPid(), q = String(D.spQ || '').trim().toLowerCase();
+  const owners = S.players.filter(p => all.some(g => g.pid === p.id) && (!q || p.name.toLowerCase().includes(q)))
+    .sort((a, b) => (b.id === me) - (a.id === me) || a.createdAt - b.createdAt);
+  if (!owners.length) return '';
+  return `<h3 class="vg-h3">🏅 Top 10 Spiele</h3>
+    <div class="t10-all">${owners.map(p => { const top = vgTop3(vgOf(p.id), 10);
+      return `<div class="t10-card ${p.id === me ? 'is-me' : ''}">
+        <div class="t10-head"><button class="t10-who" type="button" data-act="vg-open" data-pid="${esc(p.id)}">${avatar(p, 36)}<b>${esc(p.name)}</b></button>${vgCan(p) ? `<button class="btn btn-sm btn-ghost" type="button" data-act="t10-open" data-pid="${esc(p.id)}">✎ Ordnen</button>` : ''}</div>
+        <ol class="t10-ol">${top.map((g, i) => `<li><button type="button" data-act="vg-show" data-id="${esc(g.id)}"><span class="vg-rank">${i + 1}</span>${vgCoverHTML(g, 'rt')}<span class="t10-tt"><b>${esc(g.title)}</b><small>${g.r >= 0 ? `⭐ ${g.r}/10` : 'Noch nicht bewertet'}</small></span></button></li>`).join('')}</ol>
+      </div>`; }).join('')}</div>`;
 }
 function viewPlayers() {
   if (S.mode === 'db') vgEnsure();
