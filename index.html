@@ -1634,6 +1634,8 @@ body.ah-locked .ah-lockhint{display:none}
 .uid-li b{min-width:90px}
 .uid-in{text-transform:uppercase;font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.05em}
 .uid-ask summary{cursor:pointer;font-weight:700}
+.uid-mini{margin-top:8px;font-size:.85rem}
+.uid-mini .uid-box{margin-top:6px}
 .wm-btns{
 display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .hub-admin{display:flex;justify-content:center;margin:8px 0 0}
@@ -2978,7 +2980,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=81"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=82"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -5242,6 +5244,7 @@ function playerForm(prefix, d) {
     <div class="field"><label for="${prefix}-name">Name</label>
       <input class="input" id="${prefix}-name" data-draft="${prefix}.name" data-live="pname" data-prefix="${prefix}" value="${esc(d.name)}" maxlength="40" placeholder="z. B. Lena" autocomplete="off"></div>
     ${bdayFieldHTML(prefix, d)}
+    ${d.id ? uidFormHTML(d.id) : ''}
     <div class="field"><label for="${prefix}-motto">Spruch (optional)</label>
       <input class="input" id="${prefix}-motto" data-draft="${prefix}.motto" value="${esc(d.motto || '')}" maxlength="40" placeholder="z. B. Ich hol mir den Pott!" autocomplete="off"></div>
     <div class="pf-sec"><span class="lbl">Farbe</span>
@@ -11224,21 +11227,15 @@ function uidLinkHTML(pid) {
   return `<div class="uid-box"><b>🔑 Mit deiner User-ID verbinden</b><small>Gib die User-ID ein, die auf deinem anderen Gerät im Profil steht. Danach kannst du deine Sachen auch hier ändern.</small>
     <div class="wadd"><input class="input uid-in" id="uid-in-${esc(pid || 'x')}" maxlength="24" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn btn-gold" type="button" data-act="uid-link" data-pid="${esc(pid || '')}">Verbinden</button></div></div>`;
 }
-function uidBoxHTML(p) {
-  if (!p || S.mode !== 'db' || isBot(p.id)) return '';
-  const mine = lsGet('turnier-me', '') === p.id, id = myUserId(p.id);
-  let out = '';
-  if (mine && id) out = `<div class="uid-box"><b>🔑 Deine User-ID</b><small>Nur du siehst sie. Gib sie auf deinem Handy oder PC ein, dann kannst du dort auch alles ändern. Gib sie niemandem weiter.</small>
-    <div class="uid-row"><code class="uid-code">${D.uidShow ? esc(id) : '••••-••••-••••-' + esc(id.slice(-4))}</code><button class="btn btn-sm" type="button" data-act="uid-show">${D.uidShow ? 'Verbergen' : 'Zeigen'}</button><button class="btn btn-sm" type="button" data-act="uid-copy" data-pid="${esc(p.id)}">Kopieren</button></div></div>`;
-  else if (mine && p.kh && pkeyOf(p.id).length) out = `<div class="uid-box"><b>🔑 User-ID</b><small>Erstelle deine User-ID, dann kannst du deinen Spieler auch auf anderen Geräten benutzen.</small><div class="chips"><button class="btn btn-sm btn-gold" type="button" data-act="uid-make" data-pid="${esc(p.id)}">User-ID erstellen</button></div></div>`;
-  else if (mine && p.kh) out = uidLinkHTML(p.id);
-  if (S.admin) {
-    const a = D.pkAll && D.pkAll[p.id];
-    out += `<div class="uid-box uid-adm"><b>🛡️ User-ID von ${esc(p.name)}</b><small>Nur du als Admin siehst sie.</small>
-      <div class="uid-row">${!D.pkAll ? '<span class="muted">Lädt …</span>' : a ? `<code class="uid-code">${esc(a)}</code><button class="btn btn-sm" type="button" data-act="uid-copy" data-v="${esc(a)}">Kopieren</button>` : '<span class="muted">Noch keine</span>'}<button class="btn btn-sm" type="button" data-act="uid-new" data-pid="${esc(p.id)}">${a ? 'Neu vergeben' : 'User-ID vergeben'}</button></div></div>`;
-    pkLoad();
-  }
-  return out;
+/* User-ID klein in „Profil bearbeiten“: der Spieler sieht seine eigene (auf seinem Gerät), der Admin die jedes Spielers */
+function uidFormHTML(pid) {
+  const p = playerById(pid); if (!p || S.mode !== 'db' || isBot(pid)) return '';
+  const mine = lsGet('turnier-me', '') === pid, own = mine ? myUserId(pid) : '';
+  if (S.admin) pkLoad();
+  const id = own || (S.admin && D.pkAll && D.pkAll[pid]) || '';
+  if (!id) return mine && p.kh && pkeyOf(pid).length ? `<div class="pf-sec"><span class="lbl">🔑 User-ID</span><div class="chips"><button class="btn btn-sm" type="button" data-act="uid-make" data-pid="${esc(pid)}">User-ID erstellen</button></div></div>` : '';
+  return `<div class="pf-sec"><span class="lbl">🔑 User-ID <small class="muted">${own ? 'Nur du siehst sie. Auf Handy oder PC eingeben, dann geht dort alles.' : 'Nur du als Admin siehst sie.'}</small></span>
+    <div class="uid-row"><code class="uid-code">${D.uidShow ? esc(id) : '••••-••••-••••-' + esc(id.slice(-4))}</code><button class="btn btn-sm" type="button" data-act="uid-show">${D.uidShow ? 'Verbergen' : 'Zeigen'}</button><button class="btn btn-sm" type="button" data-act="uid-copy" data-v="${esc(id)}">Kopieren</button></div></div>`;
 }
 /* Spielleiter: alle User-IDs einmal laden */
 let pkLoading = false;
@@ -11246,7 +11243,7 @@ function pkLoad(force) {
   if (!S.admin || !db || pkLoading || (D.pkAll && !force)) return;
   pkLoading = true;
   db.collection('pk').get().then(sn => { const o = {}; sn.docs.forEach(d => { const k = d.data().kp; if (isUserId(k)) o[d.id] = k; }); D.pkAll = o; })
-    .catch(() => { D.pkAll = {}; }).finally(() => { pkLoading = false; render(); });
+    .catch(() => { D.pkAll = {}; }).finally(() => { pkLoading = false; render(); if (S.modal) renderModal(); });
 }
 async function uidAdminNew(pid) {
   const p = playerById(pid); if (!S.admin || !p || !db) return;
@@ -11263,10 +11260,10 @@ async function uidAdminNew(pid) {
   else go();
 }
 const uidActions = {
-  'uid-show': () => { D.uidShow = !D.uidShow; render(); },
+  'uid-show': () => { D.uidShow = !D.uidShow; if (S.modal) renderModal(); else render(); },
   'uid-copy': b => { const v = b.dataset.v || myUserId(b.dataset.pid); if (!v) return; try { navigator.clipboard.writeText(v).then(() => toast('User-ID kopiert.'), () => toast(v)); } catch (e) { toast(v); } },
   'uid-link': b => { const pid = b.dataset.pid || '', el = document.getElementById('uid-in-' + (pid || 'x')); userIdLink(el ? el.value : '', pid); },
-  'uid-make': async b => { try { await vgCommit(b.dataset.pid, () => {}); toast('Deine User-ID ist erstellt.'); render(); } catch (e) { vgErr(e); } },
+  'uid-make': async b => { try { await vgCommit(b.dataset.pid, () => {}); toast('Deine User-ID ist erstellt.'); if (S.modal) renderModal(); else render(); } catch (e) { vgErr(e); } },
   'uid-new': b => uidAdminNew(b.dataset.pid)
 };
 /* Spielzeit mit „+“, wenn es mindestens so viele Stunden sind (z. B. 5.000+) */
@@ -12003,7 +12000,7 @@ function spProfileHTML(p) {
           <div class="sp-lvrow"><span class="sp-lvlbl">Level</span>${spLvHTML(lv.l, 'big')}</div>
           <div class="sp-xp"><span class="vg-bt"><i style="width:${Math.round(lv.into / lv.span * 100)}%;--c:${spLvCol(lv.l)}"></i></span><small>${lv.xp} XP · noch ${lv.next - lv.xp} bis Level ${lv.l + 1}</small></div>
           ${got.length ? `<div class="sp-feat" title="${esc(got[got.length - 1].d)}"><span>${got[got.length - 1].i}</span><div><b>${esc(got[got.length - 1].n)}</b><small>${esc(got[got.length - 1].d)}</small></div></div>` : ''}
-          <div class="sp-btns">${editable ? `<button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Profil bearbeiten</button><button class="btn btn-sm" type="button" data-act="pbg-edit" data-pid="${esc(p.id)}">🖼️ Hintergrund</button>${pbgNorm(p.pbg) !== 'none' && (bgG || pbgNorm(p.pbg) === 'img') ? `<button class="btn btn-sm" type="button" data-act="pbg-quick" data-pid="${esc(p.id)}">✂️ Ausschnitt</button>` : ''}` : ''}${can ? `<button class="btn btn-sm btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}</div>${uidBoxHTML(p)}
+          <div class="sp-btns">${editable ? `<button class="btn btn-sm" type="button" data-act="edit-player" data-pid="${esc(p.id)}">Profil bearbeiten</button><button class="btn btn-sm" type="button" data-act="pbg-edit" data-pid="${esc(p.id)}">🖼️ Hintergrund</button>${pbgNorm(p.pbg) !== 'none' && (bgG || pbgNorm(p.pbg) === 'img') ? `<button class="btn btn-sm" type="button" data-act="pbg-quick" data-pid="${esc(p.id)}">✂️ Ausschnitt</button>` : ''}` : ''}${can ? `<button class="btn btn-sm btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}</div>${vgNoKey(p) ? `<details class="uid-ask uid-mini"><summary>🔑 Mit User-ID verbinden</summary>${uidLinkHTML(p.id)}</details>` : ''}
         </div>
       </div>
     </div>
