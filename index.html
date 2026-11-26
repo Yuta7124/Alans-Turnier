@@ -1800,6 +1800,7 @@ body.ah-locked .ah-lockhint{display:none}
 .ap-jokers{display:flex;gap:8px;flex-wrap:wrap}
 .ap-jk{border:0;border-radius:999px;padding:8px 14px;font:inherit;font-weight:800;font-size:13px;cursor:pointer;color:#fff;background:linear-gradient(180deg,#3a4cb8,#1f2b7a);box-shadow:0 0 0 2px #6d82ff}
 .ap-jk:hover:not(:disabled){transform:translateY(-2px)}
+.ap-hearts{font-size:18px;letter-spacing:2px}
 .ap-lockinfo{font-size:13px;font-weight:800;color:#9fb0ff;padding:10px 14px;border-radius:999px;background:rgba(109,130,255,.12)}
 .ap-lockinfo.wait{color:#1a1208;background:#ffb52e}
 .ap-lockinfo.ok{color:#fff;background:#178a48}
@@ -3237,7 +3238,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=102"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=103"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -11203,9 +11204,9 @@ function apNorm(x) {
   for (const id of players) {
     const r = src[id] && typeof src[id] === 'object' ? src[id] : {};
     const j = k => Number.isInteger(r[k]) && r[k] >= 0 && r[k] < AP_N ? r[k] : -1;
-    pr[id] = {lv:Math.max(0, Math.min(AP_N, +r.lv || 0)), st:['play', 'out', 'stop', 'won'].includes(r.st) ? r.st : 'play', at:Number(r.at) || 0, jf:j('jf'), jp:j('jp'), jt:j('jt'), jtc:r.jtc === 0 || r.jtc === 1 ? r.jtc : -1, ja:r.ja ? 1 : 0, jw:Number(r.jw) > 0 ? +r.jw : 0};
+    pr[id] = {lv:Math.max(0, Math.min(AP_N, +r.lv || 0)), st:['play', 'out', 'stop', 'won'].includes(r.st) ? r.st : 'play', at:Number(r.at) || 0, jf:j('jf'), jp:j('jp'), jt:j('jt'), jtc:r.jtc === 0 || r.jtc === 1 ? r.jtc : -1, mx:Math.max(0, Math.min(3, Math.round(+r.mx || 0))), ja:r.ja ? 1 : 0, jw:Number(r.jw) > 0 ? +r.jw : 0};
   }
-  return {g:'ap', id:str(x.id, 40), status:x.status, players, qs, tl:[0, 30, 60].includes(+x.tl) ? +x.tl : 0, pr, transferred:x.transferred === true, pz:x.pz && x.pz.at ? x.pz : null};
+  return {g:'ap', id:str(x.id, 40), status:x.status, players, qs, tl:[0, 30, 60].includes(+x.tl) ? +x.tl : 0, pr, tour:x.tour === true, transferred:x.transferred === true, pz:x.pz && x.pz.at ? x.pz : null};
 }
 function apMe(M) { const me = myPid(), L = lobby(); return M && me && !S.spectate && L && L.members[me] && M.players.includes(me) ? me : ''; }
 /* Frage einer Stufe: Text, Antworten (gemischt, für alle gleich) und Index der richtigen */
@@ -11216,6 +11217,15 @@ function apQ(M, lv) {
   return {t:q[0], a:ord.map(o => q[1][o]), ok:ord.indexOf(0), cat:CATS[c] || ''};
 }
 /* Gewonnener Betrag: beim Aussteigen der letzte sichere Stand, bei falscher Antwort die letzte Sicherheitsstufe */
+/* Turnier-Modus: Punkte = Nummer der Frage, bei der man raus ist (alle geschafft = 30). 2 Leben: erst der 3. Fehler wirft raus, nach Fehler 1 und 2 geht es mit der nächsten Frage weiter. */
+const AP_LIVES = 2;
+function apPts(r) { return r.st === 'won' ? AP_N : r.st === 'out' ? r.lv + 1 : r.lv; }
+function apMissed(M, r) {
+  if (!M.tour) return {...r, st:'out'};
+  const mx = (r.mx || 0) + 1; if (mx > AP_LIVES) return {...r, mx, st:'out'};
+  const n = r.lv + 1; return {...r, mx, lv:n, st:n >= AP_N ? 'won' : 'play', at:Date.now()};
+}
+function apHearts(r) { const left = Math.max(0, AP_LIVES - (r.mx || 0)); return `<span class="ap-hearts" title="Noch ${left} Leben">${'❤️'.repeat(left)}${'🖤'.repeat(AP_LIVES - left)}</span>`; }
 function apWon(r) {
   if (r.st === 'won') return AP_LADDER[AP_N - 1];
   if (r.st === 'out') { const s = AP_SAFE.filter(x => r.lv >= x).pop(); return s ? AP_LADDER[s - 1] : 0; }
@@ -11284,12 +11294,13 @@ function apStart() {
   }
   apSeenSet([...seen, ...qs]);
   const tl = [0, 30, 60].includes(D.apTl) ? D.apTl : 0, now = Date.now() + 1500;
-  const pr = Object.fromEntries(players.map(p => [p, {lv:0, st:'play', at:now, jf:-1, jp:-1, jt:-1}]));
-  const M = {g:'ap', id, status:'running', players, qs, tl, pr, transferred:false};
+  const pr = Object.fromEntries(players.map(p => [p, {lv:0, st:'play', at:now, jf:-1, jp:-1, jt:-1, mx:0}]));
+  const M = {g:'ap', id, status:'running', players, qs, tl, pr, tour:!!(L && L.tour), transferred:false};
   S.lobbies[S.room] = {...L, uno:M}; S.ap = apNorm(M); roomWrite({uno:M}); render();
 }
 function apTransfer() {
   const M = S.ap; if (!ctl() || !M || M.status !== 'finished' || M.transferred) return;
+  if (M.tour) { lobbyAward({'uno.transferred':true}, M.players.map(id => ({playerId:id, delta:apPts(M.pr[id])}))); return; }
   const rows = M.players.map(id => ({id, v:apWon(M.pr[id])})).sort((a, b) => b.v - a.v);
   const pts = [3, 2, 1]; let rank = 0;
   const e = rows.map((x, i) => { if (i && x.v < rows[i - 1].v) rank = i; return {playerId:x.id, delta:x.v > 0 ? (pts[rank] || 1) : 0}; });
@@ -11303,8 +11314,9 @@ function apLogic() {
   if (me && M.pr[me].jw && !aph.show) { const c = M.pr[me]; apWrite(me, {...c, at:c.at + Math.max(0, now - c.jw), jw:0}); return; }
   // Eigene Zeit abgelaufen: falsch
   if (M.tl && me && M.pr[me].st === 'play' && !M.pr[me].jw && apl.lock < 0 && now > M.pr[me].at + M.tl * 1000 && apl.timeKey !== M.id + ':' + M.pr[me].lv) {
-    apl.timeKey = M.id + ':' + M.pr[me].lv; if (!apFxPlay('bad')) sfx('timeout'); toast('⏰ Zeit abgelaufen!');
-    apWrite(me, {...M.pr[me], st:'out'}); return;
+    apl.timeKey = M.id + ':' + M.pr[me].lv; if (!apFxPlay('bad')) sfx('timeout');
+    const nx = apMissed(M, M.pr[me]); toast(nx.st === 'play' ? `⏰ Zeit abgelaufen! Ein Leben weg, noch ${AP_LIVES - nx.mx}.` : '⏰ Zeit abgelaufen!');
+    apl.pick = -1; apWrite(me, nx); return;
   }
   if (!host) return;
   for (const id of M.players) {
@@ -11314,8 +11326,8 @@ function apLogic() {
       if (b.lv !== r.lv) { b.lv = r.lv; b.at = Math.max(now, r.at) + botR(3500, 8500); continue; }
       if (now < b.at) continue;
       const lvl = botLvl(id), p = {e:.95, m:.97, h:.99}[lvl] - r.lv * {e:.03, m:.022, h:.015}[lvl];
-      if (AP_SAFE.includes(r.lv) && Math.random() < {e:.45, m:.3, h:.15}[lvl] * (1.2 - p)) { apWrite(id, {...r, st:'stop'}); continue; }
-      if (Math.random() < p) { const lv = r.lv + 1; apWrite(id, {...r, lv, st:lv >= AP_N ? 'won' : 'play', at:Date.now()}); } else apWrite(id, {...r, st:'out'});
+      if (!M.tour && AP_SAFE.includes(r.lv) && Math.random() < {e:.45, m:.3, h:.15}[lvl] * (1.2 - p)) { apWrite(id, {...r, st:'stop'}); continue; }
+      if (Math.random() < p) { const lv = r.lv + 1; apWrite(id, {...r, lv, st:lv >= AP_N ? 'won' : 'play', at:Date.now()}); } else apWrite(id, apMissed(M, r));
     } else if (M.tl && now > r.at + M.tl * 1000 + 20000 && !(r.jw && now - r.jw < 300000)) apWrite(id, {...r, st:'out'}); // weg vom Gerät
   }
   const L = lobby(), cur = apNorm(L && L.uno);
@@ -11341,8 +11353,8 @@ const apActions = {
       setTimeout(() => {
         apl.reveal = null; apl.lock = -1; apl.pick = -1;
         const cur = S.ap && S.ap.pr[me]; if (!cur || cur.lv !== lv) { render(); return; }
-        if (ok) { const n = lv + 1; apWrite(me, {...cur, lv:n, st:n >= AP_N ? 'won' : 'play', at:Date.now()}); if (n >= AP_N) apConfetti(); else if (AP_SAFE.includes(n)) toast(`🛡️ Sicher: ${apEur(AP_LADDER[n - 1])}`); else if (n % 5 === 0) toast(`⬆️ Jetzt wird es schwerer: ${tx(AP_TIERS[apTier(n)])}`); }
-        else apWrite(me, {...cur, st:'out'});
+        if (ok) { const n = lv + 1; apWrite(me, {...cur, lv:n, st:n >= AP_N ? 'won' : 'play', at:Date.now()}); if (n >= AP_N) apConfetti(); else if (!S.ap.tour && AP_SAFE.includes(n)) toast(`🛡️ Sicher: ${apEur(AP_LADDER[n - 1])}`); else if (n % 5 === 0) toast(`⬆️ Jetzt wird es schwerer: ${tx(AP_TIERS[apTier(n)])}`); }
+        else { const nx = apMissed(S.ap, cur); apWrite(me, nx); if (nx.st === 'play') toast(`💔 Ein Leben weg! Noch ${AP_LIVES - nx.mx}.`); else if (S.ap.tour) toast(`Raus bei Frage ${cur.lv + 1}: ${cur.lv + 1} Punkte.`); }
         render();
       }, ok ? 1300 : 2600);
     }, 1600);
@@ -11368,7 +11380,7 @@ const apActions = {
   },
   'ap-stop': () => {
     const M = S.ap, me = apMe(M); if (!me || apl.lock >= 0) return; const r = M.pr[me];
-    if (!AP_SAFE.includes(r.lv)) { toast('Aussteigen geht nur bei 1.000 € und 32.000 €.'); return; }
+    if (M.tour || !AP_SAFE.includes(r.lv)) { toast('Aussteigen geht nur bei 1.000 € und 32.000 €.'); return; }
     confirmBox('Aussteigen?', `Du nimmst ${apEur(r.lv ? AP_LADDER[r.lv - 1] : 0)} mit und spielst nicht weiter.`, [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Aussteigen', cls:'btn-gold', fn:() => { const c = S.ap.pr[me]; if (c.st === 'play') apWrite(me, {...c, st:'stop'}); render(); }}]);
   }
 };
@@ -11376,6 +11388,13 @@ function apConfetti() { try { chConfetti(); } catch (e) {} }
 
 /* ----- Ansichten ----- */
 function apRulesHTML(open) {
+  const L = lobby(); if (L && L.tour) return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird im Turnier gespielt</summary><ul>
+    <li><b>Alle gleichzeitig:</b> Jeder beantwortet dieselben 30 Fragen für sich. Wie weit die anderen sind, sieht man erst am Ende.</li>
+    <li><b>Antworten:</b> Doppelklick (am Handy doppelt tippen) auf eine Antwort = endgültige Antwort.</li>
+    <li><b>Punkte:</b> So viele Punkte wie die Nummer der Frage, bei der du rausfliegst. Raus bei Frage 14 = 14 Punkte, alle 30 geschafft = 30 Punkte.</li>
+    <li><b>2 Leben:</b> Zweimal darfst du falsch liegen (oder die Zeit verpassen), dann geht es mit der nächsten Frage weiter. Beim 3. Fehler bist du raus.</li>
+    <li><b>Aussteigen</b> gibt es im Turnier nicht.</li>
+    <li><b>Joker (je einmal):</b> 50:50, Publikum und Telefon wie im normalen Spiel.</li></ul></details>`;
   return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird gespielt</summary><ul>
     <li><b>Alle gleichzeitig:</b> Jeder beantwortet dieselben 30 Fragen für sich. Die anderen sehen nur, auf welcher Stufe du bist, nie die Frage.</li>
     <li><b>Antworten:</b> Doppelklick (am Handy doppelt tippen) auf eine Antwort = endgültige Antwort. Richtig = eine Stufe höher, von 25 € bis 1 Million.</li>
@@ -11399,13 +11418,14 @@ function apSetupHTML() {
     <button class="btn btn-gold btn-big" type="button" data-act="ap-start" ${mem.some(id => !isBot(id)) ? '' : 'disabled'}>Runde starten</button>
   </div>${apRulesHTML(true)}</section>`;
 }
-function apLadderHTML(r) {
-  return `<ol class="ap-ladder">${AP_LADDER.map((v, i) => ({v, i})).reverse().map(({v, i}) => `<li class="${i === r.lv && r.st === 'play' ? 'cur' : ''} ${i < r.lv ? 'done' : ''} ${AP_SAFE.includes(i + 1) ? 'safe' : ''} ${i % 5 === 0 && i ? 'tier' : ''}"><span>${i + 1}</span><b>${apEur(v)}</b></li>`).join('')}</ol>`;
+function apLadderHTML(r, tour) {
+  return `<ol class="ap-ladder">${AP_LADDER.map((v, i) => ({v, i})).reverse().map(({v, i}) => `<li class="${i === r.lv && r.st === 'play' ? 'cur' : ''} ${i < r.lv ? 'done' : ''} ${!tour && AP_SAFE.includes(i + 1) ? 'safe' : ''} ${i % 5 === 0 && i ? 'tier' : ''}"><span>${i + 1}</span><b>${tour ? `${i + 1} Pkt.` : apEur(v)}</b></li>`).join('')}</ol>`;
 }
 function apStatus(r) {
   return r.st === 'won' ? '🏆 Millionär!' : r.st === 'stop' ? `🚪 Ausgestiegen · ${apEur(apWon(r))}` : r.st === 'out' ? `❌ Raus · ${apEur(apWon(r))}` : `Frage ${r.lv + 1} · um ${apEur(AP_LADDER[r.lv])}`;
 }
 function apBoardHTML(M) {
+  if (M.tour) return `<div class="card ap-board"><h3>👥 Es spielen mit</h3><p class="muted">${M.players.map(id => esc(ghost(id).name)).join(' · ')}</p><small class="muted">Im Turnier siehst du erst am Ende, wie weit die anderen gekommen sind.</small></div>`;
   const rows = M.players.map(id => ({id, r:M.pr[id]})).sort((a, b) => b.r.lv - a.r.lv || apWon(b.r) - apWon(a.r));
   return `<div class="card ap-board"><h3>👥 So weit sind alle</h3><ul>${rows.map(({id, r}) => { const p = ghost(id);
     return `<li class="${id === myPid() ? 'me' : ''} st-${r.st}">${avatar(p, 34)}<div class="ap-bn"><b>${esc(p.name)}</b><small>${apStatus(r)}</small></div><span class="ap-bar"><i style="width:${Math.round(r.lv / AP_N * 100)}%"></i></span><span class="ap-blv">${r.lv}/${AP_N}</span></li>`; }).join('')}</ul></div>`;
@@ -11415,6 +11435,7 @@ function apSideHTML(M) {
   const rows = M.players.map(id => ({id, r:M.pr[id]})).sort((a, b) => b.r.lv - a.r.lv || apWon(b.r) - apWon(a.r));
   const mark = r => r.st === 'won' ? '<span class="ap-sm won" title="Geschafft">👑</span>' : r.st === 'out' ? '<span class="ap-sm out" title="Raus">✗</span>'
     : r.st === 'stop' ? `<span class="ap-sm stop" title="Ausgestiegen">${r.lv}</span>` : AP_SAFE.includes(r.lv) ? '<span class="ap-sm safe" title="Auf der Sicherheitsstufe">➜</span>' : `<span class="ap-sm" title="Frage ${r.lv + 1}">${r.lv + 1}</span>`;
+  if (M.tour) return `<aside class="card ap-side"><h3>Spieler</h3><ol>${M.players.map(id => `<li class="${id === myPid() ? 'me' : ''}"><b>${esc(ghost(id).name)}</b></li>`).join('')}</ol></aside>`;
   return `<aside class="card ap-side"><h3>Spieler</h3><ol>${rows.map(({id, r}) => `<li class="${id === myPid() ? 'me' : ''} st-${r.st}"><b>${esc(ghost(id).name)}</b>${mark(r)}</li>`).join('')}</ol></aside>`;
 }
 function apPlayHTML(M) {
@@ -11425,7 +11446,7 @@ function apPlayHTML(M) {
     const aud = r.jp === lv ? apAudience(M, lv) : null, ph = r.jt === lv && r.jtc >= 0 ? apPhone(M, lv, r.jtc) : null, phPick = r.jt === lv && r.jtc < 0 ? apPhonePair(M, lv) : null, apo = phPick && apBotHere(M, lv), paused = roomPaused();
     const left = M.tl ? Math.max(0, M.tl * 1000 - ((paused ? paused.at : r.jw || Date.now()) - r.at)) : 0;
     main = `<div class="card ap-q">
-      <div class="ap-qtop"><span class="ap-stage">Frage ${lv + 1} von ${AP_N} · <span class="ap-tier t${apTier(lv)}">${AP_TIERS[apTier(lv)]}</span></span><b class="ap-for">um ${apEur(AP_LADDER[lv])}</b>${q.cat ? `<small class="muted">${esc(q.cat)}</small>` : ''}</div>
+      <div class="ap-qtop"><span class="ap-stage">Frage ${lv + 1} von ${AP_N} · <span class="ap-tier t${apTier(lv)}">${AP_TIERS[apTier(lv)]}</span></span>${M.tour ? `<b class="ap-for">${lv + 1} ${lv ? 'Punkte' : 'Punkt'}</b>${apHearts(r)}` : `<b class="ap-for">um ${apEur(AP_LADDER[lv])}</b>`}${q.cat ? `<small class="muted">${esc(q.cat)}</small>` : ''}</div>
       ${M.tl ? `<div class="ap-time"><i id="ap-tbar" style="width:${left / (M.tl * 10)}%"></i><span id="ap-tsec">${Math.ceil(left / 1000)} s</span></div>` : ''}
       <div class="ap-mid">
       <p class="ap-text">${esc(q.t)}</p>
@@ -11437,11 +11458,11 @@ function apPlayHTML(M) {
       <div class="ap-acts">
         <span class="ap-lockinfo ${rv ? (rv.ok ? 'ok' : 'bad') : apl.lock >= 0 ? 'wait' : ''}">${apl.lock >= 0 ? (rv ? (rv.ok ? '✓ Richtig!' : '✗ Leider falsch') : '🔒 Eingeloggt …') : apl.pick >= 0 ? 'Nochmal drauf = endgültige Antwort' : (matchMedia('(pointer: coarse)').matches ? 'Doppelt tippen = endgültige Antwort' : 'Doppelklick auf eine Antwort = endgültig')}</span>
         <div class="ap-jokers">${[['jf', '50:50'], ['jp', '👥 Publikum'], ['jt', '📞 Telefon']].map(([k, l]) => `<button class="ap-jk ${r[k] >= 0 ? 'used' : ''}" type="button" data-act="ap-joker" data-v="${k}" ${r[k] >= 0 || apl.lock >= 0 ? 'disabled' : ''}>${l}</button>`).join('')}</div>
-        ${AP_SAFE.includes(lv) ? `<button class="btn btn-sm ap-stopbtn" type="button" data-act="ap-stop" ${apl.lock >= 0 ? 'disabled' : ''}>🚪 Aussteigen mit ${apEur(AP_LADDER[lv - 1])}</button>` : ''}
+        ${!M.tour && AP_SAFE.includes(lv) ? `<button class="btn btn-sm ap-stopbtn" type="button" data-act="ap-stop" ${apl.lock >= 0 ? 'disabled' : ''}>🚪 Aussteigen mit ${apEur(AP_LADDER[lv - 1])}</button>` : ''}
       </div>
     </div>`;
   } else if (r) {
-    main = `<div class="card ap-done st-${r.st}"><span class="eyebrow">Dein Ergebnis</span><h2>${r.st === 'won' ? '🏆 Du bist der nächste ApoRed!' : r.st === 'stop' ? '🚪 Ausgestiegen' : '❌ Leider raus'}</h2><p class="ap-sum">${apEur(apWon(r))}</p><p class="muted">Warte, bis alle fertig sind …</p></div>`;
+    main = `<div class="card ap-done st-${r.st}"><span class="eyebrow">Dein Ergebnis</span><h2>${r.st === 'won' ? (M.tour ? '🏆 Alle 30 Fragen geschafft!' : '🏆 Du bist der nächste ApoRed!') : r.st === 'stop' ? '🚪 Ausgestiegen' : M.tour ? `❌ Raus bei Frage ${r.lv + 1}` : '❌ Leider raus'}</h2><p class="ap-sum">${M.tour ? `${apPts(r)} Punkte` : apEur(apWon(r))}</p><p class="muted">Warte, bis alle fertig sind …</p></div>`;
   } else main = `<div class="card ap-done"><span class="eyebrow">👀 Du schaust zu</span><p class="muted">Die Fragen sehen nur die Spieler selbst.</p></div>`;
   return `<section class="section tsec applay">
     <div class="k-top">
@@ -11450,16 +11471,17 @@ function apPlayHTML(M) {
       ${apm.meta ? `<button class="btn btn-sm btn-ghost ap-mute" type="button" data-act="ap-mute" aria-label="${apm.mute ? 'Musik an' : 'Musik stumm'}" title="${apm.mute ? 'Musik an' : 'Musik stumm'}">${apm.mute ? '🔇' : '🔊'}</button>` : ''}
       ${host ? `<button class="btn btn-sm btn-ghost k-endbtn" type="button" data-act="ap-end">Beenden</button>` : ''}
     </div>
-    <div class="ap-wrap ${r ? '' : 'noladder'}">${apSideHTML(M)}<div class="ap-main">${main}${apBoardHTML(M)}</div>${r ? apLadderHTML(r) : ''}</div>
+    <div class="ap-wrap ${r ? '' : 'noladder'}">${apSideHTML(M)}<div class="ap-main">${main}${apBoardHTML(M)}</div>${r ? apLadderHTML(r, M.tour) : ''}</div>
   </section>`;
 }
 function apEndHTML(M) {
-  const host = ctl(), rows = M.players.map(id => ({id, r:M.pr[id], v:apWon(M.pr[id])})).sort((a, b) => b.v - a.v || b.r.lv - a.r.lv);
+  const host = ctl(), rows = M.players.map(id => ({id, r:M.pr[id], v:M.tour ? apPts(M.pr[id]) : apWon(M.pr[id])})).sort((a, b) => b.v - a.v || b.r.lv - a.r.lv);
+  const val = v => M.tour ? `${v} ${v === 1 ? 'Punkt' : 'Punkte'}` : apEur(v), stat = r => M.tour ? (r.st === 'won' ? '🏆 Alle Fragen geschafft' : `❌ Raus bei Frage ${r.lv + 1}`) : apStatus(r);
   const w = rows[0];
   return `<section class="section tsec"><div class="card k-end">
     <span class="eyebrow">💰 ${AP_NAME}</span>
-    <div class="k-winner">${avatar(ghost(w.id), 72)}<h2>${w.v ? `${esc(ghost(w.id).name)} gewinnt ${apEur(w.v)}!` : 'Niemand hat etwas gewonnen'}</h2></div>
-    <ol class="ap-res">${rows.map((x, i) => `<li>${avatar(ghost(x.id), 30)}<b>${esc(ghost(x.id).name)}</b><span class="muted">${apStatus(x.r)}</span><span class="ap-rv">${apEur(x.v)}</span></li>`).join('')}</ol>
+    <div class="k-winner">${avatar(ghost(w.id), 72)}<h2>${w.v ? `${esc(ghost(w.id).name)} gewinnt ${M.tour ? `mit ${w.v} ${w.v === 1 ? 'Punkt' : 'Punkten'}` : apEur(w.v)}!` : 'Niemand hat etwas gewonnen'}</h2></div>
+    <ol class="ap-res">${rows.map((x, i) => `<li>${avatar(ghost(x.id), 30)}<b>${esc(ghost(x.id).name)}</b><span class="muted">${stat(x.r)}</span><span class="ap-rv">${val(x.v)}</span></li>`).join('')}</ol>
     ${M.transferred ? `<p class="okline">✓ Steht im Highscore von ${esc((lobby() || {}).name || 'diesem Raum')}.</p>` : ''}
     ${host ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="ap-again">Neue Runde</button><button class="btn" type="button" data-act="ap-setup">Einstellungen</button></div>` : '<p class="muted">Der Host kann eine neue Runde starten.</p>'}
   </div>${lobbyHsHTML()}</section>`;
