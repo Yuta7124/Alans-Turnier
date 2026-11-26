@@ -240,3 +240,7 @@ Unter „Optionen“ kann der Spielleiter einen **Dauerlink** erstellen. Er läu
 ## Noch offen (am PC erledigen)
 
 - Die aktuelle `firestore.rules` in der Firebase-Konsole veröffentlichen (Abschnitte `vg`, `vgm`, `vgp`, die Änderung bei `players`, der Dauerlink bei `invites` und `admin/invite`, Support bei `tickets` und `tkimg`). Vorher können Spieler keine eigenen Spiele, Screenshots oder Clips eintragen, der Dauerlink lässt sich nicht erstellen, und Spieler können keine Support-Tickets schreiben.
+
+## Quiz-Fragen
+
+Themen in `CATS` (Index): 0 Videospiele, 1 Flaggen, 2 Geschichte, 3 Allgemeinwissen, 4 Schätzfragen, 5 Filme, 6 Serien, 7 Animes, 8 Deutschland (`GERMANY`, 5 × 30). Weitere Fragen stehen in `QUIZ_MORE` und `FLAGS_MORE` und werden hinten an `BANK` angehängt, damit alte IDs (`v3-Thema-Stufe-Nr`) gleich bleiben. Die 180 ApoRed-Fragen (`AP_QB`) kommen im Quiz mit Thema aus `AP_QB_CAT` dazu (IDs `ap-Stufe-Nr`). Jedes Thema hat pro Stufe mindestens 30 Fragen. Schon gestellte Fragen merkt sich das Quiz in `seen` und nimmt erst ungestellte.
