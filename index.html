@@ -1746,6 +1746,68 @@ body.ah-locked .ah-lockhint{display:none}
 .ch-endboard .ch-pc{font-size:min(5vh,40px)}
 .ch-drawav{display:flex;gap:10px;justify-content:center}
 @media (max-width:900px){.ch-wrap{grid-template-columns:minmax(0,1fr)}.ch-main{width:100%}.ch-side{position:static;width:100%}.ch-pc{font-size:min(10.5vw,60px)}.ch-mvs{max-height:180px}}
+/* Wer wird der nächste ApeRed? */
+.ap-title{font-size:clamp(26px,4vw,40px)!important}
+.ap-wrap{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:20px;align-items:start}
+.ap-main{display:flex;flex-direction:column;gap:16px;min-width:0}
+.ap-q{display:flex;flex-direction:column;gap:14px;background:radial-gradient(120% 90% at 50% 0%,#1d2b6b 0,#0b0f2e 60%,#070818 100%);box-shadow:inset 0 0 0 2px #3b4fb3}
+.ap-qtop{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.ap-stage{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:#9fb0ff}
+.ap-for{font-family:var(--display);font-size:24px;color:#ffb52e}
+.ap-time{position:relative;height:10px;border-radius:6px;background:rgba(255,255,255,.1);overflow:visible}
+.ap-time i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:linear-gradient(90deg,#39d6f2,#4ff08f);transition:width .2s linear}
+.ap-time i.low{background:linear-gradient(90deg,#ff4d5e,#ff9f5a)}
+.ap-time span{position:absolute;right:0;top:-20px;font-size:12px;font-weight:800;color:#9fb0ff}
+.ap-text{font-size:clamp(18px,2.4vw,24px);font-weight:700;line-height:1.35;margin:6px 0;padding:16px 18px;border-radius:999px;text-align:center;background:linear-gradient(180deg,#14205a,#0b123a);box-shadow:0 0 0 2px #6d82ff,0 0 18px rgba(109,130,255,.35)}
+.ap-ans{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ap-a{position:relative;display:flex;align-items:center;gap:10px;min-height:56px;padding:10px 18px;border:0;border-radius:999px;cursor:pointer;color:#fff;font:inherit;font-size:16px;font-weight:700;text-align:left;background:linear-gradient(180deg,#14205a,#0b123a);box-shadow:0 0 0 2px #6d82ff;transition:transform .12s,background .2s,box-shadow .2s;overflow:hidden}
+.ap-a:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 0 0 2px #a9b6ff,0 0 14px rgba(169,182,255,.5)}
+.ap-l{color:#ffb52e;font-weight:900}
+.ap-a.pick{background:linear-gradient(180deg,#3a4cb8,#1f2b7a);box-shadow:0 0 0 3px #fff}
+.ap-a.lock{background:linear-gradient(180deg,#ffb52e,#d9820b);color:#1a1208;box-shadow:0 0 0 3px #fff;animation:apLock 1.6s ease-in-out}
+.ap-a.lock .ap-l{color:#1a1208}
+.ap-a.right{background:linear-gradient(180deg,#2ecc71,#178a48)!important;color:#fff;box-shadow:0 0 0 3px #b8ffd3,0 0 22px rgba(46,204,113,.7)!important;animation:apRight .6s ease-in-out 3}
+.ap-a.wrong{background:linear-gradient(180deg,#ff4d5e,#a8121f)!important;color:#fff;animation:apShake .45s}
+.ap-a.gone{opacity:.25}
+.ap-a:disabled{cursor:default}
+.ap-aud{position:absolute;right:12px;bottom:4px;font-style:normal;font-size:12px;font-weight:800;color:#ffcf3f}
+.ap-aud::before{content:'';position:absolute;right:calc(100% + 6px);bottom:5px;height:6px;width:calc(var(--p) * .9);max-width:120px;border-radius:3px;background:#ffcf3f}
+.ap-phone{margin:0;padding:10px 14px;border-radius:12px;background:rgba(255,207,63,.12);font-size:15px}
+.ap-acts{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.ap-jokers{display:flex;gap:8px;flex-wrap:wrap}
+.ap-jk{border:0;border-radius:999px;padding:8px 14px;font:inherit;font-weight:800;font-size:13px;cursor:pointer;color:#fff;background:linear-gradient(180deg,#3a4cb8,#1f2b7a);box-shadow:0 0 0 2px #6d82ff}
+.ap-jk:hover:not(:disabled){transform:translateY(-2px)}
+.ap-jk.used{opacity:.35;text-decoration:line-through}
+.ap-ladder{list-style:none;margin:0;padding:10px;border-radius:14px;background:#0b0f2e;box-shadow:inset 0 0 0 2px #3b4fb3;display:flex;flex-direction:column;gap:2px;position:sticky;top:12px}
+.ap-ladder li{display:flex;justify-content:space-between;gap:8px;padding:4px 10px;border-radius:8px;font-size:14px;color:#ffb52e}
+.ap-ladder li span{color:#9fb0ff;font-size:12px;min-width:20px}
+.ap-ladder li.safe{color:#fff}
+.ap-ladder li.safe b{font-weight:900}
+.ap-ladder li.done{opacity:.55}
+.ap-ladder li.cur{background:#ffb52e;color:#1a1208;animation:apCur 1.4s ease-in-out infinite}
+.ap-ladder li.cur span{color:#1a1208}
+.ap-board ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.ap-board li{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(60px,160px) auto;gap:10px;align-items:center}
+.ap-board li.me{background:rgba(255,207,63,.08);border-radius:10px;padding:4px 6px}
+.ap-bn{display:flex;flex-direction:column;min-width:0}
+.ap-bn small{color:var(--muted);font-size:12px}
+.ap-bar{height:8px;border-radius:4px;background:rgba(255,255,255,.1);overflow:hidden}
+.ap-bar i{display:block;height:100%;background:linear-gradient(90deg,#ffb52e,#ffcf3f);transition:width .6s cubic-bezier(.3,1.4,.5,1)}
+.ap-board li.st-out .ap-bar i{background:#ff4d5e}
+.ap-board li.st-won .ap-bar i{background:#4ff08f}
+.ap-blv{font-weight:800;font-size:13px;color:var(--muted)}
+.ap-done{text-align:center}
+.ap-done h2{margin:4px 0}
+.ap-sum{font-family:var(--display);font-size:clamp(34px,6vw,56px);color:#ffb52e;margin:0}
+.ap-res{list-style:none;margin:10px auto;padding:0;display:flex;flex-direction:column;gap:8px;width:min(520px,100%)}
+.ap-res li{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left}
+.ap-rv{font-weight:900;color:#ffb52e}
+@keyframes apLock{0%,100%{filter:none}50%{filter:brightness(1.25)}}
+@keyframes apRight{0%,100%{filter:none}50%{filter:brightness(1.35)}}
+@keyframes apShake{0%,100%{transform:none}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes apCur{0%,100%{box-shadow:0 0 0 0 rgba(255,181,46,0)}50%{box-shadow:0 0 14px 2px rgba(255,181,46,.6)}}
+@media (max-width:900px){.ap-wrap{grid-template-columns:minmax(0,1fr)}.ap-ladder{position:static;order:-1;flex-direction:row-reverse;justify-content:flex-end;overflow-x:auto;padding:6px;scroll-behavior:smooth}.ap-ladder li{flex-direction:column;align-items:center;min-width:84px;font-size:12px;white-space:nowrap}}
+@media (max-width:560px){.ap-ans{grid-template-columns:1fr}.ap-a{min-height:50px;font-size:15px}}
 .wm-btns{
 display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .hub-admin{display:flex;justify-content:center;margin:8px 0 0}
@@ -3097,7 +3159,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=87"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=88"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4109,7 +4171,7 @@ function normTicker(x) {
   };
 }
 const COLORS = ['#f5b83d', '#3fd49c', '#ff8080', '#6ea8ff', '#c493ff', '#ff9f5a', '#5fdde3', '#f58fb8'];
-const SRV_ICON = {quiz:'❓', malen:'🎨', golf:'⛳', karten:'🃏', mad:'🎲', bj:'♠️', dt:'🧱', tt:'🏓', ah:'🏒', bw:'🎳', ch:'♟️'};
+const SRV_ICON = {quiz:'❓', malen:'🎨', golf:'⛳', karten:'🃏', mad:'🎲', bj:'♠️', dt:'🧱', tt:'🏓', ah:'🏒', bw:'🎳', ch:'♟️', ap:'💰'};
 const FMTS = [[1, 'Alle gegen alle', '⚔️'], [2, 'Duos', '👥'], [3, 'Trios', '👥'], [4, 'Squads', '👥']];
 const TEAM_COLS = ['#ffcf3f', '#39d6f2', '#ff4f6d', '#4ff08f', '#c493ff', '#ff9f5a', '#6ea8ff', '#f58fb8'];
 const LETTERS = ['A', 'B', 'C', 'D'];
@@ -4133,7 +4195,7 @@ function groupPick(g) {
   return GROUPS[g].some(x => x[0] === last) ? last : GROUPS[g][0][0];
 }
 /* Ansichten: "Spiele" ist der Ober-Tab für Quiz und Malen */
-const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'support', 'einstellungen'];
+const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap', 'support', 'einstellungen'];
 const HUB = ['quiz', 'malen'];
 const viewOk = t => VIEWS.includes(t);
 /* Im Turnier entscheidet nur der Spielleiter, ob alle den Highscore oder das Zufallsrad sehen (settings.tview) */
@@ -4145,7 +4207,7 @@ function viewFor(t) {
   if (t === 'vg') return 'spieler';
   if (t === 'liste') t = 'rad'; // Spieleliste gibt es im Turnier nicht mehr
   if (!S.admin && (t === 'turnier' || t === 'rangliste' || t === 'rad')) return S.settings.tview;
-  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf' || t === 'karten' || t === 'mad' || t === 'bj' || t === 'dt' || t === 'tt' || t === 'ah' || t === 'bw' || t === 'ch') return S.room ? roomView() : 'spiele';
+  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf' || t === 'karten' || t === 'mad' || t === 'bj' || t === 'dt' || t === 'tt' || t === 'ah' || t === 'bw' || t === 'ch' || t === 'ap') return S.room ? roomView() : 'spiele';
   return GROUPS[t] ? groupPick(t) : viewOk(t) ? t : 'start';
 }
 
@@ -4885,7 +4947,7 @@ function render() {
   else if (S.mode === 'lock') html = lockHTML();
   else if (blocked()) html = `<div style="min-height:70vh"></div>`;
   else if (S.tab === 'spiele-pick') html = `<div class="loading">${COIN(48, 'spin')}</div>`;
-  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, mad:viewMad, bj:viewBj, dt:viewDt, tt:viewTt, ah:viewAh, bw:viewBw, ch:viewCh, support:viewSupport, einstellungen:viewSettings}[S.tab] || viewStart)();
+  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, mad:viewMad, bj:viewBj, dt:viewDt, tt:viewTt, ah:viewAh, bw:viewBw, ch:viewCh, ap:viewAp, support:viewSupport, einstellungen:viewSettings}[S.tab] || viewStart)();
   if (groupOf(S.tab) === 'turnier' && tourLocked()) html = tourCheckin() && !D.tourPeek ? tourCheckinHTML() : tourPreviewHTML();
   else if (groupOf(S.tab) === 'turnier' && tourKey() && !tourCheckin() && (D.tourIntro || lsGet('turnier-intro', '') !== tourKey())) html = tourIntroHTML();
   else if (groupOf(S.tab) === 'turnier' && S.admin && D.tourEdit && !['live', 'today'].includes(tourState().k)) html = `<div class="tour-editbar"><span>✏️ Bearbeitungsmodus: Nur du siehst das so. Für die Spieler ist das Turnier noch gesperrt.</span><button class="btn btn-sm" type="button" data-act="tour-preview">Zur Vorschau</button></div>` + html;
@@ -4911,6 +4973,7 @@ function render() {
   ahMount();
   bwMount();
   chMount();
+  apMount();
   renderFlySite();
   const newStand = m.querySelector('.stand');
   if (oldStand && newStand && newStand.dataset.key === oldKey) newStand.replaceWith(oldStand);
@@ -4930,7 +4993,7 @@ function render() {
 function tabsHidden() { return S.mode === 'loading' || S.mode === 'setup' || S.mode === 'lock' || S.mode === 'firstrun' || (S.mode === 'db' && !S.loaded) || blocked(); }
 function inGame() {
   if (tabsHidden() || S.mode !== 'db') return false;
-  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running') || (S.tab === 'karten' && !!S.uno && S.uno.status === 'running') || (S.tab === 'mad' && !!S.mad && S.mad.status === 'running') || (S.tab === 'bj' && !!S.bj && S.bj.status === 'running') || (S.tab === 'dt' && !!S.dt && S.dt.status === 'running') || (S.tab === 'tt' && !!S.tt && S.tt.status === 'running') || (S.tab === 'ah' && !!S.ah && S.ah.status === 'running') || (S.tab === 'bw' && !!S.bw && S.bw.status === 'running') || (S.tab === 'ch' && !!S.ch && S.ch.status === 'running');
+  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running') || (S.tab === 'karten' && !!S.uno && S.uno.status === 'running') || (S.tab === 'mad' && !!S.mad && S.mad.status === 'running') || (S.tab === 'bj' && !!S.bj && S.bj.status === 'running') || (S.tab === 'dt' && !!S.dt && S.dt.status === 'running') || (S.tab === 'tt' && !!S.tt && S.tt.status === 'running') || (S.tab === 'ah' && !!S.ah && S.ah.status === 'running') || (S.tab === 'bw' && !!S.bw && S.bw.status === 'running') || (S.tab === 'ch' && !!S.ch && S.ch.status === 'running') || (S.tab === 'ap' && !!S.ap && S.ap.status === 'running');
 }
 const isTouch = () => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } };
 const canFull = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
@@ -4958,7 +5021,7 @@ function renderSubnav() {
     if (S.admin && tourKey()) h += `<div class="hub-admin"><button class="btn btn-sm hub-stop" type="button" data-act="tour-stop">⏹ Turnier stoppen</button></div>`;
   } else if (!hide && inRoom) {
     h = roomBarHTML();
-    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf' && S.tab !== 'karten' && S.tab !== 'mad' && S.tab !== 'bj' && S.tab !== 'dt' && S.tab !== 'tt' && S.tab !== 'ah' && S.tab !== 'bw' && S.tab !== 'ch') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
+    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf' && S.tab !== 'karten' && S.tab !== 'mad' && S.tab !== 'bj' && S.tab !== 'dt' && S.tab !== 'tt' && S.tab !== 'ah' && S.tab !== 'bw' && S.tab !== 'ch' && S.tab !== 'ap') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
   }
   el.setAttribute('aria-label', tx(inRoom ? 'Raum' : 'Turnier'));
   el.classList.toggle('wide', (!!grp || inRoom) && $('#main').classList.contains('wide'));
@@ -5640,7 +5703,7 @@ function wheelFollow() {
   else if (sp.id === wheelSeenSpin) return;
   wheelSeenSpin = sp.id;
   if (!wheelSpinning(w) || S.tab === 'rad') return;
-  const busy = roomTabs.includes(S.tab) && S.tab !== 'raum' && ((S.uno && S.uno.status === 'running') || (S.mad && S.mad.status === 'running') || (S.bj && S.bj.status === 'running') || (S.dt && S.dt.status === 'running') || (S.tt && S.tt.status === 'running') || (S.ah && S.ah.status === 'running') || (S.bw && S.bw.status === 'running') || (S.ch && S.ch.status === 'running') || (S.golf && S.golf.status === 'running') || (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running'));
+  const busy = roomTabs.includes(S.tab) && S.tab !== 'raum' && ((S.uno && S.uno.status === 'running') || (S.mad && S.mad.status === 'running') || (S.bj && S.bj.status === 'running') || (S.dt && S.dt.status === 'running') || (S.tt && S.tt.status === 'running') || (S.ah && S.ah.status === 'running') || (S.bw && S.bw.status === 'running') || (S.ch && S.ch.status === 'running') || (S.ap && S.ap.status === 'running') || (S.golf && S.golf.status === 'running') || (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running'));
   if (busy) { toast('🎡 Das Zufallsrad dreht sich! Schau im Turnier vorbei.'); return; }
   if (S.modal) closeModal();
   setTab('rad');
@@ -7109,7 +7172,7 @@ function normLobby(id, x) {
   const host = x.host && typeof x.host === 'object' && x.host.dev ? {pid:str(x.host.pid, 40), dev:str(x.host.dev, 60)} : null;
   const inv = Object.fromEntries(Object.keys(x.inv && typeof x.inv === 'object' && !Array.isArray(x.inv) ? x.inv : {}).filter(k => k && k.length <= 40).slice(0, 40).map(k => [k, true]));
   const tour = id === 'rt' || x.name === TOUR_ROOM || x.tour === true;
-  return {id, name:tour ? '🏆 Turnier-Lobby' : ROOM_NAMES[id] || id, tour, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true || id === 'rt', inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch'].includes(x.kind) ? x.kind : '',
+  return {id, name:tour ? '🏆 Turnier-Lobby' : ROOM_NAMES[id] || id, tour, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true || id === 'rt', inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap'].includes(x.kind) ? x.kind : '',
     quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null, uno:x.uno && typeof x.uno === 'object' ? x.uno : null,
     hs:Object.fromEntries(Object.entries(x.hs && typeof x.hs === 'object' && !Array.isArray(x.hs) ? x.hs : {}).filter(([pid, v]) => pid.length <= 40 && Number.isFinite(Number(v))).map(([pid, v]) => [pid, Math.round(Number(v))])),
     bots:Object.fromEntries(Object.entries(x.bots && typeof x.bots === 'object' && !Array.isArray(x.bots) ? x.bots : {}).filter(([id, b]) => id.startsWith('bot_') && id.length <= 40 && b && typeof b === 'object').slice(0, ROOM_MAX)
@@ -7145,6 +7208,8 @@ function lobbyAutoAward() {
   if (BWM && BWM.status === 'finished' && !BWM.transferred && !lhsDone.has('w' + BWM.id)) { lhsDone.add('w' + BWM.id); bwTransfer(); }
   const CHM = S.ch;
   if (CHM && CHM.status === 'finished' && !CHM.transferred && !lhsDone.has('c' + CHM.id)) { lhsDone.add('c' + CHM.id); chTransfer(); }
+  const APM = S.ap;
+  if (APM && APM.status === 'finished' && !APM.transferred && !lhsDone.has('a' + APM.id)) { lhsDone.add('a' + APM.id); apTransfer(); }
 }
 function lobbyHsHTML(L = lobby(), max = 10, inModal = false) {
   if (!L) return '';
@@ -7193,19 +7258,19 @@ function roomInviteModalHTML() {
 function hostStale(L) { return !L || !L.host || Date.now() - (L.hostSeen || 0) > HOST_STALE_MS; }
 function roomState(L) {
   if (!L) return 'free';
-  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : L.kind === 'karten' ? (L.uno && !L.uno.g ? L.uno : null) : L.kind === 'mad' ? (L.uno && L.uno.g === 'mad' ? L.uno : null) : L.kind === 'bj' ? (L.uno && L.uno.g === 'bj' ? L.uno : null) : L.kind === 'dt' ? (L.uno && L.uno.g === 'dt' ? L.uno : null) : L.kind === 'tt' ? (L.uno && L.uno.g === 'tt' ? L.uno : null) : L.kind === 'ah' ? (L.uno && L.uno.g === 'ah' ? L.uno : null) : L.kind === 'bw' ? (L.uno && L.uno.g === 'bw' ? L.uno : null) : L.kind === 'ch' ? (L.uno && L.uno.g === 'ch' ? L.uno : null) : null;
+  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : L.kind === 'karten' ? (L.uno && !L.uno.g ? L.uno : null) : L.kind === 'mad' ? (L.uno && L.uno.g === 'mad' ? L.uno : null) : L.kind === 'bj' ? (L.uno && L.uno.g === 'bj' ? L.uno : null) : L.kind === 'dt' ? (L.uno && L.uno.g === 'dt' ? L.uno : null) : L.kind === 'tt' ? (L.uno && L.uno.g === 'tt' ? L.uno : null) : L.kind === 'ah' ? (L.uno && L.uno.g === 'ah' ? L.uno : null) : L.kind === 'bw' ? (L.uno && L.uno.g === 'bw' ? L.uno : null) : L.kind === 'ch' ? (L.uno && L.uno.g === 'ch' ? L.uno : null) : L.kind === 'ap' ? (L.uno && L.uno.g === 'ap' ? L.uno : null) : null;
   if (g && g.status === 'running') return 'running';
   if (g && g.status === 'finished') return 'finished';
   return roomMembers(L).length ? 'waiting' : 'free';
 }
-function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : L.kind === 'karten' ? 'karten' : L.kind === 'mad' ? 'mad' : L.kind === 'bj' ? 'bj' : L.kind === 'dt' ? 'dt' : L.kind === 'tt' ? 'tt' : L.kind === 'ah' ? 'ah' : L.kind === 'bw' ? 'bw' : L.kind === 'ch' ? 'ch' : 'raum'; }
-const roomTabs = ['raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch'];
+function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : L.kind === 'karten' ? 'karten' : L.kind === 'mad' ? 'mad' : L.kind === 'bj' ? 'bj' : L.kind === 'dt' ? 'dt' : L.kind === 'tt' ? 'tt' : L.kind === 'ah' ? 'ah' : L.kind === 'bw' ? 'bw' : L.kind === 'ch' ? 'ch' : L.kind === 'ap' ? 'ap' : 'raum'; }
+const roomTabs = ['raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap'];
 const FV = () => window.firebase && firebase.firestore && firebase.firestore.FieldValue;
 function roomRef(r = S.room) { return db.collection('lobbies').doc(r); }
 function roomSet(r, spectate = false) {
   if (S.room === r && S.spectate === spectate) return;
   S.room = r; S.spectate = !!(r && spectate);
-  S.quiz = null; S.draw = null; S.golf = null; S.uno = null; S.mad = null; ml.pend = null; ml.n = 0; S.bj = null; bjl.pend = null; bjl.n = 0; S.dt = null; S.tt = null; S.ah = null; S.bw = null; S.ch = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false; kl.pend = null; kl.n = 0;
+  S.quiz = null; S.draw = null; S.golf = null; S.uno = null; S.mad = null; ml.pend = null; ml.n = 0; S.bj = null; bjl.pend = null; bjl.n = 0; S.dt = null; S.tt = null; S.ah = null; S.bw = null; S.ch = null; S.ap = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false; kl.pend = null; kl.n = 0;
   roomApply();
 }
 /* ---------- Pause für alle Raum-Spiele ----------
@@ -7213,7 +7278,7 @@ function roomSet(r, spectate = false) {
    Während der Pause laufen keine Zeiten, Host-Abläufe und Bots. Beim Weiterspielen schiebt der, der „Weiter“ drückt,
    die gespeicherten Zeitpunkte um die Pausenlänge nach hinten; jedes Gerät verschiebt seine eigenen Zähler genauso.
    Spielt man allein (nur Bots oder niemand sonst), pausiert das Spiel automatisch, wenn man die Seite verlässt. */
-const PZ_FIELD = {quiz:'quiz', malen:'draw', golf:'golf', karten:'uno', mad:'uno', bj:'uno', dt:'uno', tt:'uno', ah:'uno', bw:'uno', ch:'uno'};
+const PZ_FIELD = {quiz:'quiz', malen:'draw', golf:'golf', karten:'uno', mad:'uno', bj:'uno', dt:'uno', tt:'uno', ah:'uno', bw:'uno', ch:'uno', ap:'uno'};
 function pzField(L = lobby()) { return (L && PZ_FIELD[L.kind]) || ''; }
 function pzGame(L = lobby()) { const f = pzField(L), g = f && L[f]; return g && g.status === 'running' && (L.kind !== 'karten' || !g.g) ? g : null; }
 function roomPaused(L = lobby()) { const g = pzGame(L); return g && g.pz && g.pz.at ? g.pz : null; }
@@ -7235,6 +7300,7 @@ function pzSet(on, auto = false) {
   else if (L.kind === 'bj') sh('s.at', g.s && g.s.at);
   else if (L.kind === 'bw') sh('s.turnAt', g.s && g.s.turnAt);
   else if (L.kind === 'ch') sh('at', g.at);
+  else if (L.kind === 'ap' && g.pr) for (const [pid, r] of Object.entries(g.pr)) if (r && r.st === 'play') sh('pr.' + pid + '.at', r.at);
   else if (L.kind === 'dt' || L.kind === 'tt' || L.kind === 'ah') sh('startAt', g.startAt);
   else if (L.kind === 'golf') sh('holeAt', g.holeAt);
   const ng = clone(g); delete ng.pz;
@@ -7371,6 +7437,7 @@ function roomApply() {
   S.ah = L && L.kind === 'ah' && L.uno ? ahNorm(L.uno) : null;
   S.bw = L && L.kind === 'bw' && L.uno ? bwNorm(L.uno) : null;
   S.ch = L && L.kind === 'ch' && L.uno ? chNorm(L.uno) : null;
+  S.ap = L && L.kind === 'ap' && L.uno ? apNorm(L.uno) : null;
   handleAnswers();
   if (S.room && roomTabs.includes(S.tab)) { const v = roomView(); if (S.tab !== v) { S.tab = v; try { history.replaceState(null, '', '#' + v); } catch (e) {} } }
   if (!S.room && roomTabs.includes(S.tab)) S.tab = 'spiele';
@@ -7472,7 +7539,7 @@ const ROOM_STATE = {free:['Frei', '#4ff08f'], waiting:['Wartet', '#ffcf3f'], run
 function roomCardHTML(r) {
   const L = lobby(r), mem = roomMembers(L), n = mem.length, me = myPid(), mine = !!(me && L.members[me]);
   const st = roomState(L), sl = ROOM_STATE[st];
-  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : L.kind === 'karten' ? ['🃏', 'Kartenwahn'] : L.kind === 'mad' ? ['🎲', 'Uncle Grandpa ärgere dich'] : L.kind === 'bj' ? ['🂡', 'Blackjack'] : L.kind === 'dt' ? ['🧱', 'Dicktris'] : L.kind === 'tt' ? ['🏓', 'Tischtennis'] : L.kind === 'ah' ? ['🏒', 'Air-Hockey'] : L.kind === 'bw' ? ['🎳', 'Bowling'] : L.kind === 'ch' ? ['♟️', 'Schach'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
+  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : L.kind === 'karten' ? ['🃏', 'Kartenwahn'] : L.kind === 'mad' ? ['🎲', 'Uncle Grandpa ärgere dich'] : L.kind === 'bj' ? ['🂡', 'Blackjack'] : L.kind === 'dt' ? ['🧱', 'Dicktris'] : L.kind === 'tt' ? ['🏓', 'Tischtennis'] : L.kind === 'ah' ? ['🏒', 'Air-Hockey'] : L.kind === 'bw' ? ['🎳', 'Bowling'] : L.kind === 'ch' ? ['♟️', 'Schach'] : L.kind === 'ap' ? ['💰', AP_NAME] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
   const hostP = L.host && playerById(L.host.pid);
   const slots = Array.from({length:roomMax(L)}, (_, i) => mem[i] ? `<span class="rc-slot" title="${esc(ghost(mem[i]).name)}">${avatar(ghost(mem[i]), 34)}</span>` : '<span class="rc-slot empty"></span>').join('');
   const priv = roomPriv(L), invd = !mine && priv && !!(me && L.inv[me]);
@@ -7495,7 +7562,7 @@ function roomCardHTML(r) {
 function viewRooms() {
   const me = myPid();
   return `<section class="section">
-    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack, Dicktris, Tischtennis, Air-Hockey, Bowling und Schach könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
+    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack, Dicktris, Tischtennis, Air-Hockey, Bowling, Schach und „Wer wird der nächste ApeRed?“ könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
     ${me ? '' : `<div class="card rooms-hint"><p class="m-text">Damit du mitspielen kannst, brauchst du einen eigenen Spieler. Den erstellst du unter <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button>.</p></div>`}
     <div class="rooms">${tourLobbyVisible() ? roomCardHTML(TOUR_ID) : ''}${ROOMS.map(roomCardHTML).join('')}</div>
     <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack oder Dicktris, stellt alles ein und startet.</li><li><b>Privat:</b> Wollt ihr unter euch bleiben, stellt der Host den Raum auf privat und lädt seine Freunde ein. Andere können dann nicht beitreten.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
@@ -7509,6 +7576,7 @@ function viewRoom() {
       <h3 class="rc-grp">👥 Für mehrere Spieler</h3>
       <div class="rc-pick">
         <button class="pick-big" type="button" data-act="room-kind" data-v="quiz" style="--tc:#39d6f2"><span aria-hidden="true">🧠</span><b>Quiz</b><small>Spielbrett mit Fragen aus 8 Themen. Wer dran ist, wählt Feld und Antwort.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="ap" style="--tc:#ffb52e"><span aria-hidden="true">💰</span><b>Wer wird der nächste ApeRed?</b><small>15 Fragen bis zur Million, mit Jokern. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="malen" style="--tc:#ff7fc3"><span aria-hidden="true">🎨</span><b>Malen</b><small>Einer malt, alle anderen raten. Wie skribbl.io.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="golf" style="--tc:#4ff08f"><span aria-hidden="true">⛳</span><b>Golf</b><small>Minigolf in 3D mit 30 Bahnen, von kurz und leicht bis extrem. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="mad" style="--tc:#ff9f5a"><span aria-hidden="true">🎲</span><b>Uncle Grandpa ärgere dich</b><small>Das Brettspiel für 2 bis 4: Würfeln, mit einer 6 rauskommen, Gegner rauswerfen und alle Figuren ins Ziel bringen.</small></button>
@@ -7534,7 +7602,7 @@ function roomBarHTML() {
   const L = lobby(); if (!L) return '';
   const mem = roomMembers(L), me = myPid(), member = !!(me && L.members[me]), host = ctl();
   const st = roomState(L);
-  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : L.kind === 'mad' ? '🎲 Uncle Grandpa ärgere dich' : L.kind === 'bj' ? '🂡 Blackjack' : L.kind === 'dt' ? '🧱 Dicktris' : L.kind === 'tt' ? '🏓 Tischtennis' : L.kind === 'ah' ? '🏒 Air-Hockey' : L.kind === 'bw' ? '🎳 Bowling' : L.kind === 'ch' ? '♟️ Schach' : 'Spiel wird gewählt';
+  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : L.kind === 'mad' ? '🎲 Uncle Grandpa ärgere dich' : L.kind === 'bj' ? '🂡 Blackjack' : L.kind === 'dt' ? '🧱 Dicktris' : L.kind === 'tt' ? '🏓 Tischtennis' : L.kind === 'ah' ? '🏒 Air-Hockey' : L.kind === 'bw' ? '🎳 Bowling' : L.kind === 'ch' ? '♟️ Schach' : L.kind === 'ap' ? '💰 ' + AP_NAME : 'Spiel wird gewählt';
   const chips = mem.map(pid => { const p = ghost(pid), isHost = L.host && L.host.pid === pid, bot = isBot(pid);
     return `<span class="rb-mem ${pid === me ? 'me' : ''} ${bot ? 'bot' : ''}">${avatar(p, 26)}<span>${esc(p.name)}</span>${bot ? `<small class="rb-lvl">${botLvlName(p.lvl)}</small>` : ''}${isHost ? '<i title="Host" aria-label="Host">👑</i>' : ''}${(host || S.admin) && !bot && !isHost && pid !== me ? `<button class="rb-crown" type="button" data-act="room-host" data-pid="${esc(pid)}" aria-label="${esc(p.name)} zum Host machen" title="Zum Host machen">👑<b>+</b></button>` : ''}${(host || S.admin) && pid !== me ? `<button class="x" type="button" data-act="room-kick" data-pid="${esc(pid)}" aria-label="${esc(p.name)} aus dem Raum werfen" title="Rauswerfen">×</button>` : ''}</span>`; }).join('');
   return `<div class="roombar">
@@ -11008,6 +11076,248 @@ setInterval(() => {
   document.querySelectorAll('[data-ch-clock]').forEach(el => { const i = Number(el.dataset.chClock), ms = chClock(M, i); el.textContent = chFmt(ms); el.classList.toggle('low', ms < 30000); });
 }, 200);
 
+/* ---------- Wer wird der nächste ApeRed? (Raumspiel für alle gleichzeitig) ----------
+   15 Fragen mit Geldleiter, Sicherheitsstufen bei 500 € und 16.000 €, Joker 50:50 / Publikum / Telefon. Alle bekommen dieselben Fragen
+   (aus der Quiz-Fragensammlung, Stufe für Stufe schwerer), jeder spielt für sich. Die anderen sehen nur Stufe und Stand, nie die Frage.
+   Gespeichert im Raum-Feld uno (mit g:'ap'): {g, id, status, players, qs (15 × „Kategorie.Stufe.Nr“), tl (Sekunden pro Frage, 0 = ohne),
+   pr: {Spieler: {lv (0–15 = richtig beantwortet), st ('play'|'out'|'stop'|'won'), at (Start der Frage), jf/jp/jt (Stufe des Jokers, -1)}},
+   transferred}. Jeder schreibt nur seinen eigenen Stand (uno.pr.<id>), Bots schreibt der Host. */
+const AP_NAME = 'Wer wird der nächste ApeRed?';
+const AP_LADDER = [50, 100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 500000, 1000000];
+const AP_SAFE = [5, 10];
+const AP_CATS = [0, 2, 3, 5, 6, 7];
+const AP_TL = [[0, 'Ohne Zeitlimit'], [30, '30 s pro Frage'], [60, '60 s pro Frage']];
+const apl = {gid:'', pick:-1, lock:-1, lockAt:0, lv:-1, bot:{}, endSnd:'', timeKey:'', reveal:null};
+const apEur = n => n.toLocaleString('de-DE') + ' €';
+function apRng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = (t + Math.imul(t ^ t >>> 7, 61 | t)) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function apNorm(x) {
+  if (!x || typeof x !== 'object' || x.g !== 'ap' || !['running', 'finished'].includes(x.status)) return null;
+  const players = Array.isArray(x.players) ? x.players.filter(id => typeof id === 'string').slice(0, 8) : [];
+  const qs = Array.isArray(x.qs) ? x.qs.filter(q => typeof q === 'string' && /^\d\.\d\.\d+$/.test(q)).slice(0, 15) : [];
+  if (!players.length || qs.length !== 15) return null;
+  const pr = {}, src = x.pr && typeof x.pr === 'object' ? x.pr : {};
+  for (const id of players) {
+    const r = src[id] && typeof src[id] === 'object' ? src[id] : {};
+    const j = k => Number.isInteger(r[k]) && r[k] >= 0 && r[k] < 15 ? r[k] : -1;
+    pr[id] = {lv:Math.max(0, Math.min(15, +r.lv || 0)), st:['play', 'out', 'stop', 'won'].includes(r.st) ? r.st : 'play', at:Number(r.at) || 0, jf:j('jf'), jp:j('jp'), jt:j('jt')};
+  }
+  return {g:'ap', id:str(x.id, 40), status:x.status, players, qs, tl:[0, 30, 60].includes(+x.tl) ? +x.tl : 0, pr, transferred:x.transferred === true, pz:x.pz && x.pz.at ? x.pz : null};
+}
+function apMe(M) { const me = myPid(), L = lobby(); return M && me && !S.spectate && L && L.members[me] && M.players.includes(me) ? me : ''; }
+/* Frage einer Stufe: Text, Antworten (gemischt, für alle gleich) und Index der richtigen */
+function apQ(M, lv) {
+  const [c, l, i] = M.qs[lv].split('.').map(Number), q = (BANK[c] && BANK[c][l] && BANK[c][l][i]) || ['?', ['?', '?', '?', '?']];
+  const r = apRng(hashStr(M.id + ':' + lv)), ord = [0, 1, 2, 3];
+  for (let k = 3; k > 0; k--) { const j = Math.floor(r() * (k + 1)); [ord[k], ord[j]] = [ord[j], ord[k]]; }
+  return {t:q[0], a:ord.map(o => q[1][o]), ok:ord.indexOf(0), cat:CATS[c] || ''};
+}
+/* Gewonnener Betrag: beim Aussteigen der letzte sichere Stand, bei falscher Antwort die letzte Sicherheitsstufe */
+function apWon(r) {
+  if (r.st === 'won') return AP_LADDER[14];
+  if (r.st === 'out') { const s = AP_SAFE.filter(x => r.lv >= x).pop(); return s ? AP_LADDER[s - 1] : 0; }
+  return r.lv ? AP_LADDER[r.lv - 1] : 0;
+}
+/* Joker: 50:50 streicht zwei falsche, Publikum zeigt Balken, Telefon sagt eine Vermutung (alles fest aus der Frage berechnet) */
+function apFifty(M, lv) { const q = apQ(M, lv), r = apRng(hashStr(M.id + ':f' + lv)), wrong = [0, 1, 2, 3].filter(i => i !== q.ok); wrong.splice(Math.floor(r() * 3), 1); return wrong; }
+function apAudience(M, lv) {
+  const q = apQ(M, lv), r = apRng(hashStr(M.id + ':p' + lv)), diff = Math.floor(lv / 3), hide = M.pr[apMe(M)] && M.pr[apMe(M)].jf === lv ? apFifty(M, lv) : [];
+  const right = r() < [.97, .9, .8, .68, .55][diff];
+  const top = right ? q.ok : [0, 1, 2, 3].filter(i => i !== q.ok && !hide.includes(i))[Math.floor(r() * (3 - hide.length))] ?? q.ok;
+  const v = [0, 1, 2, 3].map(i => hide.includes(i) ? 0 : 5 + r() * 25);
+  v[top] += 40 + r() * (55 - diff * 8);
+  const sum = v.reduce((a, b) => a + b, 0); return v.map(x => Math.round(x / sum * 100));
+}
+function apPhone(M, lv) {
+  const q = apQ(M, lv), r = apRng(hashStr(M.id + ':t' + lv)), diff = Math.floor(lv / 3), hide = M.pr[apMe(M)] && M.pr[apMe(M)].jf === lv ? apFifty(M, lv) : [];
+  const right = r() < [.95, .85, .72, .6, .48][diff], opts = [0, 1, 2, 3].filter(i => i !== q.ok && !hide.includes(i));
+  const pick = right ? q.ok : opts[Math.floor(r() * opts.length)];
+  const sure = right ? 55 + Math.round(r() * 40) - diff * 6 : 30 + Math.round(r() * 35);
+  const who = ['Mama', 'dein bester Kumpel', 'Opa', 'deine Lehrerin', 'ein Quizprofi', 'deine Schwester'][Math.floor(r() * 6)];
+  return {pick, sure:Math.max(20, Math.min(99, sure)), who};
+}
+function apWrite(pid, r) { const L = lobby(); if (!L || !L.uno) return; const nx = {...L.uno, pr:{...(L.uno.pr || {}), [pid]:r}}; S.lobbies[S.room] = {...L, uno:nx}; S.ap = apNorm(nx); roomWrite({['uno.pr.' + pid]:r}); }
+
+/* ----- Host ----- */
+function apStart() {
+  if (!ctl()) return;
+  if (S.ap && S.ap.status === 'finished' && !S.ap.transferred) apTransfer();
+  const L = lobby(), players = roomMembers(L);
+  if (!players.length || players.every(isBot)) { toast('Mindestens ein echter Spieler muss mitspielen.'); return; }
+  const id = uid(), r = apRng(hashStr(id)), used = new Set(), qs = [];
+  for (let lv = 0; lv < 15; lv++) {
+    const d = Math.floor(lv / 3); let k = '';
+    for (let t = 0; t < 50 && (!k || used.has(k)); t++) { const c = AP_CATS[Math.floor(r() * AP_CATS.length)], n = BANK[c][d].length; k = `${c}.${d}.${Math.floor(r() * n)}`; }
+    used.add(k); qs.push(k);
+  }
+  const tl = [0, 30, 60].includes(D.apTl) ? D.apTl : 0, now = Date.now() + 1500;
+  const pr = Object.fromEntries(players.map(p => [p, {lv:0, st:'play', at:now, jf:-1, jp:-1, jt:-1}]));
+  const M = {g:'ap', id, status:'running', players, qs, tl, pr, transferred:false};
+  S.lobbies[S.room] = {...L, uno:M}; S.ap = apNorm(M); roomWrite({uno:M}); render();
+}
+function apTransfer() {
+  const M = S.ap; if (!ctl() || !M || M.status !== 'finished' || M.transferred) return;
+  const rows = M.players.map(id => ({id, v:apWon(M.pr[id])})).sort((a, b) => b.v - a.v);
+  const pts = [3, 2, 1]; let rank = 0;
+  const e = rows.map((x, i) => { if (i && x.v < rows[i - 1].v) rank = i; return {playerId:x.id, delta:x.v > 0 ? (pts[rank] || 1) : 0}; });
+  lobbyAward({'uno.transferred':true}, e);
+}
+/* Takt: Bots spielen (Host), abgelaufene Zeit, Spielende */
+function apLogic() {
+  const M = S.ap; if (!M || M.status !== 'running' || roomPaused()) return;
+  const host = ctl(), now = Date.now(), me = apMe(M);
+  // Eigene Zeit abgelaufen: falsch
+  if (M.tl && me && M.pr[me].st === 'play' && apl.lock < 0 && now > M.pr[me].at + M.tl * 1000 && apl.timeKey !== M.id + ':' + M.pr[me].lv) {
+    apl.timeKey = M.id + ':' + M.pr[me].lv; sfx('timeout'); toast('⏰ Zeit abgelaufen!');
+    apWrite(me, {...M.pr[me], st:'out'}); return;
+  }
+  if (!host) return;
+  for (const id of M.players) {
+    const r = M.pr[id]; if (r.st !== 'play') continue;
+    if (isBot(id)) {
+      const b = apl.bot[id] || (apl.bot[id] = {lv:-1, at:0});
+      if (b.lv !== r.lv) { b.lv = r.lv; b.at = Math.max(now, r.at) + botR(3500, 8500); continue; }
+      if (now < b.at) continue;
+      const lvl = botLvl(id), p = {e:.93, m:.96, h:.985}[lvl] - r.lv * {e:.055, m:.04, h:.028}[lvl];
+      if (r.lv >= 9 && Math.random() < {e:.25, m:.15, h:.08}[lvl] * (1 - p)) { apWrite(id, {...r, st:'stop'}); continue; }
+      if (Math.random() < p) { const lv = r.lv + 1; apWrite(id, {...r, lv, st:lv >= 15 ? 'won' : 'play', at:Date.now()}); } else apWrite(id, {...r, st:'out'});
+    } else if (M.tl && now > r.at + M.tl * 1000 + 20000) apWrite(id, {...r, st:'out'}); // weg vom Gerät
+  }
+  const L = lobby(), cur = apNorm(L && L.uno);
+  if (cur && cur.players.every(id => cur.pr[id].st !== 'play')) { const nx = {...L.uno, status:'finished'}; S.lobbies[S.room] = {...L, uno:nx}; S.ap = apNorm(nx); roomWrite({'uno.status':'finished'}); }
+}
+
+/* ----- Aktionen ----- */
+const apActions = {
+  'ap-tl': b => { D.apTl = Number(b.dataset.v); render(); },
+  'ap-start': () => apStart(),
+  'ap-again': () => apStart(),
+  'ap-end': () => confirmBox('Spiel beenden?', 'Die Runde wird abgebrochen. Es gibt keine Punkte für den Raum-Highscore.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => { if (!ctl()) return; S.ap = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); }}]),
+  'ap-setup': () => { if (!ctl()) return; if (S.ap && S.ap.status === 'finished' && !S.ap.transferred) apTransfer(); S.ap = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); },
+  'ap-pick': b => { const M = S.ap, me = apMe(M); if (!me || M.pr[me].st !== 'play' || apl.lock >= 0 || roomPaused()) return; const i = Number(b.dataset.i); apl.pick = apl.pick === i ? -1 : i; sfx('pick'); render(); },
+  'ap-lock': () => {
+    const M = S.ap, me = apMe(M); if (!me || apl.pick < 0 || apl.lock >= 0 || roomPaused()) return;
+    const r = M.pr[me], lv = r.lv, q = apQ(M, lv); apl.lock = apl.pick; apl.lockAt = performance.now(); sfx('chosen'); render();
+    setTimeout(() => {
+      const ok = apl.lock === q.ok; apl.reveal = {lv, ok, pick:apl.lock, right:q.ok}; sfx(ok ? 'right' : 'wrong'); render();
+      setTimeout(() => {
+        apl.reveal = null; apl.lock = -1; apl.pick = -1;
+        const cur = S.ap && S.ap.pr[me]; if (!cur || cur.lv !== lv) { render(); return; }
+        if (ok) { const n = lv + 1; apWrite(me, {...cur, lv:n, st:n >= 15 ? 'won' : 'play', at:Date.now()}); if (n >= 15) apConfetti(); else if (AP_SAFE.includes(n)) toast(`🛡️ Sicher: ${apEur(AP_LADDER[n - 1])}`); }
+        else apWrite(me, {...cur, st:'out'});
+        render();
+      }, ok ? 1300 : 2600);
+    }, 1600);
+  },
+  'ap-joker': b => {
+    const M = S.ap, me = apMe(M); if (!me || apl.lock >= 0 || roomPaused()) return;
+    const r = M.pr[me], k = b.dataset.v; if (r.st !== 'play' || r[k] >= 0) return;
+    if (k === 'jf' && apl.pick >= 0 && apFifty(M, r.lv).includes(apl.pick)) apl.pick = -1;
+    sfx('chosen'); apWrite(me, {...r, [k]:r.lv}); render();
+  },
+  'ap-stop': () => {
+    const M = S.ap, me = apMe(M); if (!me || apl.lock >= 0) return; const r = M.pr[me];
+    confirmBox('Aussteigen?', `Du nimmst ${apEur(r.lv ? AP_LADDER[r.lv - 1] : 0)} mit und spielst nicht weiter.`, [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Aussteigen', cls:'btn-gold', fn:() => { const c = S.ap.pr[me]; if (c.st === 'play') apWrite(me, {...c, st:'stop'}); render(); }}]);
+  }
+};
+function apConfetti() { try { chConfetti(); } catch (e) {} }
+
+/* ----- Ansichten ----- */
+function apRulesHTML(open) {
+  return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird gespielt</summary><ul>
+    <li><b>Alle gleichzeitig:</b> Jeder beantwortet dieselben 15 Fragen für sich. Die anderen sehen nur, auf welcher Stufe du bist, nie die Frage.</li>
+    <li><b>Antworten:</b> Antwort antippen, dann „Endgültige Antwort“. Richtig = eine Stufe höher, von 50 € bis 1 Million.</li>
+    <li><b>Sicherheitsstufen:</b> Bei 500 € und 16.000 €. Bei einer falschen Antwort fällst du auf die letzte Sicherheitsstufe zurück.</li>
+    <li><b>Aussteigen:</b> Jederzeit möglich, dann behältst du, was du schon hast.</li>
+    <li><b>Joker (je einmal):</b> 50:50 streicht zwei falsche Antworten, Publikum zeigt eine Umfrage, Telefon fragt jemanden um Rat.</li>
+    <li><b>Highscore:</b> Wer am meisten gewinnt +3, Zweiter +2, alle anderen mit Gewinn +1.</li></ul></details>`;
+}
+function apSetupHTML() {
+  const L = lobby(), hostP = L && L.host && playerById(L.host.pid), mem = roomMembers(L);
+  if (!ctl()) return `<section class="section tsec"><div class="card waiting">${COIN(56, 'spin')}<span class="eyebrow">${esc(L ? L.name : '')} · 💰 ${AP_NAME}</span><h2>Gleich geht's los</h2>
+    <p class="muted">${hostP ? `<b>${esc(hostP.name)}</b> ist Host und startet die Runde.` : 'Gerade ist niemand Host.'}</p>
+    ${hostStale(L) && L.members[myPid()] ? `<button class="btn btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}</div>${apRulesHTML(false)}</section>`;
+  const tl = [0, 30, 60].includes(D.apTl) ? D.apTl : 0;
+  return `<section class="section tsec"><div class="card k-setup ap-setup">
+    <span class="eyebrow">Du bist Host</span><h2 class="k-title-big ap-title">💰 ${AP_NAME}</h2>
+    <p class="muted">Alle im Raum spielen gleichzeitig dieselben 15 Fragen. Jeder sieht nur seine eigenen Fragen, von den anderen nur den Stand.</p>
+    <span class="lbl">Es spielen mit (${mem.length})</span><div class="chips">${mem.map(id => `<span class="chip pchip" aria-pressed="true">${avatar(ghost(id), 26)}${esc(ghost(id).name)}${isBot(id) ? ` <small>${botLvlName(botLvl(id))}</small>` : ''}</span>`).join('')}</div>
+    <span class="lbl">Zeit pro Frage</span><div class="chips">${AP_TL.map(([v, l]) => `<button class="chip" type="button" data-act="ap-tl" data-v="${v}" aria-pressed="${tl === v}">${l}</button>`).join('')}</div>
+    <button class="btn btn-gold btn-big" type="button" data-act="ap-start" ${mem.some(id => !isBot(id)) ? '' : 'disabled'}>Runde starten</button>
+  </div>${apRulesHTML(true)}</section>`;
+}
+function apLadderHTML(r) {
+  return `<ol class="ap-ladder">${AP_LADDER.map((v, i) => ({v, i})).reverse().map(({v, i}) => `<li class="${i === r.lv && r.st === 'play' ? 'cur' : ''} ${i < r.lv ? 'done' : ''} ${AP_SAFE.includes(i + 1) ? 'safe' : ''}"><span>${i + 1}</span><b>${apEur(v)}</b></li>`).join('')}</ol>`;
+}
+function apStatus(r) {
+  return r.st === 'won' ? '🏆 Millionär!' : r.st === 'stop' ? `🚪 Ausgestiegen · ${apEur(apWon(r))}` : r.st === 'out' ? `❌ Raus · ${apEur(apWon(r))}` : `Frage ${r.lv + 1} · um ${apEur(AP_LADDER[r.lv])}`;
+}
+function apBoardHTML(M) {
+  const rows = M.players.map(id => ({id, r:M.pr[id]})).sort((a, b) => b.r.lv - a.r.lv || apWon(b.r) - apWon(a.r));
+  return `<div class="card ap-board"><h3>👥 So weit sind alle</h3><ul>${rows.map(({id, r}) => { const p = ghost(id);
+    return `<li class="${id === myPid() ? 'me' : ''} st-${r.st}">${avatar(p, 34)}<div class="ap-bn"><b>${esc(p.name)}</b><small>${apStatus(r)}</small></div><span class="ap-bar"><i style="width:${Math.round(r.lv / 15 * 100)}%"></i></span><span class="ap-blv">${r.lv}/15</span></li>`; }).join('')}</ul></div>`;
+}
+function apPlayHTML(M) {
+  const me = apMe(M), host = ctl(), r = me ? M.pr[me] : null;
+  let main = '';
+  if (r && r.st === 'play') {
+    const lv = r.lv, q = apQ(M, lv), rv = apl.reveal && apl.reveal.lv === lv ? apl.reveal : null, hide = r.jf === lv ? apFifty(M, lv) : [];
+    const aud = r.jp === lv ? apAudience(M, lv) : null, ph = r.jt === lv ? apPhone(M, lv) : null, paused = roomPaused();
+    const left = M.tl ? Math.max(0, M.tl * 1000 - ((paused ? paused.at : Date.now()) - r.at)) : 0;
+    main = `<div class="card ap-q">
+      <div class="ap-qtop"><span class="ap-stage">Frage ${lv + 1} von 15</span><b class="ap-for">um ${apEur(AP_LADDER[lv])}</b>${q.cat ? `<small class="muted">${esc(q.cat)}</small>` : ''}</div>
+      ${M.tl ? `<div class="ap-time"><i id="ap-tbar" style="width:${left / (M.tl * 10)}%"></i><span id="ap-tsec">${Math.ceil(left / 1000)} s</span></div>` : ''}
+      <p class="ap-text">${esc(q.t)}</p>
+      <div class="ap-ans">${q.a.map((a, i) => { const gone = hide.includes(i), cls = ['ap-a', apl.pick === i ? 'pick' : '', apl.lock === i ? 'lock' : '', rv && i === rv.right ? 'right' : '', rv && !rv.ok && i === rv.pick ? 'wrong' : '', gone ? 'gone' : ''].filter(Boolean).join(' ');
+        return `<button class="${cls}" type="button" data-act="ap-pick" data-i="${i}" ${gone || apl.lock >= 0 ? 'disabled' : ''}><span class="ap-l">${'ABCD'[i]}:</span><span>${gone ? '' : esc(a)}</span>${aud ? `<em class="ap-aud" style="--p:${aud[i]}%">${aud[i]} %</em>` : ''}</button>`; }).join('')}</div>
+      ${ph ? `<p class="ap-phone">📞 ${esc(ph.who)}: „Ich glaube, es ist <b>${'ABCD'[ph.pick]}</b>. Da bin ich mir zu ${ph.sure} % sicher.“</p>` : ''}
+      <div class="ap-acts">
+        <button class="btn btn-gold btn-big" type="button" data-act="ap-lock" ${apl.pick >= 0 && apl.lock < 0 && !paused ? '' : 'disabled'}>${apl.lock >= 0 ? (rv ? (rv.ok ? '✓ Richtig!' : '✗ Leider falsch') : '🔒 Eingeloggt …') : 'Endgültige Antwort'}</button>
+        <div class="ap-jokers">${[['jf', '50:50'], ['jp', '👥 Publikum'], ['jt', '📞 Telefon']].map(([k, l]) => `<button class="ap-jk ${r[k] >= 0 ? 'used' : ''}" type="button" data-act="ap-joker" data-v="${k}" ${r[k] >= 0 || apl.lock >= 0 ? 'disabled' : ''}>${l}</button>`).join('')}</div>
+        <button class="btn btn-sm btn-ghost" type="button" data-act="ap-stop" ${apl.lock >= 0 ? 'disabled' : ''}>🚪 Aussteigen mit ${apEur(lv ? AP_LADDER[lv - 1] : 0)}</button>
+      </div>
+    </div>`;
+  } else if (r) {
+    main = `<div class="card ap-done st-${r.st}"><span class="eyebrow">Dein Ergebnis</span><h2>${r.st === 'won' ? '🏆 Du bist der nächste ApeRed!' : r.st === 'stop' ? '🚪 Ausgestiegen' : '❌ Leider raus'}</h2><p class="ap-sum">${apEur(apWon(r))}</p><p class="muted">Warte, bis alle fertig sind …</p></div>`;
+  } else main = `<div class="card ap-done"><span class="eyebrow">👀 Du schaust zu</span><p class="muted">Die Fragen sehen nur die Spieler selbst.</p></div>`;
+  return `<section class="section tsec applay">
+    <div class="k-top">
+      <button class="gmenu" type="button" data-act="gmenu" aria-label="Menü anzeigen" title="Menü">☰</button>
+      <div class="k-head"><b>💰 ${AP_NAME}</b><small>${esc((lobby() || {}).name || '')}${M.tl ? ` · ${M.tl} s pro Frage` : ''}</small></div>
+      ${host ? `<button class="btn btn-sm btn-ghost k-endbtn" type="button" data-act="ap-end">Beenden</button>` : ''}
+    </div>
+    <div class="ap-wrap"><div class="ap-main">${main}${apBoardHTML(M)}</div>${r ? apLadderHTML(r) : ''}</div>
+  </section>`;
+}
+function apEndHTML(M) {
+  const host = ctl(), rows = M.players.map(id => ({id, r:M.pr[id], v:apWon(M.pr[id])})).sort((a, b) => b.v - a.v || b.r.lv - a.r.lv);
+  const w = rows[0];
+  return `<section class="section tsec"><div class="card k-end">
+    <span class="eyebrow">💰 ${AP_NAME}</span>
+    <div class="k-winner">${avatar(ghost(w.id), 72)}<h2>${w.v ? `${esc(ghost(w.id).name)} gewinnt ${apEur(w.v)}!` : 'Niemand hat etwas gewonnen'}</h2></div>
+    <ol class="ap-res">${rows.map((x, i) => `<li>${avatar(ghost(x.id), 30)}<b>${esc(ghost(x.id).name)}</b><span class="muted">${apStatus(x.r)}</span><span class="ap-rv">${apEur(x.v)}</span></li>`).join('')}</ol>
+    ${M.transferred ? `<p class="okline">✓ Steht im Highscore von ${esc((lobby() || {}).name || 'diesem Raum')}.</p>` : ''}
+    ${host ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="ap-again">Neue Runde</button><button class="btn" type="button" data-act="ap-setup">Einstellungen</button></div>` : '<p class="muted">Der Host kann eine neue Runde starten.</p>'}
+  </div>${lobbyHsHTML()}</section>`;
+}
+function viewAp() { const M = S.ap; if (!M) return apSetupHTML(); return M.status === 'finished' ? apEndHTML(M) : apPlayHTML(M); }
+function apMount() {
+  const M = S.ap; if (!M) return;
+  if (M.id !== apl.gid) Object.assign(apl, {gid:M.id, pick:-1, lock:-1, reveal:null, bot:{}, timeKey:''});
+  if (M.status === 'finished' && apl.endSnd !== M.id && S.tab === 'ap') { apl.endSnd = M.id; kSnd('win', .3); }
+  // Handy: aktuelle Stufe in der Leiste sichtbar machen
+  const lad = document.querySelector('.ap-ladder'), cur = lad && lad.querySelector('li.cur');
+  if (lad && cur && lad.scrollWidth > lad.clientWidth) lad.scrollLeft = cur.offsetLeft - lad.clientWidth / 2 + cur.offsetWidth / 2;
+}
+/* Zeitbalken flüssig nachführen, ohne neu zu zeichnen */
+setInterval(() => {
+  const M = S.ap; if (!M || S.tab !== 'ap' || !M.tl) return;
+  const me = apMe(M), r = me && M.pr[me]; if (!r || r.st !== 'play') return;
+  const pz = roomPaused(), left = Math.max(0, M.tl * 1000 - ((pz ? pz.at : Date.now()) - r.at));
+  const bar = document.getElementById('ap-tbar'), sec = document.getElementById('ap-tsec');
+  if (bar) { bar.style.width = (left / (M.tl * 10)) + '%'; bar.classList.toggle('low', left < 10000); }
+  if (sec) sec.textContent = Math.ceil(left / 1000) + ' s';
+}, 200);
+
 /* ---------- Bowling: reihum werfen, 3, 5 oder 10 Frames (auch mit Bots) ----------
    Gespeichert im Raum-Feld uno (mit g:'bw'): {g, id, status, cfg:{fr}, players, s, transferred}.
    s = {seq, turn, fr, roll, pins, rolls:{pid:[[w1, w2, (w3)], …]}, th, turnAt}: pins = stehende Pins als Bitmaske (10 Bit),
@@ -12424,7 +12734,7 @@ async function vgmLinkSubmit() {
 /* ---------- Spieler-Profile im Steam-Stil ----------
    Der Tab „Spieler“ zeigt alle Spieler. Ein Tipp auf einen Spieler öffnet sein Profil: Kopfbereich mit Level und Status,
    Lieblingsspiel, Screenshots, kürzliche Aktivität, Spielebibliothek; daneben Abzeichen, Zahlen und die anderen Spieler. */
-const GAME_KIND_NAME = {quiz:'Quiz', malen:'Malen', golf:'Minigolf', karten:'Kartenwahn', mad:'Uncle Grandpa ärgere dich', bj:'Blackjack', dt:'Dicktris', tt:'Tischtennis', ah:'Air-Hockey', bw:'Bowling', ch:'Schach'};
+const GAME_KIND_NAME = {quiz:'Quiz', malen:'Malen', golf:'Minigolf', karten:'Kartenwahn', mad:'Uncle Grandpa ärgere dich', bj:'Blackjack', dt:'Dicktris', tt:'Tischtennis', ah:'Air-Hockey', bw:'Bowling', ch:'Schach', ap:'Wer wird der nächste ApeRed?'};
 /* Status wie bei Steam: im Spiel (in einem Raum mit laufendem Spiel), online oder offline */
 function spStatus(pid) {
   const now = Date.now();
@@ -12717,7 +13027,7 @@ const TK_TYPES = [
 ];
 const TK_AREAS = [
   ['menu', 'Main-Menü', '🏠'], ['turnier', 'Turnier', '🏆'], ['raeume', 'Spiele-Räume', '🚪'], ['quiz', 'Quiz', '❔'], ['malen', 'Malen', '🎨'],
-  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['mad', 'Uncle Grandpa ärgere dich', '🎲'], ['bj', 'Blackjack', '🂡'], ['dt', 'Dicktris', '🧱'], ['tt', 'Tischtennis', '🏓'], ['ah', 'Air-Hockey', '🏒'], ['bw', 'Bowling', '🎳'], ['ch', 'Schach', '♟️'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
+  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['mad', 'Uncle Grandpa ärgere dich', '🎲'], ['bj', 'Blackjack', '🂡'], ['dt', 'Dicktris', '🧱'], ['tt', 'Tischtennis', '🏓'], ['ah', 'Air-Hockey', '🏒'], ['bw', 'Bowling', '🎳'], ['ch', 'Schach', '♟️'], ['ap', 'Wer wird der nächste ApeRed?', '💰'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
   ['support', 'Support', '🛟'], ['musik', 'Musik und Sound', '🎵'], ['optionen', 'Optionen', '⚙️'], ['login', 'Login und Einladungen', '🔑'], ['handy', 'Handy-Ansicht', '📱'], ['other', 'Sonstiges', '🧩']
 ];
 const TK_SUB = {
@@ -12790,7 +13100,7 @@ function tkContext() {
   const t = S.tab, L = typeof lobby === 'function' ? lobby() : null, me = myPid();
   const map = {start:'menu', turnier:'turnier', rangliste:'turnier', rad:'turnier', liste:'turnier', spiele:'raeume', raum:'raeume', spieler:'profile', einstellungen:'optionen'};
   let area = map[t] || '', hole = 0, sub = '';
-  if (['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch'].includes(t)) area = t;
+  if (['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap'].includes(t)) area = t;
   if (t === 'spieler' && D.vgP) area = 'games';
   if (area === 'golf' && S.golf && S.golf.status === 'running') { const p = S.golf.pos && S.golf.pos[me]; hole = (Array.isArray(p) ? p[3] : S.golf.hi) + 1 || 0; }
   if (area === 'turnier') sub = {rangliste:'Rangliste', rad:'Glücksrad', liste:'Spieleliste'}[t] || '';
@@ -14365,6 +14675,7 @@ function tick() {
     try { ahLogic(); } catch (e) {}
     try { bwLogic(); } catch (e) {}
     try { chLogic(); } catch (e) {}
+    try { apLogic(); } catch (e) {}
     botTick();
   }
   lobbyAutoAward();
@@ -14949,7 +15260,7 @@ const actions = {
   'quiz-again': () => { const base = clone(S.quiz); withPending(() => quizStart(base)); },
   'quiz-new': () => withPending(() => quizDiscard())
 };
-Object.assign(actions, chActions, uidActions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions, dtActions, ttActions, ahActions, bwActions);
+Object.assign(actions, apActions, chActions, uidActions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions, dtActions, ttActions, ahActions, bwActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
   if (e.target.classList && e.target.classList.contains('scrim')) { if (!(S.modal && S.modal.type === 'bday-ask')) closeModal(); return; }
@@ -16476,7 +16787,7 @@ function boot() {
   if (!S.deco) S.deco = normDeco(null);
   renderBgm();
   const h = (location.hash || '').slice(1);
-  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch'].includes(h) ? 'spiele-pick' : viewFor(h);
+  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap'].includes(h) ? 'spiele-pick' : viewFor(h);
   const fc = CFG && CFG.firebase;
   if (!fc || !fc.apiKey || /HIER_EINTRAGEN/.test(fc.apiKey) || /DEIN-PROJEKT/.test(fc.projectId || '') || !window.firebase) {
     S.mode = 'setup'; S.loaded = true;
