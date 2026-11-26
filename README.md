@@ -181,7 +181,7 @@ Alle Regeln (Rochade, en passant, Umwandlung mit Auswahl, Matt, Patt, 50 Züge, 
 Aufgeben, Remis anbieten). Die Zuggenerierung ist mit Perft-Stellungen geprüft. Bot (Host): Alpha-Beta mit Feldtabellen,
 leicht/mittel/schwer = Tiefe 1/2/3, höchstens 0,8 s pro Zug. Highscore: Sieg +3, Niederlage +1, Remis je +2.
 
-## Wer wird der nächste ApeRed?
+## Wer wird der nächste ApoRed?
 Raumspiel `ap` (Feld `uno`, g:'ap'), alle im Raum spielen gleichzeitig dieselben 15 Fragen (aus `BANK`, Kategorien Games/Geschichte/
 Wissen/Filme/Serien/Anime; je 3 Fragen pro Schwierigkeitsstufe). Geldleiter 50 € bis 1 Mio, Sicherheitsstufen 500 € und 16.000 €,
 Aussteigen jederzeit, Joker 50:50 / Publikum / Telefon (fest aus der Frage berechnet, für alle gleich). Optional 30 oder 60 s pro Frage.

@@ -1746,7 +1746,7 @@ body.ah-locked .ah-lockhint{display:none}
 .ch-endboard .ch-pc{font-size:min(5vh,40px)}
 .ch-drawav{display:flex;gap:10px;justify-content:center}
 @media (max-width:900px){.ch-wrap{grid-template-columns:minmax(0,1fr)}.ch-main{width:100%}.ch-side{position:static;width:100%}.ch-pc{font-size:min(10.5vw,60px)}.ch-mvs{max-height:180px}}
-/* Wer wird der nächste ApeRed? */
+/* Wer wird der nächste ApoRed? */
 .ap-title{font-size:clamp(26px,4vw,40px)!important}
 .ap-wrap{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:20px;align-items:start}
 .ap-main{display:flex;flex-direction:column;gap:16px;min-width:0}
@@ -3159,7 +3159,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=88"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=89"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -7562,7 +7562,7 @@ function roomCardHTML(r) {
 function viewRooms() {
   const me = myPid();
   return `<section class="section">
-    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack, Dicktris, Tischtennis, Air-Hockey, Bowling, Schach und „Wer wird der nächste ApeRed?“ könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
+    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack, Dicktris, Tischtennis, Air-Hockey, Bowling, Schach und „Wer wird der nächste ApoRed?“ könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
     ${me ? '' : `<div class="card rooms-hint"><p class="m-text">Damit du mitspielen kannst, brauchst du einen eigenen Spieler. Den erstellst du unter <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button>.</p></div>`}
     <div class="rooms">${tourLobbyVisible() ? roomCardHTML(TOUR_ID) : ''}${ROOMS.map(roomCardHTML).join('')}</div>
     <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack oder Dicktris, stellt alles ein und startet.</li><li><b>Privat:</b> Wollt ihr unter euch bleiben, stellt der Host den Raum auf privat und lädt seine Freunde ein. Andere können dann nicht beitreten.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
@@ -7576,7 +7576,7 @@ function viewRoom() {
       <h3 class="rc-grp">👥 Für mehrere Spieler</h3>
       <div class="rc-pick">
         <button class="pick-big" type="button" data-act="room-kind" data-v="quiz" style="--tc:#39d6f2"><span aria-hidden="true">🧠</span><b>Quiz</b><small>Spielbrett mit Fragen aus 8 Themen. Wer dran ist, wählt Feld und Antwort.</small></button>
-        <button class="pick-big" type="button" data-act="room-kind" data-v="ap" style="--tc:#ffb52e"><span aria-hidden="true">💰</span><b>Wer wird der nächste ApeRed?</b><small>15 Fragen bis zur Million, mit Jokern. Alle spielen gleichzeitig.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="ap" style="--tc:#ffb52e"><span aria-hidden="true">💰</span><b>Wer wird der nächste ApoRed?</b><small>15 Fragen bis zur Million, mit Jokern. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="malen" style="--tc:#ff7fc3"><span aria-hidden="true">🎨</span><b>Malen</b><small>Einer malt, alle anderen raten. Wie skribbl.io.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="golf" style="--tc:#4ff08f"><span aria-hidden="true">⛳</span><b>Golf</b><small>Minigolf in 3D mit 30 Bahnen, von kurz und leicht bis extrem. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="mad" style="--tc:#ff9f5a"><span aria-hidden="true">🎲</span><b>Uncle Grandpa ärgere dich</b><small>Das Brettspiel für 2 bis 4: Würfeln, mit einer 6 rauskommen, Gegner rauswerfen und alle Figuren ins Ziel bringen.</small></button>
@@ -11076,13 +11076,13 @@ setInterval(() => {
   document.querySelectorAll('[data-ch-clock]').forEach(el => { const i = Number(el.dataset.chClock), ms = chClock(M, i); el.textContent = chFmt(ms); el.classList.toggle('low', ms < 30000); });
 }, 200);
 
-/* ---------- Wer wird der nächste ApeRed? (Raumspiel für alle gleichzeitig) ----------
+/* ---------- Wer wird der nächste ApoRed? (Raumspiel für alle gleichzeitig) ----------
    15 Fragen mit Geldleiter, Sicherheitsstufen bei 500 € und 16.000 €, Joker 50:50 / Publikum / Telefon. Alle bekommen dieselben Fragen
    (aus der Quiz-Fragensammlung, Stufe für Stufe schwerer), jeder spielt für sich. Die anderen sehen nur Stufe und Stand, nie die Frage.
    Gespeichert im Raum-Feld uno (mit g:'ap'): {g, id, status, players, qs (15 × „Kategorie.Stufe.Nr“), tl (Sekunden pro Frage, 0 = ohne),
    pr: {Spieler: {lv (0–15 = richtig beantwortet), st ('play'|'out'|'stop'|'won'), at (Start der Frage), jf/jp/jt (Stufe des Jokers, -1)}},
    transferred}. Jeder schreibt nur seinen eigenen Stand (uno.pr.<id>), Bots schreibt der Host. */
-const AP_NAME = 'Wer wird der nächste ApeRed?';
+const AP_NAME = 'Wer wird der nächste ApoRed?';
 const AP_LADDER = [50, 100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 500000, 1000000];
 const AP_SAFE = [5, 10];
 const AP_CATS = [0, 2, 3, 5, 6, 7];
@@ -11277,7 +11277,7 @@ function apPlayHTML(M) {
       </div>
     </div>`;
   } else if (r) {
-    main = `<div class="card ap-done st-${r.st}"><span class="eyebrow">Dein Ergebnis</span><h2>${r.st === 'won' ? '🏆 Du bist der nächste ApeRed!' : r.st === 'stop' ? '🚪 Ausgestiegen' : '❌ Leider raus'}</h2><p class="ap-sum">${apEur(apWon(r))}</p><p class="muted">Warte, bis alle fertig sind …</p></div>`;
+    main = `<div class="card ap-done st-${r.st}"><span class="eyebrow">Dein Ergebnis</span><h2>${r.st === 'won' ? '🏆 Du bist der nächste ApoRed!' : r.st === 'stop' ? '🚪 Ausgestiegen' : '❌ Leider raus'}</h2><p class="ap-sum">${apEur(apWon(r))}</p><p class="muted">Warte, bis alle fertig sind …</p></div>`;
   } else main = `<div class="card ap-done"><span class="eyebrow">👀 Du schaust zu</span><p class="muted">Die Fragen sehen nur die Spieler selbst.</p></div>`;
   return `<section class="section tsec applay">
     <div class="k-top">
@@ -12734,7 +12734,7 @@ async function vgmLinkSubmit() {
 /* ---------- Spieler-Profile im Steam-Stil ----------
    Der Tab „Spieler“ zeigt alle Spieler. Ein Tipp auf einen Spieler öffnet sein Profil: Kopfbereich mit Level und Status,
    Lieblingsspiel, Screenshots, kürzliche Aktivität, Spielebibliothek; daneben Abzeichen, Zahlen und die anderen Spieler. */
-const GAME_KIND_NAME = {quiz:'Quiz', malen:'Malen', golf:'Minigolf', karten:'Kartenwahn', mad:'Uncle Grandpa ärgere dich', bj:'Blackjack', dt:'Dicktris', tt:'Tischtennis', ah:'Air-Hockey', bw:'Bowling', ch:'Schach', ap:'Wer wird der nächste ApeRed?'};
+const GAME_KIND_NAME = {quiz:'Quiz', malen:'Malen', golf:'Minigolf', karten:'Kartenwahn', mad:'Uncle Grandpa ärgere dich', bj:'Blackjack', dt:'Dicktris', tt:'Tischtennis', ah:'Air-Hockey', bw:'Bowling', ch:'Schach', ap:'Wer wird der nächste ApoRed?'};
 /* Status wie bei Steam: im Spiel (in einem Raum mit laufendem Spiel), online oder offline */
 function spStatus(pid) {
   const now = Date.now();
@@ -13027,7 +13027,7 @@ const TK_TYPES = [
 ];
 const TK_AREAS = [
   ['menu', 'Main-Menü', '🏠'], ['turnier', 'Turnier', '🏆'], ['raeume', 'Spiele-Räume', '🚪'], ['quiz', 'Quiz', '❔'], ['malen', 'Malen', '🎨'],
-  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['mad', 'Uncle Grandpa ärgere dich', '🎲'], ['bj', 'Blackjack', '🂡'], ['dt', 'Dicktris', '🧱'], ['tt', 'Tischtennis', '🏓'], ['ah', 'Air-Hockey', '🏒'], ['bw', 'Bowling', '🎳'], ['ch', 'Schach', '♟️'], ['ap', 'Wer wird der nächste ApeRed?', '💰'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
+  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['mad', 'Uncle Grandpa ärgere dich', '🎲'], ['bj', 'Blackjack', '🂡'], ['dt', 'Dicktris', '🧱'], ['tt', 'Tischtennis', '🏓'], ['ah', 'Air-Hockey', '🏒'], ['bw', 'Bowling', '🎳'], ['ch', 'Schach', '♟️'], ['ap', 'Wer wird der nächste ApoRed?', '💰'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
   ['support', 'Support', '🛟'], ['musik', 'Musik und Sound', '🎵'], ['optionen', 'Optionen', '⚙️'], ['login', 'Login und Einladungen', '🔑'], ['handy', 'Handy-Ansicht', '📱'], ['other', 'Sonstiges', '🧩']
 ];
 const TK_SUB = {
