@@ -252,3 +252,11 @@ In der Turnier-Lobby (`lobby().tour`) zählen Punkte direkt aufs Turnier-Konto (
 - ApoRed: am Ende die Nummer der Frage, bei der man rausfliegt (IDs `tap_<spiel>_<spieler>`).
 - Alle anderen Spiele: am Spielende nach `TOUR_RULES`/`tourRows` (IDs `tg_<art>_<spiel>_<spieler>`): Malen Malpunkte ÷ 25, Minigolf pro Bahn 6 − Schläge (min. 0), Kartenwahn und Uncle Grandpa nach Platz 10/6/3/1, Blackjack Chips ÷ Start × 5, Dicktris 1 pro Reihe, Tischtennis und Air-Hockey 1 pro eigenem Punkt/Tor + 5 für den Sieg, Bowling Punkte ÷ 10, Schach Sieg 10 / Remis 5 / Niederlage 1.
 - Am Spielende zeigt `tourCardHTML` (über `lobbyHsHTML`) die Regel und die vergebenen Turnierpunkte.
+
+## Codenames
+
+Raumspiel `cn` (Feld `uno`, `g:'cn'`): 2 Teams in `t0`/`t1` (Firestore erlaubt keine Listen in Listen), Spione in `spy`, 25 Wörter aus `CN_WORDS`, Farben in `key` (0 Rot, 1 Blau, 2 neutral, 3 Attentäter), aufgedeckt in `rv`. Der Spion gibt `hint` (ein Wort + Zahl, 0 = beliebig), das Team rät bis Zahl + 1. Ab 4 Spielern (je Team 2), Bots spielen nicht mit. Highscore: Siegerteam 3, Verlierer 1. Turnier: gefundene Wörter des Teams + 5 für den Sieg.
+
+## Stadt, Land, Fluss
+
+Raumspiel `slf` (Feld `uno`, `g:'slf'`): Kategorien `cats` (3 bis 8 aus `SLF_CATS`), Runden 3/5/8, Zeit 60–180 s oder ohne. Phasen `write` → `stop` (jemand drückt STOPP oder Zeit vorbei, 3 s zum Einsammeln) → `check` (Antworten prüfen, ✗-Stimmen in `x`, Mehrheit der anderen lehnt ab). Antworten pro Spieler in `pr.<pid>.r<Runde>`. Punkte (`slfCell`): als Einziger 20, eigenes Wort 10, doppelt 5. Turnier: Punkte ÷ 10.

@@ -1800,6 +1800,81 @@ body.ah-locked .ah-lockhint{display:none}
 .ap-jokers{display:flex;gap:8px;flex-wrap:wrap}
 .ap-jk{border:0;border-radius:999px;padding:8px 14px;font:inherit;font-weight:800;font-size:13px;cursor:pointer;color:#fff;background:linear-gradient(180deg,#3a4cb8,#1f2b7a);box-shadow:0 0 0 2px #6d82ff}
 .ap-jk:hover:not(:disabled){transform:translateY(-2px)}
+/* Codenames */
+.cn-teams{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+.cn-tcol{padding:12px;border-radius:14px;background:rgba(255,255,255,.03);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--tc) 60%,transparent)}
+.cn-tcol h3{margin:0 0 8px;color:var(--tc)}
+.cn-prow{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.cn-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.cn-turn{font-family:var(--display);font-size:22px;font-weight:900;text-transform:uppercase;color:var(--tc)}
+.cn-act{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:12px;text-align:center}
+.cn-hintbox{width:min(720px,100%);padding:14px;border-radius:14px;background:rgba(255,207,63,.08);box-shadow:inset 0 0 0 2px rgba(255,207,63,.5)}
+.cn-hrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-top:8px}
+.cn-hrow .input{max-width:240px;text-transform:uppercase}
+.cn-nums .chip{min-width:40px;justify-content:center}
+.cn-hint{display:inline-flex;align-items:center;gap:14px;padding:10px 22px;border-radius:999px;background:color-mix(in srgb,var(--tc) 22%,#0b0f2e);box-shadow:0 0 0 2px var(--tc)}
+.cn-hint span{font-size:13px;font-weight:800;opacity:.85}
+.cn-hint b{font-family:var(--display);font-size:28px;letter-spacing:.06em}
+.cn-hint em{font-style:normal;font-family:var(--display);font-size:28px;color:#ffcf3f}
+.cn-wait{margin:0;color:var(--muted)}
+.cn-main{display:grid;grid-template-columns:170px minmax(0,1fr) 170px;gap:12px;align-items:start}
+.cn-side{padding:10px;border-radius:14px;background:rgba(255,255,255,.03);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--tc) 55%,transparent)}
+.cn-side h3{margin:0 0 6px;display:flex;justify-content:space-between;color:var(--tc)}
+.cn-left{display:inline-grid;place-items:center;min-width:30px;height:30px;border-radius:8px;background:var(--tc);color:#fff;font-family:var(--display)}
+.cn-side ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.cn-side li{display:flex;align-items:center;gap:6px;font-size:14px;min-width:0}
+.cn-side li b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cn-side li.me b{color:#ffcf3f}
+.cn-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.cn-card{position:relative;display:grid;place-items:center;min-height:74px;padding:8px 4px;hyphens:auto;-webkit-hyphens:auto;border:0;border-radius:12px;background:#efe4c8;color:#2a2112;font:inherit;font-weight:900;font-size:clamp(11px,1.5vw,17px);text-transform:uppercase;letter-spacing:.02em;cursor:pointer;box-shadow:0 4px 0 #b9a77c;overflow-wrap:anywhere;transition:transform .12s}
+.cn-card:not(:disabled):hover{transform:translateY(-2px)}
+.cn-card:disabled{cursor:default}
+.cn-card.sp.k0{box-shadow:inset 0 0 0 4px #ff4d5e,0 4px 0 #b9a77c}
+.cn-card.sp.k1{box-shadow:inset 0 0 0 4px #3f8cff,0 4px 0 #b9a77c}
+.cn-card.sp.k3{background:#3a3a3a;color:#fff}
+.cn-card.rv{color:#fff;box-shadow:none}
+.cn-card.rv.k0{background:#d9303f}
+.cn-card.rv.k1{background:#2a6fd6}
+.cn-card.rv.k2{background:#8d8164}
+.cn-card.rv.k3{background:#111}
+.cn-card.rv span{opacity:.75}
+.cn-card i{position:absolute;font-style:normal;font-size:28px}
+.cn-card small{position:absolute;bottom:3px;font-size:10px;font-weight:700;text-transform:none;opacity:.9}
+.cn-card.last{outline:3px solid #ffcf3f;outline-offset:2px}
+.cn-win{text-align:center;padding:16px;margin-bottom:12px;border-radius:16px;background:color-mix(in srgb,var(--tc) 18%,#0b0f2e);box-shadow:0 0 0 2px var(--tc)}
+.cn-win h2{margin:0 0 6px;color:var(--tc)}
+@media (max-width:760px){.cn-main{grid-template-columns:1fr 1fr}.cn-main .cn-grid{grid-column:1/-1;order:-1}.cn-card{min-height:56px;font-size:11px}.cn-grid{gap:5px}.cn-teams{grid-template-columns:1fr}}
+/* Stadt, Land, Fluss */
+.slf-top{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:12px}
+.slf-letter{display:grid;place-items:center;width:110px;height:110px;border-radius:24px;font-family:var(--display);font-size:72px;font-weight:900;color:#1a1208;background:linear-gradient(180deg,#ffe27a,#ffb52e);box-shadow:0 6px 0 #b9761a,0 0 30px rgba(255,181,46,.45)}
+.slf-time{font-family:var(--display);font-size:22px;font-weight:900}
+.slf-bar{width:min(420px,90%);height:8px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
+.slf-bar i{display:block;height:100%;background:linear-gradient(90deg,#4ff08f,#ffcf3f);transition:width .25s linear}
+.slf-endbtn{position:absolute;right:0;top:0}
+.slf-stopbanner{text-align:center;padding:12px;margin:0 auto 12px;max-width:720px;border-radius:14px;background:#a8121f;color:#fff;font-weight:800;font-size:18px}
+.slf-form{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.slf-row{display:grid;grid-template-columns:150px 1fr;align-items:center;gap:10px}
+.slf-row span{font-weight:800}
+.slf-row .input{font-size:18px}
+.slf-stopbtn{margin-top:6px}
+.slf-tablewrap{overflow-x:auto}
+.slf-table{width:100%;border-collapse:separate;border-spacing:4px;font-size:14px}
+.slf-table th{text-align:left;white-space:nowrap;font-size:13px}
+.slf-table td{vertical-align:top;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,.04);min-width:110px}
+.slf-table td.ok{background:rgba(79,240,143,.1)}
+.slf-table td.bad .slf-ans{text-decoration:line-through;opacity:.6}
+.slf-table tr.me th{color:#ffcf3f}
+.slf-ans{display:block;font-weight:700}
+.slf-pts{display:block;font-size:12px;color:#4ff08f;font-weight:800}
+.slf-table td.bad .slf-pts{color:#ff6b78}
+.slf-x{margin-top:4px;border:0;border-radius:8px;padding:2px 8px;background:rgba(255,255,255,.08);color:inherit;font:inherit;font-size:12px;cursor:pointer}
+.slf-x.on{background:#a8121f;color:#fff}
+.slf-sum{font-family:var(--display);font-weight:900;color:#ffcf3f;min-width:60px!important}
+.slf-score ol{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column;gap:4px}
+.slf-score li{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.04)}
+.slf-score li span{margin-left:auto;font-weight:900;color:#ffcf3f}
+.slf-score li.me{background:rgba(255,207,63,.12)}
+@media (max-width:560px){.slf-row{grid-template-columns:1fr;gap:4px}.slf-letter{width:86px;height:86px;font-size:56px}}
 .tour-intro{position:relative;text-align:center;padding:28px 24px;margin-bottom:18px;border:2px solid #ffcf3f;background:radial-gradient(80% 120% at 50% 0%,rgba(255,207,63,.22),rgba(13,22,64,.9) 70%);box-shadow:0 0 30px rgba(255,207,63,.25)}
 .tour-intro-ic{display:block;font-size:54px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 0 14px rgba(255,207,63,.6))}
 .tour-intro h2{margin:6px 0 12px;font-size:clamp(22px,3vw,34px)}
@@ -3252,7 +3327,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=109"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=110"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4271,7 +4346,7 @@ function normTicker(x) {
   };
 }
 const COLORS = ['#f5b83d', '#3fd49c', '#ff8080', '#6ea8ff', '#c493ff', '#ff9f5a', '#5fdde3', '#f58fb8'];
-const SRV_ICON = {quiz:'❓', malen:'🎨', golf:'⛳', karten:'🃏', mad:'🎲', bj:'♠️', dt:'🧱', tt:'🏓', ah:'🏒', bw:'🎳', ch:'♟️', ap:'💰'};
+const SRV_ICON = {quiz:'❓', malen:'🎨', golf:'⛳', karten:'🃏', mad:'🎲', bj:'♠️', dt:'🧱', tt:'🏓', ah:'🏒', bw:'🎳', ch:'♟️', ap:'💰', cn:'🕵️', slf:'🏙️'};
 const FMTS = [[1, 'Alle gegen alle', '⚔️'], [2, 'Duos', '👥'], [3, 'Trios', '👥'], [4, 'Squads', '👥']];
 const TEAM_COLS = ['#ffcf3f', '#39d6f2', '#ff4f6d', '#4ff08f', '#c493ff', '#ff9f5a', '#6ea8ff', '#f58fb8'];
 const LETTERS = ['A', 'B', 'C', 'D'];
@@ -4295,7 +4370,7 @@ function groupPick(g) {
   return GROUPS[g].some(x => x[0] === last) ? last : GROUPS[g][0][0];
 }
 /* Ansichten: "Spiele" ist der Ober-Tab für Quiz und Malen */
-const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap', 'support', 'einstellungen'];
+const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap', 'cn', 'slf', 'support', 'einstellungen'];
 const HUB = ['quiz', 'malen'];
 const viewOk = t => VIEWS.includes(t);
 /* Im Turnier entscheidet nur der Spielleiter, ob alle den Highscore oder das Zufallsrad sehen (settings.tview) */
@@ -4307,7 +4382,7 @@ function viewFor(t) {
   if (t === 'vg') return 'spieler';
   if (t === 'liste') t = 'rad'; // Spieleliste gibt es im Turnier nicht mehr
   if (!S.admin && (t === 'turnier' || t === 'rangliste' || t === 'rad')) return S.settings.tview;
-  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf' || t === 'karten' || t === 'mad' || t === 'bj' || t === 'dt' || t === 'tt' || t === 'ah' || t === 'bw' || t === 'ch' || t === 'ap') return S.room ? roomView() : 'spiele';
+  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf' || t === 'karten' || t === 'mad' || t === 'bj' || t === 'dt' || t === 'tt' || t === 'ah' || t === 'bw' || t === 'ch' || t === 'ap' || t === 'cn' || t === 'slf') return S.room ? roomView() : 'spiele';
   return GROUPS[t] ? groupPick(t) : viewOk(t) ? t : 'start';
 }
 
@@ -5054,7 +5129,7 @@ function render() {
   else if (S.mode === 'lock') html = lockHTML();
   else if (blocked()) html = `<div style="min-height:70vh"></div>`;
   else if (S.tab === 'spiele-pick') html = `<div class="loading">${COIN(48, 'spin')}</div>`;
-  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, mad:viewMad, bj:viewBj, dt:viewDt, tt:viewTt, ah:viewAh, bw:viewBw, ch:viewCh, ap:viewAp, support:viewSupport, einstellungen:viewSettings}[S.tab] || viewStart)();
+  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, mad:viewMad, bj:viewBj, dt:viewDt, tt:viewTt, ah:viewAh, bw:viewBw, ch:viewCh, ap:viewAp, cn:viewCn, slf:viewSlf, support:viewSupport, einstellungen:viewSettings}[S.tab] || viewStart)();
   if (groupOf(S.tab) === 'turnier' && tourLocked()) html = tourCheckin() && !D.tourPeek ? tourCheckinHTML() : tourPreviewHTML();
   else if (groupOf(S.tab) === 'turnier' && tourKey() && !tourCheckin() && (D.tourIntro || lsGet('turnier-intro', '') !== tourKey())) html = tourIntroHTML();
   else if (groupOf(S.tab) === 'turnier' && S.admin && D.tourEdit && !['live', 'today'].includes(tourState().k)) html = `<div class="tour-editbar"><span>✏️ Bearbeitungsmodus: Nur du siehst das so. Für die Spieler ist das Turnier noch gesperrt.</span><button class="btn btn-sm" type="button" data-act="tour-preview">Zur Vorschau</button></div>` + html;
@@ -5081,6 +5156,7 @@ function render() {
   ahMount();
   bwMount();
   chMount();
+  cnMount(); slfMount();
   apMount();
   renderFlySite();
   const newStand = m.querySelector('.stand');
@@ -5101,7 +5177,7 @@ function render() {
 function tabsHidden() { return S.mode === 'loading' || S.mode === 'setup' || S.mode === 'lock' || S.mode === 'firstrun' || (S.mode === 'db' && !S.loaded) || blocked(); }
 function inGame() {
   if (tabsHidden() || S.mode !== 'db') return false;
-  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running') || (S.tab === 'karten' && !!S.uno && S.uno.status === 'running') || (S.tab === 'mad' && !!S.mad && S.mad.status === 'running') || (S.tab === 'bj' && !!S.bj && S.bj.status === 'running') || (S.tab === 'dt' && !!S.dt && S.dt.status === 'running') || (S.tab === 'tt' && !!S.tt && S.tt.status === 'running') || (S.tab === 'ah' && !!S.ah && S.ah.status === 'running') || (S.tab === 'bw' && !!S.bw && S.bw.status === 'running') || (S.tab === 'ch' && !!S.ch && S.ch.status === 'running') || (S.tab === 'ap' && !!S.ap && S.ap.status === 'running');
+  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running') || (S.tab === 'karten' && !!S.uno && S.uno.status === 'running') || (S.tab === 'mad' && !!S.mad && S.mad.status === 'running') || (S.tab === 'bj' && !!S.bj && S.bj.status === 'running') || (S.tab === 'dt' && !!S.dt && S.dt.status === 'running') || (S.tab === 'tt' && !!S.tt && S.tt.status === 'running') || (S.tab === 'ah' && !!S.ah && S.ah.status === 'running') || (S.tab === 'bw' && !!S.bw && S.bw.status === 'running') || (S.tab === 'ch' && !!S.ch && S.ch.status === 'running') || (S.tab === 'ap' && !!S.ap && S.ap.status === 'running') || (S.tab === 'cn' && !!S.cn && S.cn.status === 'running') || (S.tab === 'slf' && !!S.slf && S.slf.status === 'running');
 }
 const isTouch = () => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } };
 const canFull = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
@@ -5129,7 +5205,7 @@ function renderSubnav() {
     if (S.admin && tourKey()) h += `<div class="hub-admin"><button class="btn btn-sm hub-stop" type="button" data-act="tour-stop">⏹ Turnier stoppen</button></div>`;
   } else if (!hide && inRoom) {
     h = roomBarHTML();
-    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf' && S.tab !== 'karten' && S.tab !== 'mad' && S.tab !== 'bj' && S.tab !== 'dt' && S.tab !== 'tt' && S.tab !== 'ah' && S.tab !== 'bw' && S.tab !== 'ch' && S.tab !== 'ap') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
+    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf' && S.tab !== 'karten' && S.tab !== 'mad' && S.tab !== 'bj' && S.tab !== 'dt' && S.tab !== 'tt' && S.tab !== 'ah' && S.tab !== 'bw' && S.tab !== 'ch' && S.tab !== 'ap' && S.tab !== 'cn' && S.tab !== 'slf') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
   }
   el.setAttribute('aria-label', tx(inRoom ? 'Raum' : 'Turnier'));
   el.classList.toggle('wide', (!!grp || inRoom) && $('#main').classList.contains('wide'));
@@ -5815,7 +5891,7 @@ function wheelFollow() {
   else if (sp.id === wheelSeenSpin) return;
   wheelSeenSpin = sp.id;
   if (!wheelSpinning(w) || S.tab === 'rad') return;
-  const busy = roomTabs.includes(S.tab) && S.tab !== 'raum' && ((S.uno && S.uno.status === 'running') || (S.mad && S.mad.status === 'running') || (S.bj && S.bj.status === 'running') || (S.dt && S.dt.status === 'running') || (S.tt && S.tt.status === 'running') || (S.ah && S.ah.status === 'running') || (S.bw && S.bw.status === 'running') || (S.ch && S.ch.status === 'running') || (S.ap && S.ap.status === 'running') || (S.golf && S.golf.status === 'running') || (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running'));
+  const busy = roomTabs.includes(S.tab) && S.tab !== 'raum' && ((S.uno && S.uno.status === 'running') || (S.mad && S.mad.status === 'running') || (S.bj && S.bj.status === 'running') || (S.dt && S.dt.status === 'running') || (S.tt && S.tt.status === 'running') || (S.ah && S.ah.status === 'running') || (S.bw && S.bw.status === 'running') || (S.ch && S.ch.status === 'running') || (S.ap && S.ap.status === 'running') || (S.cn && S.cn.status === 'running') || (S.slf && S.slf.status === 'running') || (S.golf && S.golf.status === 'running') || (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running'));
   if (busy) { toast('🎡 Das Zufallsrad dreht sich! Schau im Turnier vorbei.'); return; }
   if (S.modal) closeModal();
   setTab('rad');
@@ -7286,7 +7362,7 @@ function normLobby(id, x) {
   const host = x.host && typeof x.host === 'object' && x.host.dev ? {pid:str(x.host.pid, 40), dev:str(x.host.dev, 60)} : null;
   const inv = Object.fromEntries(Object.keys(x.inv && typeof x.inv === 'object' && !Array.isArray(x.inv) ? x.inv : {}).filter(k => k && k.length <= 40).slice(0, 40).map(k => [k, true]));
   const tour = id === 'rt' || x.name === TOUR_ROOM || x.tour === true;
-  return {id, name:tour ? '🏆 Turnier-Lobby' : ROOM_NAMES[id] || id, tour, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true || id === 'rt', inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap'].includes(x.kind) ? x.kind : '',
+  return {id, name:tour ? '🏆 Turnier-Lobby' : ROOM_NAMES[id] || id, tour, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true || id === 'rt', inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap', 'cn', 'slf'].includes(x.kind) ? x.kind : '',
     quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null, uno:x.uno && typeof x.uno === 'object' ? x.uno : null,
     hs:Object.fromEntries(Object.entries(x.hs && typeof x.hs === 'object' && !Array.isArray(x.hs) ? x.hs : {}).filter(([pid, v]) => pid.length <= 40 && Number.isFinite(Number(v))).map(([pid, v]) => [pid, Math.round(Number(v))])),
     bots:Object.fromEntries(Object.entries(x.bots && typeof x.bots === 'object' && !Array.isArray(x.bots) ? x.bots : {}).filter(([id, b]) => id.startsWith('bot_') && id.length <= 40 && b && typeof b === 'object').slice(0, ROOM_MAX)
@@ -7325,10 +7401,12 @@ const TOUR_RULES = {
   tt:['Jeder Punkt, den du im Spiel machst = 1 Punkt.', 'Wer gewinnt, bekommt 5 Punkte extra.'],
   ah:['Jedes Tor, das du schießt = 1 Punkt.', 'Wer gewinnt, bekommt 5 Punkte extra.'],
   bw:['Deine Bowling-Punkte geteilt durch 10.', 'Beispiel: 150 Bowling-Punkte = 15 Punkte.'],
-  ch:['Gewonnen = 10 Punkte, unentschieden = 5, verloren = 1.']
+  ch:['Gewonnen = 10 Punkte, unentschieden = 5, verloren = 1.'],
+  cn:['Jedes Wort, das dein Team findet = 1 Punkt für jeden im Team.', 'Das Siegerteam bekommt 5 Punkte extra.'],
+  slf:['Deine Punkte im Spiel geteilt durch 10.', 'Beispiel: 230 Punkte = 23 Turnierpunkte.']
 };
 const tourRuleList = k => `<ul class="tour-rule-list">${(TOUR_RULES[k] || []).map(t => `<li>${t}</li>`).join('')}</ul>`;
-function tourGame(kind) { return ({quiz:S.quiz, malen:S.draw, golf:S.golf, karten:S.uno, mad:S.mad, bj:S.bj, dt:S.dt, tt:S.tt, ah:S.ah, bw:S.bw, ch:S.ch, ap:S.ap})[kind] || null; }
+function tourGame(kind) { return ({quiz:S.quiz, malen:S.draw, golf:S.golf, karten:S.uno, mad:S.mad, bj:S.bj, dt:S.dt, tt:S.tt, ah:S.ah, bw:S.bw, ch:S.ch, ap:S.ap, cn:S.cn, slf:S.slf})[kind] || null; }
 /* Turnierpunkte eines Spiels: [{id, pts}] (bei Quiz auch während des Spiels), sonst null */
 function tourRows(kind, M) {
   if (!M) return null;
@@ -7346,6 +7424,8 @@ function tourRows(kind, M) {
     case 'tt': case 'ah': return M.win < 0 ? null : M.p.map((id, i) => ({id, pts:M.sc[i] + (M.win === i ? 5 : 0)}));
     case 'bw': return bwRank(M).map(r => ({id:r.id, pts:Math.round(r.sc / 10)}));
     case 'ch': return M.win < 0 ? null : M.p.map((id, i) => ({id, pts:M.win === 2 ? 5 : M.win === i ? 10 : 1}));
+    case 'cn': return M.win < 0 ? null : [...M.teams[0], ...M.teams[1]].map(id => { const t = cnTeamOf(M, id); return {id, pts:cnFound(M, t) + (t === M.win ? 5 : 0)}; });
+    case 'slf': { const t = slfTotals(M); return M.players.map(id => ({id, pts:Math.round(t[id] / 10)})); }
   }
   return null;
 }
@@ -7393,6 +7473,8 @@ function lobbyAutoAward() {
   if (BWM && BWM.status === 'finished' && !BWM.transferred && !lhsDone.has('w' + BWM.id)) { lhsDone.add('w' + BWM.id); bwTransfer(); }
   const CHM = S.ch;
   if (CHM && CHM.status === 'finished' && !CHM.transferred && !lhsDone.has('c' + CHM.id)) { lhsDone.add('c' + CHM.id); chTransfer(); }
+  if (S.cn && S.cn.status === 'finished' && !S.cn.transferred && !lhsDone.has('n' + S.cn.id)) { lhsDone.add('n' + S.cn.id); cnTransfer(); }
+  if (S.slf && S.slf.status === 'finished' && !S.slf.transferred && !lhsDone.has('s' + S.slf.id)) { lhsDone.add('s' + S.slf.id); slfTransfer(); }
   const APM = S.ap;
   if (APM && APM.status === 'finished' && !APM.transferred && !lhsDone.has('a' + APM.id)) { lhsDone.add('a' + APM.id); apTransfer(); }
 }
@@ -7444,19 +7526,19 @@ function roomInviteModalHTML() {
 function hostStale(L) { return !L || !L.host || Date.now() - (L.hostSeen || 0) > HOST_STALE_MS; }
 function roomState(L) {
   if (!L) return 'free';
-  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : L.kind === 'karten' ? (L.uno && !L.uno.g ? L.uno : null) : L.kind === 'mad' ? (L.uno && L.uno.g === 'mad' ? L.uno : null) : L.kind === 'bj' ? (L.uno && L.uno.g === 'bj' ? L.uno : null) : L.kind === 'dt' ? (L.uno && L.uno.g === 'dt' ? L.uno : null) : L.kind === 'tt' ? (L.uno && L.uno.g === 'tt' ? L.uno : null) : L.kind === 'ah' ? (L.uno && L.uno.g === 'ah' ? L.uno : null) : L.kind === 'bw' ? (L.uno && L.uno.g === 'bw' ? L.uno : null) : L.kind === 'ch' ? (L.uno && L.uno.g === 'ch' ? L.uno : null) : L.kind === 'ap' ? (L.uno && L.uno.g === 'ap' ? L.uno : null) : null;
+  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : L.kind === 'karten' ? (L.uno && !L.uno.g ? L.uno : null) : L.kind === 'mad' ? (L.uno && L.uno.g === 'mad' ? L.uno : null) : L.kind === 'bj' ? (L.uno && L.uno.g === 'bj' ? L.uno : null) : L.kind === 'dt' ? (L.uno && L.uno.g === 'dt' ? L.uno : null) : L.kind === 'tt' ? (L.uno && L.uno.g === 'tt' ? L.uno : null) : L.kind === 'ah' ? (L.uno && L.uno.g === 'ah' ? L.uno : null) : L.kind === 'bw' ? (L.uno && L.uno.g === 'bw' ? L.uno : null) : L.kind === 'ch' ? (L.uno && L.uno.g === 'ch' ? L.uno : null) : L.kind === 'ap' ? (L.uno && L.uno.g === 'ap' ? L.uno : null) : L.kind === 'cn' ? (L.uno && L.uno.g === 'cn' ? L.uno : null) : L.kind === 'slf' ? (L.uno && L.uno.g === 'slf' ? L.uno : null) : null;
   if (g && g.status === 'running') return 'running';
   if (g && g.status === 'finished') return 'finished';
   return roomMembers(L).length ? 'waiting' : 'free';
 }
-function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : L.kind === 'karten' ? 'karten' : L.kind === 'mad' ? 'mad' : L.kind === 'bj' ? 'bj' : L.kind === 'dt' ? 'dt' : L.kind === 'tt' ? 'tt' : L.kind === 'ah' ? 'ah' : L.kind === 'bw' ? 'bw' : L.kind === 'ch' ? 'ch' : L.kind === 'ap' ? 'ap' : 'raum'; }
-const roomTabs = ['raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap'];
+function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : L.kind === 'karten' ? 'karten' : L.kind === 'mad' ? 'mad' : L.kind === 'bj' ? 'bj' : L.kind === 'dt' ? 'dt' : L.kind === 'tt' ? 'tt' : L.kind === 'ah' ? 'ah' : L.kind === 'bw' ? 'bw' : L.kind === 'ch' ? 'ch' : L.kind === 'ap' ? 'ap' : L.kind === 'cn' ? 'cn' : L.kind === 'slf' ? 'slf' : 'raum'; }
+const roomTabs = ['raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap', 'cn', 'slf'];
 const FV = () => window.firebase && firebase.firestore && firebase.firestore.FieldValue;
 function roomRef(r = S.room) { return db.collection('lobbies').doc(r); }
 function roomSet(r, spectate = false) {
   if (S.room === r && S.spectate === spectate) return;
   S.room = r; S.spectate = !!(r && spectate);
-  S.quiz = null; S.draw = null; S.golf = null; S.uno = null; S.mad = null; ml.pend = null; ml.n = 0; S.bj = null; bjl.pend = null; bjl.n = 0; S.dt = null; S.tt = null; S.ah = null; S.bw = null; S.ch = null; S.ap = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false; kl.pend = null; kl.n = 0;
+  S.quiz = null; S.draw = null; S.golf = null; S.uno = null; S.mad = null; ml.pend = null; ml.n = 0; S.bj = null; bjl.pend = null; bjl.n = 0; S.dt = null; S.tt = null; S.ah = null; S.bw = null; S.ch = null; S.ap = null; S.cn = null; S.slf = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false; kl.pend = null; kl.n = 0;
   roomApply();
 }
 /* ---------- Pause für alle Raum-Spiele ----------
@@ -7464,7 +7546,7 @@ function roomSet(r, spectate = false) {
    Während der Pause laufen keine Zeiten, Host-Abläufe und Bots. Beim Weiterspielen schiebt der, der „Weiter“ drückt,
    die gespeicherten Zeitpunkte um die Pausenlänge nach hinten; jedes Gerät verschiebt seine eigenen Zähler genauso.
    Spielt man allein (nur Bots oder niemand sonst), pausiert das Spiel automatisch, wenn man die Seite verlässt. */
-const PZ_FIELD = {quiz:'quiz', malen:'draw', golf:'golf', karten:'uno', mad:'uno', bj:'uno', dt:'uno', tt:'uno', ah:'uno', bw:'uno', ch:'uno', ap:'uno'};
+const PZ_FIELD = {quiz:'quiz', malen:'draw', golf:'golf', karten:'uno', mad:'uno', bj:'uno', dt:'uno', tt:'uno', ah:'uno', bw:'uno', ch:'uno', ap:'uno', cn:'uno', slf:'uno'};
 function pzField(L = lobby()) { return (L && PZ_FIELD[L.kind]) || ''; }
 function pzGame(L = lobby()) { const f = pzField(L), g = f && L[f]; return g && g.status === 'running' && (L.kind !== 'karten' || !g.g) ? g : null; }
 function roomPaused(L = lobby()) { const g = pzGame(L); return g && g.pz && g.pz.at ? g.pz : null; }
@@ -7486,6 +7568,7 @@ function pzSet(on, auto = false) {
   else if (L.kind === 'bj') sh('s.at', g.s && g.s.at);
   else if (L.kind === 'bw') sh('s.turnAt', g.s && g.s.turnAt);
   else if (L.kind === 'ch') sh('at', g.at);
+  else if (L.kind === 'slf' && g.ph === 'write') sh('at', g.at);
   else if (L.kind === 'ap' && g.pr) for (const [pid, r] of Object.entries(g.pr)) if (r && r.st === 'play') sh('pr.' + pid + '.at', r.at);
   else if (L.kind === 'dt' || L.kind === 'tt' || L.kind === 'ah') sh('startAt', g.startAt);
   else if (L.kind === 'golf') sh('holeAt', g.holeAt);
@@ -7624,6 +7707,8 @@ function roomApply() {
   S.bw = L && L.kind === 'bw' && L.uno ? bwNorm(L.uno) : null;
   S.ch = L && L.kind === 'ch' && L.uno ? chNorm(L.uno) : null;
   S.ap = L && L.kind === 'ap' && L.uno ? apNorm(L.uno) : null;
+  S.cn = L && L.kind === 'cn' && L.uno ? cnNorm(L.uno) : null;
+  S.slf = L && L.kind === 'slf' && L.uno ? slfNorm(L.uno) : null;
   handleAnswers();
   if (S.room && roomTabs.includes(S.tab)) { const v = roomView(); if (S.tab !== v) { S.tab = v; try { history.replaceState(null, '', '#' + v); } catch (e) {} } }
   if (!S.room && roomTabs.includes(S.tab)) S.tab = 'spiele';
@@ -7725,7 +7810,7 @@ const ROOM_STATE = {free:['Frei', '#4ff08f'], waiting:['Wartet', '#ffcf3f'], run
 function roomCardHTML(r) {
   const L = lobby(r), mem = roomMembers(L), n = mem.length, me = myPid(), mine = !!(me && L.members[me]);
   const st = roomState(L), sl = ROOM_STATE[st];
-  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : L.kind === 'karten' ? ['🃏', 'Kartenwahn'] : L.kind === 'mad' ? ['🎲', 'Uncle Grandpa ärgere dich'] : L.kind === 'bj' ? ['🂡', 'Blackjack'] : L.kind === 'dt' ? ['🧱', 'Dicktris'] : L.kind === 'tt' ? ['🏓', 'Tischtennis'] : L.kind === 'ah' ? ['🏒', 'Air-Hockey'] : L.kind === 'bw' ? ['🎳', 'Bowling'] : L.kind === 'ch' ? ['♟️', 'Schach'] : L.kind === 'ap' ? ['💰', AP_NAME] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
+  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : L.kind === 'karten' ? ['🃏', 'Kartenwahn'] : L.kind === 'mad' ? ['🎲', 'Uncle Grandpa ärgere dich'] : L.kind === 'bj' ? ['🂡', 'Blackjack'] : L.kind === 'dt' ? ['🧱', 'Dicktris'] : L.kind === 'tt' ? ['🏓', 'Tischtennis'] : L.kind === 'ah' ? ['🏒', 'Air-Hockey'] : L.kind === 'bw' ? ['🎳', 'Bowling'] : L.kind === 'ch' ? ['♟️', 'Schach'] : L.kind === 'ap' ? ['💰', AP_NAME] : L.kind === 'cn' ? ['🕵️', 'Codenames'] : L.kind === 'slf' ? ['🏙️', 'Stadt, Land, Fluss'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
   const hostP = L.host && playerById(L.host.pid);
   const slots = Array.from({length:roomMax(L)}, (_, i) => mem[i] ? `<span class="rc-slot" title="${esc(ghost(mem[i]).name)}">${avatar(ghost(mem[i]), 34)}</span>` : '<span class="rc-slot empty"></span>').join('');
   const priv = roomPriv(L), invd = !mine && priv && !!(me && L.inv[me]);
@@ -7761,8 +7846,10 @@ function viewRoom() {
       <span class="eyebrow">Du bist Host</span><h2>Was spielt ihr?</h2>
       <h3 class="rc-grp">👥 Für mehrere Spieler</h3>
       <div class="rc-pick">
-        <button class="pick-big" type="button" data-act="room-kind" data-v="quiz" style="--tc:#39d6f2"><span aria-hidden="true">🧠</span><b>Quiz</b><small>Spielbrett mit Fragen aus 8 Themen. Wer dran ist, wählt Feld und Antwort.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="quiz" style="--tc:#39d6f2"><span aria-hidden="true">🧠</span><b>Quiz</b><small>Spielbrett mit Fragen aus 9 Themen. Wer dran ist, wählt Feld und Antwort.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="ap" style="--tc:#ffb52e"><span aria-hidden="true">💰</span><b>Wer wird der nächste ApoRed?</b><small>30 Fragen bis zur Million, mit Jokern. Alle spielen gleichzeitig.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="slf" style="--tc:#4ff08f"><span aria-hidden="true">🏙️</span><b>Stadt, Land, Fluss</b><small>Ein Buchstabe, alle schreiben gleichzeitig. Wer fertig ist, ruft STOPP.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="cn" style="--tc:#ff4d5e"><span aria-hidden="true">🕵️</span><b>Codenames</b><small>Rot gegen Blau: Der Spion gibt Hinweise, das Team rät die richtigen Wörter. Ab 4 Spielern.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="malen" style="--tc:#ff7fc3"><span aria-hidden="true">🎨</span><b>Malen</b><small>Einer malt, alle anderen raten. Wie skribbl.io.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="golf" style="--tc:#4ff08f"><span aria-hidden="true">⛳</span><b>Golf</b><small>Minigolf in 3D mit 30 Bahnen, von kurz und leicht bis extrem. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="mad" style="--tc:#ff9f5a"><span aria-hidden="true">🎲</span><b>Uncle Grandpa ärgere dich</b><small>Das Brettspiel für 2 bis 4: Würfeln, mit einer 6 rauskommen, Gegner rauswerfen und alle Figuren ins Ziel bringen.</small></button>
@@ -7788,7 +7875,7 @@ function roomBarHTML() {
   const L = lobby(); if (!L) return '';
   const mem = roomMembers(L), me = myPid(), member = !!(me && L.members[me]), host = ctl();
   const st = roomState(L);
-  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : L.kind === 'mad' ? '🎲 Uncle Grandpa ärgere dich' : L.kind === 'bj' ? '🂡 Blackjack' : L.kind === 'dt' ? '🧱 Dicktris' : L.kind === 'tt' ? '🏓 Tischtennis' : L.kind === 'ah' ? '🏒 Air-Hockey' : L.kind === 'bw' ? '🎳 Bowling' : L.kind === 'ch' ? '♟️ Schach' : L.kind === 'ap' ? '💰 ' + AP_NAME : 'Spiel wird gewählt';
+  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : L.kind === 'mad' ? '🎲 Uncle Grandpa ärgere dich' : L.kind === 'bj' ? '🂡 Blackjack' : L.kind === 'dt' ? '🧱 Dicktris' : L.kind === 'tt' ? '🏓 Tischtennis' : L.kind === 'ah' ? '🏒 Air-Hockey' : L.kind === 'bw' ? '🎳 Bowling' : L.kind === 'ch' ? '♟️ Schach' : L.kind === 'ap' ? '💰 ' + AP_NAME : L.kind === 'cn' ? '🕵️ Codenames' : L.kind === 'slf' ? '🏙️ Stadt, Land, Fluss' : 'Spiel wird gewählt';
   const chips = mem.map(pid => { const p = ghost(pid), isHost = L.host && L.host.pid === pid, bot = isBot(pid);
     return `<span class="rb-mem ${pid === me ? 'me' : ''} ${bot ? 'bot' : ''}">${avatar(p, 26)}<span>${esc(p.name)}</span>${bot ? `<small class="rb-lvl">${botLvlName(p.lvl)}</small>` : ''}${isHost ? '<i title="Host" aria-label="Host">👑</i>' : ''}${(host || S.admin) && !bot && !isHost && pid !== me ? `<button class="rb-crown" type="button" data-act="room-host" data-pid="${esc(pid)}" aria-label="${esc(p.name)} zum Host machen" title="Zum Host machen">👑<b>+</b></button>` : ''}${(host || S.admin) && pid !== me ? `<button class="x" type="button" data-act="room-kick" data-pid="${esc(pid)}" aria-label="${esc(p.name)} aus dem Raum werfen" title="Rauswerfen">×</button>` : ''}</span>`; }).join('');
   return `<div class="roombar">
@@ -11594,6 +11681,353 @@ setInterval(() => {
   if (sec) sec.textContent = Math.ceil(left / 1000) + ' s';
 }, 200);
 
+/* ---------- Codenames (Raumspiel in 2 Teams) ----------
+   Gespeichert im Raum-Feld uno (g:'cn'): {g, id, status, t0:[pid…] (Rot), t1:[pid…] (Blau), spy:[pid, pid], words[25],
+   key[25] (0 = Rot, 1 = Blau, 2 = neutral, 3 = Attentäter), rv:{Index:1}, turn, first, hint:{w, n, by}|null,
+   gu (Treffer in diesem Zug), last:{i, by}, win (-1/0/1), why ('all'|'killer'), tour, transferred} */
+const CN_WORDS = ('Apfel Bank Bär Berg Blatt Blitz Boot Brücke Brief Burg Dach Drache Eis Ente Feder Fenster Feuer Fisch Flasche Flügel Fuchs Fußball Gabel Garten Geist Gift Glas Glocke Gold Gras Hafen Hahn Hammer Hand Herz Himmel Hose Hund Insel Jacke Kaffee Kamera Karte Katze Kerze Kette Kino Kirche Kiste Knopf König Kopf Krone Kuchen Lampe Laser Leiter Löwe Luft Magnet Mantel Maske Maus Meer Messer Mond Motor Musik Nadel Nacht Nest Netz Ofen Ohr Paket Palme Papier Pferd Pfeil Pilot Pirat Planet Post Puppe Rakete Rad Ring Ritter Roboter Rose Säge Salz Sand Schiff Schlange Schloss Schlüssel Schnee Schuh Schule Schwert Seife Sonne Spiegel Spinne Stadt Stern Stift Stuhl Sturm Tasche Tee Teller Tiger Tisch Tor Turm Uhr Vogel Wald Wal Wand Wasser Welle Wolke Wurm Zahn Zelt Zug Zwerg Adler Anker Arzt Auge Ball Band Baum Bett Bier Birne Bombe Bus Computer Daumen Diamant Dino Dose Drachen Eimer Engel Erde Feld Film Flöte Frosch Gabe Geld Gitarre Gürtel Hai Helm Hexe Honig Horn Hut Igel Jäger Kabel Kanal Kanone Käse Koch Koffer Kompass Korb Kreuz Kuh Kurs Laden Land Löffel Markt Mauer Mikrofon Mühle Münze Nase Nuss Oper Orange Panzer Park Pass Pfanne Pinsel Pizza Polizei Prinz Pyramide Quelle Rabe Regen Riese Rock Rose Schatz Schatten Schild Schirm Schwan Seil Sirene Socke Spion Stab Strand Strom Tanne Taube Taxi Tinte Topf Tunnel Vampir Vulkan Waffel Wolf Würfel Zauber Zebra Ziege Zucker').split(' ').filter((w, i, a) => a.indexOf(w) === i);
+const CN_TEAM = [{n:'Rot', c:'#ff4d5e', e:'🔴'}, {n:'Blau', c:'#3f8cff', e:'🔵'}];
+const cnl = {endSnd:'', lastRv:-1};
+function cnNorm(x) {
+  if (!x || typeof x !== 'object' || x.g !== 'cn' || !['running', 'finished'].includes(x.status)) return null;
+  const teams = [x.t0, x.t1].map(a => Array.isArray(a) ? a.filter(p => typeof p === 'string' && p).slice(0, 8) : []); // Firestore kennt keine Listen in Listen, darum t0/t1
+  const words = Array.isArray(x.words) ? x.words.map(w => str(w, 24)).slice(0, 25) : [];
+  const key = Array.isArray(x.key) ? x.key.slice(0, 25).map(v => [0, 1, 2, 3].includes(+v) ? +v : 2) : [];
+  if (words.length !== 25 || key.length !== 25) return null;
+  const rv = {}; if (x.rv && typeof x.rv === 'object') for (const k of Object.keys(x.rv)) if (+k >= 0 && +k < 25 && x.rv[k]) rv[+k] = 1;
+  const spy = [0, 1].map(t => Array.isArray(x.spy) && teams[t].includes(x.spy[t]) ? x.spy[t] : teams[t][0] || '');
+  const hint = x.hint && typeof x.hint === 'object' && x.hint.w ? {w:str(x.hint.w, 24), n:Math.max(0, Math.min(9, Math.round(+x.hint.n || 0))), by:str(x.hint.by, 40)} : null;
+  const last = x.last && typeof x.last === 'object' && +x.last.i >= 0 ? {i:+x.last.i, by:str(x.last.by, 40)} : null;
+  return {g:'cn', id:str(x.id, 40), status:x.status, teams, spy, words, key, rv, turn:x.turn === 1 ? 1 : 0, first:x.first === 1 ? 1 : 0, hint,
+    gu:Math.max(0, Math.round(+x.gu || 0)), last, win:x.win === 0 || x.win === 1 ? x.win : -1, why:str(x.why, 10), tour:x.tour === true, transferred:x.transferred === true, pz:x.pz && x.pz.at ? x.pz : null};
+}
+const cnTeamOf = (M, pid) => M.teams[0].includes(pid) ? 0 : M.teams[1].includes(pid) ? 1 : -1;
+const cnLeft = (M, t, rv = M.rv) => M.key.filter((k, i) => k === t && !rv[i]).length;
+const cnFound = (M, t) => M.key.filter((k, i) => k === t && M.rv[i]).length;
+function cnPut(nx, patch) { S.lobbies[S.room] = {...lobby(), uno:nx}; S.cn = cnNorm(nx); roomWrite(patch); render(); }
+/* Teams im Setup: Entwurf D.cnT {pid: 0|1}, Spione D.cnSpy [pid, pid] */
+function cnDraft() {
+  const mem = roomMembers(lobby()).filter(id => !isBot(id));
+  const t = {}; let n = [0, 0];
+  for (const id of mem) { const v = D.cnT && (D.cnT[id] === 0 || D.cnT[id] === 1) ? D.cnT[id] : n[0] <= n[1] ? 0 : 1; t[id] = v; n[v]++; }
+  D.cnT = t;
+  const teams = [0, 1].map(v => mem.filter(id => t[id] === v));
+  const spy = [0, 1].map(v => D.cnSpy && teams[v].includes(D.cnSpy[v]) ? D.cnSpy[v] : teams[v][0] || '');
+  D.cnSpy = spy;
+  return {teams, spy};
+}
+function cnStart(again) {
+  if (!ctl()) return;
+  const L = lobby(), M0 = S.cn;
+  let teams, spy;
+  if (again && M0) {
+    const mem = roomMembers(L);
+    teams = M0.teams.map(t => t.filter(id => mem.includes(id)));
+    spy = [0, 1].map(v => { const t = teams[v]; if (!t.length) return ''; const i = t.indexOf(M0.spy[v]); return t[(i + 1) % t.length]; });
+  } else ({teams, spy} = cnDraft());
+  if (teams[0].length < 2 || teams[1].length < 2) { toast('Jedes Team braucht mindestens 2 Spieler: einen Spion und einen, der rät.'); return; }
+  const r = Math.random, pool = CN_WORDS.slice();
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  const first = r() < .5 ? 0 : 1, key = [...Array(first === 0 ? 9 : 8).fill(0), ...Array(first === 1 ? 9 : 8).fill(1), ...Array(7).fill(2), 3];
+  for (let i = key.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [key[i], key[j]] = [key[j], key[i]]; }
+  const M = {g:'cn', id:uid(), status:'running', t0:teams[0], t1:teams[1], spy, words:pool.slice(0, 25), key, rv:{}, turn:first, first, hint:null, gu:0, last:null, win:-1, why:'', tour:!!(L && L.tour), transferred:false};
+  S.lobbies[S.room] = {...L, uno:M}; S.cn = cnNorm(M); roomWrite({uno:M}); D.cnHw = ''; D.cnHn = 1; render();
+}
+function cnTransfer() {
+  const M = S.cn; if (!ctl() || !M || M.status !== 'finished' || M.transferred || M.win < 0) return;
+  const all = [...M.teams[0], ...M.teams[1]];
+  if (M.tour) all.forEach(id => { const t = cnTeamOf(M, id); tourPay(`tg_cn_${M.id}_${id}`, id, cnFound(M, t) + (t === M.win ? 5 : 0), 'Codenames · Turnier'); });
+  lobbyAward({'uno.transferred':true}, all.map(id => ({playerId:id, delta:cnTeamOf(M, id) === M.win ? 3 : 1})));
+}
+function cnEndTurn(M) { return {turn:1 - M.turn, hint:null, gu:0}; }
+const cnActions = {
+  'cn-move': b => { if (!ctl()) return; const id = b.dataset.pid; cnDraft(); D.cnT[id] = 1 - D.cnT[id]; render(); },
+  'cn-spy': b => { if (!ctl()) return; const id = b.dataset.pid; cnDraft(); const t = D.cnT[id]; D.cnSpy[t] = id; render(); },
+  'cn-shuffle': () => { if (!ctl()) return; const mem = roomMembers(lobby()).filter(id => !isBot(id)).sort(() => Math.random() - .5); D.cnT = {}; mem.forEach((id, i) => D.cnT[id] = i % 2); D.cnSpy = null; render(); },
+  'cn-start': () => cnStart(false),
+  'cn-again': () => cnStart(true),
+  'cn-setup': () => { if (!ctl()) return; if (S.cn && S.cn.status === 'finished' && !S.cn.transferred) cnTransfer(); S.cn = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); },
+  'cn-end': () => confirmBox('Codenames beenden?', 'Die Runde wird abgebrochen. Es gibt keine Punkte.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => { if (!ctl()) return; S.cn = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); }}]),
+  'cn-hn': b => { D.cnHn = Math.max(0, Math.min(9, +b.dataset.v || 0)); render(); },
+  'cn-hint': () => {
+    const M = S.cn, me = myPid(); if (!M || M.status !== 'running' || M.hint || M.spy[M.turn] !== me || roomPaused()) return;
+    const w = (D.cnHw || '').trim().replace(/\s+/g, ' ');
+    if (!w) { toast('Schreib ein Hinweis-Wort.'); return; }
+    if (w.includes(' ')) { toast('Der Hinweis muss ein einziges Wort sein.'); return; }
+    const lw = w.toLowerCase(); if (M.words.some((x, i) => !M.rv[i] && (x.toLowerCase() === lw || lw.includes(x.toLowerCase()) || x.toLowerCase().includes(lw)))) { toast('Das Wort steht (fast) so auf dem Spielfeld. Nimm ein anderes.'); return; }
+    const n = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].includes(D.cnHn) ? D.cnHn : 1, hint = {w:w.toUpperCase(), n, by:me};
+    D.cnHw = ''; sfx('chosen'); cnPut({...lobby().uno, hint, gu:0}, {'uno.hint':hint, 'uno.gu':0});
+  },
+  'cn-pick': b => {
+    const M = S.cn, me = myPid(), i = +b.dataset.i; if (!M || M.status !== 'running' || !M.hint || roomPaused()) return;
+    if (cnTeamOf(M, me) !== M.turn || M.spy[M.turn] === me || M.rv[i] || !(i >= 0 && i < 25)) return;
+    const k = M.key[i], rv = {...M.rv, [i]:1}, ch = {rv, last:{i, by:me}};
+    if (k === 3) Object.assign(ch, {status:'finished', win:1 - M.turn, why:'killer'});
+    else if (!cnLeft(M, M.turn, rv)) Object.assign(ch, {status:'finished', win:M.turn, why:'all'});
+    else if (!cnLeft(M, 1 - M.turn, rv)) Object.assign(ch, {status:'finished', win:1 - M.turn, why:'all'});
+    else if (k === M.turn) { const gu = M.gu + 1; if (M.hint.n > 0 && gu >= M.hint.n + 1) Object.assign(ch, cnEndTurn(M)); else ch.gu = gu; }
+    else Object.assign(ch, cnEndTurn(M));
+    kSnd(k === M.turn ? 'flip' : k === 3 ? 'lose' : 'land');
+    const patch = {['uno.rv.' + i]:1, 'uno.last':ch.last}; for (const f of ['status', 'win', 'why', 'turn', 'hint', 'gu']) if (f in ch) patch['uno.' + f] = ch[f];
+    const base = lobby().uno; cnPut({...base, ...ch, rv:{...(base.rv || {}), [i]:1}}, patch);
+  },
+  'cn-pass': () => {
+    const M = S.cn, me = myPid(); if (!M || M.status !== 'running' || !M.hint || cnTeamOf(M, me) !== M.turn || M.spy[M.turn] === me || !M.gu) return;
+    const ch = cnEndTurn(M); cnPut({...lobby().uno, ...ch}, {'uno.turn':ch.turn, 'uno.hint':null, 'uno.gu':0});
+  }
+};
+function cnRulesHTML(open) {
+  return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird Codenames gespielt</summary><ul>
+    <li><b>2 Teams:</b> Rot und Blau. In jedem Team gibt es einen <b>Spion</b> 🕵️, alle anderen raten.</li>
+    <li><b>Das Spielfeld:</b> 25 Wörter. Nur die Spione sehen, welche Wörter zu welchem Team gehören.</li>
+    <li><b>Hinweis:</b> Der Spion gibt <b>ein Wort und eine Zahl</b>, z. B. „TIER 2“. Die Zahl sagt, wie viele Wörter dazu passen.</li>
+    <li><b>Raten:</b> Das Team tippt Wörter an. Richtig = weiterraten (bis Zahl + 1). Falsch = das andere Team ist dran.</li>
+    <li><b>Vorsicht:</b> Wer den 💀 <b>Attentäter</b> antippt, verliert sofort.</li>
+    <li><b>Gewonnen</b> hat das Team, das zuerst alle seine Wörter gefunden hat.</li></ul></details>`;
+}
+function cnSetupHTML() {
+  const L = lobby(), hostP = L && L.host && playerById(L.host.pid);
+  if (!ctl()) return `<section class="section tsec"><div class="card waiting">${COIN(56, 'spin')}<span class="eyebrow">${esc(L ? L.name : '')} · 🕵️ Codenames</span><h2>Gleich geht's los</h2>
+    <p class="muted">${hostP ? `<b>${esc(hostP.name)}</b> ist Host, teilt die Teams ein und startet.` : 'Gerade ist niemand Host.'}</p>
+    ${hostStale(L) && L.members[myPid()] ? `<button class="btn btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}</div>${cnRulesHTML(true)}</section>`;
+  const {teams, spy} = cnDraft(), ok = teams[0].length >= 2 && teams[1].length >= 2;
+  return `<section class="section tsec"><div class="card k-setup cn-setup">
+    <span class="eyebrow">Du bist Host</span><h2 class="k-title-big">🕵️ Codenames</h2>
+    <p class="muted">Tippe auf einen Spieler, um ihn ins andere Team zu schieben. Mit 🕵️ machst du ihn zum Spion.</p>
+    <div class="cn-teams">${[0, 1].map(t => `<div class="cn-tcol" style="--tc:${CN_TEAM[t].c}"><h3>${CN_TEAM[t].e} Team ${CN_TEAM[t].n} (${teams[t].length})</h3>
+      ${teams[t].map(id => `<div class="cn-prow"><button class="chip pchip" type="button" data-act="cn-move" data-pid="${esc(id)}" title="Ins andere Team">${avatar(ghost(id), 26)}${esc(ghost(id).name)}</button>
+        <button class="btn btn-sm ${spy[t] === id ? 'btn-gold' : 'btn-ghost'}" type="button" data-act="cn-spy" data-pid="${esc(id)}" aria-pressed="${spy[t] === id}" title="Spion">🕵️${spy[t] === id ? ' Spion' : ''}</button></div>`).join('') || '<p class="muted">Noch niemand.</p>'}</div>`).join('')}</div>
+    <div class="chips"><button class="btn btn-sm" type="button" data-act="cn-shuffle">🔀 Teams mischen</button></div>
+    ${ok ? '' : '<p class="muted">Jedes Team braucht mindestens 2 Spieler (einen Spion und einen, der rät). Bots spielen hier nicht mit.</p>'}
+    <button class="btn btn-gold btn-big" type="button" data-act="cn-start" ${ok ? '' : 'disabled'}>Spiel starten</button>
+  </div>${cnRulesHTML(false)}</section>`;
+}
+function cnBoardHTML(M, me) {
+  const myT = cnTeamOf(M, me), spyView = M.spy.includes(me) || M.status === 'finished', canPick = M.status === 'running' && !!M.hint && myT === M.turn && M.spy[M.turn] !== me && !roomPaused();
+  return `<div class="cn-grid">${M.words.map((w, i) => { const k = M.key[i], r = !!M.rv[i];
+    return `<button lang="de" class="cn-card ${r ? 'rv k' + k : spyView ? 'sp k' + k : ''} ${M.last && M.last.i === i ? 'last' : ''}" type="button" data-act="cn-pick" data-i="${i}" ${canPick && !r ? '' : 'disabled'}>
+      <span>${esc(w)}</span>${r && k === 3 ? '<i aria-hidden="true">💀</i>' : ''}${r && M.last && M.last.i === i ? `<small>${esc(ghost(M.last.by).name)}</small>` : ''}</button>`; }).join('')}</div>`;
+}
+function cnPlayHTML(M) {
+  const me = myPid(), myT = cnTeamOf(M, me), T = CN_TEAM[M.turn], isSpy = M.spy[M.turn] === me, paused = roomPaused();
+  let act;
+  if (M.status === 'finished') act = '';
+  else if (!M.hint) act = isSpy ? `<div class="cn-hintbox"><b>Du bist dran, Spion! Gib deinem Team einen Hinweis.</b>
+      <div class="cn-hrow"><input class="input" id="cn-hw" maxlength="24" placeholder="Ein Wort, z. B. TIER" value="${esc(D.cnHw || '')}" autocomplete="off" spellcheck="false">
+      <div class="chips cn-nums">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map(n => `<button class="chip" type="button" data-act="cn-hn" data-v="${n}" aria-pressed="${(D.cnHn ?? 1) === n}" title="${n ? n + ' Wörter' : 'beliebig viele'}">${n || '∞'}</button>`).join('')}</div>
+      <button class="btn btn-gold" type="button" data-act="cn-hint" ${paused ? 'disabled' : ''}>Hinweis geben</button></div></div>`
+    : `<p class="cn-wait">${T.e} Der Spion von Team ${T.n} (<b>${esc(ghost(M.spy[M.turn]).name)}</b>) überlegt sich einen Hinweis …</p>`;
+  else act = `<div class="cn-hint" style="--tc:${T.c}"><span>${T.e} Hinweis</span><b>${esc(M.hint.w)}</b><em>${M.hint.n || '∞'}</em></div>
+    ${myT === M.turn && !isSpy ? `<p class="cn-wait">Tippt die passenden Wörter an. ${M.hint.n ? `Noch ${M.hint.n + 1 - M.gu} Versuch${M.hint.n + 1 - M.gu === 1 ? '' : 'e'}.` : ''}</p>${M.gu ? `<button class="btn btn-sm" type="button" data-act="cn-pass">Zug beenden</button>` : ''}`
+      : `<p class="cn-wait">${myT === M.turn ? 'Dein Team rät jetzt.' : `Team ${T.n} rät.`}</p>`}`;
+  const side = t => `<div class="cn-side" style="--tc:${CN_TEAM[t].c}"><h3>${CN_TEAM[t].e} ${CN_TEAM[t].n} <span class="cn-left">${cnLeft(M, t)}</span></h3>
+    <ul>${M.teams[t].map(id => `<li class="${id === me ? 'me' : ''}">${avatar(ghost(id), 24)}<b>${esc(ghost(id).name)}</b>${M.spy[t] === id ? ' 🕵️' : ''}</li>`).join('')}</ul></div>`;
+  const win = M.status === 'finished' ? `<div class="cn-win" style="--tc:${CN_TEAM[M.win].c}"><h2>${CN_TEAM[M.win].e} Team ${CN_TEAM[M.win].n} gewinnt!</h2><p>${M.why === 'killer' ? `Team ${CN_TEAM[1 - M.win].n} hat den 💀 Attentäter erwischt.` : 'Alle Wörter gefunden.'}</p>
+    ${M.transferred ? `<p class="okline">✓ Steht im Highscore von ${esc((lobby() || {}).name || 'diesem Raum')}.</p>` : ''}
+    ${ctl() ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="cn-again">Neue Runde (Spione wechseln)</button><button class="btn" type="button" data-act="cn-setup">Teams ändern</button></div>` : '<p class="muted">Der Host kann eine neue Runde starten.</p>'}</div>` : '';
+  return `<section class="section tsec cn-wrap">
+    <div class="cn-top" style="--tc:${T.c}">${M.status === 'running' ? `<span class="cn-turn">${T.e} Team ${T.n} ist dran</span>` : ''}${myT >= 0 ? `<span class="muted">Du: ${CN_TEAM[myT].e} ${CN_TEAM[myT].n}${M.spy.includes(me) ? ' · 🕵️ Spion' : ''}</span>` : '<span class="muted">Du schaust zu.</span>'}
+      ${ctl() && M.status === 'running' ? `<button class="btn btn-sm btn-ghost" type="button" data-act="cn-end">Beenden</button>` : ''}</div>
+    ${win}<div class="cn-act">${act}</div>
+    <div class="cn-main">${side(0)}${cnBoardHTML(M, me)}${side(1)}</div>
+    ${M.status === 'finished' ? lobbyHsHTML() : cnRulesHTML(false)}
+  </section>`;
+}
+function viewCn() { const M = S.cn; return M ? cnPlayHTML(M) : cnSetupHTML(); }
+function cnMount() {
+  const M = S.cn; if (!M) return;
+  if (M.status === 'finished' && cnl.endSnd !== M.id && S.tab === 'cn') { cnl.endSnd = M.id; const t = cnTeamOf(M, myPid()); kSnd(t < 0 || t === M.win ? 'win' : 'lose', .3); }
+}
+
+/* ---------- Stadt, Land, Fluss (Raumspiel für alle gleichzeitig) ----------
+   Gespeichert im Raum-Feld uno (g:'slf'): {g, id, status, players, cats[], rounds, tl (Sekunden, 0 = ohne), rd, ph ('write'|'stop'|'check'),
+   letter, letters[], at, stopAt, stopBy, pr:{pid:{r0:[…], r1:[…]}}, x:{'Runde_Kategorie_Spieler':{Wähler:1}}, tour, transferred} */
+const SLF_CATS = ['Stadt', 'Land', 'Fluss', 'Name', 'Tier', 'Beruf', 'Pflanze', 'Marke', 'Essen & Trinken', 'Sportart', 'Film oder Serie', 'Promi', 'Videospiel', 'Gegenstand', 'Körperteil', 'Musiker'];
+const SLF_DEF = ['Stadt', 'Land', 'Fluss', 'Name', 'Tier', 'Beruf'];
+const SLF_LETTERS = 'ABDEFGHIKLMNOPRSTUVWZ';
+const SLF_TL = [[60, '1 Min.'], [90, '1,5 Min.'], [120, '2 Min.'], [180, '3 Min.'], [0, 'Ohne Zeit']];
+const slfl = {draft:null, flush:0, flushed:'', endSnd:'', timer:0, letterKey:''};
+function slfNorm(x) {
+  if (!x || typeof x !== 'object' || x.g !== 'slf' || !['running', 'finished'].includes(x.status)) return null;
+  const players = Array.isArray(x.players) ? x.players.filter(p => typeof p === 'string' && p).slice(0, 8) : [];
+  const cats = Array.isArray(x.cats) ? x.cats.map(c => str(c, 24)).filter(Boolean).slice(0, 8) : [];
+  if (!players.length || cats.length < 2) return null;
+  const rounds = Math.max(1, Math.min(10, Math.round(+x.rounds || 5))), rd = Math.max(0, Math.min(rounds - 1, Math.round(+x.rd || 0)));
+  const pr = {};
+  for (const id of players) { const src = x.pr && x.pr[id] && typeof x.pr[id] === 'object' ? x.pr[id] : {}, o = {};
+    for (let r = 0; r <= rd; r++) { const a = Array.isArray(src['r' + r]) ? src['r' + r] : []; o['r' + r] = cats.map((_, i) => str(a[i], 40)); }
+    pr[id] = o; }
+  const xv = {}; if (x.x && typeof x.x === 'object') for (const [k, v] of Object.entries(x.x)) if (v && typeof v === 'object') xv[k] = Object.keys(v).filter(p => v[p]);
+  return {g:'slf', id:str(x.id, 40), status:x.status, players, cats, rounds, tl:[0, 60, 90, 120, 180].includes(+x.tl) ? +x.tl : 90, rd,
+    ph:['write', 'stop', 'check'].includes(x.ph) ? x.ph : 'write', letter:/^[A-Z]$/.test(x.letter) ? x.letter : 'A', letters:Array.isArray(x.letters) ? x.letters.filter(l => /^[A-Z]$/.test(l)) : [],
+    at:+x.at || 0, stopAt:+x.stopAt || 0, stopBy:str(x.stopBy, 40), pr, x:xv, tour:x.tour === true, transferred:x.transferred === true, pz:x.pz && x.pz.at ? x.pz : null};
+}
+const slfFold = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ß/g, 'ss').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+/* Bewertung einer Antwort: leer/falscher Anfangsbuchstabe = 0, abgelehnt (Mehrheit der anderen) = 0,
+   als Einziger in der Kategorie = 20, sonst einzigartig = 10, doppelt = 5 */
+function slfCell(M, r, ci, pid) {
+  const letter = r === M.rd ? M.letter : M.letters[r] || '', a = (M.pr[pid] && M.pr[pid]['r' + r] || [])[ci] || '';
+  const others = M.players.length - 1, need = Math.max(1, Math.ceil(others / 2));
+  const valid = id => { const v = (M.pr[id] && M.pr[id]['r' + r] || [])[ci] || '', f = slfFold(v);
+    if (!f || f[0] !== slfFold(letter)) return false; const votes = (M.x[`${r}_${ci}_${id}`] || []).filter(p => p !== id); return votes.length < need; };
+  const votes = (M.x[`${r}_${ci}_${pid}`] || []).filter(p => p !== pid);
+  if (!slfFold(a)) return {a, ok:false, pts:0, why:'leer', votes};
+  if (slfFold(a)[0] !== slfFold(letter)) return {a, ok:false, pts:0, why:'Buchstabe', votes};
+  if (!valid(pid)) return {a, ok:false, pts:0, why:'abgelehnt', votes};
+  const vs = M.players.filter(valid), mine = slfFold(a);
+  const pts = vs.length === 1 ? 20 : vs.filter(id => id !== pid && slfFold((M.pr[id]['r' + r] || [])[ci]) === mine).length ? 5 : 10;
+  return {a, ok:true, pts, why:'', votes};
+}
+function slfRoundsDone(M) { return M.status === 'finished' || M.ph === 'check' ? M.rd + 1 : M.rd; }
+function slfTotals(M) {
+  const t = {}; for (const id of M.players) { let s = 0; for (let r = 0; r < slfRoundsDone(M); r++) for (let ci = 0; ci < M.cats.length; ci++) s += slfCell(M, r, ci, id).pts; t[id] = s; }
+  return t;
+}
+function slfPick(used) { const free = SLF_LETTERS.split('').filter(l => !used.includes(l)); return free[Math.floor(Math.random() * free.length)] || 'S'; }
+function slfPut(nx, patch) { S.lobbies[S.room] = {...lobby(), uno:nx}; S.slf = slfNorm(nx); roomWrite(patch); render(); }
+function slfStart() {
+  if (!ctl()) return;
+  const L = lobby(), players = roomMembers(L).filter(id => !isBot(id));
+  if (!players.length) return;
+  const cats = (D.slfCats && D.slfCats.length >= 3 ? D.slfCats : SLF_DEF).slice(0, 8), rounds = [3, 5, 8].includes(D.slfRd) ? D.slfRd : 5, tl = [0, 60, 90, 120, 180].includes(D.slfTl) ? D.slfTl : 90;
+  const letter = slfPick([]);
+  const M = {g:'slf', id:uid(), status:'running', players, cats, rounds, tl, rd:0, ph:'write', letter, letters:[letter], at:Date.now(), stopAt:0, stopBy:'', pr:{}, x:{}, tour:!!(L && L.tour), transferred:false};
+  slfl.draft = null; S.lobbies[S.room] = {...L, uno:M}; S.slf = slfNorm(M); roomWrite({uno:M}); render();
+}
+/* Eigene Antworten: Entwurf auf dem Gerät, gespeichert wird kurz nach dem Tippen und sofort beim Stopp */
+function slfDraft(M) {
+  const key = M.id + ':' + M.rd;
+  if (!slfl.draft || slfl.draft.key !== key) slfl.draft = {key, a:((M.pr[myPid()] || {})['r' + M.rd] || M.cats.map(() => '')).slice(), dirty:false};
+  return slfl.draft;
+}
+function slfFlush() {
+  clearTimeout(slfl.flush); const M = S.slf, me = myPid(); if (!M || !M.players.includes(me) || !slfl.draft || !slfl.draft.dirty) return;
+  if (slfl.draft.key !== M.id + ':' + M.rd) return;
+  const a = slfl.draft.a.map(v => str(v, 40)); slfl.draft.dirty = false;
+  const L = lobby(), u = L.uno, nx = {...u, pr:{...(u.pr || {}), [me]:{...((u.pr || {})[me] || {}), ['r' + M.rd]:a}}};
+  S.lobbies[S.room] = {...L, uno:nx}; S.slf = slfNorm(nx); roomWrite({[`uno.pr.${me}.r${M.rd}`]:a});
+}
+function slfTransfer() {
+  const M = S.slf; if (!ctl() || !M || M.status !== 'finished' || M.transferred) return;
+  const t = slfTotals(M), rows = M.players.map(id => ({id, v:t[id]})).sort((a, b) => b.v - a.v);
+  if (M.tour) rows.forEach(x => tourPay(`tg_slf_${M.id}_${x.id}`, x.id, Math.round(x.v / 10), 'Stadt, Land, Fluss · Turnier'));
+  const pts = [3, 2, 1]; let rank = 0;
+  lobbyAward({'uno.transferred':true}, rows.map((x, i) => { if (i && x.v < rows[i - 1].v) rank = i; return {playerId:x.id, delta:x.v > 0 ? (pts[rank] || 1) : 0}; }));
+}
+/* Takt: Zeit vorbei -> Stopp (Host), Stopp -> nach 3 s Auswertung (Host), beim Stopp eigene Antworten sofort sichern (alle) */
+function slfLogic() {
+  const M = S.slf; if (!M || M.status !== 'running' || roomPaused()) return;
+  const now = Date.now(), k = M.id + ':' + M.rd;
+  if (M.ph !== 'write' && slfl.flushed !== k) { slfl.flushed = k; if (slfl.draft && slfl.draft.key === k) { slfl.draft.dirty = true; slfFlush(); } }
+  if (!ctl()) return;
+  if (M.ph === 'write' && M.tl && now >= M.at + M.tl * 1000) slfPut({...lobby().uno, ph:'stop', stopAt:now, stopBy:''}, {'uno.ph':'stop', 'uno.stopAt':now, 'uno.stopBy':''});
+  else if (M.ph === 'stop' && now >= M.stopAt + 3000) slfPut({...lobby().uno, ph:'check'}, {'uno.ph':'check'});
+}
+const slfActions = {
+  'slf-cat': b => { const c = b.dataset.v, cur = (D.slfCats && D.slfCats.length ? D.slfCats : SLF_DEF).slice(), i = cur.indexOf(c);
+    if (i >= 0) { if (cur.length <= 3) { toast('Mindestens 3 Kategorien.'); return; } cur.splice(i, 1); } else { if (cur.length >= 8) { toast('Höchstens 8 Kategorien.'); return; } cur.push(c); }
+    D.slfCats = SLF_CATS.filter(x => cur.includes(x)); render(); },
+  'slf-rd': b => { D.slfRd = +b.dataset.v; render(); },
+  'slf-tl': b => { D.slfTl = +b.dataset.v; render(); },
+  'slf-start': () => slfStart(),
+  'slf-again': () => slfStart(),
+  'slf-setup': () => { if (!ctl()) return; if (S.slf && S.slf.status === 'finished' && !S.slf.transferred) slfTransfer(); S.slf = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); },
+  'slf-end': () => confirmBox('Stadt, Land, Fluss beenden?', 'Das Spiel wird abgebrochen. Es gibt keine Punkte.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => { if (!ctl()) return; S.slf = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); }}]),
+  'slf-stop': () => {
+    const M = S.slf, me = myPid(); if (!M || M.status !== 'running' || M.ph !== 'write' || !M.players.includes(me) || roomPaused()) return;
+    const d = slfDraft(M); if (d.a.some(v => !v.trim())) { toast('Erst alle Felder ausfüllen, dann Stopp.'); return; }
+    d.dirty = true; slfFlush(); const now = Date.now(); kSnd('win', .2);
+    slfPut({...lobby().uno, ph:'stop', stopAt:now, stopBy:me}, {'uno.ph':'stop', 'uno.stopAt':now, 'uno.stopBy':me});
+  },
+  'slf-x': b => {
+    const M = S.slf, me = myPid(); if (!M || M.ph !== 'check' || !M.players.includes(me)) return;
+    const key = b.dataset.k, pid = key.split('_')[2]; if (pid === me) return;
+    const on = !(M.x[key] || []).includes(me), L = lobby(), u = L.uno, xo = {...(u.x || {})}; xo[key] = {...(xo[key] || {}), [me]:on};
+    S.lobbies[S.room] = {...L, uno:{...u, x:xo}}; S.slf = slfNorm(lobby().uno); roomWrite({[`uno.x.${key}.${me}`]:on}); render();
+  },
+  'slf-next': () => {
+    const M = S.slf; if (!ctl() || !M || M.ph !== 'check') return;
+    if (M.rd + 1 >= M.rounds) { slfPut({...lobby().uno, status:'finished'}, {'uno.status':'finished'}); return; }
+    const letter = slfPick(M.letters), now = Date.now(), letters = [...M.letters, letter];
+    slfPut({...lobby().uno, rd:M.rd + 1, ph:'write', letter, letters, at:now, stopAt:0, stopBy:''}, {'uno.rd':M.rd + 1, 'uno.ph':'write', 'uno.letter':letter, 'uno.letters':letters, 'uno.at':now, 'uno.stopAt':0, 'uno.stopBy':''});
+  }
+};
+function slfRulesHTML(open) {
+  return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird Stadt, Land, Fluss gespielt</summary><ul>
+    <li><b>Buchstabe:</b> Jede Runde gibt es einen Buchstaben. Zu jeder Kategorie schreibst du ein Wort mit diesem Anfangsbuchstaben.</li>
+    <li><b>Stopp:</b> Wer alles ausgefüllt hat, drückt <b>STOPP</b>. Dann ist die Runde für alle nach 3 Sekunden vorbei. Sonst endet sie, wenn die Zeit um ist.</li>
+    <li><b>Prüfen:</b> Danach seht ihr alle Antworten. Ist eine Antwort Quatsch, tippt auf ✗. Lehnt die Mehrheit sie ab, gibt es dafür 0 Punkte.</li>
+    <li><b>Punkte:</b> Als Einziger in der Kategorie = 20, eigenes Wort = 10, gleiches Wort wie ein anderer = 5.</li></ul></details>`;
+}
+function slfSetupHTML() {
+  const L = lobby(), hostP = L && L.host && playerById(L.host.pid), mem = roomMembers(L).filter(id => !isBot(id));
+  if (!ctl()) return `<section class="section tsec"><div class="card waiting">${COIN(56, 'spin')}<span class="eyebrow">${esc(L ? L.name : '')} · 🏙️ Stadt, Land, Fluss</span><h2>Gleich geht's los</h2>
+    <p class="muted">${hostP ? `<b>${esc(hostP.name)}</b> ist Host und startet die Runde.` : 'Gerade ist niemand Host.'}</p>
+    ${hostStale(L) && L.members[myPid()] ? `<button class="btn btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}</div>${slfRulesHTML(true)}</section>`;
+  const cats = D.slfCats && D.slfCats.length >= 3 ? D.slfCats : SLF_DEF, rd = [3, 5, 8].includes(D.slfRd) ? D.slfRd : 5, tl = [0, 60, 90, 120, 180].includes(D.slfTl) ? D.slfTl : 90;
+  return `<section class="section tsec"><div class="card k-setup slf-setup">
+    <span class="eyebrow">Du bist Host</span><h2 class="k-title-big">🏙️ Stadt, Land, Fluss</h2>
+    <span class="lbl">Es spielen mit (${mem.length})</span><div class="chips">${mem.map(id => `<span class="chip pchip" aria-pressed="true">${avatar(ghost(id), 26)}${esc(ghost(id).name)}</span>`).join('')}</div>
+    <span class="lbl">Kategorien (${cats.length}, 3 bis 8)</span><div class="chips">${SLF_CATS.map(c => `<button class="chip" type="button" data-act="slf-cat" data-v="${esc(c)}" aria-pressed="${cats.includes(c)}">${esc(c)}</button>`).join('')}</div>
+    <span class="lbl">Runden</span><div class="chips">${[3, 5, 8].map(v => `<button class="chip" type="button" data-act="slf-rd" data-v="${v}" aria-pressed="${rd === v}">${v}</button>`).join('')}</div>
+    <span class="lbl">Zeit pro Runde</span><div class="chips">${SLF_TL.map(([v, l]) => `<button class="chip" type="button" data-act="slf-tl" data-v="${v}" aria-pressed="${tl === v}">${l}</button>`).join('')}</div>
+    <button class="btn btn-gold btn-big" type="button" data-act="slf-start" ${mem.length ? '' : 'disabled'}>Spiel starten</button>
+  </div>${slfRulesHTML(false)}</section>`;
+}
+function slfLeft(M) { return M.tl ? Math.max(0, M.tl * 1000 - (Date.now() - M.at)) : 0; }
+function slfPlayHTML(M) {
+  const me = myPid(), inGame = M.players.includes(me), host = ctl();
+  const head = `<div class="slf-top"><span class="eyebrow">Runde ${M.rd + 1} von ${M.rounds}</span><div class="slf-letter" aria-label="Buchstabe ${M.letter}">${M.letter}</div>
+    ${M.ph === 'write' && M.tl ? `<div class="slf-time"><span id="slf-tsec">${Math.ceil(slfLeft(M) / 1000)}</span> s</div><div class="slf-bar"><i id="slf-tbar" style="width:${slfLeft(M) / (M.tl * 10)}%"></i></div>` : ''}
+    ${host ? `<button class="btn btn-sm btn-ghost slf-endbtn" type="button" data-act="slf-end">Beenden</button>` : ''}</div>`;
+  if (M.ph === 'write' || M.ph === 'stop') {
+    const d = inGame ? slfDraft(M) : null, stop = M.ph === 'stop';
+    return `<section class="section tsec slf-wrap">${head}
+      ${stop ? `<div class="slf-stopbanner">⛔ STOPP${M.stopBy ? ` von <b>${esc(ghost(M.stopBy).name)}</b>` : ' · Zeit ist um'}! Die Antworten werden eingesammelt …</div>` : ''}
+      ${inGame ? `<div class="card slf-form">${M.cats.map((c, i) => `<label class="slf-row"><span>${esc(c)}</span><input class="input" id="slf-a-${i}" maxlength="40" value="${esc(d.a[i] || '')}" placeholder="${M.letter} …" autocomplete="off" spellcheck="false" ${stop ? 'disabled' : ''}></label>`).join('')}
+        ${stop ? '' : `<button class="btn btn-gold btn-big slf-stopbtn" type="button" data-act="slf-stop">✋ STOPP! Ich bin fertig</button><small class="muted">STOPP geht erst, wenn alle Felder ausgefüllt sind.</small>`}</div>` : '<p class="muted">Du schaust zu.</p>'}
+    </section>`;
+  }
+  const t = slfTotals(M), need = Math.max(1, Math.ceil((M.players.length - 1) / 2));
+  return `<section class="section tsec slf-wrap">${head}
+    <div class="card slf-check"><h3>✅ Antworten prüfen</h3><p class="muted">Ist eine Antwort Quatsch? Tippe auf ✗. Ab ${need} ✗ zählt sie nicht.</p>
+      <div class="slf-tablewrap"><table class="slf-table"><thead><tr><th>Spieler</th>${M.cats.map(c => `<th>${esc(c)}</th>`).join('')}<th>Runde</th></tr></thead><tbody>
+      ${M.players.map(id => { let rs = 0; const cells = M.cats.map((c, ci) => { const x = slfCell(M, M.rd, ci, id), k = `${M.rd}_${ci}_${id}`, mine = x.votes.includes(me); rs += x.pts;
+          return `<td class="${x.ok ? 'ok' : 'bad'}"><span class="slf-ans">${x.a ? esc(x.a) : '—'}</span><span class="slf-pts">${x.ok ? '+' + x.pts : x.why === 'abgelehnt' ? '✗ abgelehnt' : x.why === 'Buchstabe' ? 'falscher Buchstabe' : ''}</span>
+            ${x.a && id !== me && inGame && slfFold(x.a)[0] === slfFold(M.letter) ? `<button class="slf-x ${mine ? 'on' : ''}" type="button" data-act="slf-x" data-k="${k}" aria-pressed="${mine}" title="Zählt nicht">✗${x.votes.length ? ' ' + x.votes.length : ''}</button>` : ''}</td>`; }).join('');
+        return `<tr class="${id === me ? 'me' : ''}"><th>${avatar(ghost(id), 24)} ${esc(ghost(id).name)}</th>${cells}<td class="slf-sum">+${rs}</td></tr>`; }).join('')}
+      </tbody></table></div></div>
+    <div class="card slf-score"><h3>🏆 Gesamt</h3><ol>${M.players.slice().sort((a, b) => t[b] - t[a]).map(id => `<li class="${id === me ? 'me' : ''}">${avatar(ghost(id), 24)}<b>${esc(ghost(id).name)}</b><span>${t[id]}</span></li>`).join('')}</ol>
+      ${host ? `<button class="btn btn-gold btn-big" type="button" data-act="slf-next">${M.rd + 1 >= M.rounds ? '🏁 Zum Ergebnis' : '▶ Nächste Runde'}</button>` : '<p class="muted">Der Host startet die nächste Runde.</p>'}</div>
+  </section>`;
+}
+function slfEndHTML(M) {
+  const t = slfTotals(M), rows = M.players.slice().sort((a, b) => t[b] - t[a]), w = rows[0];
+  return `<section class="section tsec"><div class="card k-end"><span class="eyebrow">🏙️ Stadt, Land, Fluss</span>
+    <div class="k-winner">${avatar(ghost(w), 72)}<h2>${esc(ghost(w).name)} gewinnt mit ${t[w]} Punkten!</h2></div>
+    <ol class="ap-res">${rows.map(id => `<li>${avatar(ghost(id), 30)}<b>${esc(ghost(id).name)}</b><span class="muted">${M.rounds} Runden</span><span class="ap-rv">${t[id]} Punkte</span></li>`).join('')}</ol>
+    ${M.transferred ? `<p class="okline">✓ Steht im Highscore von ${esc((lobby() || {}).name || 'diesem Raum')}.</p>` : ''}
+    ${ctl() ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="slf-again">Neues Spiel</button><button class="btn" type="button" data-act="slf-setup">Einstellungen</button></div>` : '<p class="muted">Der Host kann ein neues Spiel starten.</p>'}
+  </div>${lobbyHsHTML()}</section>`;
+}
+function viewSlf() { const M = S.slf; if (!M) return slfSetupHTML(); return M.status === 'finished' ? slfEndHTML(M) : slfPlayHTML(M); }
+function slfMount() {
+  const M = S.slf; if (!M) return;
+  if (M.status === 'finished' && slfl.endSnd !== M.id && S.tab === 'slf') { slfl.endSnd = M.id; kSnd('win', .3); }
+  const lk = M.id + ':' + M.rd; if (M.status === 'running' && M.ph === 'write' && slfl.letterKey !== lk && S.tab === 'slf') { slfl.letterKey = lk; kSnd('flip', .3); }
+}
+document.addEventListener('keydown', e => {
+  const t = e.target; if (e.key !== 'Enter' || !t || !t.id) return;
+  if (t.id === 'cn-hw') { e.preventDefault(); actions['cn-hint'](); return; }
+  const m = /^slf-a-(\d)$/.exec(t.id); if (m) { e.preventDefault(); const n = document.getElementById('slf-a-' + (+m[1] + 1)); if (n) n.focus(); else { const b = document.querySelector('[data-act="slf-stop"]'); if (b) b.focus(); } }
+});
+/* Zeitanzeige ohne Neuzeichnen */
+setInterval(() => {
+  const M = S.slf; if (!M || S.tab !== 'slf' || M.ph !== 'write' || !M.tl) return;
+  const left = slfLeft(M), a = document.getElementById('slf-tsec'), b = document.getElementById('slf-tbar');
+  if (a) a.textContent = Math.ceil(left / 1000); if (b) b.style.width = (left / (M.tl * 10)) + '%';
+}, 250);
+
 /* ---------- Bowling: reihum werfen, 3, 5 oder 10 Frames (auch mit Bots) ----------
    Gespeichert im Raum-Feld uno (mit g:'bw'): {g, id, status, cfg:{fr}, players, s, transferred}.
    s = {seq, turn, fr, roll, pins, rolls:{pid:[[w1, w2, (w3)], …]}, th, turnAt}: pins = stehende Pins als Bitmaske (10 Bit),
@@ -13034,7 +13468,7 @@ async function vgmLinkSubmit() {
 /* ---------- Spieler-Profile im Steam-Stil ----------
    Der Tab „Spieler“ zeigt alle Spieler. Ein Tipp auf einen Spieler öffnet sein Profil: Kopfbereich mit Level und Status,
    Lieblingsspiel, Screenshots, kürzliche Aktivität, Spielebibliothek; daneben Abzeichen, Zahlen und die anderen Spieler. */
-const GAME_KIND_NAME = {quiz:'Quiz', malen:'Malen', golf:'Minigolf', karten:'Kartenwahn', mad:'Uncle Grandpa ärgere dich', bj:'Blackjack', dt:'Dicktris', tt:'Tischtennis', ah:'Air-Hockey', bw:'Bowling', ch:'Schach', ap:'Wer wird der nächste ApoRed?'};
+const GAME_KIND_NAME = {quiz:'Quiz', malen:'Malen', golf:'Minigolf', karten:'Kartenwahn', mad:'Uncle Grandpa ärgere dich', bj:'Blackjack', dt:'Dicktris', tt:'Tischtennis', ah:'Air-Hockey', bw:'Bowling', ch:'Schach', ap:'Wer wird der nächste ApoRed?', cn:'Codenames', slf:'Stadt, Land, Fluss'};
 /* Status wie bei Steam: im Spiel (in einem Raum mit laufendem Spiel), online oder offline */
 function spStatus(pid) {
   const now = Date.now();
@@ -13327,7 +13761,7 @@ const TK_TYPES = [
 ];
 const TK_AREAS = [
   ['menu', 'Main-Menü', '🏠'], ['turnier', 'Turnier', '🏆'], ['raeume', 'Spiele-Räume', '🚪'], ['quiz', 'Quiz', '❔'], ['malen', 'Malen', '🎨'],
-  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['mad', 'Uncle Grandpa ärgere dich', '🎲'], ['bj', 'Blackjack', '🂡'], ['dt', 'Dicktris', '🧱'], ['tt', 'Tischtennis', '🏓'], ['ah', 'Air-Hockey', '🏒'], ['bw', 'Bowling', '🎳'], ['ch', 'Schach', '♟️'], ['ap', 'Wer wird der nächste ApoRed?', '💰'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
+  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['mad', 'Uncle Grandpa ärgere dich', '🎲'], ['bj', 'Blackjack', '🂡'], ['dt', 'Dicktris', '🧱'], ['tt', 'Tischtennis', '🏓'], ['ah', 'Air-Hockey', '🏒'], ['bw', 'Bowling', '🎳'], ['ch', 'Schach', '♟️'], ['ap', 'Wer wird der nächste ApoRed?', '💰'], ['cn', 'Codenames', '🕵️'], ['slf', 'Stadt, Land, Fluss', '🏙️'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
   ['support', 'Support', '🛟'], ['musik', 'Musik und Sound', '🎵'], ['optionen', 'Optionen', '⚙️'], ['login', 'Login und Einladungen', '🔑'], ['handy', 'Handy-Ansicht', '📱'], ['other', 'Sonstiges', '🧩']
 ];
 const TK_SUB = {
@@ -13400,7 +13834,7 @@ function tkContext() {
   const t = S.tab, L = typeof lobby === 'function' ? lobby() : null, me = myPid();
   const map = {start:'menu', turnier:'turnier', rangliste:'turnier', rad:'turnier', liste:'turnier', spiele:'raeume', raum:'raeume', spieler:'profile', einstellungen:'optionen'};
   let area = map[t] || '', hole = 0, sub = '';
-  if (['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap'].includes(t)) area = t;
+  if (['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap', 'cn', 'slf'].includes(t)) area = t;
   if (t === 'spieler' && D.vgP) area = 'games';
   if (area === 'golf' && S.golf && S.golf.status === 'running') { const p = S.golf.pos && S.golf.pos[me]; hole = (Array.isArray(p) ? p[3] : S.golf.hi) + 1 || 0; }
   if (area === 'turnier') sub = {rangliste:'Rangliste', rad:'Glücksrad', liste:'Spieleliste'}[t] || '';
@@ -14976,6 +15410,7 @@ function tick() {
     try { bwLogic(); } catch (e) {}
     try { chLogic(); } catch (e) {}
     try { apLogic(); } catch (e) {}
+    try { slfLogic(); } catch (e) {}
     botTick();
   }
   lobbyAutoAward();
@@ -15561,7 +15996,7 @@ const actions = {
   'quiz-again': () => { const base = clone(S.quiz); withPending(() => quizStart(base)); },
   'quiz-new': () => withPending(() => quizDiscard())
 };
-Object.assign(actions, apActions, chActions, uidActions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions, dtActions, ttActions, ahActions, bwActions);
+Object.assign(actions, apActions, chActions, cnActions, slfActions, uidActions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions, dtActions, ttActions, ahActions, bwActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
   if (e.target.classList && e.target.classList.contains('scrim')) { if (!(S.modal && S.modal.type === 'bday-ask')) closeModal(); return; }
@@ -15574,6 +16009,8 @@ document.addEventListener('input', e => {
   const t = e.target;
   if (t.id && /^aph-n-(\d|b)$/.test(t.id)) { const k = t.id.slice(6); aph.draft[k === 'b' ? 'b' : +k] = t.value; return; }
   if (t.id === 'aph-txt') { aph.draft.t = t.value; return; }
+  if (t.id === 'cn-hw') { D.cnHw = t.value; return; }
+  if (/^slf-a-\d$/.test(t.id) && S.slf) { const d = slfDraft(S.slf); d.a[+t.id.slice(6)] = t.value; d.dirty = true; clearTimeout(slfl.flush); slfl.flush = setTimeout(slfFlush, 900); return; }
   if (t.dataset && t.dataset.gmVol) { const g = gmActive(), v = Number(t.value); if (g && g.k === 'ap') { apm.vol = v; lsSet('turnier-ap-vol', String(v)); if (apm.el) apm.el.volume = v; } else if (g) { music.vol = v; lsSet('turnier-music-vol', String(v)); if (music.el) music.el.volume = v; const mv = document.getElementById('music-vol'); if (mv) mv.value = v; } return; }
   if (t.id === 'music-vol') { music.vol = Number(t.value); lsSet('turnier-music-vol', String(music.vol)); if (music.el) music.el.volume = music.vol; return; }
   if (t.dataset && t.dataset.bgmVol) { bgm.vol = Number(t.value); lsSet('turnier-bgm-vol', String(bgm.vol)); document.querySelectorAll('[data-bgm-vol]').forEach(x => { if (x !== t) x.value = t.value; }); bgm.unlocked = true; bgmSync(); return; }
@@ -17334,7 +17771,7 @@ function boot() {
   if (!S.deco) S.deco = normDeco(null);
   renderBgm();
   const h = (location.hash || '').slice(1);
-  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap'].includes(h) ? 'spiele-pick' : viewFor(h);
+  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'ap', 'cn', 'slf'].includes(h) ? 'spiele-pick' : viewFor(h);
   const fc = CFG && CFG.firebase;
   if (!fc || !fc.apiKey || /HIER_EINTRAGEN/.test(fc.apiKey) || /DEIN-PROJEKT/.test(fc.projectId || '') || !window.firebase) {
     S.mode = 'setup'; S.loaded = true;
