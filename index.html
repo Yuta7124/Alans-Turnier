@@ -3159,7 +3159,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=90"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=91"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -15718,10 +15718,10 @@ function musicCardHTML() {
    Der Admin lädt eine MP3 hoch (bis 8 MB). Sie liegt in Stücken in rooms/{raum}/media (apored = Infos, apored_0 … = Daten als Base64),
    weil die Seite keinen Datei-Speicher hat. Jedes Gerät lädt sie nur einmal und merkt sie sich (IndexedDB, Schlüssel apored).
    Sie läuft in Schleife, solange „Wer wird der nächste ApoRed?“ läuft; im Spiel stummschaltbar (gilt pro Gerät). */
-const APM_CHUNK = 900000, APM_MAX = 8 * 1024 * 1024;
-const apm = {meta:null, v:'', url:'', loading:'', el:null, blocked:false, mute:lsGet('turnier-ap-mute', '0') === '1', up:0};
-function apmNorm(x) { return x && typeof x.v === 'string' && Number.isInteger(x.n) && x.n > 0 && x.n <= 16 ? {v:x.v, n:x.n, name:str(x.name || 'Musik', 80), size:+x.size || 0, type:str(x.type || 'audio/mpeg', 40)} : null; }
-function apmWanted() { if (apm.test && apm.meta) return true; return !!(apm.meta && !apm.mute && S.tab === 'ap' && S.ap && S.ap.status === 'running' && !roomPaused() && document.visibilityState === 'visible'); }
+const APM_CHUNK = 900000, APM_MAX = 10 * 1024 * 1024;
+const apm = {meta:null, v:'', url:'', loading:'', el:null, blocked:false, mute:lsGet('turnier-ap-mute', '0') === '1', up:0, done:''};
+function apmNorm(x) { return x && typeof x.v === 'string' && Number.isInteger(x.n) && x.n > 0 && x.n <= 16 ? {v:x.v, n:x.n, name:str(x.name || 'Musik', 80), size:+x.size || 0, type:str(x.type || 'audio/mpeg', 40), loop:x.loop !== false, cut:x.cut === true} : null; }
+function apmWanted() { if (apm.test && apm.meta) return true; if (apm.meta && !apm.meta.loop && S.ap && apm.done === S.ap.id) return false; return !!(apm.meta && !apm.mute && S.tab === 'ap' && S.ap && S.ap.status === 'running' && !roomPaused() && document.visibilityState === 'visible'); }
 async function apmLoad() {
   const m = apm.meta; if (!m || apm.v === m.v || apm.loading === m.v) return;
   apm.loading = m.v;
@@ -15738,7 +15738,7 @@ async function apmLoad() {
     if (apm.meta !== m) { apm.loading = ''; return; }
     if (apm.url) URL.revokeObjectURL(apm.url);
     apm.url = URL.createObjectURL(blob); apm.v = m.v;
-    if (!apm.el) { apm.el = new Audio(); apm.el.loop = true; apm.el.volume = .55; }
+    if (!apm.el) { apm.el = new Audio(); apm.el.volume = .55; apm.el.addEventListener('ended', () => { apm.done = S.ap ? S.ap.id : 'x'; if (apm.test) { apm.test = false; render(); } }); }
     apm.el.src = apm.url;
   } catch (e) { console.warn('apoRed-Musik', e); }
   apm.loading = '';
@@ -15747,7 +15747,8 @@ async function apmLoad() {
 function apmSync() {
   if (apmWanted()) {
     if (apm.v !== apm.meta.v) { apmLoad(); return; }
-    const el = apm.el; if (el && el.paused) { const p = el.play(); if (p && p.catch) p.then(() => { apm.blocked = false; }, () => { apm.blocked = true; }); }
+    const el = apm.el; if (el) el.loop = apm.meta.loop;
+    if (el && el.paused) { const p = el.play(); if (p && p.catch) p.then(() => { apm.blocked = false; }, () => { apm.blocked = true; }); }
   } else if (apm.el && !apm.el.paused) apm.el.pause();
 }
 document.addEventListener('pointerdown', () => { if (apm.blocked && apmWanted()) apmSync(); }, true);
@@ -15755,14 +15756,20 @@ document.addEventListener('visibilitychange', () => apmSync());
 setInterval(apmSync, 700);
 async function apmUpload(file) {
   if (!S.admin || !db || !file) return;
-  if (file.size > APM_MAX) { toast('Die Datei ist zu groß. Nimm eine MP3 bis 8 MB.'); return; }
+  let cut = false;
+  if (file.size > APM_MAX) {
+    // MP3 lässt sich am Stück abschneiden: Wir nehmen die ersten 10 MB (ohne neu umzuwandeln)
+    const mins = await new Promise(res => { const a = new Audio(), u = URL.createObjectURL(file); a.preload = 'metadata'; a.onloadedmetadata = () => { URL.revokeObjectURL(u); res(isFinite(a.duration) ? a.duration * APM_MAX / file.size / 60 : 0); }; a.onerror = () => res(0); setTimeout(() => res(0), 4000); a.src = u; });
+    toast(`Die Datei ist größer als 10 MB. Ich nehme den Anfang${mins ? ` (etwa die ersten ${Math.floor(mins)} Minuten)` : ''}.`);
+    file = new File([file.slice(0, APM_MAX)], file.name, {type:file.type || 'audio/mpeg'}); cut = true;
+  }
   const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = rej; r.readAsDataURL(file); });
   const n = Math.ceil(b64.length / APM_CHUNK), old = apm.meta ? apm.meta.n : 0, v = uid();
   apm.up = 1; render();
   try {
     for (let i = 0; i < n; i++) { await db.collection('media').doc('apored_' + i).set({d:b64.slice(i * APM_CHUNK, (i + 1) * APM_CHUNK)}); apm.up = Math.round((i + 1) / n * 100); render(); }
     for (let i = n; i < old; i++) await db.collection('media').doc('apored_' + i).delete().catch(() => {});
-    await db.collection('media').doc('apored').set({v, n, name:file.name, size:file.size, type:file.type || 'audio/mpeg', at:Date.now()});
+    await db.collection('media').doc('apored').set({v, n, name:file.name, size:file.size, type:file.type || 'audio/mpeg', at:Date.now(), loop:apm.meta ? apm.meta.loop : true, cut});
     toast('ApoRed-Musik gespeichert. Sie läuft jetzt bei allen im Spiel.');
   } catch (e) { toast(e && e.code === 'permission-denied' ? 'Nur der Spielleiter darf Musik hochladen.' : 'Die Musik konnte nicht hochgeladen werden. Prüf dein Internet.'); }
   apm.up = 0; render();
@@ -15776,16 +15783,18 @@ function apmCardHTML() {
   const m = apm.meta;
   return `<div class="card share-card music-card">
       <h3>💰 Musik für „Wer wird der nächste ApoRed?“</h3>
-      <p class="m-text">Diese MP3 läuft bei allen Spielern, solange das Spiel läuft. Im Spiel kann jeder sie mit 🔊 für sich stummschalten. Höchstens 8 MB.</p>
+      <p class="m-text">Diese MP3 läuft bei allen Spielern, solange das Spiel läuft. Im Spiel kann jeder sie mit 🔊 für sich stummschalten. Ist die Datei größer als 10 MB, wird nur ihr Anfang genommen.</p>
       <div class="music-row">
         <label class="btn btn-gold" for="apm-file">${apm.up ? `Lädt hoch … ${apm.up} %` : m ? 'Andere MP3 wählen' : 'MP3 wählen'}</label>
         <input class="vh" type="file" id="apm-file" accept="audio/mpeg,audio/*,.mp3" ${apm.up ? 'disabled' : ''}>
-        ${m ? `<span class="music-name">♪ ${esc(m.name)} <small>${(m.size / 1048576).toFixed(1).replace('.', ',')} MB</small></span>` : `<span class="muted">Noch keine Musik.</span>`}
+        ${m ? `<span class="music-name">♪ ${esc(m.name)} <small>${(m.size / 1048576).toFixed(1).replace('.', ',')} MB${m.cut ? ' · gekürzt' : ''}</small></span>` : `<span class="muted">Noch keine Musik.</span>`}
       </div>
+      ${m ? `<span class="lbl">Wenn das Lied zu Ende ist</span><div class="chips"><button class="chip" type="button" data-act="apm-loop" data-v="1" aria-pressed="${m.loop}">🔁 In Schleife</button><button class="chip" type="button" data-act="apm-loop" data-v="0" aria-pressed="${!m.loop}">▶️ Einmal abspielen</button></div>` : ''}
       ${m ? `<div class="music-row"><button class="btn btn-sm" type="button" data-act="apm-test">${apm.test ? 'Stopp' : 'Probehören'}</button><button class="btn btn-sm btn-ghost danger" type="button" data-act="apm-remove">Entfernen</button></div>` : ''}
     </div>`;
 }
 const apmActions = {
+  'apm-loop': b => { if (!S.admin || !db || !apm.meta) return; const loop = b.dataset.v === '1'; apm.meta = {...apm.meta, loop}; render(); db.collection('media').doc('apored').update({loop}).catch(() => toast('Das hat nicht geklappt.')); },
   'ap-mute': () => { apm.mute = !apm.mute; lsSet('turnier-ap-mute', apm.mute ? '1' : '0'); apmSync(); render(); },
   'apm-remove': () => confirmBox('ApoRed-Musik entfernen?', 'Sie läuft dann bei niemandem mehr.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Entfernen', cls:'btn-gold', fn:apmRemove}]),
   'apm-test': async () => {
