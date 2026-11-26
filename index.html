@@ -1741,7 +1741,7 @@ body.ah-locked .ah-lockhint{display:none}
 @keyframes chGlow{0%,100%{text-shadow:0 0 0 rgba(255,207,63,0)}50%{text-shadow:0 0 14px rgba(255,207,63,.7)}}
 @keyframes chPop{from{transform:translate(-50%,-50%) scale(.6);opacity:0}}
 @keyframes chFall{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--dx),110vh) rotate(var(--r))}}
-@media (prefers-reduced-motion:reduce){.ch-pc,.ch-sq::after,.ch-sq.chk,.ch-sq.chk .ch-pc,.ch-sq.lostk .ch-pc,.ch-clock,.ch-pl.on,.ch-st.mine,.ch-pro{animation:none!important;transition:none!important}}
+@media (prefers-reduced-motion:reduce){.ch-sq::after,.ch-sq.chk,.ch-sq.chk .ch-pc,.ch-sq.lostk .ch-pc,.ch-clock,.ch-pl.on,.ch-st.mine,.ch-pro{animation:none!important;transition:none!important}}
 .ch-endboard{width:min(360px,90%);margin:10px auto;pointer-events:none}
 .ch-endboard .ch-pc{font-size:min(5vh,40px)}
 .ch-drawav{display:flex;gap:10px;justify-content:center}
@@ -10936,7 +10936,8 @@ const chReduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const CH_FLY = 430;
 function chHidden(i) { return !!(chl.hide && performance.now() < chl.hide.until && chl.hide.sq.includes(i)); }
 function chAnimLast(M) {
-  if (!M.h.length || chReduce()) return;
+  // Läuft auch bei „Bewegung reduzieren“: Sie zeigt, welche Figur wohin gezogen ist
+  if (!M.h.length) return;
   const bd = document.querySelector('.ch-board'); if (!bd) return;
   const u = M.h[M.h.length - 1], f = chIdx(u.slice(0, 2)), to = chIdx(u.slice(2, 4)), sq = i => bd.querySelector(`[data-i="${i}"]`);
   const prev = chReplay(M.h.slice(0, -1)).pos.b, moved = prev[f];
