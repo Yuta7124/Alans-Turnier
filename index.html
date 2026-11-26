@@ -1713,6 +1713,35 @@ body.ah-locked .ah-lockhint{display:none}
 .ch-pro>span{font-weight:800;font-size:14px}
 .ch-pro-b{width:56px;height:56px;border:0;border-radius:10px;background:#f0d9b5;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .ch-pro-b .ch-pc{font-size:44px}
+.ch-pc{transition:transform .15s ease,filter .15s ease;will-change:transform}
+.ch-sq.own{cursor:grab}
+@media (hover:hover){.ch-sq.own:hover .ch-pc{transform:translateY(-4%) scale(1.06)}}
+.ch-sq.sel .ch-pc{transform:translateY(-8%) scale(1.14);filter:drop-shadow(0 8px 6px rgba(0,0,0,.45))}
+.ch-sq.tg::after{animation:chDot .22s cubic-bezier(.3,1.6,.5,1)}
+.ch-sq.tgc::after{animation:chRing .25s ease-out}
+.ch-sq.chk{animation:chChk 1.1s ease-in-out infinite}
+.ch-sq.chk .ch-pc{animation:chShake .45s ease-in-out}
+.ch-sq.lostk .ch-pc{animation:chTopple .9s .3s cubic-bezier(.5,0,.6,1) forwards;transform-origin:50% 90%}
+.ch-ghost{position:absolute;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2}
+.ch-clock.low.run{animation:chLow 1s ease-in-out infinite}
+.ch-pl.on{animation:chOn .4s ease-out}
+.ch-st.mine{animation:chGlow 1.6s ease-in-out infinite}
+.ch-pro{animation:chPop .2s cubic-bezier(.3,1.5,.5,1)}
+.ch-fin{animation:chPop2 .5s cubic-bezier(.3,1.5,.5,1)}
+@keyframes chPop2{from{transform:scale(.6);opacity:0}}
+.ch-conf{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.ch-conf i{position:absolute;top:-16px;width:9px;height:14px;border-radius:2px;animation:chFall linear forwards}
+@keyframes chDot{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes chRing{from{transform:scale(1.25);opacity:0}to{transform:none;opacity:1}}
+@keyframes chChk{0%,100%{box-shadow:inset 0 0 0 0 rgba(255,40,40,.0)}50%{box-shadow:inset 0 0 0 6px rgba(255,40,40,.85)}}
+@keyframes chShake{0%,100%{transform:none}20%{transform:translateX(-6%) rotate(-6deg)}40%{transform:translateX(6%) rotate(6deg)}60%{transform:translateX(-4%) rotate(-3deg)}80%{transform:translateX(3%)}}
+@keyframes chTopple{to{transform:rotate(80deg) translateY(10%);opacity:.85}}
+@keyframes chLow{0%,100%{transform:none}50%{transform:scale(1.08)}}
+@keyframes chOn{from{box-shadow:inset 0 0 0 6px var(--coin)}}
+@keyframes chGlow{0%,100%{text-shadow:0 0 0 rgba(255,207,63,0)}50%{text-shadow:0 0 14px rgba(255,207,63,.7)}}
+@keyframes chPop{from{transform:translate(-50%,-50%) scale(.6);opacity:0}}
+@keyframes chFall{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--dx),110vh) rotate(var(--r))}}
+@media (prefers-reduced-motion:reduce){.ch-pc,.ch-sq::after,.ch-sq.chk,.ch-sq.chk .ch-pc,.ch-sq.lostk .ch-pc,.ch-clock,.ch-pl.on,.ch-st.mine,.ch-pro{animation:none!important;transition:none!important}}
 .ch-endboard{width:min(360px,90%);margin:10px auto;pointer-events:none}
 .ch-endboard .ch-pc{font-size:min(5vh,40px)}
 .ch-drawav{display:flex;gap:10px;justify-content:center}
@@ -3066,7 +3095,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=85"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=86"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -10829,6 +10858,7 @@ function chPlayerBar(M, i) {
 }
 function chBoardHTML(M) {
   const me = chMeIdx(M), flip = me === 1 ? !D.chFlip : !!D.chFlip, pos = chPos(M);
+  const lostK = M.status === 'finished' && (M.win === 0 || M.win === 1) ? chKing(pos.b, M.win === 0 ? 'b' : 'w') : -1;
   const sel = M.status === 'running' && me >= 0 && M.t === (me ? 'b' : 'w') ? D.chSel : -1;
   const tg = sel >= 0 ? new Set(chLegal(pos).filter(m => m.f === sel).map(m => m.to)) : new Set();
   const last = M.h.length ? M.h[M.h.length - 1] : '', lf = last ? chIdx(last.slice(0, 2)) : -1, lt = last ? chIdx(last.slice(2, 4)) : -1;
@@ -10836,7 +10866,7 @@ function chBoardHTML(M) {
   let h = '';
   for (let k = 0; k < 64; k++) {
     const i = flip ? 63 - k : k, c = pos.b[i], r = Math.floor(i / 8), f = i % 8, dark = (r + f) % 2 === 1;
-    const cls = ['ch-sq', dark ? 'd' : 'l', i === sel ? 'sel' : '', tg.has(i) ? (c !== '.' ? 'tgc' : 'tg') : '', i === lf || i === lt ? 'last' : '', i === chk ? 'chk' : ''].filter(Boolean).join(' ');
+    const cls = ['ch-sq', dark ? 'd' : 'l', i === sel ? 'sel' : '', tg.has(i) ? (c !== '.' ? 'tgc' : 'tg') : '', i === lf || i === lt ? 'last' : '', i === chk ? 'chk' : '', i === lostK ? 'lostk' : '', c !== '.' && M.status === 'running' && me >= 0 && chSide(c) === (me ? 'b' : 'w') && M.t === chSide(c) ? 'own' : ''].filter(Boolean).join(' ');
     const lblF = (flip ? r === 0 : r === 7) ? `<i class="ch-lf">${'abcdefgh'[f]}</i>` : '', lblR = (flip ? f === 7 : f === 0) ? `<i class="ch-lr">${8 - r}</i>` : '';
     h += `<button class="${cls}" type="button" data-act="ch-sq" data-i="${i}" aria-label="${chSq(i)}${c !== '.' ? ' ' + (chWhite(c) ? 'weißer' : 'schwarzer') + ' ' + CH_NAME[c.toLowerCase()] : ''}">${c !== '.' ? `<span class="ch-pc ${chWhite(c) ? 'w' : 'b'}">${CH_GLYPH[c.toLowerCase()]}︎</span>` : ''}${lblF}${lblR}</button>`;
   }
@@ -10852,6 +10882,7 @@ function chMovesHTML(M) {
 const CH_WHY = {mate:'Schachmatt', stalemate:'Patt', fifty:'50 Züge ohne Schlag oder Bauernzug', material:'Zu wenig Material', rep:'Dreimal dieselbe Stellung', resign:'Aufgegeben', time:'Zeit abgelaufen', agree:'Remis vereinbart'};
 function chStatusHTML(M) {
   const me = chMeIdx(M), pos = chPos(M), side = M.t === 'w' ? 0 : 1, who = ghost(M.p[side]);
+  if (M.status === 'finished') return `<p class="ch-st mine ch-fin">🏁 ${esc(CH_WHY[M.why] || 'Partie vorbei')}${M.win === 2 ? ' · Remis' : ` · ${esc(ghost(M.p[M.win]).name)} gewinnt`}</p>`;
   if (roomPaused()) return '<p class="ch-st">⏸ Pausiert</p>';
   const chk = chInCheck(pos) ? ' <b class="ch-chk">Schach!</b>' : '';
   if (me === side) return `<p class="ch-st mine">Du bist dran${chk}</p>`;
@@ -10874,7 +10905,7 @@ function chPlayHTML(M) {
       </div>
       <aside class="ch-side">
         ${chStatusHTML(M)}${offer}
-        ${me >= 0 ? `<div class="chips">${M.d === me ? '<span class="muted">Remis angeboten …</span>' : `<button class="btn btn-sm" type="button" data-act="ch-draw">🤝 Remis anbieten</button>`}<button class="btn btn-sm btn-ghost" type="button" data-act="ch-resign">🏳️ Aufgeben</button></div>` : `<p class="muted">👀 Du schaust zu.</p>`}
+        ${M.status !== 'running' ? '' : me >= 0 ? `<div class="chips">${M.d === me ? '<span class="muted">Remis angeboten …</span>' : `<button class="btn btn-sm" type="button" data-act="ch-draw">🤝 Remis anbieten</button>`}<button class="btn btn-sm btn-ghost" type="button" data-act="ch-resign">🏳️ Aufgeben</button></div>` : `<p class="muted">👀 Du schaust zu.</p>`}
         <button class="btn btn-sm btn-ghost" type="button" data-act="ch-flip">🔄 Brett drehen</button>
         <div class="ch-mvbox"><span class="lbl">Züge</span>${chMovesHTML(M)}</div>
       </aside>
@@ -10891,12 +10922,60 @@ function chEndHTML(M) {
     ${host ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="ch-again">Revanche (Farben getauscht)</button><button class="btn" type="button" data-act="ch-setup">Andere Spieler</button></div>` : '<p class="muted">Der Host kann eine neue Partie starten.</p>'}
   </div>${lobbyHsHTML()}</section>`;
 }
-function viewCh() { const M = S.ch; if (!M) return duoSetupHTML('ch'); return M.status === 'finished' ? chEndHTML(M) : chPlayHTML(M); }
+function viewCh() {
+  const M = S.ch; if (!M) return duoSetupHTML('ch');
+  if (M.status !== 'finished') return chPlayHTML(M);
+  // Nach dem letzten Zug noch kurz das große Brett zeigen (Matt sehen), dann den Ergebnis-Bildschirm
+  if (chl.finId !== M.id) { chl.finId = M.id; chl.finAt = performance.now(); setTimeout(() => { if (S.tab === 'ch') render(); }, 2700); }
+  return performance.now() - chl.finAt < 2600 ? chPlayHTML(M) : chEndHTML(M);
+}
+/* Letzten Zug zeigen: Figur gleitet vom Start- aufs Zielfeld, geschlagene Figur fliegt weg, bei Rochade gleitet der Turm mit */
+const chReduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+function chAnimLast(M, k = 1) {
+  if (!M.h.length || chReduce()) return;
+  const bd = document.querySelector('.ch-board'); if (!bd) return;
+  const u = M.h[M.h.length - 1], f = chIdx(u.slice(0, 2)), to = chIdx(u.slice(2, 4)), sq = i => bd.querySelector(`[data-i="${i}"]`);
+  const slide = (a, b, ms) => { const A = sq(a), B = sq(b), pc = B && B.querySelector('.ch-pc'); if (!A || !pc) return;
+    const ra = A.getBoundingClientRect(), rb = B.getBoundingClientRect();
+    pc.animate([{transform:`translate(${(ra.left - rb.left) * k}px,${(ra.top - rb.top) * k}px) scale(${1 + .12 * k})`, filter:'drop-shadow(0 10px 8px rgba(0,0,0,.5))'}, {transform:'none', filter:'none'}], {duration:ms * k, easing:k < 1 ? 'ease-out' : 'cubic-bezier(.25,.8,.3,1)'}); };
+  const prev = chReplay(M.h.slice(0, -1)).pos.b, moved = prev[f];
+  // Geschlagene Figur (auch en passant)
+  if (k < 1) { slide(f, to, 260); if (moved && moved.toLowerCase() === 'k' && Math.abs(f - to) === 2) slide(to > f ? f + 3 : f - 4, to > f ? f + 1 : f - 1, 320); return; }
+  let ci = prev[to] !== '.' ? to : (moved && moved.toLowerCase() === 'p' && f % 8 !== to % 8 ? to + (chWhite(moved) ? 8 : -8) : -1);
+  if (ci >= 0) {
+    const C = sq(ci), c = prev[ci];
+    if (C && c && c !== '.') {
+      const g = document.createElement('span'); g.className = `ch-pc ${chWhite(c) ? 'w' : 'b'} ch-ghost`; g.textContent = CH_GLYPH[c.toLowerCase()] + '\uFE0E';
+      const rc = C.getBoundingClientRect(), rbd = bd.getBoundingClientRect();
+      Object.assign(g.style, {left:(rc.left - rbd.left) + 'px', top:(rc.top - rbd.top) + 'px', width:rc.width + 'px', height:rc.height + 'px'});
+      bd.appendChild(g);
+      const dx = (Math.random() < .5 ? -1 : 1) * rc.width * .9;
+      g.animate([{transform:'none', opacity:1}, {transform:`translate(${dx}px,${-rc.height * .8}px) rotate(${dx > 0 ? 200 : -200}deg) scale(.4)`, opacity:0}], {duration:520, delay:140, easing:'cubic-bezier(.3,.6,.4,1)', fill:'forwards'}).onfinish = () => g.remove();
+      C.animate([{boxShadow:'inset 0 0 0 0 rgba(255,80,60,0)'}, {boxShadow:'inset 0 0 0 40px rgba(255,80,60,.45)'}, {boxShadow:'inset 0 0 0 0 rgba(255,80,60,0)'}], {duration:520, delay:120});
+    }
+  }
+  slide(f, to, 260);
+  if (moved && moved.toLowerCase() === 'k' && Math.abs(f - to) === 2) slide(to > f ? f + 3 : f - 4, to > f ? f + 1 : f - 1, 320);
+}
+function chConfetti() {
+  if (chReduce()) return;
+  const box = document.createElement('div'); box.className = 'ch-conf';
+  const cols = ['#ffcf3f', '#ff4f9a', '#39d6f2', '#4ff08f', '#c493ff', '#fff'];
+  for (let i = 0; i < 70; i++) { const b = document.createElement('i'); b.style.cssText = `left:${Math.random() * 100}%;background:${cols[i % cols.length]};--dx:${(Math.random() - .5) * 240}px;--r:${Math.random() * 720 - 360}deg;animation-duration:${1.6 + Math.random() * 1.6}s;animation-delay:${Math.random() * .4}s`; box.appendChild(b); }
+  document.body.appendChild(box); setTimeout(() => box.remove(), 3800);
+}
 function chMount() {
   const M = S.ch;
-  if (M && M.status === 'finished' && chl.endSnd !== M.id && S.tab === 'ch') { chl.endSnd = M.id; const me = chMeIdx(M); kSnd(me < 0 || M.win === me || M.win === 2 ? 'win' : 'lose', .3); }
+  if (M && M.status === 'finished' && chl.endSnd !== M.id && S.tab === 'ch') { chl.endSnd = M.id; const me = chMeIdx(M); kSnd(me < 0 || M.win === me || M.win === 2 ? 'win' : 'lose', .3); if (M.win !== 2 && (me < 0 || M.win === me)) chConfetti(); }
   if (M && M.id !== chl.gid) { chl.gid = M.id; chl.lastSeq = M.h.length; D.chSel = -1; D.chPro = null; }
-  if (M && M.h.length !== chl.lastSeq) { if (M.h.length > chl.lastSeq && S.tab === 'ch' && chMeIdx(M) !== (M.t === 'w' ? 1 : 0)) kSnd('land'); chl.lastSeq = M.h.length; }
+  if (M && M.h.length !== chl.lastSeq) {
+    if (M.h.length > chl.lastSeq && S.tab === 'ch') { if (chMeIdx(M) !== (M.t === 'w' ? 1 : 0)) kSnd('land'); try { chAnimLast(M); chl.animAt = performance.now(); } catch (e) {} }
+    chl.lastSeq = M.h.length;
+  } else if (M && S.tab === 'ch' && chl.animAt) {
+    // Wurde das Brett mitten in der Bewegung neu gezeichnet, läuft sie vom aktuellen Stand aus weiter
+    const t = (performance.now() - chl.animAt) / 260;
+    if (t < 1) { try { chAnimLast(M, 1 - t); } catch (e) {} } else chl.animAt = 0;
+  }
 }
 /* Uhr jede Zehntelsekunde nachführen, ohne neu zu zeichnen */
 setInterval(() => {
