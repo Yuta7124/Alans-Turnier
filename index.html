@@ -1800,6 +1800,10 @@ body.ah-locked .ah-lockhint{display:none}
 .ap-jokers{display:flex;gap:8px;flex-wrap:wrap}
 .ap-jk{border:0;border-radius:999px;padding:8px 14px;font:inherit;font-weight:800;font-size:13px;cursor:pointer;color:#fff;background:linear-gradient(180deg,#3a4cb8,#1f2b7a);box-shadow:0 0 0 2px #6d82ff}
 .ap-jk:hover:not(:disabled){transform:translateY(-2px)}
+.tour-intro{position:relative;text-align:center;padding:28px 24px;margin-bottom:18px;border:2px solid #ffcf3f;background:radial-gradient(80% 120% at 50% 0%,rgba(255,207,63,.22),rgba(13,22,64,.9) 70%);box-shadow:0 0 30px rgba(255,207,63,.25)}
+.tour-intro-ic{display:block;font-size:54px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 0 14px rgba(255,207,63,.6))}
+.tour-intro h2{margin:6px 0 12px;font-size:clamp(22px,3vw,34px)}
+.tour-intro-rule{margin:0 auto 10px;max-width:760px;font-size:clamp(18px,2.2vw,26px);font-weight:800;line-height:1.35;color:#ffe9a8}
 .tour-pts{border:1px solid rgba(255,207,63,.45);background:linear-gradient(180deg,rgba(255,207,63,.08),transparent)}
 .tour-pts h3{margin:0 0 6px}
 .tour-pts-list{list-style:none;margin:10px 0 6px;padding:0;display:flex;flex-direction:column;gap:4px}
@@ -3244,7 +3248,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=105"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=106"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -5050,6 +5054,7 @@ function render() {
   if (groupOf(S.tab) === 'turnier' && tourLocked()) html = tourCheckin() && !D.tourPeek ? tourCheckinHTML() : tourPreviewHTML();
   else if (groupOf(S.tab) === 'turnier' && tourKey() && !tourCheckin() && (D.tourIntro || lsGet('turnier-intro', '') !== tourKey())) html = tourIntroHTML();
   else if (groupOf(S.tab) === 'turnier' && S.admin && D.tourEdit && !['live', 'today'].includes(tourState().k)) html = `<div class="tour-editbar"><span>✏️ Bearbeitungsmodus: Nur du siehst das so. Für die Spieler ist das Turnier noch gesperrt.</span><button class="btn btn-sm" type="button" data-act="tour-preview">Zur Vorschau</button></div>` + html;
+  try { const ti = tourRuleHTML(); if (ti) html = /<section[^>]*>/.test(html) ? html.replace(/<section[^>]*>/, m0 => m0 + ti) : ti + html; } catch (e) {}
   const oldStand = m.querySelector('.stand');
   const oldKey = oldStand ? oldStand.dataset.key : null;
   const before = standCapture(oldStand);
@@ -7342,6 +7347,15 @@ function tourGamePay() {
   const L = lobby(); if (!L || !L.tour || !S.admin || !L.kind || L.kind === 'quiz' || L.kind === 'ap') return;
   const M = tourGame(L.kind), rows = tourRows(L.kind, M); if (!rows || !M.id) return;
   for (const r of rows) tourPay(`tg_${L.kind}_${M.id}_${r.id}`, r.id, r.pts, `${GAME_KIND_NAME[L.kind] || 'Spiel'} · Turnier`);
+}
+/* Turnier: Bevor ein Spiel startet, steht groß oben, wie es im Turnier zählt */
+function tourRuleHTML() {
+  const L = lobby(); if (!L || !L.tour || !L.kind || L.kind !== S.tab || !TOUR_RULES[L.kind]) return '';
+  const G = tourGame(L.kind); if (G && ['running', 'finished'].includes(G.status)) return '';
+  const when = L.kind === 'quiz' ? 'Die Punkte kommen sofort nach jeder richtigen Antwort aufs Turnier-Konto.' : L.kind === 'ap' ? 'Wie weit die anderen sind, siehst du erst am Ende. Dann kommen die Punkte aufs Turnier-Konto.' : 'Die Punkte kommen am Spielende automatisch aufs Turnier-Konto.';
+  return `<div class="card tour-intro"><span class="tour-intro-ic" aria-hidden="true">🏆</span><span class="eyebrow">Turnier-Regel</span>
+    <h2>So zählt ${SRV_ICON[L.kind] || ''} ${esc(GAME_KIND_NAME[L.kind] || 'das Spiel')} im Turnier</h2>
+    <p class="tour-intro-rule">${TOUR_RULES[L.kind]}</p><p class="muted">${when}</p></div>`;
 }
 function tourCardHTML(L) {
   if (!L || !L.tour || !TOUR_RULES[L.kind]) return '';
