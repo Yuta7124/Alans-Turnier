@@ -1800,6 +1800,12 @@ body.ah-locked .ah-lockhint{display:none}
 .ap-jokers{display:flex;gap:8px;flex-wrap:wrap}
 .ap-jk{border:0;border-radius:999px;padding:8px 14px;font:inherit;font-weight:800;font-size:13px;cursor:pointer;color:#fff;background:linear-gradient(180deg,#3a4cb8,#1f2b7a);box-shadow:0 0 0 2px #6d82ff}
 .ap-jk:hover:not(:disabled){transform:translateY(-2px)}
+.ap-lockinfo{font-size:13px;font-weight:800;color:#9fb0ff;padding:10px 14px;border-radius:999px;background:rgba(109,130,255,.12)}
+.ap-lockinfo.wait{color:#1a1208;background:#ffb52e}
+.ap-lockinfo.ok{color:#fff;background:#178a48}
+.ap-lockinfo.bad{color:#fff;background:#a8121f}
+.btn.ap-stopbtn{background:linear-gradient(180deg,#2ecc71,#178a48);color:#fff;box-shadow:0 0 0 2px #b8ffd3}
+.ap-a{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .ap-jk.used{opacity:.35;text-decoration:line-through}
 .ap-ladder{list-style:none;margin:0;padding:10px;border-radius:14px;background:#0b0f2e;box-shadow:inset 0 0 0 2px #3b4fb3;display:flex;flex-direction:column;gap:2px;position:sticky;top:12px}
 .ap-ladder li{display:flex;justify-content:space-between;gap:8px;padding:4px 10px;border-radius:8px;font-size:14px;color:#ffb52e}
@@ -1855,7 +1861,7 @@ body.ah-locked .ah-lockhint{display:none}
   .ap-a.lock .ap-l::before{background:rgba(26,18,8,.15);box-shadow:inset 0 0 0 1px rgba(26,18,8,.5)}
   .ap-acts{justify-content:center;gap:16px}
   .ap-jk{font-size:17px;padding:13px 22px}
-  .ap-acts .btn-big{font-size:18px;padding:16px 28px}
+  .ap-lockinfo{font-size:16px;padding:14px 22px}
   .ap-time{height:12px}
 }
 .ap-board li.me{background:rgba(255,207,63,.08);border-radius:10px;padding:4px 6px}
@@ -3231,7 +3237,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=101"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=102"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -11308,7 +11314,7 @@ function apLogic() {
       if (b.lv !== r.lv) { b.lv = r.lv; b.at = Math.max(now, r.at) + botR(3500, 8500); continue; }
       if (now < b.at) continue;
       const lvl = botLvl(id), p = {e:.95, m:.97, h:.99}[lvl] - r.lv * {e:.03, m:.022, h:.015}[lvl];
-      if (r.lv >= 18 && Math.random() < {e:.25, m:.15, h:.08}[lvl] * (1 - p)) { apWrite(id, {...r, st:'stop'}); continue; }
+      if (AP_SAFE.includes(r.lv) && Math.random() < {e:.45, m:.3, h:.15}[lvl] * (1.2 - p)) { apWrite(id, {...r, st:'stop'}); continue; }
       if (Math.random() < p) { const lv = r.lv + 1; apWrite(id, {...r, lv, st:lv >= AP_N ? 'won' : 'play', at:Date.now()}); } else apWrite(id, {...r, st:'out'});
     } else if (M.tl && now > r.at + M.tl * 1000 + 20000 && !(r.jw && now - r.jw < 300000)) apWrite(id, {...r, st:'out'}); // weg vom Gerät
   }
@@ -11323,7 +11329,10 @@ const apActions = {
   'ap-again': () => apStart(),
   'ap-end': () => confirmBox('Spiel beenden?', 'Die Runde wird abgebrochen. Es gibt keine Punkte für den Raum-Highscore.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => { if (!ctl()) return; S.ap = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); }}]),
   'ap-setup': () => { if (!ctl()) return; if (S.ap && S.ap.status === 'finished' && !S.ap.transferred) apTransfer(); S.ap = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); },
-  'ap-pick': b => { const M = S.ap, me = apMe(M); if (!me || M.pr[me].st !== 'play' || apl.lock >= 0 || roomPaused()) return; const i = Number(b.dataset.i); apl.pick = apl.pick === i ? -1 : i; sfx('pick'); render(); },
+  'ap-pick': b => { const M = S.ap, me = apMe(M); if (!me || M.pr[me].st !== 'play' || apl.lock >= 0 || roomPaused()) return; const i = Number(b.dataset.i), now = performance.now();
+    // Doppelklick / doppelt tippen auf dieselbe Antwort = endgültige Antwort
+    if (apl.pick === i && now - (apl.pickAt || 0) < 600) { apl.pickAt = 0; apActions['ap-lock'](); return; }
+    apl.pick = i; apl.pickAt = now; sfx('pick'); render(); },
   'ap-lock': () => {
     const M = S.ap, me = apMe(M); if (!me || apl.pick < 0 || apl.lock >= 0 || roomPaused()) return;
     const r = M.pr[me], lv = r.lv, q = apQ(M, lv); apl.lock = apl.pick; apl.lockAt = performance.now(); sfx('chosen'); render();
@@ -11359,6 +11368,7 @@ const apActions = {
   },
   'ap-stop': () => {
     const M = S.ap, me = apMe(M); if (!me || apl.lock >= 0) return; const r = M.pr[me];
+    if (!AP_SAFE.includes(r.lv)) { toast('Aussteigen geht nur bei 1.000 € und 32.000 €.'); return; }
     confirmBox('Aussteigen?', `Du nimmst ${apEur(r.lv ? AP_LADDER[r.lv - 1] : 0)} mit und spielst nicht weiter.`, [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Aussteigen', cls:'btn-gold', fn:() => { const c = S.ap.pr[me]; if (c.st === 'play') apWrite(me, {...c, st:'stop'}); render(); }}]);
   }
 };
@@ -11368,10 +11378,10 @@ function apConfetti() { try { chConfetti(); } catch (e) {} }
 function apRulesHTML(open) {
   return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird gespielt</summary><ul>
     <li><b>Alle gleichzeitig:</b> Jeder beantwortet dieselben 30 Fragen für sich. Die anderen sehen nur, auf welcher Stufe du bist, nie die Frage.</li>
-    <li><b>Antworten:</b> Antwort antippen, dann „Endgültige Antwort“. Richtig = eine Stufe höher, von 25 € bis 1 Million.</li>
+    <li><b>Antworten:</b> Doppelklick (am Handy doppelt tippen) auf eine Antwort = endgültige Antwort. Richtig = eine Stufe höher, von 25 € bis 1 Million.</li>
     <li><b>Schwierigkeit:</b> Alle 5 Fragen wird es schwerer: sehr leicht, leicht, mittel, schwer, sehr schwer und zum Schluss Profi.</li>
     <li><b>Sicherheitsstufen:</b> Bei 1.000 € und 32.000 €. Bei einer falschen Antwort fällst du auf die letzte Sicherheitsstufe zurück.</li>
-    <li><b>Aussteigen:</b> Jederzeit möglich, dann behältst du, was du schon hast.</li>
+    <li><b>Aussteigen:</b> Nur auf den Sicherheitsstufen 1.000 € und 32.000 €. Wer die Million gewinnt, ist automatisch fertig.</li>
     <li><b>Joker (je einmal):</b> 50:50 streicht zwei falsche Antworten, Publikum zeigt eine Umfrage, Telefon fragt jemanden um Rat.</li>
     <li><b>Highscore:</b> Wer am meisten gewinnt +3, Zweiter +2, alle anderen mit Gewinn +1.</li></ul></details>`;
 }
@@ -11425,9 +11435,9 @@ function apPlayHTML(M) {
       ${ph ? `<div class="ap-phone aph-call">${aphFace(ph.who, 52)}<div><b>📞 ${esc(aphPerson(ph.who).name)}</b>${(aph.ring[M.id + ':' + lv] || 0) > Date.now() ? `<p class="aph-ring">Es klingelt …</p>` : `<p>„Ich glaube, es ist <b>${'ABCD'[ph.pick]}</b>. Da bin ich mir zu ${ph.sure} % sicher.“</p>`}</div></div>` : ''}
       </div>
       <div class="ap-acts">
-        <button class="btn btn-gold btn-big" type="button" data-act="ap-lock" ${apl.pick >= 0 && apl.lock < 0 && !paused ? '' : 'disabled'}>${apl.lock >= 0 ? (rv ? (rv.ok ? '✓ Richtig!' : '✗ Leider falsch') : '🔒 Eingeloggt …') : 'Endgültige Antwort'}</button>
+        <span class="ap-lockinfo ${rv ? (rv.ok ? 'ok' : 'bad') : apl.lock >= 0 ? 'wait' : ''}">${apl.lock >= 0 ? (rv ? (rv.ok ? '✓ Richtig!' : '✗ Leider falsch') : '🔒 Eingeloggt …') : apl.pick >= 0 ? 'Nochmal drauf = endgültige Antwort' : (matchMedia('(pointer: coarse)').matches ? 'Doppelt tippen = endgültige Antwort' : 'Doppelklick auf eine Antwort = endgültig')}</span>
         <div class="ap-jokers">${[['jf', '50:50'], ['jp', '👥 Publikum'], ['jt', '📞 Telefon']].map(([k, l]) => `<button class="ap-jk ${r[k] >= 0 ? 'used' : ''}" type="button" data-act="ap-joker" data-v="${k}" ${r[k] >= 0 || apl.lock >= 0 ? 'disabled' : ''}>${l}</button>`).join('')}</div>
-        <button class="btn btn-sm btn-ghost" type="button" data-act="ap-stop" ${apl.lock >= 0 ? 'disabled' : ''}>🚪 Aussteigen mit ${apEur(lv ? AP_LADDER[lv - 1] : 0)}</button>
+        ${AP_SAFE.includes(lv) ? `<button class="btn btn-sm ap-stopbtn" type="button" data-act="ap-stop" ${apl.lock >= 0 ? 'disabled' : ''}>🚪 Aussteigen mit ${apEur(AP_LADDER[lv - 1])}</button>` : ''}
       </div>
     </div>`;
   } else if (r) {
