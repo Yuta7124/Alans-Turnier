@@ -1800,6 +1800,12 @@ body.ah-locked .ah-lockhint{display:none}
 .ap-jokers{display:flex;gap:8px;flex-wrap:wrap}
 .ap-jk{border:0;border-radius:999px;padding:8px 14px;font:inherit;font-weight:800;font-size:13px;cursor:pointer;color:#fff;background:linear-gradient(180deg,#3a4cb8,#1f2b7a);box-shadow:0 0 0 2px #6d82ff}
 .ap-jk:hover:not(:disabled){transform:translateY(-2px)}
+.tour-pts{border:1px solid rgba(255,207,63,.45);background:linear-gradient(180deg,rgba(255,207,63,.08),transparent)}
+.tour-pts h3{margin:0 0 6px}
+.tour-pts-list{list-style:none;margin:10px 0 6px;padding:0;display:flex;flex-direction:column;gap:4px}
+.tour-pts-list li{display:flex;justify-content:space-between;gap:10px;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.04)}
+.tour-pts-list li.me{background:rgba(255,207,63,.12)}
+.tour-pts-list span{font-weight:800;color:#ffcf3f}
 .ap-hearts{font-size:18px;letter-spacing:2px}
 .ap-lockinfo{font-size:13px;font-weight:800;color:#9fb0ff;padding:10px 14px;border-radius:999px;background:rgba(109,130,255,.12)}
 .ap-lockinfo.wait{color:#1a1208;background:#ffb52e}
@@ -3238,7 +3244,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=104"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=105"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -7295,9 +7301,58 @@ function tourQuizPay() {
   const L = lobby(), q = S.quiz; if (!L || !L.tour || !q || !Array.isArray(q.board)) return;
   q.board.forEach((c, i) => { if (c && c.used && c.ok && c.by) tourPay(`tq_${q.id}_${q.round || 1}_${i}`, c.by, PTS[c.lvl] || 0, `Quiz · ${LEVELS[c.lvl]}`); });
 }
+/* Turnier: wie jedes Spiel Punkte fürs Turnier-Konto gibt (Leistung zählt, nicht nur der Platz) */
+const TOUR_PLACE = [10, 6, 3];
+const TOUR_RULES = {
+  quiz:'Jede richtige Antwort zählt sofort: sehr leicht 1, leicht 2, mittel 3, schwer 4, sehr schwer 5 Punkte.',
+  ap:'Punkte = Nummer der Frage, bei der du rausfliegst (alle 30 = 30). 2 Leben, kein Aussteigen.',
+  malen:'Pro erratenem Wort 1 bis 5 Punkte, je schneller, desto mehr. Wer malt, bekommt Punkte für jeden, der es errät (Malpunkte geteilt durch 25).',
+  golf:'Pro Bahn: Hole-in-One 5, mit 2 Schlägen 4, mit 3 Schlägen 3, mit 4 Schlägen 2, mit 5 Schlägen 1 Punkt.',
+  karten:'Platz 1: 10 Punkte, Platz 2: 6, Platz 3: 3, alle anderen 1.',
+  mad:'Platz 1: 10 Punkte, Platz 2: 6, Platz 3: 3, alle anderen 1.',
+  bj:'Punkte = deine Chips am Ende geteilt durch die Start-Chips mal 5. Verdoppelt = 10 Punkte, pleite = 0.',
+  dt:'Jede abgeräumte Reihe = 1 Punkt.',
+  tt:'Jeder eigene Punkt im Spiel = 1 Turnierpunkt, der Sieger bekommt 5 dazu.',
+  ah:'Jedes eigene Tor = 1 Turnierpunkt, der Sieger bekommt 5 dazu.',
+  bw:'Punkte = deine Bowling-Punkte geteilt durch 10 (300 = 30 Punkte).',
+  ch:'Sieg 10 Punkte, Remis 5 für beide, Niederlage 1.'
+};
+function tourGame(kind) { return ({quiz:S.quiz, malen:S.draw, golf:S.golf, karten:S.uno, mad:S.mad, bj:S.bj, dt:S.dt, tt:S.tt, ah:S.ah, bw:S.bw, ch:S.ch, ap:S.ap})[kind] || null; }
+/* Turnierpunkte eines Spiels: [{id, pts}] (bei Quiz auch während des Spiels), sonst null */
+function tourRows(kind, M) {
+  if (!M) return null;
+  const place = rows => rows.map(r => ({id:r.id, pts:TOUR_PLACE[r.rank - 1] || 1}));
+  if (kind === 'quiz') { const t = {}; (M.players || []).forEach(id => t[id] = 0); (M.board || []).forEach(c => { if (c && c.used && c.ok && c.by) t[c.by] = (t[c.by] || 0) + (PTS[c.lvl] || 0); }); return Object.entries(t).map(([id, pts]) => ({id, pts})); }
+  if (M.status !== 'finished') return null;
+  switch (kind) {
+    case 'ap': return M.players.map(id => ({id, pts:apPts(M.pr[id])}));
+    case 'malen': return M.players.map(id => ({id, pts:Math.round((M.scores[id] || 0) / 25)}));
+    case 'golf': { const end = M.end || 0; return M.players.map(id => { let pts = 0; for (let j = 0; j < end; j++) { const n = gScore(M, id, j); if (n) pts += Math.max(0, 6 - n); } return {id, pts}; }); }
+    case 'karten': return M.s.win ? place(kRank(M.s)) : null;
+    case 'mad': return M.s.win ? place(madRank(M.s)) : null;
+    case 'bj': return M.s.order.map(id => ({id, pts:Math.max(0, Math.round(M.s.pl[id].chips / M.cfg.start * 5))}));
+    case 'dt': return dtRank(M).map(r => ({id:r.id, pts:Math.round(r.ln || 0)}));
+    case 'tt': case 'ah': return M.win < 0 ? null : M.p.map((id, i) => ({id, pts:M.sc[i] + (M.win === i ? 5 : 0)}));
+    case 'bw': return bwRank(M).map(r => ({id:r.id, pts:Math.round(r.sc / 10)}));
+    case 'ch': return M.win < 0 ? null : M.p.map((id, i) => ({id, pts:M.win === 2 ? 5 : M.win === i ? 10 : 1}));
+  }
+  return null;
+}
+function tourGamePay() {
+  const L = lobby(); if (!L || !L.tour || !S.admin || !L.kind || L.kind === 'quiz' || L.kind === 'ap') return;
+  const M = tourGame(L.kind), rows = tourRows(L.kind, M); if (!rows || !M.id) return;
+  for (const r of rows) tourPay(`tg_${L.kind}_${M.id}_${r.id}`, r.id, r.pts, `${GAME_KIND_NAME[L.kind] || 'Spiel'} · Turnier`);
+}
+function tourCardHTML(L) {
+  if (!L || !L.tour || !TOUR_RULES[L.kind]) return '';
+  const M = tourGame(L.kind), rows = (tourRows(L.kind, M) || []).filter(r => playerById(r.id) && !isBot(r.id)).sort((a, b) => b.pts - a.pts);
+  const done = M && (M.status === 'finished' || L.kind === 'quiz');
+  return `<div class="card tour-pts"><h3>🏆 So zählt ${esc(GAME_KIND_NAME[L.kind] || 'das Spiel')} im Turnier</h3><p class="m-text">${TOUR_RULES[L.kind]}</p>
+    ${done && rows.length ? `<ol class="tour-pts-list">${rows.map(r => `<li class="${r.id === myPid() ? 'me' : ''}"><b>${esc(ghost(r.id).name)}</b><span>+${r.pts} ${r.pts === 1 ? 'Punkt' : 'Punkte'}</span></li>`).join('')}</ol><small class="muted">${L.kind === 'quiz' ? 'Wird nach jeder richtigen Antwort gutgeschrieben.' : 'Steht auf dem Turnier-Konto.'}</small>` : ''}</div>`;
+}
 function lobbyAutoAward() {
   if (!ctl() || S.mode !== 'db') return;
-  tourQuizPay();
+  tourQuizPay(); tourGamePay();
   const q = S.quiz, st = S.draw, G = S.golf;
   if (q && q.status === 'finished' && !q.transferred && !lhsDone.has('q' + q.id + ':' + (q.round || 1))) { lhsDone.add('q' + q.id + ':' + (q.round || 1)); quizTransfer(); }
   if (st && st.status === 'finished' && !st.transferred && !lhsDone.has('d' + st.id)) { lhsDone.add('d' + st.id); drawTransfer(); }
@@ -7323,9 +7378,10 @@ function lobbyAutoAward() {
 }
 function lobbyHsHTML(L = lobby(), max = 10, inModal = false) {
   if (!L) return '';
+  const tc = !inModal && L.tour ? tourCardHTML(L) : '';
   const rows = Object.entries(L.hs || {}).filter(([id, v]) => v > 0 && playerById(id)).sort((a, b) => b[1] - a[1]).slice(0, max);
   let rank = 0;
-  return `<div class="card lhs">${inModal && !(S.admin && rows.length) ? '' : `<div class="lhs-head">${inModal ? '<span></span>' : `<h3>🏆 Highscore · ${esc(L.name)}</h3>`}${S.admin && rows.length ? '<button class="btn btn-sm btn-ghost" type="button" data-act="lhs-reset">Zurücksetzen</button>' : ''}</div>`}
+  return tc + `<div class="card lhs">${inModal && !(S.admin && rows.length) ? '' : `<div class="lhs-head">${inModal ? '<span></span>' : `<h3>🏆 Highscore · ${esc(L.name)}</h3>`}${S.admin && rows.length ? '<button class="btn btn-sm btn-ghost" type="button" data-act="lhs-reset">Zurücksetzen</button>' : ''}</div>`}
     ${rows.length ? `<ol class="lhs-list">${rows.map(([id, v], i) => { if (!i || v !== rows[i - 1][1]) rank = i + 1; const p = playerById(id); return `<li class="${id === myPid() ? 'me' : ''}"><span class="lhs-rank">${rank}</span>${avatar(p, 28)}<b>${nameHTML(p)}</b><span class="lhs-pts">${v}</span></li>`; }).join('')}</ol>`
       : '<p class="muted">Noch keine Punkte in diesem Raum. Nach jedem Spiel kommen die Punkte automatisch hierher.</p>'}
   </div>`;

@@ -250,3 +250,5 @@ Themen in `CATS` (Index): 0 Videospiele, 1 Flaggen, 2 Geschichte, 3 Allgemeinwis
 In der Turnier-Lobby (`lobby().tour`) zählen Punkte direkt aufs Turnier-Konto (`points`, schreibt der Admin als Host, feste IDs verhindern Doppelbuchungen, siehe `tourPay`):
 - Quiz: jede richtige Antwort sofort, sehr leicht 1 bis sehr schwer 5 Punkte (`tourQuizPay`, IDs `tq_<quiz>_<runde>_<feld>`).
 - ApoRed: am Ende die Nummer der Frage, bei der man rausfliegt (IDs `tap_<spiel>_<spieler>`).
+- Alle anderen Spiele: am Spielende nach `TOUR_RULES`/`tourRows` (IDs `tg_<art>_<spiel>_<spieler>`): Malen Malpunkte ÷ 25, Minigolf pro Bahn 6 − Schläge (min. 0), Kartenwahn und Uncle Grandpa nach Platz 10/6/3/1, Blackjack Chips ÷ Start × 5, Dicktris 1 pro Reihe, Tischtennis und Air-Hockey 1 pro eigenem Punkt/Tor + 5 für den Sieg, Bowling Punkte ÷ 10, Schach Sieg 10 / Remis 5 / Niederlage 1.
+- Am Spielende zeigt `tourCardHTML` (über `lobbyHsHTML`) die Regel und die vergebenen Turnierpunkte.
