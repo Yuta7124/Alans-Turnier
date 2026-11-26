@@ -187,6 +187,10 @@ Wissen/Filme/Serien/Anime; je 3 Fragen pro Schwierigkeitsstufe). Geldleiter 50 �
 Aussteigen jederzeit, Joker 50:50 / Publikum / Telefon (fest aus der Frage berechnet, für alle gleich). Optional 30 oder 60 s pro Frage.
 Jeder schreibt nur `uno.pr.<id>` = {lv, st, at, jf/jp/jt}; die anderen sehen nur Stufe und Status, nie die Frage. Bots spielt der Host.
 Highscore nach Gewinn: 1. +3, 2. +2, alle weiteren mit Gewinn +1.
+Musik: Der Admin lädt unter Optionen → Musik eine MP3 (bis 8 MB) hoch. Sie liegt Base64 in Stücken in `rooms/{raum}/media`
+(`apored` = Infos, `apored_0…` = Daten), jedes Gerät lädt sie einmal und speichert sie in IndexedDB. Läuft bei allen, solange das Spiel läuft;
+🔊/🔇 oben im Spiel schaltet sie pro Gerät stumm.
+
 ## Air-Hockey und 2er-Spiele
 🏒 Air-Hockey: 1 gegen 1 (auch gegen einen Bot), bis 5, 7 oder 10 Tore. Gespeichert im Raum-Feld `uno` mit `g:'ah'`.
 Der Puck läuft auf jedem Gerät mit festen Rechenschritten gleich weiter. Treffer und Tore auf einer Hälfte schreibt nur deren

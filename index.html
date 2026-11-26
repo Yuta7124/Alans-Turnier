@@ -3159,7 +3159,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=89"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=90"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4681,6 +4681,7 @@ function subscribe() {
   U(db.doc('meta/news').onSnapshot(d => { S.news = normNews(d.exists ? d.data() : null); got('news', d); }, fail));
   U(db.doc('meta/ticker').onSnapshot(d => { S.ticker = normTicker(d.exists ? d.data() : null); got('ticker', d); }, fail));
   U(db.doc('meta/deco').onSnapshot(d => { S.deco = normDeco(d.exists ? d.data() : null); got('deco', d); bgmSync(); }, fail));
+  U(db.collection('media').doc('apored').onSnapshot(d => { apm.meta = apmNorm(d.exists ? d.data() : null); if (S.tab === 'einstellungen') render(); apmSync(); }, () => {}));
   U(db.collection('pics').onSnapshot(sn => { S.pics = sn.docs.map(d => normPic(d.id, d.data())).filter(x => x.img).sort((a, b) => a.ts - b.ts); got('pics', sn); }, fail));
   U(db.collection('games').onSnapshot(sn => { S.games = sn.docs.map(d => normGame(d.id, d.data())).filter(g => g.name); got('games', sn); }, fail));
   U(db.collection('gvotes').onSnapshot(sn => { S.gvotes = sn.docs.map(d => { const x = d.data() || {}; return {id:d.id, gid:str(x.gid, 40), voter:str(x.voter, 40)}; }).filter(v => v.gid); got('gvotes', sn); }, fail));
@@ -5552,7 +5553,8 @@ function viewSettings() {
     ${picsCardHTML()}`,
     musik: () => `${uiSndCardHTML()}
     ${bgmCardHTML()}
-    ${musicCardHTML()}`,
+    ${musicCardHTML()}
+    ${S.admin ? apmCardHTML() : ''}`,
     freunde: () => `    <div class="card share-card">
       <h3>Link für deine Freunde</h3>
       <div class="wadd"><input class="input" id="share-link" readonly value="${SHARE_URL}" aria-label="Link zur Seite"><button class="btn btn-gold" type="button" data-act="copy-link">Kopieren</button></div>
@@ -11283,6 +11285,7 @@ function apPlayHTML(M) {
     <div class="k-top">
       <button class="gmenu" type="button" data-act="gmenu" aria-label="Menü anzeigen" title="Menü">☰</button>
       <div class="k-head"><b>💰 ${AP_NAME}</b><small>${esc((lobby() || {}).name || '')}${M.tl ? ` · ${M.tl} s pro Frage` : ''}</small></div>
+      ${apm.meta ? `<button class="btn btn-sm btn-ghost ap-mute" type="button" data-act="ap-mute" aria-label="${apm.mute ? 'Musik an' : 'Musik stumm'}" title="${apm.mute ? 'Musik an' : 'Musik stumm'}">${apm.mute ? '🔇' : '🔊'}</button>` : ''}
       ${host ? `<button class="btn btn-sm btn-ghost k-endbtn" type="button" data-act="ap-end">Beenden</button>` : ''}
     </div>
     <div class="ap-wrap"><div class="ap-main">${main}${apBoardHTML(M)}</div>${r ? apLadderHTML(r) : ''}</div>
@@ -15320,6 +15323,7 @@ document.addEventListener('change', async e => {
   }
   if (t.id === 'vg-file') { const f = t.files && t.files[0]; t.value = ''; if (!f || !D.vgF) return; try { const b = await cropToBlob(f, {title:'Cover zuschneiden', aspects:[['Cover (3:4)', 3 / 4]], max:900}); if (!b) return; D.vgF.img = await toVgCover(b); renderModal(); } catch (err) { toast('Das Bild ließ sich nicht öffnen. Versuch ein JPG oder PNG.'); } return; }
   if (t.id === 'music-file') { const f = t.files && t.files[0]; t.value = ''; if (f) saveMusicFile(f); return; }
+  if (t.id === 'apm-file') { const f = t.files && t.files[0]; t.value = ''; if (f) apmUpload(f); return; }
   if (t.id === 'music-auto') { music.auto = t.checked; lsSet('turnier-music-auto', music.auto ? '1' : '0'); syncMusic(); return; }
   if (t.id === 'gm-file') {
     const f = t.files && t.files[0]; t.value = '';
@@ -15709,6 +15713,88 @@ function musicCardHTML() {
       <label class="toggle"><input type="checkbox" id="music-auto" ${music.auto ? 'checked' : ''}> Während des Quiz automatisch abspielen</label>` : ''}
     </div>`;
 }
+
+/* ---------- ApoRed-Musik: eine MP3 für alle Spieler ----------
+   Der Admin lädt eine MP3 hoch (bis 8 MB). Sie liegt in Stücken in rooms/{raum}/media (apored = Infos, apored_0 … = Daten als Base64),
+   weil die Seite keinen Datei-Speicher hat. Jedes Gerät lädt sie nur einmal und merkt sie sich (IndexedDB, Schlüssel apored).
+   Sie läuft in Schleife, solange „Wer wird der nächste ApoRed?“ läuft; im Spiel stummschaltbar (gilt pro Gerät). */
+const APM_CHUNK = 900000, APM_MAX = 8 * 1024 * 1024;
+const apm = {meta:null, v:'', url:'', loading:'', el:null, blocked:false, mute:lsGet('turnier-ap-mute', '0') === '1', up:0};
+function apmNorm(x) { return x && typeof x.v === 'string' && Number.isInteger(x.n) && x.n > 0 && x.n <= 16 ? {v:x.v, n:x.n, name:str(x.name || 'Musik', 80), size:+x.size || 0, type:str(x.type || 'audio/mpeg', 40)} : null; }
+function apmWanted() { if (apm.test && apm.meta) return true; return !!(apm.meta && !apm.mute && S.tab === 'ap' && S.ap && S.ap.status === 'running' && !roomPaused() && document.visibilityState === 'visible'); }
+async function apmLoad() {
+  const m = apm.meta; if (!m || apm.v === m.v || apm.loading === m.v) return;
+  apm.loading = m.v;
+  try {
+    let blob = null;
+    try { const rec = await idbDo('readonly', st => st.get('apored')); if (rec && rec.v === m.v && rec.blob) blob = rec.blob; } catch (e) {}
+    if (!blob) {
+      const parts = await Promise.all(Array.from({length:m.n}, (_, i) => db.collection('media').doc('apored_' + i).get().then(d => (d.exists && d.data().d) || '')));
+      const bin = atob(parts.join('')), u8 = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+      blob = new Blob([u8], {type:m.type});
+      try { await idbDo('readwrite', st => st.put({v:m.v, blob}, 'apored')); } catch (e) {}
+    }
+    if (apm.meta !== m) { apm.loading = ''; return; }
+    if (apm.url) URL.revokeObjectURL(apm.url);
+    apm.url = URL.createObjectURL(blob); apm.v = m.v;
+    if (!apm.el) { apm.el = new Audio(); apm.el.loop = true; apm.el.volume = .55; }
+    apm.el.src = apm.url;
+  } catch (e) { console.warn('apoRed-Musik', e); }
+  apm.loading = '';
+  apmSync();
+}
+function apmSync() {
+  if (apmWanted()) {
+    if (apm.v !== apm.meta.v) { apmLoad(); return; }
+    const el = apm.el; if (el && el.paused) { const p = el.play(); if (p && p.catch) p.then(() => { apm.blocked = false; }, () => { apm.blocked = true; }); }
+  } else if (apm.el && !apm.el.paused) apm.el.pause();
+}
+document.addEventListener('pointerdown', () => { if (apm.blocked && apmWanted()) apmSync(); }, true);
+document.addEventListener('visibilitychange', () => apmSync());
+setInterval(apmSync, 700);
+async function apmUpload(file) {
+  if (!S.admin || !db || !file) return;
+  if (file.size > APM_MAX) { toast('Die Datei ist zu groß. Nimm eine MP3 bis 8 MB.'); return; }
+  const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = rej; r.readAsDataURL(file); });
+  const n = Math.ceil(b64.length / APM_CHUNK), old = apm.meta ? apm.meta.n : 0, v = uid();
+  apm.up = 1; render();
+  try {
+    for (let i = 0; i < n; i++) { await db.collection('media').doc('apored_' + i).set({d:b64.slice(i * APM_CHUNK, (i + 1) * APM_CHUNK)}); apm.up = Math.round((i + 1) / n * 100); render(); }
+    for (let i = n; i < old; i++) await db.collection('media').doc('apored_' + i).delete().catch(() => {});
+    await db.collection('media').doc('apored').set({v, n, name:file.name, size:file.size, type:file.type || 'audio/mpeg', at:Date.now()});
+    toast('ApoRed-Musik gespeichert. Sie läuft jetzt bei allen im Spiel.');
+  } catch (e) { toast(e && e.code === 'permission-denied' ? 'Nur der Spielleiter darf Musik hochladen.' : 'Die Musik konnte nicht hochgeladen werden. Prüf dein Internet.'); }
+  apm.up = 0; render();
+}
+async function apmRemove() {
+  if (!S.admin || !db) return;
+  const n = apm.meta ? apm.meta.n : 0;
+  try { await db.collection('media').doc('apored').delete(); for (let i = 0; i < n; i++) await db.collection('media').doc('apored_' + i).delete().catch(() => {}); toast('ApoRed-Musik entfernt.'); } catch (e) { toast('Das hat nicht geklappt.'); }
+}
+function apmCardHTML() {
+  const m = apm.meta;
+  return `<div class="card share-card music-card">
+      <h3>💰 Musik für „Wer wird der nächste ApoRed?“</h3>
+      <p class="m-text">Diese MP3 läuft bei allen Spielern, solange das Spiel läuft. Im Spiel kann jeder sie mit 🔊 für sich stummschalten. Höchstens 8 MB.</p>
+      <div class="music-row">
+        <label class="btn btn-gold" for="apm-file">${apm.up ? `Lädt hoch … ${apm.up} %` : m ? 'Andere MP3 wählen' : 'MP3 wählen'}</label>
+        <input class="vh" type="file" id="apm-file" accept="audio/mpeg,audio/*,.mp3" ${apm.up ? 'disabled' : ''}>
+        ${m ? `<span class="music-name">♪ ${esc(m.name)} <small>${(m.size / 1048576).toFixed(1).replace('.', ',')} MB</small></span>` : `<span class="muted">Noch keine Musik.</span>`}
+      </div>
+      ${m ? `<div class="music-row"><button class="btn btn-sm" type="button" data-act="apm-test">${apm.test ? 'Stopp' : 'Probehören'}</button><button class="btn btn-sm btn-ghost danger" type="button" data-act="apm-remove">Entfernen</button></div>` : ''}
+    </div>`;
+}
+const apmActions = {
+  'ap-mute': () => { apm.mute = !apm.mute; lsSet('turnier-ap-mute', apm.mute ? '1' : '0'); apmSync(); render(); },
+  'apm-remove': () => confirmBox('ApoRed-Musik entfernen?', 'Sie läuft dann bei niemandem mehr.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Entfernen', cls:'btn-gold', fn:apmRemove}]),
+  'apm-test': async () => {
+    if (apm.test) { apm.test = false; if (apm.el) apm.el.pause(); render(); return; }
+    if (apm.v !== (apm.meta && apm.meta.v)) { toast('Musik wird geladen …'); await apmLoad(); }
+    if (apm.el) { apm.test = true; apm.el.play().catch(() => {}); render(); }
+  }
+};
+Object.assign(actions, apmActions);
 
 /* ---------- GitHub Pages + Firebase: Live-Speicher, Spielleiter-Login, Turnier-Passwort ---------- */
 const CFG = window.TURNIER_CONFIG || null;
