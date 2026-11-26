@@ -1808,6 +1808,7 @@ body.ah-locked .ah-lockhint{display:none}
 @keyframes apCur{0%,100%{box-shadow:0 0 0 0 rgba(255,181,46,0)}50%{box-shadow:0 0 14px 2px rgba(255,181,46,.6)}}
 @media (max-width:900px){.ap-wrap{grid-template-columns:minmax(0,1fr)}.ap-ladder{position:static;order:-1;flex-direction:row-reverse;justify-content:flex-end;overflow-x:auto;padding:6px;scroll-behavior:smooth}.ap-ladder li{flex-direction:column;align-items:center;min-width:84px;font-size:12px;white-space:nowrap}}
 @media (max-width:560px){.ap-ans{grid-template-columns:1fr}.ap-a{min-height:50px;font-size:15px}}
+.apfx-row{display:flex;flex-direction:column;gap:6px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)}
 .bgm-gm{display:flex;flex-direction:column;gap:8px;padding-bottom:12px;margin-bottom:10px;border-bottom:1px solid rgba(255,255,255,.12)}
 .wm-btns{
 display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
@@ -3160,7 +3161,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=93"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=94"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4683,6 +4684,7 @@ function subscribe() {
   U(db.doc('meta/ticker').onSnapshot(d => { S.ticker = normTicker(d.exists ? d.data() : null); got('ticker', d); }, fail));
   U(db.doc('meta/deco').onSnapshot(d => { S.deco = normDeco(d.exists ? d.data() : null); got('deco', d); bgmSync(); }, fail));
   U(db.collection('media').doc('apored').onSnapshot(d => { apm.meta = apmNorm(d.exists ? d.data() : null); if (S.tab === 'einstellungen') render(); apmSync(); }, () => {}));
+  for (const k of ['ok', 'bad']) U(db.collection('media').doc(AP_FX[k].doc).onSnapshot(d => { apm.fx[k].meta = apmNorm(d.exists ? d.data() : null); if (S.tab === 'einstellungen') render(); }, () => {}));
   U(db.collection('pics').onSnapshot(sn => { S.pics = sn.docs.map(d => normPic(d.id, d.data())).filter(x => x.img).sort((a, b) => a.ts - b.ts); got('pics', sn); }, fail));
   U(db.collection('games').onSnapshot(sn => { S.games = sn.docs.map(d => normGame(d.id, d.data())).filter(g => g.name); got('games', sn); }, fail));
   U(db.collection('gvotes').onSnapshot(sn => { S.gvotes = sn.docs.map(d => { const x = d.data() || {}; return {id:d.id, gid:str(x.gid, 40), voter:str(x.voter, 40)}; }).filter(v => v.gid); got('gvotes', sn); }, fail));
@@ -11170,7 +11172,7 @@ function apLogic() {
   const host = ctl(), now = Date.now(), me = apMe(M);
   // Eigene Zeit abgelaufen: falsch
   if (M.tl && me && M.pr[me].st === 'play' && apl.lock < 0 && now > M.pr[me].at + M.tl * 1000 && apl.timeKey !== M.id + ':' + M.pr[me].lv) {
-    apl.timeKey = M.id + ':' + M.pr[me].lv; sfx('timeout'); toast('⏰ Zeit abgelaufen!');
+    apl.timeKey = M.id + ':' + M.pr[me].lv; if (!apFxPlay('bad')) sfx('timeout'); toast('⏰ Zeit abgelaufen!');
     apWrite(me, {...M.pr[me], st:'out'}); return;
   }
   if (!host) return;
@@ -11201,7 +11203,7 @@ const apActions = {
     const M = S.ap, me = apMe(M); if (!me || apl.pick < 0 || apl.lock >= 0 || roomPaused()) return;
     const r = M.pr[me], lv = r.lv, q = apQ(M, lv); apl.lock = apl.pick; apl.lockAt = performance.now(); sfx('chosen'); render();
     setTimeout(() => {
-      const ok = apl.lock === q.ok; apl.reveal = {lv, ok, pick:apl.lock, right:q.ok}; sfx(ok ? 'right' : 'wrong'); render();
+      const ok = apl.lock === q.ok; apl.reveal = {lv, ok, pick:apl.lock, right:q.ok}; if (!apFxPlay(ok ? 'ok' : 'bad')) sfx(ok ? 'right' : 'wrong'); render();
       setTimeout(() => {
         apl.reveal = null; apl.lock = -1; apl.pick = -1;
         const cur = S.ap && S.ap.pr[me]; if (!cur || cur.lv !== lv) { render(); return; }
@@ -15327,6 +15329,7 @@ document.addEventListener('change', async e => {
   if (t.id === 'vg-file') { const f = t.files && t.files[0]; t.value = ''; if (!f || !D.vgF) return; try { const b = await cropToBlob(f, {title:'Cover zuschneiden', aspects:[['Cover (3:4)', 3 / 4]], max:900}); if (!b) return; D.vgF.img = await toVgCover(b); renderModal(); } catch (err) { toast('Das Bild ließ sich nicht öffnen. Versuch ein JPG oder PNG.'); } return; }
   if (t.id === 'music-file') { const f = t.files && t.files[0]; t.value = ''; if (f) saveMusicFile(f); return; }
   if (t.id === 'apm-file') { const f = t.files && t.files[0]; t.value = ''; if (f) apmUpload(f); return; }
+  if (t.id === 'apfx-ok' || t.id === 'apfx-bad') { const f = t.files && t.files[0]; t.value = ''; if (f) apFxUpload(t.id.slice(5), f); return; }
   if (t.id === 'music-auto') { music.auto = t.checked; lsSet('turnier-music-auto', music.auto ? '1' : '0'); syncMusic(); return; }
   if (t.id === 'gm-file') {
     const f = t.files && t.files[0]; t.value = '';
@@ -15732,19 +15735,63 @@ const APM_CHUNK = 900000, APM_MAX = 10 * 1024 * 1024;
 const apm = {meta:null, v:'', url:'', loading:'', el:null, blocked:false, mute:lsGet('turnier-ap-mute', '0') === '1', vol:Number(lsGet('turnier-ap-vol', '0.55')) || .55, up:0, done:''};
 function apmNorm(x) { return x && typeof x.v === 'string' && Number.isInteger(x.n) && x.n > 0 && x.n <= 16 ? {v:x.v, n:x.n, name:str(x.name || 'Musik', 80), size:+x.size || 0, type:str(x.type || 'audio/mpeg', 40), loop:x.loop !== false, cut:x.cut === true} : null; }
 function apmWanted() { if (apm.test && apm.meta) return true; if (apm.meta && !apm.meta.loop && S.ap && apm.done === S.ap.id) return false; return !!(apm.meta && !apm.mute && S.tab === 'ap' && S.ap && S.ap.status === 'running' && !roomPaused() && document.visibilityState === 'visible'); }
+/* Gemeinsam für ApoRed-Musik und -Sounds: Datei aus media/<doc>_0 … zusammensetzen (einmal laden, dann aus IndexedDB) */
+async function medBlob(doc, m) {
+  try { const rec = await idbDo('readonly', st => st.get(doc)); if (rec && rec.v === m.v && rec.blob) return rec.blob; } catch (e) {}
+  const parts = await Promise.all(Array.from({length:m.n}, (_, i) => db.collection('media').doc(doc + '_' + i).get().then(d => (d.exists && d.data().d) || '')));
+  const bin = atob(parts.join('')), u8 = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  const blob = new Blob([u8], {type:m.type});
+  try { await idbDo('readwrite', st => st.put({v:m.v, blob}, doc)); } catch (e) {}
+  return blob;
+}
+async function medUpload(doc, file, oldN, extra, onProg) {
+  const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = rej; r.readAsDataURL(file); });
+  const n = Math.ceil(b64.length / APM_CHUNK), v = uid();
+  for (let i = 0; i < n; i++) { await db.collection('media').doc(doc + '_' + i).set({d:b64.slice(i * APM_CHUNK, (i + 1) * APM_CHUNK)}); if (onProg) onProg(Math.round((i + 1) / n * 100)); }
+  for (let i = n; i < oldN; i++) await db.collection('media').doc(doc + '_' + i).delete().catch(() => {});
+  await db.collection('media').doc(doc).set({v, n, name:file.name, size:file.size, type:file.type || 'audio/mpeg', at:Date.now(), ...extra});
+}
+async function medRemove(doc, n) { await db.collection('media').doc(doc).delete(); for (let i = 0; i < n; i++) await db.collection('media').doc(doc + '_' + i).delete().catch(() => {}); }
+/* Eigene Sounds bei richtiger und falscher Antwort (bis 2 MB, sonst der Anfang). Ohne eigenen Sound kommt der eingebaute Ton. */
+const AP_FX = {ok:{doc:'ap_ok', label:'✅ Sound bei richtiger Antwort'}, bad:{doc:'ap_bad', label:'❌ Sound bei falscher Antwort (und wenn die Zeit abläuft)'}}, APFX_MAX = 2 * 1024 * 1024;
+apm.fx = {ok:{meta:null, v:'', url:'', loading:'', up:0}, bad:{meta:null, v:'', url:'', loading:'', up:0}};
+async function apFxLoad(k) {
+  const f = apm.fx[k], m = f.meta; if (!m || f.v === m.v || f.loading === m.v || !db) return;
+  f.loading = m.v;
+  try { const blob = await medBlob(AP_FX[k].doc, m); if (f.meta === m) { if (f.url) URL.revokeObjectURL(f.url); f.url = URL.createObjectURL(blob); f.v = m.v; } } catch (e) { console.warn('apoRed-Sound', e); }
+  f.loading = '';
+}
+/* Spielt den eigenen Sound (Musik wird so lange leiser). false = keiner da, dann nimmt das Spiel den eingebauten Ton */
+function apFxPlay(k) {
+  const f = apm.fx[k]; if (!f.meta || !f.url || f.v !== f.meta.v) return false;
+  const a = new Audio(f.url); a.volume = Math.min(1, .35 + apm.vol);
+  const el = apm.el;
+  if (el && !el.paused) { const pv = apm.vol; el.volume = pv * .25; const back = () => { if (apm.el === el) el.volume = apm.vol; }; a.addEventListener('ended', back); a.addEventListener('error', back); setTimeout(back, 15000); }
+  const p = a.play(); if (p && p.catch) p.catch(() => {});
+  return true;
+}
+async function apFxUpload(k, file) {
+  if (!S.admin || !db || !file) return;
+  const c = await mp3Cut(file, APFX_MAX);
+  if (c.cut) { toast('Die Datei ist größer als 2 MB. Ich nehme den Anfang.'); file = c.file; }
+  const f = apm.fx[k]; f.up = 1; render();
+  try { await medUpload(AP_FX[k].doc, file, f.meta ? f.meta.n : 0, {cut:c.cut}, pr => { f.up = pr; render(); }); toast('Sound gespeichert. Er kommt jetzt bei allen im Spiel.'); }
+  catch (e) { toast(e && e.code === 'permission-denied' ? 'Nur der Spielleiter darf Sounds hochladen.' : 'Der Sound konnte nicht hochgeladen werden. Prüf dein Internet.'); }
+  f.up = 0; render();
+}
+function apFxRowHTML(k) {
+  const f = apm.fx[k], m = f.meta;
+  return `<div class="apfx-row"><b>${AP_FX[k].label}</b>
+    <div class="music-row"><label class="btn btn-sm ${m ? '' : 'btn-gold'}" for="apfx-${k}">${f.up ? `Lädt hoch … ${f.up} %` : m ? 'Andere MP3 wählen' : 'MP3 wählen'}</label>
+      <input class="vh" type="file" id="apfx-${k}" accept="audio/mpeg,audio/*,.mp3" ${f.up ? 'disabled' : ''}>
+      ${m ? `<span class="music-name">♪ ${esc(m.name)} <small>${(m.size / 1048576).toFixed(1).replace('.', ',')} MB${m.cut ? ' · gekürzt' : ''}</small></span><button class="btn btn-sm" type="button" data-act="apfx-test" data-k="${k}">Probehören</button><button class="btn btn-sm btn-ghost danger" type="button" data-act="apfx-remove" data-k="${k}">Entfernen</button>` : '<span class="muted">Eingebauter Ton.</span>'}</div></div>`;
+}
 async function apmLoad() {
   const m = apm.meta; if (!m || apm.v === m.v || apm.loading === m.v) return;
   apm.loading = m.v;
   try {
-    let blob = null;
-    try { const rec = await idbDo('readonly', st => st.get('apored')); if (rec && rec.v === m.v && rec.blob) blob = rec.blob; } catch (e) {}
-    if (!blob) {
-      const parts = await Promise.all(Array.from({length:m.n}, (_, i) => db.collection('media').doc('apored_' + i).get().then(d => (d.exists && d.data().d) || '')));
-      const bin = atob(parts.join('')), u8 = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
-      blob = new Blob([u8], {type:m.type});
-      try { await idbDo('readwrite', st => st.put({v:m.v, blob}, 'apored')); } catch (e) {}
-    }
+    const blob = await medBlob('apored', m);
     if (apm.meta !== m) { apm.loading = ''; return; }
     if (apm.url) URL.revokeObjectURL(apm.url);
     apm.url = URL.createObjectURL(blob); apm.v = m.v;
@@ -15755,6 +15802,7 @@ async function apmLoad() {
   apmSync();
 }
 function apmSync() {
+  if (S.tab === 'ap' && S.ap) { apFxLoad('ok'); apFxLoad('bad'); }
   if (apmWanted()) {
     if (apm.v !== apm.meta.v) { apmLoad(); return; }
     const el = apm.el; if (el) el.loop = apm.meta.loop;
@@ -15766,28 +15814,21 @@ document.addEventListener('visibilitychange', () => apmSync());
 setInterval(apmSync, 700);
 async function apmUpload(file) {
   if (!S.admin || !db || !file) return;
-  const c = await mp3Cut(file, APM_MAX), cut = c.cut;
-  if (cut) { toast(`Die Datei ist größer als 10 MB. Ich nehme den Anfang${c.mins ? ` (etwa die ersten ${Math.floor(c.mins)} Minuten)` : ''}.`); file = c.file; }
-  const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = rej; r.readAsDataURL(file); });
-  const n = Math.ceil(b64.length / APM_CHUNK), old = apm.meta ? apm.meta.n : 0, v = uid();
+  const c = await mp3Cut(file, APM_MAX);
+  if (c.cut) { toast(`Die Datei ist größer als 10 MB. Ich nehme den Anfang${c.mins ? ` (etwa die ersten ${Math.floor(c.mins)} Minuten)` : ''}.`); file = c.file; }
   apm.up = 1; render();
-  try {
-    for (let i = 0; i < n; i++) { await db.collection('media').doc('apored_' + i).set({d:b64.slice(i * APM_CHUNK, (i + 1) * APM_CHUNK)}); apm.up = Math.round((i + 1) / n * 100); render(); }
-    for (let i = n; i < old; i++) await db.collection('media').doc('apored_' + i).delete().catch(() => {});
-    await db.collection('media').doc('apored').set({v, n, name:file.name, size:file.size, type:file.type || 'audio/mpeg', at:Date.now(), loop:apm.meta ? apm.meta.loop : true, cut});
-    toast('ApoRed-Musik gespeichert. Sie läuft jetzt bei allen im Spiel.');
-  } catch (e) { toast(e && e.code === 'permission-denied' ? 'Nur der Spielleiter darf Musik hochladen.' : 'Die Musik konnte nicht hochgeladen werden. Prüf dein Internet.'); }
+  try { await medUpload('apored', file, apm.meta ? apm.meta.n : 0, {loop:apm.meta ? apm.meta.loop : true, cut:c.cut}, pr => { apm.up = pr; render(); }); toast('ApoRed-Musik gespeichert. Sie läuft jetzt bei allen im Spiel.'); }
+  catch (e) { toast(e && e.code === 'permission-denied' ? 'Nur der Spielleiter darf Musik hochladen.' : 'Die Musik konnte nicht hochgeladen werden. Prüf dein Internet.'); }
   apm.up = 0; render();
 }
 async function apmRemove() {
   if (!S.admin || !db) return;
-  const n = apm.meta ? apm.meta.n : 0;
-  try { await db.collection('media').doc('apored').delete(); for (let i = 0; i < n; i++) await db.collection('media').doc('apored_' + i).delete().catch(() => {}); toast('ApoRed-Musik entfernt.'); } catch (e) { toast('Das hat nicht geklappt.'); }
+  try { await medRemove('apored', apm.meta ? apm.meta.n : 0); toast('ApoRed-Musik entfernt.'); } catch (e) { toast('Das hat nicht geklappt.'); }
 }
 function apmCardHTML() {
   const m = apm.meta;
   return `<div class="card share-card music-card">
-      <h3>💰 Musik für „Wer wird der nächste ApoRed?“</h3>
+      <h3>💰 Musik und Sounds für „Wer wird der nächste ApoRed?“</h3>
       <p class="m-text">Diese MP3 läuft bei allen Spielern, solange das Spiel läuft. Im Spiel kann jeder sie mit 🔊 für sich stummschalten. Ist die Datei größer als 10 MB, wird nur ihr Anfang genommen.</p>
       <div class="music-row">
         <label class="btn btn-gold" for="apm-file">${apm.up ? `Lädt hoch … ${apm.up} %` : m ? 'Andere MP3 wählen' : 'MP3 wählen'}</label>
@@ -15796,9 +15837,12 @@ function apmCardHTML() {
       </div>
       ${m ? `<span class="lbl">Wenn das Lied zu Ende ist</span><div class="chips"><button class="chip" type="button" data-act="apm-loop" data-v="1" aria-pressed="${m.loop}">🔁 In Schleife</button><button class="chip" type="button" data-act="apm-loop" data-v="0" aria-pressed="${!m.loop}">▶️ Einmal abspielen</button></div>` : ''}
       ${m ? `<div class="music-row"><button class="btn btn-sm" type="button" data-act="apm-test">${apm.test ? 'Stopp' : 'Probehören'}</button><button class="btn btn-sm btn-ghost danger" type="button" data-act="apm-remove">Entfernen</button></div>` : ''}
+      ${Object.keys(AP_FX).map(apFxRowHTML).join('')}
     </div>`;
 }
 const apmActions = {
+  'apfx-test': async b => { const k = b.dataset.k; if (!apm.fx[k].meta) return; if (apm.fx[k].v !== apm.fx[k].meta.v) { toast('Wird geladen …'); await apFxLoad(k); } apFxPlay(k); },
+  'apfx-remove': b => { const k = b.dataset.k; confirmBox('Sound entfernen?', 'Dann kommt wieder der eingebaute Ton.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Entfernen', cls:'btn-gold', fn:async () => { if (!S.admin || !db) return; try { await medRemove(AP_FX[k].doc, apm.fx[k].meta ? apm.fx[k].meta.n : 0); toast('Sound entfernt.'); } catch (e) { toast('Das hat nicht geklappt.'); } }}]); },
   'apm-loop': b => { if (!S.admin || !db || !apm.meta) return; const loop = b.dataset.v === '1'; apm.meta = {...apm.meta, loop}; render(); db.collection('media').doc('apored').update({loop}).catch(() => toast('Das hat nicht geklappt.')); },
   'ap-mute': () => { apm.mute = !apm.mute; lsSet('turnier-ap-mute', apm.mute ? '1' : '0'); apmSync(); bgm.key = ''; render(); },
   'apm-remove': () => confirmBox('ApoRed-Musik entfernen?', 'Sie läuft dann bei niemandem mehr.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Entfernen', cls:'btn-gold', fn:apmRemove}]),
