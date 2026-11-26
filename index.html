@@ -3252,7 +3252,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=107"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=108"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -5499,7 +5499,7 @@ async function pbnSave(d) {
   if (d.pbnImg == null || !db) return;
   const img = d.pbnImg, r = db.collection('pbn').doc(d.id);
   try { await vgCommit(d.id, b => img ? b.set(r, {pid:d.id, img, ts:Date.now()}) : b.delete(r)); pbnCache[d.id] = img; render(); }
-  catch (e) { toast(e && e.code === 'permission-denied' ? 'Das Banner-Bild kann nur der Spieler selbst auf seinem Gerät ändern.' : 'Das Banner-Bild konnte nicht gespeichert werden.'); }
+  catch (e) { if (e && (e.code === 'pk-missing' || e.code === 'pk-changed')) vgErr(e); else toast('Das Banner-Bild konnte nicht gespeichert werden.'); }
 }
 function pfBgHTML(prefix, d) {
   const games = d.id && typeof vgOf === 'function' ? vgOf(d.id).filter(g => g.img) : [];
@@ -12634,7 +12634,7 @@ async function vgCommit(pid, fn) {
   const p = playerById(pid);
   if (!fs || !db || !p) throw Object.assign(new Error('x'), {code:'permission-denied'});
   const how = vgHow(p), ref = db.collection('players').doc(pid);
-  if (!how) throw Object.assign(new Error('x'), {code:'permission-denied'});
+  if (!how) throw Object.assign(new Error('x'), {code:'pk-missing', pid});
   if (how === 'claim') {
     const id = newUserId(); pkeyPut(pid, [id]);
     const b = fs.batch(); b.update(ref, {kh:await sha256hex(id)}); pkSet(b, pid, id); fn(b); await b.commit(); return;
@@ -12642,7 +12642,7 @@ async function vgCommit(pid, fn) {
   const keys = pkeyOf(pid), uk = keys.find(isUserId);
   if (uk) {
     try { const b = fs.batch(); pkSet(b, pid, uk); fn(b); await b.commit(); return; }
-    catch (e) { if (e && e.code === 'permission-denied' && p.kh && p.kh !== await sha256hex(uk)) { pkeyPut(pid, keys.filter(k => k !== uk)); toast('Deine User-ID wurde geändert. Gib die neue ein.'); } throw e; }
+    catch (e) { if (e && e.code === 'permission-denied' && p.kh && p.kh !== await sha256hex(uk)) { pkeyPut(pid, keys.filter(k => k !== uk)); throw Object.assign(new Error('x'), {code:'pk-changed', pid}); } throw e; }
   }
   // Alter Geräte-Schlüssel: einmal vorzeigen und dabei eine User-ID festlegen
   const id = newUserId(), nh = await sha256hex(id);
@@ -12651,10 +12651,21 @@ async function vgCommit(pid, fn) {
     try { const b = fs.batch(); b.update(ref, {kp:k, kh:nh}); pkSet(b, pid, id); fn(b); await b.commit(); pkeyPut(pid, [id]); return; }
     catch (e) { if (!e || e.code !== 'permission-denied') throw e; }
   }
-  pkeyPut(pid, keys);
-  throw Object.assign(new Error('x'), {code:'permission-denied'});
+  // Kein Schlüssel passt mehr (z. B. hat das andere Gerät schon eine User-ID bekommen): veraltete Schlüssel weg, dann zeigt das Profil „Mit User-ID verbinden“
+  const ok = []; for (const k of keys) if (await sha256hex(k) === p.kh) ok.push(k);
+  pkeyPut(pid, ok);
+  throw Object.assign(new Error('x'), {code:'pk-missing', pid});
 }
-const vgErr = e => toast(e && e.code === 'permission-denied' ? 'Das Eintragen ist noch nicht freigeschaltet. Der Spielleiter muss dafür einmal die neuen Datenbank-Regeln veröffentlichen.' : 'Speichern hat nicht geklappt. Prüfe die Verbindung und versuch es nochmal.');
+/* Fehler beim geschützten Speichern. Die Regeln sind veröffentlicht: Scheitert es am Schlüssel, fehlt auf diesem Gerät die (aktuelle) User-ID.
+   Dann führt die Meldung direkt zum Profil, wo man die User-ID eingeben kann. */
+function vgErr(e) {
+  if (e && (e.code === 'pk-missing' || e.code === 'pk-changed')) {
+    toast(e.code === 'pk-changed' ? 'Deine User-ID wurde geändert. Gib unten die neue User-ID ein, dann klappt es.' : 'Auf diesem Gerät fehlt deine User-ID. Gib sie unten ein (sie steht auf deinem anderen Gerät im Profil, oder der Spielleiter sagt sie dir).');
+    if (e.pid) { D.uidAsk = e.pid; D.vgP = e.pid; if (S.modal) closeModal(); setTab('spieler'); setTimeout(() => { const el = document.getElementById('uid-in-' + e.pid); if (el) { el.scrollIntoView({block:'center', behavior:'smooth'}); el.focus(); } }, 120); }
+    return;
+  }
+  toast(e && e.code === 'permission-denied' ? 'Speichern wurde abgelehnt. Lade die Seite einmal neu (am PC Strg+F5) und versuch es nochmal.' : 'Speichern hat nicht geklappt. Prüfe die Verbindung und versuch es nochmal.');
+}
 let vgBusy = false;
 async function vgSave() {
   const d = D.vgF; if (!d || vgBusy) return;
@@ -13186,7 +13197,7 @@ function spProfileHTML(p) {
         </div>
       </div>
     </div>
-    ${editable || can || vgNoKey(p) ? `<div class="sp-acts">${editable ? `<button class="btn btn-sm" type="button" data-act="pbg-edit" data-pid="${esc(p.id)}">🖼️ Hintergrund</button>` : ''}${can ? `<button class="btn btn-sm btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}${can && all.length ? `<button class="btn btn-sm" type="button" data-act="t10-open" data-pid="${esc(p.id)}">✎ Top 10 ordnen</button>` : ''}${vgNoKey(p) ? `<details class="uid-ask uid-mini"><summary>🔑 Mit User-ID verbinden</summary>${uidLinkHTML(p.id)}</details>` : ''}</div>` : ''}
+    ${editable || can || vgNoKey(p) ? `<div class="sp-acts">${editable ? `<button class="btn btn-sm" type="button" data-act="pbg-edit" data-pid="${esc(p.id)}">🖼️ Hintergrund</button>` : ''}${can ? `<button class="btn btn-sm btn-gold" type="button" data-act="vg-new" data-pid="${esc(p.id)}">+ Spiel eintragen</button>` : ''}${can && all.length ? `<button class="btn btn-sm" type="button" data-act="t10-open" data-pid="${esc(p.id)}">✎ Top 10 ordnen</button>` : ''}${vgNoKey(p) ? `<details class="uid-ask uid-mini" ${D.uidAsk === p.id ? 'open' : ''}><summary>🔑 Mit User-ID verbinden</summary>${uidLinkHTML(p.id)}</details>` : ''}</div>` : ''}
     <div class="sp-cols">
       <div class="sp-main">
         ${fav ? `<div class="sp-box sp-favbox"><h3 class="sp-h">${fav.fav === 1 ? 'Lieblingsspiel' : 'Bestes Spiel'}</h3>
@@ -13768,7 +13779,7 @@ async function tkSubmit() {
     closeModal(); render();
     toast(`Danke! Dein Ticket ${tkCode(id)} ist beim Spielleiter.`);
   } catch (e) {
-    toast(e && e.code === 'permission-denied' ? 'Tickets sind noch nicht freigeschaltet. Der Spielleiter muss die neuen Datenbank-Regeln veröffentlichen.' : 'Absenden hat nicht geklappt. Prüf die Verbindung und versuch es nochmal.');
+    if (e && (e.code === 'pk-missing' || e.code === 'pk-changed')) vgErr(e); else toast('Absenden hat nicht geklappt. Prüf die Verbindung und versuch es nochmal.');
   } finally { tkBusy = false; if (S.modal && S.modal.type === 'tknew') renderModal(); }
 }
 async function tkAddImgs(files) {
@@ -13798,7 +13809,7 @@ async function tkSend(t) {
   try {
     await vgCommit(t.by, b => b.update(db.collection('tickets').doc(t.id), {msgs:t.msgs.concat([{by:t.by, t:now, text}]).slice(-80), up:now, lastBy:'player'}));
     D.tkReply = ''; tkMarkSeen({id:t.id, up:now}); renderModal(); toast('Nachtrag gesendet.');
-  } catch (e) { toast(e && e.code === 'permission-denied' ? 'Das ist noch nicht freigeschaltet. Der Spielleiter muss die neuen Datenbank-Regeln veröffentlichen.' : 'Senden hat nicht geklappt. Versuch es nochmal.'); }
+  } catch (e) { if (e && (e.code === 'pk-missing' || e.code === 'pk-changed')) vgErr(e); else toast('Senden hat nicht geklappt. Versuch es nochmal.'); }
 }
 async function tkRemove(t) {
   const refs = [db.collection('tickets').doc(t.id)];
@@ -16647,8 +16658,8 @@ async function userIdLink(raw, pid) {
   if (!id) { toast('Die User-ID hat 16 Zeichen, z. B. K7QD-M2XA-9PRT-HW4C.'); return false; }
   const h = await sha256hex(id), p = pid ? playerById(pid) : S.players.find(x => x.kh === h);
   if (!p || p.kh !== h) { toast('Diese User-ID passt zu keinem Spieler.'); return false; }
-  pkeyPut(p.id, [id]); lsSet('turnier-me', p.id);
-  toast(`Verbunden: Du bist ${p.name}.`); render(); return true;
+  pkeyPut(p.id, [id]); lsSet('turnier-me', p.id); D.uidAsk = '';
+  toast(`Verbunden: Du bist ${p.name}. Jetzt kannst du hier alles ändern.`); render(); return true;
 }
 function newKey() { const a = new Uint8Array(24); crypto.getRandomValues(a); return [...a].map(b => b.toString(16).padStart(2, '0')).join(''); }
 async function sha256hex(t) { const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, '0')).join(''); }
