@@ -1803,7 +1803,11 @@ body.ah-locked .ah-lockhint{display:none}
 .tour-intro{position:relative;text-align:center;padding:28px 24px;margin-bottom:18px;border:2px solid #ffcf3f;background:radial-gradient(80% 120% at 50% 0%,rgba(255,207,63,.22),rgba(13,22,64,.9) 70%);box-shadow:0 0 30px rgba(255,207,63,.25)}
 .tour-intro-ic{display:block;font-size:54px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 0 14px rgba(255,207,63,.6))}
 .tour-intro h2{margin:6px 0 12px;font-size:clamp(22px,3vw,34px)}
-.tour-intro-rule{margin:0 auto 10px;max-width:760px;font-size:clamp(18px,2.2vw,26px);font-weight:800;line-height:1.35;color:#ffe9a8}
+.tour-intro-rule{margin:0 auto 10px;max-width:760px;font-size:clamp(18px,2.1vw,24px);font-weight:800;line-height:1.35;color:#ffe9a8}
+.tour-intro-rule .tour-rule-list{text-align:left;display:inline-flex}
+.tour-rule-list{list-style:none;margin:8px 0;padding:0;flex-direction:column;gap:8px;display:flex}
+.tour-rule-list li{position:relative;padding-left:26px}
+.tour-rule-list li::before{content:'👉';position:absolute;left:0}
 .tour-pts{border:1px solid rgba(255,207,63,.45);background:linear-gradient(180deg,rgba(255,207,63,.08),transparent)}
 .tour-pts h3{margin:0 0 6px}
 .tour-pts-list{list-style:none;margin:10px 0 6px;padding:0;display:flex;flex-direction:column;gap:4px}
@@ -3248,7 +3252,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=106"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=107"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -7309,19 +7313,20 @@ function tourQuizPay() {
 /* Turnier: wie jedes Spiel Punkte fürs Turnier-Konto gibt (Leistung zählt, nicht nur der Platz) */
 const TOUR_PLACE = [10, 6, 3];
 const TOUR_RULES = {
-  quiz:'Jede richtige Antwort zählt sofort: sehr leicht 1, leicht 2, mittel 3, schwer 4, sehr schwer 5 Punkte.',
-  ap:'Punkte = Nummer der Frage, bei der du rausfliegst (alle 30 = 30). 2 Leben, kein Aussteigen.',
-  malen:'Pro erratenem Wort 1 bis 5 Punkte, je schneller, desto mehr. Wer malt, bekommt Punkte für jeden, der es errät (Malpunkte geteilt durch 25).',
-  golf:'Pro Bahn: Hole-in-One 5, mit 2 Schlägen 4, mit 3 Schlägen 3, mit 4 Schlägen 2, mit 5 Schlägen 1 Punkt.',
-  karten:'Platz 1: 10 Punkte, Platz 2: 6, Platz 3: 3, alle anderen 1.',
-  mad:'Platz 1: 10 Punkte, Platz 2: 6, Platz 3: 3, alle anderen 1.',
-  bj:'Punkte = deine Chips am Ende geteilt durch die Start-Chips mal 5. Verdoppelt = 10 Punkte, pleite = 0.',
-  dt:'Jede abgeräumte Reihe = 1 Punkt.',
-  tt:'Jeder eigene Punkt im Spiel = 1 Turnierpunkt, der Sieger bekommt 5 dazu.',
-  ah:'Jedes eigene Tor = 1 Turnierpunkt, der Sieger bekommt 5 dazu.',
-  bw:'Punkte = deine Bowling-Punkte geteilt durch 10 (300 = 30 Punkte).',
-  ch:'Sieg 10 Punkte, Remis 5 für beide, Niederlage 1.'
+  quiz:['Richtige Antwort = Punkte für dich.', 'Je schwerer die Frage, desto mehr Punkte: ★ = 1 Punkt, ★★★★★ = 5 Punkte.'],
+  ap:['Bei welcher Frage du rausfliegst, so viele Punkte bekommst du.', 'Beispiel: raus bei Frage 14 = 14 Punkte. Alle 30 geschafft = 30 Punkte.', 'Du hast 2 Leben: Zweimal falsch ist okay, beim 3. Mal bist du raus.', 'Aussteigen geht nicht.'],
+  malen:['Errätst du ein Wort, bekommst du Punkte. Je schneller, desto mehr (1 bis 5).', 'Malst du selbst, bekommst du Punkte, wenn andere dein Bild erraten.'],
+  golf:['Je weniger Schläge pro Bahn, desto mehr Punkte.', '1 Schlag = 5 Punkte, 2 Schläge = 4, 3 = 3, 4 = 2, 5 = 1, mehr = 0.'],
+  karten:['Es zählt dein Platz am Ende.', '1. Platz = 10 Punkte, 2. Platz = 6, 3. Platz = 3, alle anderen = 1.'],
+  mad:['Es zählt dein Platz am Ende.', '1. Platz = 10 Punkte, 2. Platz = 6, 3. Platz = 3, alle anderen = 1.'],
+  bj:['Je mehr Chips du am Ende hast, desto mehr Punkte.', 'Gleich viele Chips wie am Anfang = 5 Punkte. Doppelt so viele = 10. Alles verloren = 0.'],
+  dt:['Jede Reihe, die du wegräumst = 1 Punkt.'],
+  tt:['Jeder Punkt, den du im Spiel machst = 1 Punkt.', 'Wer gewinnt, bekommt 5 Punkte extra.'],
+  ah:['Jedes Tor, das du schießt = 1 Punkt.', 'Wer gewinnt, bekommt 5 Punkte extra.'],
+  bw:['Deine Bowling-Punkte geteilt durch 10.', 'Beispiel: 150 Bowling-Punkte = 15 Punkte.'],
+  ch:['Gewonnen = 10 Punkte, unentschieden = 5, verloren = 1.']
 };
+const tourRuleList = k => `<ul class="tour-rule-list">${(TOUR_RULES[k] || []).map(t => `<li>${t}</li>`).join('')}</ul>`;
 function tourGame(kind) { return ({quiz:S.quiz, malen:S.draw, golf:S.golf, karten:S.uno, mad:S.mad, bj:S.bj, dt:S.dt, tt:S.tt, ah:S.ah, bw:S.bw, ch:S.ch, ap:S.ap})[kind] || null; }
 /* Turnierpunkte eines Spiels: [{id, pts}] (bei Quiz auch während des Spiels), sonst null */
 function tourRows(kind, M) {
@@ -7352,16 +7357,16 @@ function tourGamePay() {
 function tourRuleHTML() {
   const L = lobby(); if (!L || !L.tour || !L.kind || L.kind !== S.tab || !TOUR_RULES[L.kind]) return '';
   const G = tourGame(L.kind); if (G && ['running', 'finished'].includes(G.status)) return '';
-  const when = L.kind === 'quiz' ? 'Die Punkte kommen sofort nach jeder richtigen Antwort aufs Turnier-Konto.' : L.kind === 'ap' ? 'Wie weit die anderen sind, siehst du erst am Ende. Dann kommen die Punkte aufs Turnier-Konto.' : 'Die Punkte kommen am Spielende automatisch aufs Turnier-Konto.';
+  const when = L.kind === 'quiz' ? 'Die Punkte bekommst du sofort.' : L.kind === 'ap' ? 'Wie weit die anderen sind, siehst du erst am Ende.' : 'Die Punkte bekommst du am Ende vom Spiel.';
   return `<div class="card tour-intro"><span class="tour-intro-ic" aria-hidden="true">🏆</span><span class="eyebrow">Turnier-Regel</span>
-    <h2>So zählt ${SRV_ICON[L.kind] || ''} ${esc(GAME_KIND_NAME[L.kind] || 'das Spiel')} im Turnier</h2>
-    <p class="tour-intro-rule">${TOUR_RULES[L.kind]}</p><p class="muted">${when}</p></div>`;
+    <h2>${SRV_ICON[L.kind] || ''} ${esc(GAME_KIND_NAME[L.kind] || 'Spiel')}: So bekommst du Punkte</h2>
+    <div class="tour-intro-rule">${tourRuleList(L.kind)}</div><p class="muted">${when}</p></div>`;
 }
 function tourCardHTML(L) {
   if (!L || !L.tour || !TOUR_RULES[L.kind]) return '';
   const M = tourGame(L.kind), rows = (tourRows(L.kind, M) || []).filter(r => playerById(r.id) && !isBot(r.id)).sort((a, b) => b.pts - a.pts);
   const done = M && (M.status === 'finished' || L.kind === 'quiz');
-  return `<div class="card tour-pts"><h3>🏆 So zählt ${esc(GAME_KIND_NAME[L.kind] || 'das Spiel')} im Turnier</h3><p class="m-text">${TOUR_RULES[L.kind]}</p>
+  return `<div class="card tour-pts"><h3>🏆 Deine Turnierpunkte</h3>${tourRuleList(L.kind)}
     ${done && rows.length ? `<ol class="tour-pts-list">${rows.map(r => `<li class="${r.id === myPid() ? 'me' : ''}"><b>${esc(ghost(r.id).name)}</b><span>+${r.pts} ${r.pts === 1 ? 'Punkt' : 'Punkte'}</span></li>`).join('')}</ol><small class="muted">${L.kind === 'quiz' ? 'Wird nach jeder richtigen Antwort gutgeschrieben.' : 'Steht auf dem Turnier-Konto.'}</small>` : ''}</div>`;
 }
 function lobbyAutoAward() {
@@ -11473,12 +11478,11 @@ function apConfetti() { try { chConfetti(); } catch (e) {} }
 /* ----- Ansichten ----- */
 function apRulesHTML(open) {
   const L = lobby(); if (L && L.tour) return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird im Turnier gespielt</summary><ul>
-    <li><b>Alle gleichzeitig:</b> Jeder beantwortet dieselben 30 Fragen für sich. Wie weit die anderen sind, sieht man erst am Ende.</li>
-    <li><b>Antworten:</b> Doppelklick (am Handy doppelt tippen) auf eine Antwort = endgültige Antwort.</li>
-    <li><b>Punkte:</b> So viele Punkte wie die Nummer der Frage, bei der du rausfliegst. Raus bei Frage 14 = 14 Punkte, alle 30 geschafft = 30 Punkte.</li>
-    <li><b>2 Leben:</b> Zweimal darfst du falsch liegen (oder die Zeit verpassen), dann geht es mit der nächsten Frage weiter. Beim 3. Fehler bist du raus.</li>
-    <li><b>Aussteigen</b> gibt es im Turnier nicht.</li>
-    <li><b>Joker (je einmal):</b> 50:50, Publikum und Telefon wie im normalen Spiel.</li></ul></details>`;
+    <li>Alle spielen gleichzeitig dieselben 30 Fragen. Wie weit die anderen sind, siehst du erst am Ende.</li>
+    <li>Antwort zweimal schnell antippen = deine Antwort.</li>
+    <li>Bei welcher Frage du rausfliegst, so viele Punkte bekommst du. Beispiel: raus bei Frage 14 = 14 Punkte.</li>
+    <li>Du hast 2 Leben: Zweimal falsch ist okay, beim 3. Mal bist du raus.</li>
+    <li>Aussteigen geht nicht. Die Joker gibt es wie immer.</li></ul></details>`;
   return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird gespielt</summary><ul>
     <li><b>Alle gleichzeitig:</b> Jeder beantwortet dieselben 30 Fragen für sich. Die anderen sehen nur, auf welcher Stufe du bist, nie die Frage.</li>
     <li><b>Antworten:</b> Doppelklick (am Handy doppelt tippen) auf eine Antwort = endgültige Antwort. Richtig = eine Stufe höher, von 25 € bis 1 Million.</li>
