@@ -1813,6 +1813,33 @@ body.ah-locked .ah-lockhint{display:none}
 .ap-ladder li.cur span{color:#1a1208}
 .ap-board ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
 .ap-board li{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(60px,160px) auto;gap:10px;align-items:center}
+.ap-side{display:none;padding:14px;position:sticky;top:12px}
+.ap-side h3{margin:0 0 8px;font-size:15px}
+.ap-side ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.ap-side li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 10px;border-radius:10px;background:rgba(255,255,255,.04)}
+.ap-side li.me{background:rgba(255,207,63,.12);box-shadow:inset 0 0 0 1px rgba(255,207,63,.5)}
+.ap-side li b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px}
+.ap-side li.st-out b{opacity:.5}
+.ap-sm{flex:none;min-width:28px;text-align:center;font-family:var(--display);font-size:17px;font-weight:900;color:#ffb52e}
+.ap-sm.out{color:#ff4d5e;font-size:20px}
+.ap-sm.won{font-size:19px}
+.ap-sm.safe{color:#4ff08f;font-size:20px}
+.ap-sm.stop{color:var(--muted)}
+@media (min-width:901px){
+  .ap-wrap{grid-template-columns:210px minmax(0,1fr) 220px}
+  .ap-wrap.noladder{grid-template-columns:210px minmax(0,1fr)}
+  .ap-side{display:block}
+  .ap-main .ap-board{display:none}
+  .ap-q{padding:26px 28px;gap:18px}
+  .ap-for{font-size:30px}
+  .ap-stage{font-size:14px}
+  .ap-text{font-size:clamp(22px,1.9vw,30px);padding:24px 28px}
+  .ap-ans{gap:16px}
+  .ap-a{min-height:72px;font-size:20px;padding:12px 24px}
+  .ap-acts{justify-content:center}
+  .ap-jk{font-size:16px;padding:12px 20px}
+  .ap-acts .btn-big{font-size:17px}
+}
 .ap-board li.me{background:rgba(255,207,63,.08);border-radius:10px;padding:4px 6px}
 .ap-bn{display:flex;flex-direction:column;min-width:0}
 .ap-bn small{color:var(--muted);font-size:12px}
@@ -3186,7 +3213,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=100"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=101"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -11355,6 +11382,13 @@ function apBoardHTML(M) {
   return `<div class="card ap-board"><h3>👥 So weit sind alle</h3><ul>${rows.map(({id, r}) => { const p = ghost(id);
     return `<li class="${id === myPid() ? 'me' : ''} st-${r.st}">${avatar(p, 34)}<div class="ap-bn"><b>${esc(p.name)}</b><small>${apStatus(r)}</small></div><span class="ap-bar"><i style="width:${Math.round(r.lv / AP_N * 100)}%"></i></span><span class="ap-blv">${r.lv}/${AP_N}</span></li>`; }).join('')}</ul></div>`;
 }
+/* PC: schlanke Spielerliste links. Rechts die Frage, bei der man steht, ✗ = raus, 👑 = geschafft, grüner Pfeil = steht auf einer Sicherheitsstufe */
+function apSideHTML(M) {
+  const rows = M.players.map(id => ({id, r:M.pr[id]})).sort((a, b) => b.r.lv - a.r.lv || apWon(b.r) - apWon(a.r));
+  const mark = r => r.st === 'won' ? '<span class="ap-sm won" title="Geschafft">👑</span>' : r.st === 'out' ? '<span class="ap-sm out" title="Raus">✗</span>'
+    : r.st === 'stop' ? `<span class="ap-sm stop" title="Ausgestiegen">${r.lv}</span>` : AP_SAFE.includes(r.lv) ? '<span class="ap-sm safe" title="Auf der Sicherheitsstufe">➜</span>' : `<span class="ap-sm" title="Frage ${r.lv + 1}">${r.lv + 1}</span>`;
+  return `<aside class="card ap-side"><h3>Spieler</h3><ol>${rows.map(({id, r}) => `<li class="${id === myPid() ? 'me' : ''} st-${r.st}"><b>${esc(ghost(id).name)}</b>${mark(r)}</li>`).join('')}</ol></aside>`;
+}
 function apPlayHTML(M) {
   const me = apMe(M), host = ctl(), r = me ? M.pr[me] : null;
   let main = '';
@@ -11386,7 +11420,7 @@ function apPlayHTML(M) {
       ${apm.meta ? `<button class="btn btn-sm btn-ghost ap-mute" type="button" data-act="ap-mute" aria-label="${apm.mute ? 'Musik an' : 'Musik stumm'}" title="${apm.mute ? 'Musik an' : 'Musik stumm'}">${apm.mute ? '🔇' : '🔊'}</button>` : ''}
       ${host ? `<button class="btn btn-sm btn-ghost k-endbtn" type="button" data-act="ap-end">Beenden</button>` : ''}
     </div>
-    <div class="ap-wrap"><div class="ap-main">${main}${apBoardHTML(M)}</div>${r ? apLadderHTML(r) : ''}</div>
+    <div class="ap-wrap ${r ? '' : 'noladder'}">${apSideHTML(M)}<div class="ap-main">${main}${apBoardHTML(M)}</div>${r ? apLadderHTML(r) : ''}</div>
   </section>`;
 }
 function apEndHTML(M) {
