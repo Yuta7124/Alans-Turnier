@@ -182,8 +182,8 @@ Aufgeben, Remis anbieten). Die Zuggenerierung ist mit Perft-Stellungen geprüft.
 leicht/mittel/schwer = Tiefe 1/2/3, höchstens 0,8 s pro Zug. Highscore: Sieg +3, Niederlage +1, Remis je +2.
 
 ## Wer wird der nächste ApoRed?
-Raumspiel `ap` (Feld `uno`, g:'ap'), alle im Raum spielen gleichzeitig dieselben 15 Fragen (aus `BANK`, Kategorien Games/Geschichte/
-Wissen/Filme/Serien/Anime; je 3 Fragen pro Schwierigkeitsstufe). Geldleiter 50 € bis 1 Mio, Sicherheitsstufen 500 € und 16.000 €,
+Raumspiel `ap` (Feld `uno`, g:'ap'), alle im Raum spielen gleichzeitig dieselben 30 Fragen (aus `BANK`, Kategorien Games/Geschichte/
+Wissen/Filme/Serien/Anime; 6 Stufen zu je 5 Fragen: sehr leicht, leicht, mittel, schwer, sehr schwer, Profi = wieder aus „sehr schwer“). Geldleiter 25 € bis 1 Mio, Sicherheitsstufen 1.000 € (Frage 10) und 32.000 € (Frage 20),
 Aussteigen jederzeit, Joker 50:50 / Publikum / Telefon (fest aus der Frage berechnet). Beim Telefon-Joker werden 2 von 10 Personen ausgelost, man ruft eine davon an; Name und Bild der 10 Personen stellt der Spielleiter unter Optionen → Spiele ein (`rooms/{room}/media/ap_phone`). Mit 10 % taucht als dritte Person der Witz-Anrufer „ApoRed“ auf (höchstens einmal pro Spiel und Spieler); er zeigt Text oder ein MP4 (`media/ap_vid`, bis 10 MB), währenddessen steht die Zeit, danach geht es mit den 2 normalen Personen weiter. Optional 30 oder 60 s pro Frage.
 Jeder schreibt nur `uno.pr.<id>` = {lv, st, at, jf/jp/jt}; die anderen sehen nur Stufe und Status, nie die Frage. Bots spielt der Host.
 Highscore nach Gewinn: 1. +3, 2. +2, alle weiteren mit Gewinn +1.

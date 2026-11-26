@@ -1804,6 +1804,8 @@ body.ah-locked .ah-lockhint{display:none}
 .ap-ladder{list-style:none;margin:0;padding:10px;border-radius:14px;background:#0b0f2e;box-shadow:inset 0 0 0 2px #3b4fb3;display:flex;flex-direction:column;gap:2px;position:sticky;top:12px}
 .ap-ladder li{display:flex;justify-content:space-between;gap:8px;padding:4px 10px;border-radius:8px;font-size:14px;color:#ffb52e}
 .ap-ladder li span{color:#9fb0ff;font-size:12px;min-width:20px}
+@media (min-width:901px){.ap-ladder{max-height:calc(100vh - 24px);overflow-y:auto;gap:1px;padding:8px}.ap-ladder li{padding:2px 10px;font-size:13px}.ap-ladder li.tier{margin-bottom:5px}}
+.ap-tier{color:#4ff08f}.ap-tier.t1{color:#9be15d}.ap-tier.t2{color:#ffd23f}.ap-tier.t3{color:#ffb020}.ap-tier.t4{color:#ff6a4f}.ap-tier.t5{color:#ff3fa4}
 .ap-ladder li.safe{color:#fff}
 .ap-ladder li.safe b{font-weight:900}
 .ap-ladder li.done{opacity:.55}
@@ -3184,7 +3186,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=97"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=98"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -7608,7 +7610,7 @@ function viewRoom() {
       <h3 class="rc-grp">👥 Für mehrere Spieler</h3>
       <div class="rc-pick">
         <button class="pick-big" type="button" data-act="room-kind" data-v="quiz" style="--tc:#39d6f2"><span aria-hidden="true">🧠</span><b>Quiz</b><small>Spielbrett mit Fragen aus 8 Themen. Wer dran ist, wählt Feld und Antwort.</small></button>
-        <button class="pick-big" type="button" data-act="room-kind" data-v="ap" style="--tc:#ffb52e"><span aria-hidden="true">💰</span><b>Wer wird der nächste ApoRed?</b><small>15 Fragen bis zur Million, mit Jokern. Alle spielen gleichzeitig.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="ap" style="--tc:#ffb52e"><span aria-hidden="true">💰</span><b>Wer wird der nächste ApoRed?</b><small>30 Fragen bis zur Million, mit Jokern. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="malen" style="--tc:#ff7fc3"><span aria-hidden="true">🎨</span><b>Malen</b><small>Einer malt, alle anderen raten. Wie skribbl.io.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="golf" style="--tc:#4ff08f"><span aria-hidden="true">⛳</span><b>Golf</b><small>Minigolf in 3D mit 30 Bahnen, von kurz und leicht bis extrem. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="mad" style="--tc:#ff9f5a"><span aria-hidden="true">🎲</span><b>Uncle Grandpa ärgere dich</b><small>Das Brettspiel für 2 bis 4: Würfeln, mit einer 6 rauskommen, Gegner rauswerfen und alle Figuren ins Ziel bringen.</small></button>
@@ -11115,8 +11117,12 @@ setInterval(() => {
    pr: {Spieler: {lv (0–15 = richtig beantwortet), st ('play'|'out'|'stop'|'won'), at (Start der Frage), jf/jp/jt (Stufe des Jokers, -1)}},
    transferred}. Jeder schreibt nur seinen eigenen Stand (uno.pr.<id>), Bots schreibt der Host. */
 const AP_NAME = 'Wer wird der nächste ApoRed?';
-const AP_LADDER = [50, 100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 500000, 1000000];
-const AP_SAFE = [5, 10];
+/* 30 Fragen in 6 Stufen zu je 5: sehr leicht, leicht, mittel, schwer, sehr schwer, Profi (Profi = die schwersten Fragen aus „sehr schwer“) */
+const AP_N = 30;
+const AP_LADDER = [25, 50, 75, 100, 150, 200, 300, 400, 600, 1000, 1500, 2000, 3000, 4000, 5000, 7500, 10000, 15000, 20000, 32000, 40000, 50000, 64000, 80000, 100000, 125000, 250000, 400000, 600000, 1000000];
+const AP_SAFE = [10, 20];
+const AP_TIERS = ['Sehr leicht', 'Leicht', 'Mittel', 'Schwer', 'Sehr schwer', 'Profi'];
+const apTier = lv => Math.min(5, Math.floor(lv / 5));
 const AP_CATS = [0, 2, 3, 5, 6, 7];
 const AP_TL = [[0, 'Ohne Zeitlimit'], [30, '30 s pro Frage'], [60, '60 s pro Frage']];
 const apl = {gid:'', pick:-1, lock:-1, lockAt:0, lv:-1, bot:{}, endSnd:'', timeKey:'', reveal:null};
@@ -11125,13 +11131,13 @@ function apRng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >
 function apNorm(x) {
   if (!x || typeof x !== 'object' || x.g !== 'ap' || !['running', 'finished'].includes(x.status)) return null;
   const players = Array.isArray(x.players) ? x.players.filter(id => typeof id === 'string').slice(0, 8) : [];
-  const qs = Array.isArray(x.qs) ? x.qs.filter(q => typeof q === 'string' && /^\d\.\d\.\d+$/.test(q)).slice(0, 15) : [];
-  if (!players.length || qs.length !== 15) return null;
+  const qs = Array.isArray(x.qs) ? x.qs.filter(q => typeof q === 'string' && /^\d\.\d\.\d+$/.test(q)).slice(0, AP_N) : [];
+  if (!players.length || qs.length !== AP_N) return null;
   const pr = {}, src = x.pr && typeof x.pr === 'object' ? x.pr : {};
   for (const id of players) {
     const r = src[id] && typeof src[id] === 'object' ? src[id] : {};
-    const j = k => Number.isInteger(r[k]) && r[k] >= 0 && r[k] < 15 ? r[k] : -1;
-    pr[id] = {lv:Math.max(0, Math.min(15, +r.lv || 0)), st:['play', 'out', 'stop', 'won'].includes(r.st) ? r.st : 'play', at:Number(r.at) || 0, jf:j('jf'), jp:j('jp'), jt:j('jt'), jtc:r.jtc === 0 || r.jtc === 1 ? r.jtc : -1, ja:r.ja ? 1 : 0, jw:Number(r.jw) > 0 ? +r.jw : 0};
+    const j = k => Number.isInteger(r[k]) && r[k] >= 0 && r[k] < AP_N ? r[k] : -1;
+    pr[id] = {lv:Math.max(0, Math.min(AP_N, +r.lv || 0)), st:['play', 'out', 'stop', 'won'].includes(r.st) ? r.st : 'play', at:Number(r.at) || 0, jf:j('jf'), jp:j('jp'), jt:j('jt'), jtc:r.jtc === 0 || r.jtc === 1 ? r.jtc : -1, ja:r.ja ? 1 : 0, jw:Number(r.jw) > 0 ? +r.jw : 0};
   }
   return {g:'ap', id:str(x.id, 40), status:x.status, players, qs, tl:[0, 30, 60].includes(+x.tl) ? +x.tl : 0, pr, transferred:x.transferred === true, pz:x.pz && x.pz.at ? x.pz : null};
 }
@@ -11145,18 +11151,18 @@ function apQ(M, lv) {
 }
 /* Gewonnener Betrag: beim Aussteigen der letzte sichere Stand, bei falscher Antwort die letzte Sicherheitsstufe */
 function apWon(r) {
-  if (r.st === 'won') return AP_LADDER[14];
+  if (r.st === 'won') return AP_LADDER[AP_N - 1];
   if (r.st === 'out') { const s = AP_SAFE.filter(x => r.lv >= x).pop(); return s ? AP_LADDER[s - 1] : 0; }
   return r.lv ? AP_LADDER[r.lv - 1] : 0;
 }
 /* Joker: 50:50 streicht zwei falsche, Publikum zeigt Balken, Telefon sagt eine Vermutung (alles fest aus der Frage berechnet) */
 function apFifty(M, lv) { const q = apQ(M, lv), r = apRng(hashStr(M.id + ':f' + lv)), wrong = [0, 1, 2, 3].filter(i => i !== q.ok); wrong.splice(Math.floor(r() * 3), 1); return wrong; }
 function apAudience(M, lv) {
-  const q = apQ(M, lv), r = apRng(hashStr(M.id + ':p' + lv)), diff = Math.floor(lv / 3), hide = M.pr[apMe(M)] && M.pr[apMe(M)].jf === lv ? apFifty(M, lv) : [];
-  const right = r() < [.97, .9, .8, .68, .55][diff];
+  const q = apQ(M, lv), r = apRng(hashStr(M.id + ':p' + lv)), diff = apTier(lv), hide = M.pr[apMe(M)] && M.pr[apMe(M)].jf === lv ? apFifty(M, lv) : [];
+  const right = r() < [.98, .93, .84, .72, .6, .5][diff];
   const top = right ? q.ok : [0, 1, 2, 3].filter(i => i !== q.ok && !hide.includes(i))[Math.floor(r() * (3 - hide.length))] ?? q.ok;
   const v = [0, 1, 2, 3].map(i => hide.includes(i) ? 0 : 5 + r() * 25);
-  v[top] += 40 + r() * (55 - diff * 8);
+  v[top] += 40 + r() * (58 - diff * 8);
   const sum = v.reduce((a, b) => a + b, 0); return v.map(x => Math.round(x / sum * 100));
 }
 /* Telefon-Joker: 10 Personen (Name + Bild stellt der Spielleiter in den Optionen ein), 2 werden ausgelost, 1 darf man anrufen */
@@ -11183,8 +11189,8 @@ function apPhonePair(M, lv) {
 }
 function apPhone(M, lv, c) {
   const who = apPhonePair(M, lv)[c === 1 ? 1 : 0];
-  const q = apQ(M, lv), r = apRng(hashStr(M.id + ':t' + lv + ':' + who)), diff = Math.floor(lv / 3), hide = M.pr[apMe(M)] && M.pr[apMe(M)].jf === lv ? apFifty(M, lv) : [];
-  const right = r() < [.95, .85, .72, .6, .48][diff], opts = [0, 1, 2, 3].filter(i => i !== q.ok && !hide.includes(i));
+  const q = apQ(M, lv), r = apRng(hashStr(M.id + ':t' + lv + ':' + who)), diff = apTier(lv), hide = M.pr[apMe(M)] && M.pr[apMe(M)].jf === lv ? apFifty(M, lv) : [];
+  const right = r() < [.96, .88, .76, .64, .52, .42][diff], opts = [0, 1, 2, 3].filter(i => i !== q.ok && !hide.includes(i));
   const pick = right ? q.ok : opts[Math.floor(r() * opts.length)];
   const sure = right ? 55 + Math.round(r() * 40) - diff * 6 : 30 + Math.round(r() * 35);
   return {pick, sure:Math.max(20, Math.min(99, sure)), who};
@@ -11198,8 +11204,8 @@ function apStart() {
   const L = lobby(), players = roomMembers(L);
   if (!players.length || players.every(isBot)) { toast('Mindestens ein echter Spieler muss mitspielen.'); return; }
   const id = uid(), r = apRng(hashStr(id)), used = new Set(), qs = [];
-  for (let lv = 0; lv < 15; lv++) {
-    const d = Math.floor(lv / 3); let k = '';
+  for (let lv = 0; lv < AP_N; lv++) {
+    const d = Math.min(4, apTier(lv)); let k = '';
     for (let t = 0; t < 50 && (!k || used.has(k)); t++) { const c = AP_CATS[Math.floor(r() * AP_CATS.length)], n = BANK[c][d].length; k = `${c}.${d}.${Math.floor(r() * n)}`; }
     used.add(k); qs.push(k);
   }
@@ -11233,9 +11239,9 @@ function apLogic() {
       const b = apl.bot[id] || (apl.bot[id] = {lv:-1, at:0});
       if (b.lv !== r.lv) { b.lv = r.lv; b.at = Math.max(now, r.at) + botR(3500, 8500); continue; }
       if (now < b.at) continue;
-      const lvl = botLvl(id), p = {e:.93, m:.96, h:.985}[lvl] - r.lv * {e:.055, m:.04, h:.028}[lvl];
-      if (r.lv >= 9 && Math.random() < {e:.25, m:.15, h:.08}[lvl] * (1 - p)) { apWrite(id, {...r, st:'stop'}); continue; }
-      if (Math.random() < p) { const lv = r.lv + 1; apWrite(id, {...r, lv, st:lv >= 15 ? 'won' : 'play', at:Date.now()}); } else apWrite(id, {...r, st:'out'});
+      const lvl = botLvl(id), p = {e:.95, m:.97, h:.99}[lvl] - r.lv * {e:.03, m:.022, h:.015}[lvl];
+      if (r.lv >= 18 && Math.random() < {e:.25, m:.15, h:.08}[lvl] * (1 - p)) { apWrite(id, {...r, st:'stop'}); continue; }
+      if (Math.random() < p) { const lv = r.lv + 1; apWrite(id, {...r, lv, st:lv >= AP_N ? 'won' : 'play', at:Date.now()}); } else apWrite(id, {...r, st:'out'});
     } else if (M.tl && now > r.at + M.tl * 1000 + 20000 && !(r.jw && now - r.jw < 300000)) apWrite(id, {...r, st:'out'}); // weg vom Gerät
   }
   const L = lobby(), cur = apNorm(L && L.uno);
@@ -11258,7 +11264,7 @@ const apActions = {
       setTimeout(() => {
         apl.reveal = null; apl.lock = -1; apl.pick = -1;
         const cur = S.ap && S.ap.pr[me]; if (!cur || cur.lv !== lv) { render(); return; }
-        if (ok) { const n = lv + 1; apWrite(me, {...cur, lv:n, st:n >= 15 ? 'won' : 'play', at:Date.now()}); if (n >= 15) apConfetti(); else if (AP_SAFE.includes(n)) toast(`🛡️ Sicher: ${apEur(AP_LADDER[n - 1])}`); }
+        if (ok) { const n = lv + 1; apWrite(me, {...cur, lv:n, st:n >= AP_N ? 'won' : 'play', at:Date.now()}); if (n >= AP_N) apConfetti(); else if (AP_SAFE.includes(n)) toast(`🛡️ Sicher: ${apEur(AP_LADDER[n - 1])}`); else if (n % 5 === 0) toast(`⬆️ Jetzt wird es schwerer: ${tx(AP_TIERS[apTier(n)])}`); }
         else apWrite(me, {...cur, st:'out'});
         render();
       }, ok ? 1300 : 2600);
@@ -11293,9 +11299,10 @@ function apConfetti() { try { chConfetti(); } catch (e) {} }
 /* ----- Ansichten ----- */
 function apRulesHTML(open) {
   return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird gespielt</summary><ul>
-    <li><b>Alle gleichzeitig:</b> Jeder beantwortet dieselben 15 Fragen für sich. Die anderen sehen nur, auf welcher Stufe du bist, nie die Frage.</li>
-    <li><b>Antworten:</b> Antwort antippen, dann „Endgültige Antwort“. Richtig = eine Stufe höher, von 50 € bis 1 Million.</li>
-    <li><b>Sicherheitsstufen:</b> Bei 500 € und 16.000 €. Bei einer falschen Antwort fällst du auf die letzte Sicherheitsstufe zurück.</li>
+    <li><b>Alle gleichzeitig:</b> Jeder beantwortet dieselben 30 Fragen für sich. Die anderen sehen nur, auf welcher Stufe du bist, nie die Frage.</li>
+    <li><b>Antworten:</b> Antwort antippen, dann „Endgültige Antwort“. Richtig = eine Stufe höher, von 25 € bis 1 Million.</li>
+    <li><b>Schwierigkeit:</b> Alle 5 Fragen wird es schwerer: sehr leicht, leicht, mittel, schwer, sehr schwer und zum Schluss Profi.</li>
+    <li><b>Sicherheitsstufen:</b> Bei 1.000 € und 32.000 €. Bei einer falschen Antwort fällst du auf die letzte Sicherheitsstufe zurück.</li>
     <li><b>Aussteigen:</b> Jederzeit möglich, dann behältst du, was du schon hast.</li>
     <li><b>Joker (je einmal):</b> 50:50 streicht zwei falsche Antworten, Publikum zeigt eine Umfrage, Telefon fragt jemanden um Rat.</li>
     <li><b>Highscore:</b> Wer am meisten gewinnt +3, Zweiter +2, alle anderen mit Gewinn +1.</li></ul></details>`;
@@ -11308,14 +11315,14 @@ function apSetupHTML() {
   const tl = [0, 30, 60].includes(D.apTl) ? D.apTl : 0;
   return `<section class="section tsec"><div class="card k-setup ap-setup">
     <span class="eyebrow">Du bist Host</span><h2 class="k-title-big ap-title">💰 ${AP_NAME}</h2>
-    <p class="muted">Alle im Raum spielen gleichzeitig dieselben 15 Fragen. Jeder sieht nur seine eigenen Fragen, von den anderen nur den Stand.</p>
+    <p class="muted">Alle im Raum spielen gleichzeitig dieselben 30 Fragen. Jeder sieht nur seine eigenen Fragen, von den anderen nur den Stand.</p>
     <span class="lbl">Es spielen mit (${mem.length})</span><div class="chips">${mem.map(id => `<span class="chip pchip" aria-pressed="true">${avatar(ghost(id), 26)}${esc(ghost(id).name)}${isBot(id) ? ` <small>${botLvlName(botLvl(id))}</small>` : ''}</span>`).join('')}</div>
     <span class="lbl">Zeit pro Frage</span><div class="chips">${AP_TL.map(([v, l]) => `<button class="chip" type="button" data-act="ap-tl" data-v="${v}" aria-pressed="${tl === v}">${l}</button>`).join('')}</div>
     <button class="btn btn-gold btn-big" type="button" data-act="ap-start" ${mem.some(id => !isBot(id)) ? '' : 'disabled'}>Runde starten</button>
   </div>${apRulesHTML(true)}</section>`;
 }
 function apLadderHTML(r) {
-  return `<ol class="ap-ladder">${AP_LADDER.map((v, i) => ({v, i})).reverse().map(({v, i}) => `<li class="${i === r.lv && r.st === 'play' ? 'cur' : ''} ${i < r.lv ? 'done' : ''} ${AP_SAFE.includes(i + 1) ? 'safe' : ''}"><span>${i + 1}</span><b>${apEur(v)}</b></li>`).join('')}</ol>`;
+  return `<ol class="ap-ladder">${AP_LADDER.map((v, i) => ({v, i})).reverse().map(({v, i}) => `<li class="${i === r.lv && r.st === 'play' ? 'cur' : ''} ${i < r.lv ? 'done' : ''} ${AP_SAFE.includes(i + 1) ? 'safe' : ''} ${i % 5 === 0 && i ? 'tier' : ''}"><span>${i + 1}</span><b>${apEur(v)}</b></li>`).join('')}</ol>`;
 }
 function apStatus(r) {
   return r.st === 'won' ? '🏆 Millionär!' : r.st === 'stop' ? `🚪 Ausgestiegen · ${apEur(apWon(r))}` : r.st === 'out' ? `❌ Raus · ${apEur(apWon(r))}` : `Frage ${r.lv + 1} · um ${apEur(AP_LADDER[r.lv])}`;
@@ -11323,7 +11330,7 @@ function apStatus(r) {
 function apBoardHTML(M) {
   const rows = M.players.map(id => ({id, r:M.pr[id]})).sort((a, b) => b.r.lv - a.r.lv || apWon(b.r) - apWon(a.r));
   return `<div class="card ap-board"><h3>👥 So weit sind alle</h3><ul>${rows.map(({id, r}) => { const p = ghost(id);
-    return `<li class="${id === myPid() ? 'me' : ''} st-${r.st}">${avatar(p, 34)}<div class="ap-bn"><b>${esc(p.name)}</b><small>${apStatus(r)}</small></div><span class="ap-bar"><i style="width:${Math.round(r.lv / 15 * 100)}%"></i></span><span class="ap-blv">${r.lv}/15</span></li>`; }).join('')}</ul></div>`;
+    return `<li class="${id === myPid() ? 'me' : ''} st-${r.st}">${avatar(p, 34)}<div class="ap-bn"><b>${esc(p.name)}</b><small>${apStatus(r)}</small></div><span class="ap-bar"><i style="width:${Math.round(r.lv / AP_N * 100)}%"></i></span><span class="ap-blv">${r.lv}/${AP_N}</span></li>`; }).join('')}</ul></div>`;
 }
 function apPlayHTML(M) {
   const me = apMe(M), host = ctl(), r = me ? M.pr[me] : null;
@@ -11333,7 +11340,7 @@ function apPlayHTML(M) {
     const aud = r.jp === lv ? apAudience(M, lv) : null, ph = r.jt === lv && r.jtc >= 0 ? apPhone(M, lv, r.jtc) : null, phPick = r.jt === lv && r.jtc < 0 ? apPhonePair(M, lv) : null, apo = phPick && apBotHere(M, lv), paused = roomPaused();
     const left = M.tl ? Math.max(0, M.tl * 1000 - ((paused ? paused.at : r.jw || Date.now()) - r.at)) : 0;
     main = `<div class="card ap-q">
-      <div class="ap-qtop"><span class="ap-stage">Frage ${lv + 1} von 15</span><b class="ap-for">um ${apEur(AP_LADDER[lv])}</b>${q.cat ? `<small class="muted">${esc(q.cat)}</small>` : ''}</div>
+      <div class="ap-qtop"><span class="ap-stage">Frage ${lv + 1} von ${AP_N} · <span class="ap-tier t${apTier(lv)}">${AP_TIERS[apTier(lv)]}</span></span><b class="ap-for">um ${apEur(AP_LADDER[lv])}</b>${q.cat ? `<small class="muted">${esc(q.cat)}</small>` : ''}</div>
       ${M.tl ? `<div class="ap-time"><i id="ap-tbar" style="width:${left / (M.tl * 10)}%"></i><span id="ap-tsec">${Math.ceil(left / 1000)} s</span></div>` : ''}
       <p class="ap-text">${esc(q.t)}</p>
       <div class="ap-ans">${q.a.map((a, i) => { const gone = hide.includes(i), cls = ['ap-a', apl.pick === i ? 'pick' : '', apl.lock === i ? 'lock' : '', rv && i === rv.right ? 'right' : '', rv && !rv.ok && i === rv.pick ? 'wrong' : '', gone ? 'gone' : ''].filter(Boolean).join(' ');
