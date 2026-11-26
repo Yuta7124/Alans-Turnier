@@ -244,3 +244,9 @@ Unter „Optionen“ kann der Spielleiter einen **Dauerlink** erstellen. Er läu
 ## Quiz-Fragen
 
 Themen in `CATS` (Index): 0 Videospiele, 1 Flaggen, 2 Geschichte, 3 Allgemeinwissen, 4 Schätzfragen, 5 Filme, 6 Serien, 7 Animes, 8 Deutschland (`GERMANY`, 5 × 30). Weitere Fragen stehen in `QUIZ_MORE` und `FLAGS_MORE` und werden hinten an `BANK` angehängt, damit alte IDs (`v3-Thema-Stufe-Nr`) gleich bleiben. Die 180 ApoRed-Fragen (`AP_QB`) kommen im Quiz mit Thema aus `AP_QB_CAT` dazu (IDs `ap-Stufe-Nr`). Jedes Thema hat pro Stufe mindestens 30 Fragen. Schon gestellte Fragen merkt sich das Quiz in `seen` und nimmt erst ungestellte.
+
+## Spiele im Turnier
+
+In der Turnier-Lobby (`lobby().tour`) zählen Punkte direkt aufs Turnier-Konto (`points`, schreibt der Admin als Host, feste IDs verhindern Doppelbuchungen, siehe `tourPay`):
+- Quiz: jede richtige Antwort sofort, sehr leicht 1 bis sehr schwer 5 Punkte (`tourQuizPay`, IDs `tq_<quiz>_<runde>_<feld>`).
+- ApoRed: am Ende die Nummer der Frage, bei der man rausfliegt (IDs `tap_<spiel>_<spieler>`).
