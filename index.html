@@ -3252,7 +3252,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=108"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=109"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -5587,6 +5587,7 @@ function langCardHTML() {
 function viewSettings() {
   if (!S.admin) return `<section class="section narrow">
     <div class="sec-head"><h2 class="h">Optionen</h2></div>
+    ${myUidCardHTML()}
     ${inviteCardHTML()}
     ${langCardHTML()}
     <div class="card share-card">
@@ -5623,7 +5624,7 @@ function viewSettings() {
   const cur = secs.find(x => x[0] === sec);
   const parts = {
     spiele: () => aphCardHTML(),
-    ids: () => { pkLoad(); const ps = S.players.filter(x => !isBot(x.id)); return `<div class="card share-card"><h3>🔑 User-IDs</h3><p class="m-text">Mit seiner User-ID kann jeder Spieler sein Profil und seine Spiele auf Handy und PC benutzen. Jeder sieht nur seine eigene, du als Admin siehst alle.</p>
+    ids: () => { pkLoad(); const ps = S.players.filter(x => !isBot(x.id)); return (lsGet('turnier-me', '') ? myUidCardHTML() : '') + `<div class="card share-card"><h3>🔑 User-IDs</h3><p class="m-text">Mit seiner User-ID kann jeder Spieler sein Profil und seine Spiele auf Handy und PC benutzen. Jeder sieht nur seine eigene, du als Admin siehst alle.</p>
       ${!D.pkAll ? '<p class="muted">Lädt …</p>' : `<div class="uid-list">${ps.map(x => `<div class="uid-li">${avatar(x, 28)}<b>${esc(x.name)}</b>${D.pkAll[x.id] ? `<code class="uid-code">${esc(D.pkAll[x.id])}</code><button class="btn btn-sm" type="button" data-act="uid-copy" data-v="${esc(D.pkAll[x.id])}">Kopieren</button>` : '<span class="muted">Noch keine</span>'}<button class="btn btn-sm btn-ghost" type="button" data-act="uid-new" data-pid="${esc(x.id)}">${D.pkAll[x.id] ? 'Neu' : 'Vergeben'}</button></div>`).join('')}</div>
       <p class="muted">„Noch keine“: Der Spieler hat seine ID noch nicht erstellt. Sie entsteht automatisch, wenn er das nächste Mal etwas speichert, oder du vergibst eine.</p>`}</div>`; },
     turnier: () => `    <div class="card share-card ts-card"><h3>🏆 Turnier</h3><p class="m-text">Steht noch kein Turnier an, sehen alle im Turnier-Tab den Wartebildschirm. Hier stellst du ein, was dort steht: kein Turnier geplant, bald, oder ein fester Termin mit Countdown.</p>${tourStatusFormHTML(false)}
@@ -12416,6 +12417,19 @@ function uidLinkHTML(pid) {
     <div class="wadd"><input class="input uid-in" id="uid-in-${esc(pid || 'x')}" maxlength="24" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn btn-gold" type="button" data-act="uid-link" data-pid="${esc(pid || '')}">Verbinden</button></div></div>`;
 }
 /* User-ID klein in „Profil bearbeiten“: der Spieler sieht seine eigene (auf seinem Gerät), der Admin die jedes Spielers */
+/* Optionen: jeder sieht hier seine eigene User-ID (oder kann sich verbinden bzw. eine erstellen) */
+function myUidCardHTML() {
+  if (S.mode !== 'db') return '';
+  const pid = lsGet('turnier-me', ''), p = pid ? playerById(pid) : null;
+  const head = `<h3>🔑 Deine User-ID</h3><p class="m-text">Mit deiner User-ID kannst du dein Profil und deine Spiele auf jedem Gerät ändern, auf Handy und PC. Gib sie niemandem weiter.</p>`;
+  if (!p || isBot(pid)) return `<div class="card share-card uid-card">${head}<p class="muted">Auf diesem Gerät ist noch kein Spieler. Hast du schon einen? Dann gib hier deine User-ID ein.</p>${uidLinkHTML('')}</div>`;
+  const id = myUserId(pid);
+  if (id) return `<div class="card share-card uid-card">${head}<p class="muted">Spieler: <b>${esc(p.name)}</b></p>
+    <div class="uid-row"><code class="uid-code">${D.uidShow ? esc(id) : '••••-••••-••••-' + esc(id.slice(-4))}</code><button class="btn btn-sm" type="button" data-act="uid-show">${D.uidShow ? 'Verbergen' : 'Zeigen'}</button><button class="btn btn-sm" type="button" data-act="uid-copy" data-v="${esc(id)}">Kopieren</button></div>
+    <small class="muted">Auf einem anderen Gerät: Optionen öffnen und diese User-ID eingeben.</small></div>`;
+  if ((p.kh && pkeyOf(pid).length) || (!p.kh && p.byGuest)) return `<div class="card share-card uid-card">${head}<p class="muted">Spieler: <b>${esc(p.name)}</b>. Du hast noch keine User-ID.</p><div class="chips"><button class="btn btn-gold" type="button" data-act="uid-make" data-pid="${esc(pid)}">User-ID erstellen</button></div></div>`;
+  return `<div class="card share-card uid-card">${head}<p class="muted">Spieler: <b>${esc(p.name)}</b>. Auf diesem Gerät fehlt deine User-ID. Sie steht auf deinem anderen Gerät unter Optionen, oder der Spielleiter sagt sie dir.</p>${uidLinkHTML(pid)}</div>`;
+}
 function uidFormHTML(pid) {
   const p = playerById(pid); if (!p || S.mode !== 'db' || isBot(pid)) return '';
   const mine = lsGet('turnier-me', '') === pid, own = mine ? myUserId(pid) : '';
@@ -12660,7 +12674,7 @@ async function vgCommit(pid, fn) {
    Dann führt die Meldung direkt zum Profil, wo man die User-ID eingeben kann. */
 function vgErr(e) {
   if (e && (e.code === 'pk-missing' || e.code === 'pk-changed')) {
-    toast(e.code === 'pk-changed' ? 'Deine User-ID wurde geändert. Gib unten die neue User-ID ein, dann klappt es.' : 'Auf diesem Gerät fehlt deine User-ID. Gib sie unten ein (sie steht auf deinem anderen Gerät im Profil, oder der Spielleiter sagt sie dir).');
+    toast(e.code === 'pk-changed' ? 'Deine User-ID wurde geändert. Gib unten die neue User-ID ein, dann klappt es.' : 'Auf diesem Gerät fehlt deine User-ID. Gib sie unten ein (sie steht auf deinem anderen Gerät unter Optionen, oder der Spielleiter sagt sie dir).');
     if (e.pid) { D.uidAsk = e.pid; D.vgP = e.pid; if (S.modal) closeModal(); setTab('spieler'); setTimeout(() => { const el = document.getElementById('uid-in-' + e.pid); if (el) { el.scrollIntoView({block:'center', behavior:'smooth'}); el.focus(); } }, 120); }
     return;
   }
