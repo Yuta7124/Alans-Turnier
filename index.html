@@ -1808,6 +1808,7 @@ body.ah-locked .ah-lockhint{display:none}
 @keyframes apCur{0%,100%{box-shadow:0 0 0 0 rgba(255,181,46,0)}50%{box-shadow:0 0 14px 2px rgba(255,181,46,.6)}}
 @media (max-width:900px){.ap-wrap{grid-template-columns:minmax(0,1fr)}.ap-ladder{position:static;order:-1;flex-direction:row-reverse;justify-content:flex-end;overflow-x:auto;padding:6px;scroll-behavior:smooth}.ap-ladder li{flex-direction:column;align-items:center;min-width:84px;font-size:12px;white-space:nowrap}}
 @media (max-width:560px){.ap-ans{grid-template-columns:1fr}.ap-a{min-height:50px;font-size:15px}}
+.bgm-gm{display:flex;flex-direction:column;gap:8px;padding-bottom:12px;margin-bottom:10px;border-bottom:1px solid rgba(255,255,255,.12)}
 .wm-btns{
 display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .hub-admin{display:flex;justify-content:center;margin:8px 0 0}
@@ -3159,7 +3160,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=92"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=93"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -15177,6 +15178,7 @@ const actions = {
   'pf-set': b => { const t = D[b.dataset.target]; if (!t) return; t[b.dataset.k] = b.dataset.v; S.modal ? renderModal() : render(); },
   'crop-apply': b => { applyCrop(b.dataset.target).catch(() => toast('Das Foto ließ sich nicht zuschneiden.')); },
   'crop-cancel': b => { const t = D[b.dataset.target]; if (!t) return; t.crop = null; S.modal ? renderModal() : render(); },
+  'gm-mute': () => { const g = gmActive(); if (!g) return; if (g.k === 'ap') { apm.mute = !apm.mute; lsSet('turnier-ap-mute', apm.mute ? '1' : '0'); apmSync(); } else { music.on = !music.on; lsSet('turnier-music-on', music.on ? '1' : '0'); syncMusic(); } bgm.key = ''; renderBgm(); if (S.tab === 'ap') render(); },
   'bgm-open': () => { bgm.open = !bgm.open; bgm.unlocked = true; bgmSync(); },
   'bgm-toggle': () => { bgmSetPref(!bgmOn()); if (S.tab === 'einstellungen') render(); },
   'bgm-style': b => { bgmSetStyle(b.dataset.s); if (S.tab === 'einstellungen') render(); },
@@ -15274,6 +15276,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('input', e => {
   const t = e.target;
+  if (t.dataset && t.dataset.gmVol) { const g = gmActive(), v = Number(t.value); if (g && g.k === 'ap') { apm.vol = v; lsSet('turnier-ap-vol', String(v)); if (apm.el) apm.el.volume = v; } else if (g) { music.vol = v; lsSet('turnier-music-vol', String(v)); if (music.el) music.el.volume = v; const mv = document.getElementById('music-vol'); if (mv) mv.value = v; } return; }
   if (t.id === 'music-vol') { music.vol = Number(t.value); lsSet('turnier-music-vol', String(music.vol)); if (music.el) music.el.volume = music.vol; return; }
   if (t.dataset && t.dataset.bgmVol) { bgm.vol = Number(t.value); lsSet('turnier-bgm-vol', String(bgm.vol)); document.querySelectorAll('[data-bgm-vol]').forEach(x => { if (x !== t) x.value = t.value; }); bgm.unlocked = true; bgmSync(); return; }
   if (t.dataset && t.dataset.cropZoom) { const d = D[t.dataset.cropZoom]; if (d && d.crop) { d.crop.z = Number(t.value); cropUpdate(t.dataset.cropZoom); } return; }
@@ -15726,7 +15729,7 @@ function musicCardHTML() {
    weil die Seite keinen Datei-Speicher hat. Jedes Gerät lädt sie nur einmal und merkt sie sich (IndexedDB, Schlüssel apored).
    Sie läuft in Schleife, solange „Wer wird der nächste ApoRed?“ läuft; im Spiel stummschaltbar (gilt pro Gerät). */
 const APM_CHUNK = 900000, APM_MAX = 10 * 1024 * 1024;
-const apm = {meta:null, v:'', url:'', loading:'', el:null, blocked:false, mute:lsGet('turnier-ap-mute', '0') === '1', up:0, done:''};
+const apm = {meta:null, v:'', url:'', loading:'', el:null, blocked:false, mute:lsGet('turnier-ap-mute', '0') === '1', vol:Number(lsGet('turnier-ap-vol', '0.55')) || .55, up:0, done:''};
 function apmNorm(x) { return x && typeof x.v === 'string' && Number.isInteger(x.n) && x.n > 0 && x.n <= 16 ? {v:x.v, n:x.n, name:str(x.name || 'Musik', 80), size:+x.size || 0, type:str(x.type || 'audio/mpeg', 40), loop:x.loop !== false, cut:x.cut === true} : null; }
 function apmWanted() { if (apm.test && apm.meta) return true; if (apm.meta && !apm.meta.loop && S.ap && apm.done === S.ap.id) return false; return !!(apm.meta && !apm.mute && S.tab === 'ap' && S.ap && S.ap.status === 'running' && !roomPaused() && document.visibilityState === 'visible'); }
 async function apmLoad() {
@@ -15745,7 +15748,7 @@ async function apmLoad() {
     if (apm.meta !== m) { apm.loading = ''; return; }
     if (apm.url) URL.revokeObjectURL(apm.url);
     apm.url = URL.createObjectURL(blob); apm.v = m.v;
-    if (!apm.el) { apm.el = new Audio(); apm.el.volume = .55; apm.el.addEventListener('ended', () => { apm.done = S.ap ? S.ap.id : 'x'; if (apm.test) { apm.test = false; render(); } }); }
+    if (!apm.el) { apm.el = new Audio(); apm.el.volume = apm.vol; apm.el.addEventListener('ended', () => { apm.done = S.ap ? S.ap.id : 'x'; if (apm.test) { apm.test = false; render(); } }); }
     apm.el.src = apm.url;
   } catch (e) { console.warn('apoRed-Musik', e); }
   apm.loading = '';
@@ -15797,7 +15800,7 @@ function apmCardHTML() {
 }
 const apmActions = {
   'apm-loop': b => { if (!S.admin || !db || !apm.meta) return; const loop = b.dataset.v === '1'; apm.meta = {...apm.meta, loop}; render(); db.collection('media').doc('apored').update({loop}).catch(() => toast('Das hat nicht geklappt.')); },
-  'ap-mute': () => { apm.mute = !apm.mute; lsSet('turnier-ap-mute', apm.mute ? '1' : '0'); apmSync(); render(); },
+  'ap-mute': () => { apm.mute = !apm.mute; lsSet('turnier-ap-mute', apm.mute ? '1' : '0'); apmSync(); bgm.key = ''; render(); },
   'apm-remove': () => confirmBox('ApoRed-Musik entfernen?', 'Sie läuft dann bei niemandem mehr.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Entfernen', cls:'btn-gold', fn:apmRemove}]),
   'apm-test': async () => {
     if (apm.test) { apm.test = false; if (apm.el) apm.el.pause(); render(); return; }
@@ -16845,14 +16848,27 @@ function bgmControlsHTML(idp) {
     ${on && !bgm.unlocked ? '<p class="m-text bgm-hint">Tipp einmal irgendwo auf die Seite, dann startet die Musik.</p>' : ''}
   </div>`;
 }
+/* Gerade aktive Spiel-Musik (Quiz-MP3 auf dem Admin-Gerät oder ApoRed-MP3): im ♪-Fenster unten rechts lauter/leiser/stumm */
+function gmActive() {
+  if (typeof apm !== 'undefined' && apm.meta && S.tab === 'ap' && S.ap && S.ap.status === 'running') return {k:'ap', label:'💰 ApoRed-Musik', muted:apm.mute, vol:apm.vol};
+  if (typeof music !== 'undefined' && music.ready && S.admin && music.auto && S.quiz && S.quiz.status === 'running') return {k:'quiz', label:'🎵 Quiz-Musik', muted:!music.on, vol:music.vol};
+  return null;
+}
+function gmHTML(g) {
+  return `<div class="bgm-gm"><b class="bgm-title">Jetzt läuft: ${g.label}</b>
+    <div class="chips"><button class="chip" type="button" data-act="gm-mute" aria-pressed="${!g.muted}">${g.muted ? '🔇 Stumm' : '🔊 An'}</button></div>
+    <label class="vol" for="gm-vol">Lautstärke <input type="range" id="gm-vol" data-gm-vol="1" min="0" max="1" step="0.05" value="${g.vol}"></label>
+    <p class="m-text">Die Hintergrundmusik pausiert so lange.</p></div>`;
+}
 function renderBgm() {
   const root = $('#bgm-root'); if (!root) return;
-  const on = bgmOn();
-  const key = [on, bgm.open, bgmCur(), !!bgmEvent(), bgm.unlocked, bgm.playing].join('|');
+  const on = bgmOn(), gm = gmActive();
+  const key = [on, bgm.open, bgmCur(), !!bgmEvent(), bgm.unlocked, bgm.playing, gm ? gm.k + gm.muted : ''].join('|');
   if (key === bgm.key) return;
   bgm.key = key;
-  root.innerHTML = H(`<button class="bgm-btn ${on ? 'on' : ''} ${bgm.playing ? 'playing' : ''}" type="button" data-act="bgm-open" aria-expanded="${bgm.open}" aria-label="Musik ${on ? 'an' : 'aus'}, Einstellungen öffnen"><span aria-hidden="true">${on ? '♪' : '♪̸'}</span><i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i></button>
-    ${bgm.open ? `<div class="bgm-pop" role="dialog" aria-label="Musik"><b class="bgm-title">Hintergrundmusik</b>${bgmControlsHTML('bgmp')}<p class="m-text">Gilt nur für dieses Gerät.</p></div>` : ''}`);
+  const lit = gm ? !gm.muted : on;
+  root.innerHTML = H(`<button class="bgm-btn ${lit ? 'on' : ''} ${bgm.playing || (gm && !gm.muted) ? 'playing' : ''}" type="button" data-act="bgm-open" aria-expanded="${bgm.open}" aria-label="Musik ${lit ? 'an' : 'aus'}, Einstellungen öffnen"><span aria-hidden="true">${lit ? '♪' : '♪̸'}</span><i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i></button>
+    ${bgm.open ? `<div class="bgm-pop" role="dialog" aria-label="Musik">${gm ? gmHTML(gm) : ''}<b class="bgm-title">Hintergrundmusik</b>${bgmControlsHTML('bgmp')}<p class="m-text">Gilt nur für dieses Gerät.</p></div>` : ''}`);
 }
 function bgmCardHTML() {
   const def = !(S.deco && S.deco.bgm === false);
