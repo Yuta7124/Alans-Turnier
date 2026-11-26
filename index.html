@@ -1787,6 +1787,15 @@ body.ah-locked .ah-lockhint{display:none}
 .aph-row{display:flex;gap:10px;align-items:center}
 .aph-row .input{flex:1;min-width:0}
 .aph-pic{cursor:pointer;border-radius:50%}
+.aph-two.three{grid-template-columns:repeat(3,1fr)}
+.aph-special{border-color:#ffcf3f;background:linear-gradient(160deg,rgba(255,207,63,.28),rgba(10,20,60,.6));box-shadow:0 0 18px rgba(255,207,63,.35);animation:aphGlow 1.2s ease-in-out infinite alternate}
+@keyframes aphGlow{from{box-shadow:0 0 6px rgba(255,207,63,.25)}to{box-shadow:0 0 22px rgba(255,207,63,.6)}}
+.aph-ov{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:16px;background:rgba(3,6,20,.82);backdrop-filter:blur(4px)}
+.aph-ovbox{display:grid;justify-items:center;gap:10px;width:min(560px,100%);max-height:100%;overflow:auto;padding:20px;border-radius:18px;background:#0d1640;border:2px solid #ffcf3f;text-align:center}
+.aph-ovname{font-size:20px}
+.aph-ovtxt{margin:0;font-size:18px;white-space:pre-wrap}
+.aph-vid{width:100%;max-height:60vh;border-radius:12px;background:#000}
+.aph-botcard textarea{resize:vertical}
 .ap-acts{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
 .ap-jokers{display:flex;gap:8px;flex-wrap:wrap}
 .ap-jk{border:0;border-radius:999px;padding:8px 14px;font:inherit;font-weight:800;font-size:13px;cursor:pointer;color:#fff;background:linear-gradient(180deg,#3a4cb8,#1f2b7a);box-shadow:0 0 0 2px #6d82ff}
@@ -3175,7 +3184,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=96"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=97"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4698,7 +4707,8 @@ function subscribe() {
   U(db.doc('meta/ticker').onSnapshot(d => { S.ticker = normTicker(d.exists ? d.data() : null); got('ticker', d); }, fail));
   U(db.doc('meta/deco').onSnapshot(d => { S.deco = normDeco(d.exists ? d.data() : null); got('deco', d); bgmSync(); }, fail));
   U(db.collection('media').doc('apored').onSnapshot(d => { apm.meta = apmNorm(d.exists ? d.data() : null); if (S.tab === 'einstellungen') render(); apmSync(); }, () => {}));
-  U(db.collection('media').doc('ap_phone').onSnapshot(d => { aph.list = aphNorm(d.exists ? d.data() : null); if (S.tab === 'einstellungen' || S.tab === 'ap') render(); }, () => {}));
+  U(db.collection('media').doc('ap_vid').onSnapshot(d => { aph.vid.meta = apmNorm(d.exists ? d.data() : null); if (S.tab === 'einstellungen') render(); }, () => {}));
+  U(db.collection('media').doc('ap_phone').onSnapshot(d => { aph.list = aphNorm(d.exists ? d.data() : null); aph.bot = aphBotNorm(d.exists ? d.data().bot : null); if (S.tab === 'einstellungen' || S.tab === 'ap') render(); }, () => {}));
   for (const k of ['ok', 'bad']) U(db.collection('media').doc(AP_FX[k].doc).onSnapshot(d => { apm.fx[k].meta = apmNorm(d.exists ? d.data() : null); if (S.tab === 'einstellungen') render(); }, () => {}));
   U(db.collection('pics').onSnapshot(sn => { S.pics = sn.docs.map(d => normPic(d.id, d.data())).filter(x => x.img).sort((a, b) => a.ts - b.ts); got('pics', sn); }, fail));
   U(db.collection('games').onSnapshot(sn => { S.games = sn.docs.map(d => normGame(d.id, d.data())).filter(g => g.name); got('games', sn); }, fail));
@@ -11121,7 +11131,7 @@ function apNorm(x) {
   for (const id of players) {
     const r = src[id] && typeof src[id] === 'object' ? src[id] : {};
     const j = k => Number.isInteger(r[k]) && r[k] >= 0 && r[k] < 15 ? r[k] : -1;
-    pr[id] = {lv:Math.max(0, Math.min(15, +r.lv || 0)), st:['play', 'out', 'stop', 'won'].includes(r.st) ? r.st : 'play', at:Number(r.at) || 0, jf:j('jf'), jp:j('jp'), jt:j('jt'), jtc:r.jtc === 0 || r.jtc === 1 ? r.jtc : -1};
+    pr[id] = {lv:Math.max(0, Math.min(15, +r.lv || 0)), st:['play', 'out', 'stop', 'won'].includes(r.st) ? r.st : 'play', at:Number(r.at) || 0, jf:j('jf'), jp:j('jp'), jt:j('jt'), jtc:r.jtc === 0 || r.jtc === 1 ? r.jtc : -1, ja:r.ja ? 1 : 0, jw:Number(r.jw) > 0 ? +r.jw : 0};
   }
   return {g:'ap', id:str(x.id, 40), status:x.status, players, qs, tl:[0, 30, 60].includes(+x.tl) ? +x.tl : 0, pr, transferred:x.transferred === true, pz:x.pz && x.pz.at ? x.pz : null};
 }
@@ -11151,13 +11161,20 @@ function apAudience(M, lv) {
 }
 /* Telefon-Joker: 10 Personen (Name + Bild stellt der Spielleiter in den Optionen ein), 2 werden ausgelost, 1 darf man anrufen */
 const AP_PH_DEF = [['Mama', '👩'], ['Papa', '👨'], ['Oma', '👵'], ['Opa', '👴'], ['Dein bester Kumpel', '🧑'], ['Deine Lehrerin', '👩‍🏫'], ['Ein Quizprofi', '🧠'], ['Deine Schwester', '👧'], ['Dein Bruder', '👦'], ['Der Nachbar', '🧔']];
-const aph = {list:[], up:-1, draft:{}, ring:{}};
+const aph = {list:[], bot:{n:'', img:'', txt:''}, up:-1, draft:{}, ring:{}, show:false, vid:{meta:null, v:'', url:'', loading:null, up:0}};
+/* Spezial-Anrufer „ApoRed“ (Witz): taucht mit 10 % als dritte Person auf, höchstens einmal pro Spiel und Spieler. Zeigt Text oder MP4 vom Spielleiter. */
+const AP_BOT_P = .1, AP_BOT_TXT = 'Ey, keine Ahnung, Bruder. Viel Glück! 😂';
+function aphBotNorm(x) { const e = x && typeof x === 'object' ? x : {}; return {n:str(e.n, 30).trim(), img:typeof e.img === 'string' && /^data:image\/(jpeg|png|webp);base64,/.test(e.img) && e.img.length < 80000 ? e.img : '', txt:str(e.txt, 400).trim()}; }
+function apBotHere(M, lv) {
+  const me = apMe(M), r = me && M.pr[me]; if (!r || r.jt !== lv || r.jtc >= 0 || r.ja) return false;
+  return apRng(hashStr(M.id + ':apo' + lv + ':' + me))() < AP_BOT_P;
+}
 function aphNorm(x) {
   const src = x && Array.isArray(x.list) ? x.list : [];
   return AP_PH_DEF.map((d, i) => { const e = src[i] && typeof src[i] === 'object' ? src[i] : {};
     return {n:str(e.n, 30).trim(), img:typeof e.img === 'string' && /^data:image\/(jpeg|png|webp);base64,/.test(e.img) && e.img.length < 80000 ? e.img : ''}; });
 }
-function aphPerson(i) { const e = aph.list[i] || {}; return {name:e.n || AP_PH_DEF[i][0], img:e.img || '', emo:AP_PH_DEF[i][1]}; }
+function aphPerson(i) { if (i === 'b') return {name:aph.bot.n || 'ApoRed', img:aph.bot.img, emo:'😎'}; const e = aph.list[i] || {}; return {name:e.n || AP_PH_DEF[i][0], img:e.img || '', emo:AP_PH_DEF[i][1]}; }
 function aphFace(i, size) { const p = aphPerson(i); return p.img ? `<img class="aph-face" src="${p.img}" alt="" width="${size}" height="${size}" style="width:${size}px;height:${size}px">` : `<span class="aph-face aph-emo" style="width:${size}px;height:${size}px;font-size:${Math.round(size * .55)}px">${p.emo}</span>`; }
 function apPhonePair(M, lv) {
   const r = apRng(hashStr(M.id + ':tp' + lv + ':' + (apMe(M) || ''))), a = Math.floor(r() * 10);
@@ -11202,8 +11219,10 @@ function apTransfer() {
 function apLogic() {
   const M = S.ap; if (!M || M.status !== 'running' || roomPaused()) return;
   const host = ctl(), now = Date.now(), me = apMe(M);
+  // ApoRed-Anruf lief (z. B. Seite neu geladen): Zeit wieder freigeben
+  if (me && M.pr[me].jw && !aph.show) { const c = M.pr[me]; apWrite(me, {...c, at:c.at + Math.max(0, now - c.jw), jw:0}); return; }
   // Eigene Zeit abgelaufen: falsch
-  if (M.tl && me && M.pr[me].st === 'play' && apl.lock < 0 && now > M.pr[me].at + M.tl * 1000 && apl.timeKey !== M.id + ':' + M.pr[me].lv) {
+  if (M.tl && me && M.pr[me].st === 'play' && !M.pr[me].jw && apl.lock < 0 && now > M.pr[me].at + M.tl * 1000 && apl.timeKey !== M.id + ':' + M.pr[me].lv) {
     apl.timeKey = M.id + ':' + M.pr[me].lv; if (!apFxPlay('bad')) sfx('timeout'); toast('⏰ Zeit abgelaufen!');
     apWrite(me, {...M.pr[me], st:'out'}); return;
   }
@@ -11217,7 +11236,7 @@ function apLogic() {
       const lvl = botLvl(id), p = {e:.93, m:.96, h:.985}[lvl] - r.lv * {e:.055, m:.04, h:.028}[lvl];
       if (r.lv >= 9 && Math.random() < {e:.25, m:.15, h:.08}[lvl] * (1 - p)) { apWrite(id, {...r, st:'stop'}); continue; }
       if (Math.random() < p) { const lv = r.lv + 1; apWrite(id, {...r, lv, st:lv >= 15 ? 'won' : 'play', at:Date.now()}); } else apWrite(id, {...r, st:'out'});
-    } else if (M.tl && now > r.at + M.tl * 1000 + 20000) apWrite(id, {...r, st:'out'}); // weg vom Gerät
+    } else if (M.tl && now > r.at + M.tl * 1000 + 20000 && !(r.jw && now - r.jw < 300000)) apWrite(id, {...r, st:'out'}); // weg vom Gerät
   }
   const L = lobby(), cur = apNorm(L && L.uno);
   if (cur && cur.players.every(id => cur.pr[id].st !== 'play')) { const nx = {...L.uno, status:'finished'}; S.lobbies[S.room] = {...L, uno:nx}; S.ap = apNorm(nx); roomWrite({'uno.status':'finished'}); }
@@ -11253,7 +11272,14 @@ const apActions = {
   },
   'ap-call': b => {
     const M = S.ap, me = apMe(M); if (!me || apl.lock >= 0 || roomPaused()) return;
-    const r = M.pr[me], c = +b.dataset.v; if (r.st !== 'play' || r.jt !== r.lv || r.jtc >= 0 || (c !== 0 && c !== 1)) return;
+    const r = M.pr[me], c = +b.dataset.v; if (r.st !== 'play' || r.jt !== r.lv || r.jtc >= 0) return;
+    if (c === 2) {
+      if (!apBotHere(M, r.lv) || aph.show) return;
+      aph.show = true; sfx('chosen'); apWrite(me, {...r, ja:1, jw:Date.now()});
+      aphBotOpen(() => { const x = S.ap && S.ap.pr[me]; if (x && x.jw) apWrite(me, {...x, at:x.at + Math.max(0, Date.now() - x.jw), jw:0}); render(); });
+      render(); return;
+    }
+    if (c !== 0 && c !== 1) return;
     aph.ring[M.id + ':' + r.lv] = Date.now() + 1600; setTimeout(render, 1650);
     sfx('chosen'); apWrite(me, {...r, jtc:c}); render();
   },
@@ -11304,15 +11330,15 @@ function apPlayHTML(M) {
   let main = '';
   if (r && r.st === 'play') {
     const lv = r.lv, q = apQ(M, lv), rv = apl.reveal && apl.reveal.lv === lv ? apl.reveal : null, hide = r.jf === lv ? apFifty(M, lv) : [];
-    const aud = r.jp === lv ? apAudience(M, lv) : null, ph = r.jt === lv && r.jtc >= 0 ? apPhone(M, lv, r.jtc) : null, phPick = r.jt === lv && r.jtc < 0 ? apPhonePair(M, lv) : null, paused = roomPaused();
-    const left = M.tl ? Math.max(0, M.tl * 1000 - ((paused ? paused.at : Date.now()) - r.at)) : 0;
+    const aud = r.jp === lv ? apAudience(M, lv) : null, ph = r.jt === lv && r.jtc >= 0 ? apPhone(M, lv, r.jtc) : null, phPick = r.jt === lv && r.jtc < 0 ? apPhonePair(M, lv) : null, apo = phPick && apBotHere(M, lv), paused = roomPaused();
+    const left = M.tl ? Math.max(0, M.tl * 1000 - ((paused ? paused.at : r.jw || Date.now()) - r.at)) : 0;
     main = `<div class="card ap-q">
       <div class="ap-qtop"><span class="ap-stage">Frage ${lv + 1} von 15</span><b class="ap-for">um ${apEur(AP_LADDER[lv])}</b>${q.cat ? `<small class="muted">${esc(q.cat)}</small>` : ''}</div>
       ${M.tl ? `<div class="ap-time"><i id="ap-tbar" style="width:${left / (M.tl * 10)}%"></i><span id="ap-tsec">${Math.ceil(left / 1000)} s</span></div>` : ''}
       <p class="ap-text">${esc(q.t)}</p>
       <div class="ap-ans">${q.a.map((a, i) => { const gone = hide.includes(i), cls = ['ap-a', apl.pick === i ? 'pick' : '', apl.lock === i ? 'lock' : '', rv && i === rv.right ? 'right' : '', rv && !rv.ok && i === rv.pick ? 'wrong' : '', gone ? 'gone' : ''].filter(Boolean).join(' ');
         return `<button class="${cls}" type="button" data-act="ap-pick" data-i="${i}" ${gone || apl.lock >= 0 ? 'disabled' : ''}><span class="ap-l">${'ABCD'[i]}:</span><span>${gone ? '' : esc(a)}</span>${aud ? `<em class="ap-aud" style="--p:${aud[i]}%">${aud[i]} %</em>` : ''}</button>`; }).join('')}</div>
-      ${phPick ? `<div class="ap-phone ap-phpick"><b>📞 Wen rufst du an?</b><div class="aph-two">${phPick.map((w, c) => `<button class="aph-btn" type="button" data-act="ap-call" data-v="${c}" ${apl.lock >= 0 ? 'disabled' : ''}>${aphFace(w, 64)}<span>${esc(aphPerson(w).name)}</span></button>`).join('')}</div><small class="muted">Du darfst nur eine Person anrufen.</small></div>` : ''}
+      ${phPick ? `<div class="ap-phone ap-phpick"><b>📞 Wen rufst du an?</b><div class="aph-two ${apo ? 'three' : ''}">${phPick.map((w, c) => `<button class="aph-btn" type="button" data-act="ap-call" data-v="${c}" ${apl.lock >= 0 ? 'disabled' : ''}>${aphFace(w, 64)}<span>${esc(aphPerson(w).name)}</span></button>`).join('')}${apo ? `<button class="aph-btn aph-special" type="button" data-act="ap-call" data-v="2" ${apl.lock >= 0 ? 'disabled' : ''}>${aphFace('b', 64)}<span>${esc(aphPerson('b').name)}</span></button>` : ''}</div><small class="muted">Du darfst nur eine Person anrufen.</small></div>` : ''}
       ${ph ? `<div class="ap-phone aph-call">${aphFace(ph.who, 52)}<div><b>📞 ${esc(aphPerson(ph.who).name)}</b>${(aph.ring[M.id + ':' + lv] || 0) > Date.now() ? `<p class="aph-ring">Es klingelt …</p>` : `<p>„Ich glaube, es ist <b>${'ABCD'[ph.pick]}</b>. Da bin ich mir zu ${ph.sure} % sicher.“</p>`}</div></div>` : ''}
       <div class="ap-acts">
         <button class="btn btn-gold btn-big" type="button" data-act="ap-lock" ${apl.pick >= 0 && apl.lock < 0 && !paused ? '' : 'disabled'}>${apl.lock >= 0 ? (rv ? (rv.ok ? '✓ Richtig!' : '✗ Leider falsch') : '🔒 Eingeloggt …') : 'Endgültige Antwort'}</button>
@@ -11357,7 +11383,7 @@ function apMount() {
 setInterval(() => {
   const M = S.ap; if (!M || S.tab !== 'ap' || !M.tl) return;
   const me = apMe(M), r = me && M.pr[me]; if (!r || r.st !== 'play') return;
-  const pz = roomPaused(), left = Math.max(0, M.tl * 1000 - ((pz ? pz.at : Date.now()) - r.at));
+  const pz = roomPaused(), left = Math.max(0, M.tl * 1000 - ((pz ? pz.at : r.jw || Date.now()) - r.at));
   const bar = document.getElementById('ap-tbar'), sec = document.getElementById('ap-tsec');
   if (bar) { bar.style.width = (left / (M.tl * 10)) + '%'; bar.classList.toggle('low', left < 10000); }
   if (sec) sec.textContent = Math.ceil(left / 1000) + ' s';
@@ -15317,7 +15343,8 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('input', e => {
   const t = e.target;
-  if (t.id && /^aph-n-\d$/.test(t.id)) { aph.draft[+t.id.slice(6)] = t.value; return; }
+  if (t.id && /^aph-n-(\d|b)$/.test(t.id)) { const k = t.id.slice(6); aph.draft[k === 'b' ? 'b' : +k] = t.value; return; }
+  if (t.id === 'aph-txt') { aph.draft.t = t.value; return; }
   if (t.dataset && t.dataset.gmVol) { const g = gmActive(), v = Number(t.value); if (g && g.k === 'ap') { apm.vol = v; lsSet('turnier-ap-vol', String(v)); if (apm.el) apm.el.volume = v; } else if (g) { music.vol = v; lsSet('turnier-music-vol', String(v)); if (music.el) music.el.volume = v; const mv = document.getElementById('music-vol'); if (mv) mv.value = v; } return; }
   if (t.id === 'music-vol') { music.vol = Number(t.value); lsSet('turnier-music-vol', String(music.vol)); if (music.el) music.el.volume = music.vol; return; }
   if (t.dataset && t.dataset.bgmVol) { bgm.vol = Number(t.value); lsSet('turnier-bgm-vol', String(bgm.vol)); document.querySelectorAll('[data-bgm-vol]').forEach(x => { if (x !== t) x.value = t.value; }); bgm.unlocked = true; bgmSync(); return; }
@@ -15368,7 +15395,10 @@ document.addEventListener('change', async e => {
   }
   if (t.id === 'vg-file') { const f = t.files && t.files[0]; t.value = ''; if (!f || !D.vgF) return; try { const b = await cropToBlob(f, {title:'Cover zuschneiden', aspects:[['Cover (3:4)', 3 / 4]], max:900}); if (!b) return; D.vgF.img = await toVgCover(b); renderModal(); } catch (err) { toast('Das Bild ließ sich nicht öffnen. Versuch ein JPG oder PNG.'); } return; }
   if (t.id === 'music-file') { const f = t.files && t.files[0]; t.value = ''; if (f) saveMusicFile(f); return; }
-  if (/^aph-img-\d$/.test(t.id)) { const f = t.files && t.files[0]; t.value = ''; if (f) aphUpload(+t.id.slice(8), f); return; }
+  if (/^aph-img-(\d|b)$/.test(t.id)) { const f = t.files && t.files[0], k = t.id.slice(8); t.value = ''; if (f) aphUpload(k === 'b' ? 'b' : +k, f); return; }
+  if (t.id === 'aph-vid') { const f = t.files && t.files[0]; t.value = ''; if (f) aphVidUpload(f); return; }
+  if (t.id === 'aph-n-b') { const n = t.value.trim().slice(0, 30); if (n === aph.bot.n || await aphSave('b', {n})) delete aph.draft.b; return; }
+  if (t.id === 'aph-txt') { const x = t.value.trim().slice(0, 400); if (x === aph.bot.txt || await aphSave('b', {txt:x})) delete aph.draft.t; return; }
   if (/^aph-n-\d$/.test(t.id)) { const i = +t.id.slice(6), n = t.value.trim().slice(0, 30); if (n !== ((aph.list[i] || {}).n || '')) { if (await aphSave(i, {n})) delete aph.draft[i]; } else delete aph.draft[i]; return; }
   if (t.id === 'apm-file') { const f = t.files && t.files[0]; t.value = ''; if (f) apmUpload(f); return; }
   if (t.id === 'apfx-ok' || t.id === 'apfx-bad') { const f = t.files && t.files[0]; t.value = ''; if (f) apFxUpload(t.id.slice(5), f); return; }
@@ -15776,7 +15806,7 @@ function musicCardHTML() {
 const APM_CHUNK = 900000, APM_MAX = 10 * 1024 * 1024;
 const apm = {meta:null, v:'', url:'', loading:'', el:null, blocked:false, mute:lsGet('turnier-ap-mute', '0') === '1', vol:Number(lsGet('turnier-ap-vol', '0.55')) || .55, up:0, done:''};
 function apmNorm(x) { return x && typeof x.v === 'string' && Number.isInteger(x.n) && x.n > 0 && x.n <= 16 ? {v:x.v, n:x.n, name:str(x.name || 'Musik', 80), size:+x.size || 0, type:str(x.type || 'audio/mpeg', 40), loop:x.loop !== false, cut:x.cut === true} : null; }
-function apmWanted() { if (apm.test && apm.meta) return true; if (apm.meta && !apm.meta.loop && S.ap && apm.done === S.ap.id) return false; return !!(apm.meta && !apm.mute && S.tab === 'ap' && S.ap && S.ap.status === 'running' && !roomPaused() && document.visibilityState === 'visible'); }
+function apmWanted() { if (aph.show) return false; if (apm.test && apm.meta) return true; if (apm.meta && !apm.meta.loop && S.ap && apm.done === S.ap.id) return false; return !!(apm.meta && !apm.mute && S.tab === 'ap' && S.ap && S.ap.status === 'running' && !roomPaused() && document.visibilityState === 'visible'); }
 /* Gemeinsam für ApoRed-Musik und -Sounds: Datei aus media/<doc>_0 … zusammensetzen (einmal laden, dann aus IndexedDB) */
 async function medBlob(doc, m) {
   try { const rec = await idbDo('readonly', st => st.get(doc)); if (rec && rec.v === m.v && rec.blob) return rec.blob; } catch (e) {}
@@ -15888,16 +15918,67 @@ function aphCardHTML() {
       <p class="m-text">Hier stehen 10 Personen. Nimmt ein Spieler den Telefon-Joker, werden 2 davon ausgelost, und er darf eine anrufen. Gib jeder Person einen Namen und tippe aufs Bild, um ein eigenes zu wählen. Leere Namen bekommen den grauen Vorschlag.</p>
       <div class="aph-grid">${AP_PH_DEF.map((d, i) => { const e = aph.list[i] || {}, v = aph.draft[i] != null ? aph.draft[i] : e.n || '';
         return `<div class="aph-row"><label class="aph-pic" for="aph-img-${i}" title="Bild wählen">${aph.up === i ? '<span class="aph-face aph-emo" style="width:48px;height:48px">⏳</span>' : aphFace(i, 48)}</label>
-          <input class="vh" type="file" id="aph-img-${i}" accept="image/*" ${aph.up >= 0 ? 'disabled' : ''}>
+          <input class="vh" type="file" id="aph-img-${i}" accept="image/*" ${aph.up !== -1 ? 'disabled' : ''}>
           <input class="input" id="aph-n-${i}" maxlength="30" value="${esc(v)}" placeholder="${esc(d[0])}" aria-label="Name von Person ${i + 1}">
           ${e.img ? `<button class="btn btn-sm btn-ghost" type="button" data-act="aph-noimg" data-i="${i}" title="Bild entfernen" aria-label="Bild entfernen">✕</button>` : ''}</div>`; }).join('')}</div>
+    </div>
+    ${aphBotCardHTML()}`;
+}
+function aphBotCardHTML() {
+  const B = aph.bot, vm = aph.vid.meta, nv = aph.draft.b != null ? aph.draft.b : B.n, tv = aph.draft.t != null ? aph.draft.t : B.txt;
+  return `<div class="card share-card aph-card aph-botcard">
+      <h3>😎 Spezial-Anrufer „ApoRed“</h3>
+      <p class="m-text">Ein Witz-Anrufer: Beim Telefon-Joker taucht er mit 10 % Wahrscheinlichkeit als dritte Person auf, höchstens einmal pro Spiel und Spieler. Wer ihn anruft, sieht deinen Text oder dein Video. Danach geht es mit den 2 normalen Personen weiter, und die Zeit läuft solange nicht.</p>
+      <div class="aph-row"><label class="aph-pic" for="aph-img-b" title="Bild wählen">${aph.up === 'b' ? '<span class="aph-face aph-emo" style="width:48px;height:48px">⏳</span>' : aphFace('b', 48)}</label>
+        <input class="vh" type="file" id="aph-img-b" accept="image/*" ${aph.up !== -1 ? 'disabled' : ''}>
+        <input class="input" id="aph-n-b" maxlength="30" value="${esc(nv)}" placeholder="ApoRed" aria-label="Name des Spezial-Anrufers">
+        ${B.img ? `<button class="btn btn-sm btn-ghost" type="button" data-act="aph-noimg" data-i="b" title="Bild entfernen" aria-label="Bild entfernen">✕</button>` : ''}</div>
+      <div class="field"><label for="aph-txt">Text (kommt, wenn kein Video da ist, sonst steht er über dem Video)</label><textarea class="input" id="aph-txt" rows="3" maxlength="400" placeholder="${esc(AP_BOT_TXT)}">${esc(tv)}</textarea></div>
+      <span class="lbl">Video (MP4, bis 10 MB)</span>
+      <div class="music-row"><label class="btn btn-sm ${vm ? '' : 'btn-gold'}" for="aph-vid">${aph.vid.up ? `Lädt hoch … ${aph.vid.up} %` : vm ? 'Anderes Video wählen' : 'MP4 wählen'}</label>
+        <input class="vh" type="file" id="aph-vid" accept="video/mp4,video/*,.mp4" ${aph.vid.up ? 'disabled' : ''}>
+        ${vm ? `<span class="music-name">🎬 ${esc(vm.name)} <small>${(vm.size / 1048576).toFixed(1).replace('.', ',')} MB</small></span><button class="btn btn-sm btn-ghost danger" type="button" data-act="aph-vid-remove">Video entfernen</button>` : '<span class="muted">Noch kein Video.</span>'}</div>
+      <div class="music-row"><button class="btn btn-sm" type="button" data-act="aph-bot-test">▶️ So sieht es im Spiel aus</button></div>
     </div>`;
+}
+async function aphVidLoad() {
+  const f = aph.vid, m = f.meta; if (!m || !db) return;
+  if (f.v === m.v && f.url) return;
+  if (f.loading && f.loading.v === m.v) return f.loading.p;
+  const p = (async () => { try { const blob = await medBlob('ap_vid', m); if (f.meta === m) { if (f.url) URL.revokeObjectURL(f.url); f.url = URL.createObjectURL(blob); f.v = m.v; } } catch (e) { console.warn('ApoRed-Video', e); } f.loading = null; })();
+  f.loading = {v:m.v, p}; return p;
+}
+async function aphVidUpload(file) {
+  if (!S.admin || !db || !file) return;
+  if (file.size > APM_MAX) { toast('Das Video ist größer als 10 MB. Bitte kürze es oder speichere es kleiner.'); return; }
+  aph.vid.up = 1; render();
+  try { await medUpload('ap_vid', file, aph.vid.meta ? aph.vid.meta.n : 0, {type:file.type || 'video/mp4'}, pr => { aph.vid.up = pr; render(); }); toast('Video gespeichert.'); }
+  catch (e) { toast(e && e.code === 'permission-denied' ? 'Nur der Spielleiter darf das ändern.' : 'Das Video konnte nicht hochgeladen werden. Prüf dein Internet.'); }
+  aph.vid.up = 0; render();
+}
+/* Anruf bei ApoRed: eigenes Fenster direkt im body, damit das Video beim Neuzeichnen nicht neu startet */
+function aphBotOpen(onClose) {
+  if (document.getElementById('aph-ov')) return;
+  aph.show = true; apmSync();
+  const vm = aph.vid.meta, txt = aph.bot.txt || (vm ? '' : AP_BOT_TXT), ov = document.createElement('div');
+  ov.id = 'aph-ov'; ov.className = 'aph-ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+  ov.innerHTML = H(`<div class="aph-ovbox">${aphFace('b', 76)}<b class="aph-ovname">📞 ${esc(aphPerson('b').name)}</b>${txt ? `<p class="aph-ovtxt">${esc(txt)}</p>` : ''}${vm ? `<video class="aph-vid" playsinline controls preload="auto"></video><small class="muted aph-vload">Video lädt …</small>` : ''}<button class="btn btn-gold" type="button" id="aph-ovclose">Auflegen</button></div>`);
+  document.body.appendChild(ov);
+  let done = false;
+  const close = () => { if (done) return; done = true; const v = ov.querySelector('video'); if (v) v.pause(); ov.remove(); document.removeEventListener('keydown', esc_); aph.show = false; apmSync(); if (onClose) onClose(); };
+  const esc_ = e => { if (e.key === 'Escape') close(); };
+  document.addEventListener('keydown', esc_);
+  ov.querySelector('#aph-ovclose').onclick = close;
+  const v = ov.querySelector('video'); if (!v) return;
+  v.addEventListener('ended', close);
+  const go = () => { const ld = ov.querySelector('.aph-vload'); if (!aph.vid.url) { if (ld) ld.textContent = H('Das Video konnte nicht geladen werden.'); return; } if (ld) ld.remove(); v.src = aph.vid.url; const p = v.play(); if (p && p.catch) p.catch(() => {}); };
+  if (aph.vid.url && aph.vid.v === vm.v) go(); else aphVidLoad().then(() => { if (!done) go(); });
 }
 async function aphSave(i, patchObj) {
   if (!S.admin || !db) return false;
-  const list = aphNorm({list:aph.list}).map((e, k) => k === i ? {...e, ...patchObj} : e);
-  aph.list = list; render();
-  try { await db.collection('media').doc('ap_phone').set({list}); return true; } catch (e) { toast(e && e.code === 'permission-denied' ? 'Nur der Spielleiter darf das ändern.' : 'Das hat nicht geklappt. Prüf dein Internet.'); return false; }
+  const list = aphNorm({list:aph.list}).map((e, k) => k === i ? {...e, ...patchObj} : e), bot = i === 'b' ? {...aphBotNorm(aph.bot), ...patchObj} : aphBotNorm(aph.bot);
+  aph.list = list; aph.bot = bot; render();
+  try { await db.collection('media').doc('ap_phone').set({list, bot}); return true; } catch (e) { toast(e && e.code === 'permission-denied' ? 'Nur der Spielleiter darf das ändern.' : 'Das hat nicht geklappt. Prüf dein Internet.'); return false; }
 }
 async function aphPic(file) {
   const url = URL.createObjectURL(file);
@@ -15915,7 +15996,9 @@ async function aphUpload(i, file) {
   aph.up = -1; render();
 }
 const apmActions = {
-  'aph-noimg': b => aphSave(+b.dataset.i, {img:''}),
+  'aph-noimg': b => aphSave(b.dataset.i === 'b' ? 'b' : +b.dataset.i, {img:''}),
+  'aph-bot-test': () => aphBotOpen(null),
+  'aph-vid-remove': () => confirmBox('Video entfernen?', 'Dann zeigt ApoRed nur den Text.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Entfernen', cls:'btn-gold', fn:async () => { if (!S.admin || !db) return; try { await medRemove('ap_vid', aph.vid.meta ? aph.vid.meta.n : 0); toast('Video entfernt.'); } catch (e) { toast('Das hat nicht geklappt.'); } }}]),
   'apfx-test': async b => { const k = b.dataset.k; if (!apm.fx[k].meta) return; if (apm.fx[k].v !== apm.fx[k].meta.v) { toast('Wird geladen …'); await apFxLoad(k); } apFxPlay(k); },
   'apfx-remove': b => { const k = b.dataset.k; confirmBox('Sound entfernen?', 'Dann kommt wieder der eingebaute Ton.', [{label:'Abbrechen', cls:'btn-ghost'}, {label:'Entfernen', cls:'btn-gold', fn:async () => { if (!S.admin || !db) return; try { await medRemove(AP_FX[k].doc, apm.fx[k].meta ? apm.fx[k].meta.n : 0); toast('Sound entfernt.'); } catch (e) { toast('Das hat nicht geklappt.'); } }}]); },
   'apm-loop': b => { if (!S.admin || !db || !apm.meta) return; const loop = b.dataset.v === '1'; apm.meta = {...apm.meta, loop}; render(); db.collection('media').doc('apored').update({loop}).catch(() => toast('Das hat nicht geklappt.')); },
