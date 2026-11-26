@@ -173,6 +173,13 @@ Physik: Die Kugel rutscht vorne auf dem Öl fast gerade und hakt hinten auf troc
 Pins kippen in Stoßrichtung um und sind beim Kippen/Liegen ein Stab, der Nachbarn mitreißt; harte Treffer lassen sie springen und drehen,
 an den Seitenwänden prallen sie zurück, leichte Stöße lassen sie nur wackeln. Alles in festen Schritten, damit alle Geräte dasselbe sehen.
 
+
+## Schach
+Raumspiel `ch` (im Feld `uno`, g:'ch'), 1 gegen 1 wie Tischtennis/Air-Hockey: Sind mehr im Raum, wählt der Host 2 aus, der Rest schaut zu.
+Farben werden ausgelost, Revanche tauscht sie. Brett als 64-Zeichen-Text (`b`), Züge als „e2e4“ (`h`), Uhr optional (3/5/10/15 Min, `tl`/`at`).
+Alle Regeln (Rochade, en passant, Umwandlung mit Auswahl, Matt, Patt, 50 Züge, dreifache Wiederholung, zu wenig Material,
+Aufgeben, Remis anbieten). Die Zuggenerierung ist mit Perft-Stellungen geprüft. Bot (Host): Alpha-Beta mit Feldtabellen,
+leicht/mittel/schwer = Tiefe 1/2/3, höchstens 0,8 s pro Zug. Highscore: Sieg +3, Niederlage +1, Remis je +2.
 ## Air-Hockey und 2er-Spiele
 🏒 Air-Hockey: 1 gegen 1 (auch gegen einen Bot), bis 5, 7 oder 10 Tore. Gespeichert im Raum-Feld `uno` mit `g:'ah'`.
 Der Puck läuft auf jedem Gerät mit festen Rechenschritten gleich weiter. Treffer und Tore auf einer Hälfte schreibt nur deren

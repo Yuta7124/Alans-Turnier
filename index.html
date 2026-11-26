@@ -1674,6 +1674,49 @@ body.ah-locked .ah-lockhint{display:none}
 .uid-ask summary{cursor:pointer;font-weight:700}
 .uid-mini{margin-top:8px;font-size:.85rem}
 .uid-mini .uid-box{margin-top:6px}
+/* Schach */
+.ch-wrap{display:grid;grid-template-columns:minmax(0,auto) minmax(220px,320px);gap:22px;align-items:start;justify-content:center}
+.ch-main{display:flex;flex-direction:column;gap:8px;width:min(78vh,640px,100%)}
+.ch-board{position:relative;display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1;width:100%;border-radius:6px;overflow:hidden;box-shadow:0 0 0 4px #3a2a1a,0 10px 30px rgba(0,0,0,.5)}
+.ch-sq{position:relative;border:0;padding:0;margin:0;display:flex;align-items:center;justify-content:center;cursor:pointer;font:inherit;aspect-ratio:1;min-width:0}
+.ch-sq.l{background:#f0d9b5}.ch-sq.d{background:#b58863}
+.ch-sq.last.l{background:#f6eb72}.ch-sq.last.d{background:#dbc34a}
+.ch-sq.sel{background:#7fc97f!important}
+.ch-sq.chk{background:radial-gradient(circle,#ff3b3b 0,#e01818 45%,transparent 75%),#b58863}
+.ch-sq.tg::after{content:'';width:28%;height:28%;border-radius:50%;background:rgba(20,20,20,.28)}
+.ch-sq.tgc::after{content:'';position:absolute;inset:4%;border-radius:50%;box-shadow:inset 0 0 0 5px rgba(20,20,20,.3)}
+.ch-pc{font-size:min(8.4vh,68px);line-height:1;font-family:'Segoe UI Symbol','Noto Sans Symbols 2','DejaVu Sans',serif;font-variant-emoji:text;pointer-events:none;user-select:none}
+.ch-pc.w{color:#fff;text-shadow:0 0 1px #000,0 0 1px #000,0 0 2px #000,1px 1px 0 #222,-1px -1px 0 #222,1px -1px 0 #222,-1px 1px 0 #222}
+.ch-pc.b{color:#1b1410;text-shadow:0 0 2px rgba(255,255,255,.55)}
+.ch-lf,.ch-lr{position:absolute;font-style:normal;font-size:11px;font-weight:800;opacity:.7;pointer-events:none}
+.ch-lf{right:4px;bottom:2px}.ch-lr{left:4px;top:2px}
+.ch-sq.l .ch-lf,.ch-sq.l .ch-lr{color:#b58863}.ch-sq.d .ch-lf,.ch-sq.d .ch-lr{color:#f0d9b5}
+.ch-pl{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:10px;background:var(--panel);min-height:48px}
+.ch-pl.on{box-shadow:inset 0 0 0 2px var(--coin)}
+.ch-pl b{font-size:16px}
+.ch-pl small{color:var(--muted)}
+.ch-capd{flex:1;font-size:18px;letter-spacing:-2px;overflow:hidden;white-space:nowrap;font-family:'Segoe UI Symbol','Noto Sans Symbols 2','DejaVu Sans',serif}
+.ch-capd.w{color:#fff;text-shadow:0 0 1px #000}.ch-capd.b{color:#1b1410;text-shadow:0 0 2px rgba(255,255,255,.7)}
+.ch-clock{margin-left:auto;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:20px;font-weight:800;padding:4px 10px;border-radius:8px;background:rgba(0,0,0,.35)}
+.ch-clock.run{background:var(--coin);color:#1a1208}
+.ch-clock.low.run{background:#e0283c;color:#fff}
+.ch-side{display:flex;flex-direction:column;gap:12px;align-items:flex-start;position:sticky;top:12px}
+.ch-st{font-size:20px;font-weight:800;margin:0}
+.ch-st.mine{color:var(--coin)}
+.ch-chk{color:#ff4d5e}
+.ch-offer{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;border-radius:10px;background:rgba(255,207,63,.12)}
+.ch-mvbox{width:100%;display:flex;flex-direction:column;gap:6px}
+.ch-mvs{list-style:none;margin:0;padding:8px;max-height:320px;overflow:auto;border-radius:10px;background:var(--panel);display:grid;grid-template-columns:1fr;gap:2px;font-size:14px}
+.ch-mvs li{display:grid;grid-template-columns:34px 1fr 1fr;gap:6px}
+.ch-mvn{color:var(--muted)}
+.ch-pro{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:rgba(15,10,30,.95);box-shadow:0 0 0 2px var(--coin),0 10px 30px rgba(0,0,0,.6);z-index:3}
+.ch-pro>span{font-weight:800;font-size:14px}
+.ch-pro-b{width:56px;height:56px;border:0;border-radius:10px;background:#f0d9b5;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ch-pro-b .ch-pc{font-size:44px}
+.ch-endboard{width:min(360px,90%);margin:10px auto;pointer-events:none}
+.ch-endboard .ch-pc{font-size:min(5vh,40px)}
+.ch-drawav{display:flex;gap:10px;justify-content:center}
+@media (max-width:900px){.ch-wrap{grid-template-columns:minmax(0,1fr)}.ch-main{width:100%}.ch-side{position:static;width:100%}.ch-pc{font-size:min(10.5vw,60px)}.ch-mvs{max-height:180px}}
 .wm-btns{
 display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .hub-admin{display:flex;justify-content:center;margin:8px 0 0}
@@ -3023,7 +3066,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=84"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=85"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4035,7 +4078,7 @@ function normTicker(x) {
   };
 }
 const COLORS = ['#f5b83d', '#3fd49c', '#ff8080', '#6ea8ff', '#c493ff', '#ff9f5a', '#5fdde3', '#f58fb8'];
-const SRV_ICON = {quiz:'❓', malen:'🎨', golf:'⛳', karten:'🃏', mad:'🎲', bj:'♠️', dt:'🧱', tt:'🏓', ah:'🏒', bw:'🎳'};
+const SRV_ICON = {quiz:'❓', malen:'🎨', golf:'⛳', karten:'🃏', mad:'🎲', bj:'♠️', dt:'🧱', tt:'🏓', ah:'🏒', bw:'🎳', ch:'♟️'};
 const FMTS = [[1, 'Alle gegen alle', '⚔️'], [2, 'Duos', '👥'], [3, 'Trios', '👥'], [4, 'Squads', '👥']];
 const TEAM_COLS = ['#ffcf3f', '#39d6f2', '#ff4f6d', '#4ff08f', '#c493ff', '#ff9f5a', '#6ea8ff', '#f58fb8'];
 const LETTERS = ['A', 'B', 'C', 'D'];
@@ -4059,7 +4102,7 @@ function groupPick(g) {
   return GROUPS[g].some(x => x[0] === last) ? last : GROUPS[g][0][0];
 }
 /* Ansichten: "Spiele" ist der Ober-Tab für Quiz und Malen */
-const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'support', 'einstellungen'];
+const VIEWS = ['start', 'rangliste', 'spieler', 'rad', 'liste', 'spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch', 'support', 'einstellungen'];
 const HUB = ['quiz', 'malen'];
 const viewOk = t => VIEWS.includes(t);
 /* Im Turnier entscheidet nur der Spielleiter, ob alle den Highscore oder das Zufallsrad sehen (settings.tview) */
@@ -4071,7 +4114,7 @@ function viewFor(t) {
   if (t === 'vg') return 'spieler';
   if (t === 'liste') t = 'rad'; // Spieleliste gibt es im Turnier nicht mehr
   if (!S.admin && (t === 'turnier' || t === 'rangliste' || t === 'rad')) return S.settings.tview;
-  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf' || t === 'karten' || t === 'mad' || t === 'bj' || t === 'dt' || t === 'tt' || t === 'ah' || t === 'bw') return S.room ? roomView() : 'spiele';
+  if (t === 'raum' || t === 'quiz' || t === 'malen' || t === 'golf' || t === 'karten' || t === 'mad' || t === 'bj' || t === 'dt' || t === 'tt' || t === 'ah' || t === 'bw' || t === 'ch') return S.room ? roomView() : 'spiele';
   return GROUPS[t] ? groupPick(t) : viewOk(t) ? t : 'start';
 }
 
@@ -4811,7 +4854,7 @@ function render() {
   else if (S.mode === 'lock') html = lockHTML();
   else if (blocked()) html = `<div style="min-height:70vh"></div>`;
   else if (S.tab === 'spiele-pick') html = `<div class="loading">${COIN(48, 'spin')}</div>`;
-  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, mad:viewMad, bj:viewBj, dt:viewDt, tt:viewTt, ah:viewAh, bw:viewBw, support:viewSupport, einstellungen:viewSettings}[S.tab] || viewStart)();
+  else html = ({start:viewStart, rangliste:viewBoard, spieler:viewPlayers, rad:viewWheel, liste:viewGames, spiele:viewRooms, raum:viewRoom, quiz:viewQuiz, malen:viewDraw, golf:viewGolf, karten:viewKarten, mad:viewMad, bj:viewBj, dt:viewDt, tt:viewTt, ah:viewAh, bw:viewBw, ch:viewCh, support:viewSupport, einstellungen:viewSettings}[S.tab] || viewStart)();
   if (groupOf(S.tab) === 'turnier' && tourLocked()) html = tourCheckin() && !D.tourPeek ? tourCheckinHTML() : tourPreviewHTML();
   else if (groupOf(S.tab) === 'turnier' && tourKey() && !tourCheckin() && (D.tourIntro || lsGet('turnier-intro', '') !== tourKey())) html = tourIntroHTML();
   else if (groupOf(S.tab) === 'turnier' && S.admin && D.tourEdit && !['live', 'today'].includes(tourState().k)) html = `<div class="tour-editbar"><span>✏️ Bearbeitungsmodus: Nur du siehst das so. Für die Spieler ist das Turnier noch gesperrt.</span><button class="btn btn-sm" type="button" data-act="tour-preview">Zur Vorschau</button></div>` + html;
@@ -4836,6 +4879,7 @@ function render() {
   ttMount();
   ahMount();
   bwMount();
+  chMount();
   renderFlySite();
   const newStand = m.querySelector('.stand');
   if (oldStand && newStand && newStand.dataset.key === oldKey) newStand.replaceWith(oldStand);
@@ -4855,7 +4899,7 @@ function render() {
 function tabsHidden() { return S.mode === 'loading' || S.mode === 'setup' || S.mode === 'lock' || S.mode === 'firstrun' || (S.mode === 'db' && !S.loaded) || blocked(); }
 function inGame() {
   if (tabsHidden() || S.mode !== 'db') return false;
-  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running') || (S.tab === 'karten' && !!S.uno && S.uno.status === 'running') || (S.tab === 'mad' && !!S.mad && S.mad.status === 'running') || (S.tab === 'bj' && !!S.bj && S.bj.status === 'running') || (S.tab === 'dt' && !!S.dt && S.dt.status === 'running') || (S.tab === 'tt' && !!S.tt && S.tt.status === 'running') || (S.tab === 'ah' && !!S.ah && S.ah.status === 'running') || (S.tab === 'bw' && !!S.bw && S.bw.status === 'running');
+  return (S.tab === 'quiz' && !!S.quiz && S.quiz.status === 'running') || (S.tab === 'malen' && !!S.draw && S.draw.status === 'running') || (S.tab === 'golf' && !!S.golf && S.golf.status === 'running') || (S.tab === 'karten' && !!S.uno && S.uno.status === 'running') || (S.tab === 'mad' && !!S.mad && S.mad.status === 'running') || (S.tab === 'bj' && !!S.bj && S.bj.status === 'running') || (S.tab === 'dt' && !!S.dt && S.dt.status === 'running') || (S.tab === 'tt' && !!S.tt && S.tt.status === 'running') || (S.tab === 'ah' && !!S.ah && S.ah.status === 'running') || (S.tab === 'bw' && !!S.bw && S.bw.status === 'running') || (S.tab === 'ch' && !!S.ch && S.ch.status === 'running');
 }
 const isTouch = () => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } };
 const canFull = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
@@ -4883,7 +4927,7 @@ function renderSubnav() {
     if (S.admin && tourKey()) h += `<div class="hub-admin"><button class="btn btn-sm hub-stop" type="button" data-act="tour-stop">⏹ Turnier stoppen</button></div>`;
   } else if (!hide && inRoom) {
     h = roomBarHTML();
-    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf' && S.tab !== 'karten' && S.tab !== 'mad' && S.tab !== 'bj' && S.tab !== 'dt' && S.tab !== 'tt' && S.tab !== 'ah' && S.tab !== 'bw') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
+    if (isTouch() && S.tab !== 'raum' && S.tab !== 'golf' && S.tab !== 'karten' && S.tab !== 'mad' && S.tab !== 'bj' && S.tab !== 'dt' && S.tab !== 'tt' && S.tab !== 'ah' && S.tab !== 'bw' && S.tab !== 'ch') h += `<div class="hub-big">${canFull() ? `<button class="btn btn-sm" type="button" data-act="fullscreen">${document.fullscreenElement || document.webkitFullscreenElement ? '✕ Vollbild beenden' : '⛶ Vollbild und quer'}</button>` : ''}<span class="hub-rot">📱 Handy quer halten = größer</span></div>`;
   }
   el.setAttribute('aria-label', tx(inRoom ? 'Raum' : 'Turnier'));
   el.classList.toggle('wide', (!!grp || inRoom) && $('#main').classList.contains('wide'));
@@ -5565,7 +5609,7 @@ function wheelFollow() {
   else if (sp.id === wheelSeenSpin) return;
   wheelSeenSpin = sp.id;
   if (!wheelSpinning(w) || S.tab === 'rad') return;
-  const busy = roomTabs.includes(S.tab) && S.tab !== 'raum' && ((S.uno && S.uno.status === 'running') || (S.mad && S.mad.status === 'running') || (S.bj && S.bj.status === 'running') || (S.dt && S.dt.status === 'running') || (S.tt && S.tt.status === 'running') || (S.ah && S.ah.status === 'running') || (S.bw && S.bw.status === 'running') || (S.golf && S.golf.status === 'running') || (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running'));
+  const busy = roomTabs.includes(S.tab) && S.tab !== 'raum' && ((S.uno && S.uno.status === 'running') || (S.mad && S.mad.status === 'running') || (S.bj && S.bj.status === 'running') || (S.dt && S.dt.status === 'running') || (S.tt && S.tt.status === 'running') || (S.ah && S.ah.status === 'running') || (S.bw && S.bw.status === 'running') || (S.ch && S.ch.status === 'running') || (S.golf && S.golf.status === 'running') || (S.quiz && S.quiz.status === 'running') || (S.draw && S.draw.status === 'running'));
   if (busy) { toast('🎡 Das Zufallsrad dreht sich! Schau im Turnier vorbei.'); return; }
   if (S.modal) closeModal();
   setTab('rad');
@@ -7021,7 +7065,7 @@ const ROOMS = ['r1', 'r2', 'r3'];
 /* rt = eigene Turnier-Lobby: nur für Turnier-Spieler, immer privat, taucht nicht bei den normalen Räumen auf */
 const TOUR_ID = 'rt', ALL_ROOMS = [...ROOMS, TOUR_ID];
 const ROOM_MAX = 8;
-const DUO_KINDS = ['tt', 'ah'];
+const DUO_KINDS = ['tt', 'ah', 'ch'];
 function roomMax(L) { return ROOM_MAX; }
 const ROOM_NAMES = {r1:'Raum 1', r2:'Raum 2', r3:'Raum 3'};
 const TOUR_ROOM = 'TOUR';
@@ -7034,7 +7078,7 @@ function normLobby(id, x) {
   const host = x.host && typeof x.host === 'object' && x.host.dev ? {pid:str(x.host.pid, 40), dev:str(x.host.dev, 60)} : null;
   const inv = Object.fromEntries(Object.keys(x.inv && typeof x.inv === 'object' && !Array.isArray(x.inv) ? x.inv : {}).filter(k => k && k.length <= 40).slice(0, 40).map(k => [k, true]));
   const tour = id === 'rt' || x.name === TOUR_ROOM || x.tour === true;
-  return {id, name:tour ? '🏆 Turnier-Lobby' : ROOM_NAMES[id] || id, tour, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true || id === 'rt', inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw'].includes(x.kind) ? x.kind : '',
+  return {id, name:tour ? '🏆 Turnier-Lobby' : ROOM_NAMES[id] || id, tour, members, host, hostSeen:Number(x.hostSeen) || 0, priv:x.priv === true || id === 'rt', inv, kind:['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch'].includes(x.kind) ? x.kind : '',
     quiz:x.quiz && typeof x.quiz === 'object' ? x.quiz : null, draw:x.draw && typeof x.draw === 'object' ? x.draw : null, golf:x.golf && typeof x.golf === 'object' ? x.golf : null, uno:x.uno && typeof x.uno === 'object' ? x.uno : null,
     hs:Object.fromEntries(Object.entries(x.hs && typeof x.hs === 'object' && !Array.isArray(x.hs) ? x.hs : {}).filter(([pid, v]) => pid.length <= 40 && Number.isFinite(Number(v))).map(([pid, v]) => [pid, Math.round(Number(v))])),
     bots:Object.fromEntries(Object.entries(x.bots && typeof x.bots === 'object' && !Array.isArray(x.bots) ? x.bots : {}).filter(([id, b]) => id.startsWith('bot_') && id.length <= 40 && b && typeof b === 'object').slice(0, ROOM_MAX)
@@ -7068,6 +7112,8 @@ function lobbyAutoAward() {
   if (AHM && AHM.status === 'finished' && !AHM.transferred && !lhsDone.has('h' + AHM.id)) { lhsDone.add('h' + AHM.id); ahTransfer(); }
   const BWM = S.bw;
   if (BWM && BWM.status === 'finished' && !BWM.transferred && !lhsDone.has('w' + BWM.id)) { lhsDone.add('w' + BWM.id); bwTransfer(); }
+  const CHM = S.ch;
+  if (CHM && CHM.status === 'finished' && !CHM.transferred && !lhsDone.has('c' + CHM.id)) { lhsDone.add('c' + CHM.id); chTransfer(); }
 }
 function lobbyHsHTML(L = lobby(), max = 10, inModal = false) {
   if (!L) return '';
@@ -7116,19 +7162,19 @@ function roomInviteModalHTML() {
 function hostStale(L) { return !L || !L.host || Date.now() - (L.hostSeen || 0) > HOST_STALE_MS; }
 function roomState(L) {
   if (!L) return 'free';
-  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : L.kind === 'karten' ? (L.uno && !L.uno.g ? L.uno : null) : L.kind === 'mad' ? (L.uno && L.uno.g === 'mad' ? L.uno : null) : L.kind === 'bj' ? (L.uno && L.uno.g === 'bj' ? L.uno : null) : L.kind === 'dt' ? (L.uno && L.uno.g === 'dt' ? L.uno : null) : L.kind === 'tt' ? (L.uno && L.uno.g === 'tt' ? L.uno : null) : L.kind === 'ah' ? (L.uno && L.uno.g === 'ah' ? L.uno : null) : L.kind === 'bw' ? (L.uno && L.uno.g === 'bw' ? L.uno : null) : null;
+  const g = L.kind === 'quiz' ? L.quiz : L.kind === 'malen' ? L.draw : L.kind === 'golf' ? L.golf : L.kind === 'karten' ? (L.uno && !L.uno.g ? L.uno : null) : L.kind === 'mad' ? (L.uno && L.uno.g === 'mad' ? L.uno : null) : L.kind === 'bj' ? (L.uno && L.uno.g === 'bj' ? L.uno : null) : L.kind === 'dt' ? (L.uno && L.uno.g === 'dt' ? L.uno : null) : L.kind === 'tt' ? (L.uno && L.uno.g === 'tt' ? L.uno : null) : L.kind === 'ah' ? (L.uno && L.uno.g === 'ah' ? L.uno : null) : L.kind === 'bw' ? (L.uno && L.uno.g === 'bw' ? L.uno : null) : L.kind === 'ch' ? (L.uno && L.uno.g === 'ch' ? L.uno : null) : null;
   if (g && g.status === 'running') return 'running';
   if (g && g.status === 'finished') return 'finished';
   return roomMembers(L).length ? 'waiting' : 'free';
 }
-function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : L.kind === 'karten' ? 'karten' : L.kind === 'mad' ? 'mad' : L.kind === 'bj' ? 'bj' : L.kind === 'dt' ? 'dt' : L.kind === 'tt' ? 'tt' : L.kind === 'ah' ? 'ah' : L.kind === 'bw' ? 'bw' : 'raum'; }
-const roomTabs = ['raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw'];
+function roomView() { const L = lobby(); return !L ? 'spiele' : L.kind === 'quiz' ? 'quiz' : L.kind === 'malen' ? 'malen' : L.kind === 'golf' ? 'golf' : L.kind === 'karten' ? 'karten' : L.kind === 'mad' ? 'mad' : L.kind === 'bj' ? 'bj' : L.kind === 'dt' ? 'dt' : L.kind === 'tt' ? 'tt' : L.kind === 'ah' ? 'ah' : L.kind === 'bw' ? 'bw' : L.kind === 'ch' ? 'ch' : 'raum'; }
+const roomTabs = ['raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch'];
 const FV = () => window.firebase && firebase.firestore && firebase.firestore.FieldValue;
 function roomRef(r = S.room) { return db.collection('lobbies').doc(r); }
 function roomSet(r, spectate = false) {
   if (S.room === r && S.spectate === spectate) return;
   S.room = r; S.spectate = !!(r && spectate);
-  S.quiz = null; S.draw = null; S.golf = null; S.uno = null; S.mad = null; ml.pend = null; ml.n = 0; S.bj = null; bjl.pend = null; bjl.n = 0; S.dt = null; S.tt = null; S.ah = null; S.bw = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false; kl.pend = null; kl.n = 0;
+  S.quiz = null; S.draw = null; S.golf = null; S.uno = null; S.mad = null; ml.pend = null; ml.n = 0; S.bj = null; bjl.pend = null; bjl.n = 0; S.dt = null; S.tt = null; S.ah = null; S.bw = null; S.ch = null; gl.key = ''; dLastTurnKey = ''; D.dnew = false; kl.pend = null; kl.n = 0;
   roomApply();
 }
 /* ---------- Pause für alle Raum-Spiele ----------
@@ -7136,7 +7182,7 @@ function roomSet(r, spectate = false) {
    Während der Pause laufen keine Zeiten, Host-Abläufe und Bots. Beim Weiterspielen schiebt der, der „Weiter“ drückt,
    die gespeicherten Zeitpunkte um die Pausenlänge nach hinten; jedes Gerät verschiebt seine eigenen Zähler genauso.
    Spielt man allein (nur Bots oder niemand sonst), pausiert das Spiel automatisch, wenn man die Seite verlässt. */
-const PZ_FIELD = {quiz:'quiz', malen:'draw', golf:'golf', karten:'uno', mad:'uno', bj:'uno', dt:'uno', tt:'uno', ah:'uno', bw:'uno'};
+const PZ_FIELD = {quiz:'quiz', malen:'draw', golf:'golf', karten:'uno', mad:'uno', bj:'uno', dt:'uno', tt:'uno', ah:'uno', bw:'uno', ch:'uno'};
 function pzField(L = lobby()) { return (L && PZ_FIELD[L.kind]) || ''; }
 function pzGame(L = lobby()) { const f = pzField(L), g = f && L[f]; return g && g.status === 'running' && (L.kind !== 'karten' || !g.g) ? g : null; }
 function roomPaused(L = lobby()) { const g = pzGame(L); return g && g.pz && g.pz.at ? g.pz : null; }
@@ -7157,6 +7203,7 @@ function pzSet(on, auto = false) {
   else if (L.kind === 'karten' || L.kind === 'mad') { sh('s.turnAt', g.s && g.s.turnAt); if (L.kind === 'karten' && g.s && g.s.unc) for (const [pid, v] of Object.entries(g.s.unc)) sh('s.unc.' + pid, v); }
   else if (L.kind === 'bj') sh('s.at', g.s && g.s.at);
   else if (L.kind === 'bw') sh('s.turnAt', g.s && g.s.turnAt);
+  else if (L.kind === 'ch') sh('at', g.at);
   else if (L.kind === 'dt' || L.kind === 'tt' || L.kind === 'ah') sh('startAt', g.startAt);
   else if (L.kind === 'golf') sh('holeAt', g.holeAt);
   const ng = clone(g); delete ng.pz;
@@ -7292,6 +7339,7 @@ function roomApply() {
   S.tt = L && L.kind === 'tt' && L.uno ? ttNorm(L.uno) : null;
   S.ah = L && L.kind === 'ah' && L.uno ? ahNorm(L.uno) : null;
   S.bw = L && L.kind === 'bw' && L.uno ? bwNorm(L.uno) : null;
+  S.ch = L && L.kind === 'ch' && L.uno ? chNorm(L.uno) : null;
   handleAnswers();
   if (S.room && roomTabs.includes(S.tab)) { const v = roomView(); if (S.tab !== v) { S.tab = v; try { history.replaceState(null, '', '#' + v); } catch (e) {} } }
   if (!S.room && roomTabs.includes(S.tab)) S.tab = 'spiele';
@@ -7393,7 +7441,7 @@ const ROOM_STATE = {free:['Frei', '#4ff08f'], waiting:['Wartet', '#ffcf3f'], run
 function roomCardHTML(r) {
   const L = lobby(r), mem = roomMembers(L), n = mem.length, me = myPid(), mine = !!(me && L.members[me]);
   const st = roomState(L), sl = ROOM_STATE[st];
-  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : L.kind === 'karten' ? ['🃏', 'Kartenwahn'] : L.kind === 'mad' ? ['🎲', 'Uncle Grandpa ärgere dich'] : L.kind === 'bj' ? ['🂡', 'Blackjack'] : L.kind === 'dt' ? ['🧱', 'Dicktris'] : L.kind === 'tt' ? ['🏓', 'Tischtennis'] : L.kind === 'ah' ? ['🏒', 'Air-Hockey'] : L.kind === 'bw' ? ['🎳', 'Bowling'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
+  const kindTxt = L.kind === 'quiz' ? ['🧠', 'Quiz'] : L.kind === 'malen' ? ['🎨', 'Malen'] : L.kind === 'golf' ? ['⛳', 'Golf'] : L.kind === 'karten' ? ['🃏', 'Kartenwahn'] : L.kind === 'mad' ? ['🎲', 'Uncle Grandpa ärgere dich'] : L.kind === 'bj' ? ['🂡', 'Blackjack'] : L.kind === 'dt' ? ['🧱', 'Dicktris'] : L.kind === 'tt' ? ['🏓', 'Tischtennis'] : L.kind === 'ah' ? ['🏒', 'Air-Hockey'] : L.kind === 'bw' ? ['🎳', 'Bowling'] : L.kind === 'ch' ? ['♟️', 'Schach'] : ['🚪', n ? 'Spiel wird gewählt' : 'Noch nichts los'];
   const hostP = L.host && playerById(L.host.pid);
   const slots = Array.from({length:roomMax(L)}, (_, i) => mem[i] ? `<span class="rc-slot" title="${esc(ghost(mem[i]).name)}">${avatar(ghost(mem[i]), 34)}</span>` : '<span class="rc-slot empty"></span>').join('');
   const priv = roomPriv(L), invd = !mine && priv && !!(me && L.inv[me]);
@@ -7416,7 +7464,7 @@ function roomCardHTML(r) {
 function viewRooms() {
   const me = myPid();
   return `<section class="section">
-    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack, Dicktris, Tischtennis, Air-Hockey und Bowling könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
+    <div class="sec-head"><h2 class="h">Spiele</h2><span class="muted">Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack, Dicktris, Tischtennis, Air-Hockey, Bowling und Schach könnt ihr jederzeit spielen, auch ohne Spielleiter. Bis zu ${ROOM_MAX} Spieler pro Raum.</span></div>
     ${me ? '' : `<div class="card rooms-hint"><p class="m-text">Damit du mitspielen kannst, brauchst du einen eigenen Spieler. Den erstellst du unter <button class="link" type="button" data-act="tab" data-tab="spieler">Spieler</button>.</p></div>`}
     <div class="rooms">${tourLobbyVisible() ? roomCardHTML(TOUR_ID) : ''}${ROOMS.map(roomCardHTML).join('')}</div>
     <ol class="dhow rooms-how"><li><b>Beitreten:</b> Such dir einen Raum aus. Wer zuerst drin ist, wird <b>Host</b>.</li><li><b>Host:</b> wählt Quiz, Malen, Golf, Kartenwahn, Uncle Grandpa ärgere dich, Blackjack oder Dicktris, stellt alles ein und startet.</li><li><b>Privat:</b> Wollt ihr unter euch bleiben, stellt der Host den Raum auf privat und lädt seine Freunde ein. Andere können dann nicht beitreten.</li><li><b>Spielen:</b> Alle spielen auf dem eigenen Handy mit. Ist der Host weg, kann jemand anderes übernehmen.</li></ol>
@@ -7436,6 +7484,7 @@ function viewRoom() {
         <button class="pick-big" type="button" data-act="room-kind" data-v="tt" style="--tc:#ff8a3d"><span aria-hidden="true">🏓</span><b>Tischtennis</b><small>1 gegen 1 an der Platte, auch gegen einen Bot. Sind mehr im Raum, schauen die anderen zu.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="ah" style="--tc:#39d6f2"><span aria-hidden="true">🏒</span><b>Air-Hockey</b><small>1 gegen 1 am Tisch, auch gegen einen Bot. Sind mehr im Raum, schauen die anderen zu.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="bw" style="--tc:#ff4f9a"><span aria-hidden="true">🎳</span><b>Bowling</b><small>Reihum werfen, mit Strikes, Spares und Effet. Für alle im Raum, auch mit Bots.</small></button>
+        <button class="pick-big" type="button" data-act="room-kind" data-v="ch" style="--tc:#e8d9b5"><span aria-hidden="true">♟️</span><b>Schach</b><small>1 gegen 1, auch gegen einen Bot. Mit allen Regeln und auf Wunsch mit Uhr.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="bj" style="--tc:#2ecc71"><span aria-hidden="true">🂡</span><b>Blackjack</b><small>Alle gegen die Bank: Komm näher an 21 als die Bank. Mit Chips, Verdoppeln und Teilen. Auch allein spielbar.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="karten" style="--tc:#ffcf3f"><span aria-hidden="true">🃏</span><b>Kartenwahn</b><small>Das Ablegespiel für 2 bis 8: Farbe oder Zahl ablegen, +2, +4, Aussetzen, Richtungswechsel.</small></button>
       </div>
@@ -7449,7 +7498,7 @@ function roomBarHTML() {
   const L = lobby(); if (!L) return '';
   const mem = roomMembers(L), me = myPid(), member = !!(me && L.members[me]), host = ctl();
   const st = roomState(L);
-  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : L.kind === 'mad' ? '🎲 Uncle Grandpa ärgere dich' : L.kind === 'bj' ? '🂡 Blackjack' : L.kind === 'dt' ? '🧱 Dicktris' : L.kind === 'tt' ? '🏓 Tischtennis' : L.kind === 'ah' ? '🏒 Air-Hockey' : L.kind === 'bw' ? '🎳 Bowling' : 'Spiel wird gewählt';
+  const kind = L.kind === 'quiz' ? '🧠 Quiz' : L.kind === 'malen' ? '🎨 Malen' : L.kind === 'golf' ? '⛳ Golf' : L.kind === 'karten' ? '🃏 Kartenwahn' : L.kind === 'mad' ? '🎲 Uncle Grandpa ärgere dich' : L.kind === 'bj' ? '🂡 Blackjack' : L.kind === 'dt' ? '🧱 Dicktris' : L.kind === 'tt' ? '🏓 Tischtennis' : L.kind === 'ah' ? '🏒 Air-Hockey' : L.kind === 'bw' ? '🎳 Bowling' : L.kind === 'ch' ? '♟️ Schach' : 'Spiel wird gewählt';
   const chips = mem.map(pid => { const p = ghost(pid), isHost = L.host && L.host.pid === pid, bot = isBot(pid);
     return `<span class="rb-mem ${pid === me ? 'me' : ''} ${bot ? 'bot' : ''}">${avatar(p, 26)}<span>${esc(p.name)}</span>${bot ? `<small class="rb-lvl">${botLvlName(p.lvl)}</small>` : ''}${isHost ? '<i title="Host" aria-label="Host">👑</i>' : ''}${(host || S.admin) && !bot && !isHost && pid !== me ? `<button class="rb-crown" type="button" data-act="room-host" data-pid="${esc(pid)}" aria-label="${esc(p.name)} zum Host machen" title="Zum Host machen">👑<b>+</b></button>` : ''}${(host || S.admin) && pid !== me ? `<button class="x" type="button" data-act="room-kick" data-pid="${esc(pid)}" aria-label="${esc(p.name)} aus dem Raum werfen" title="Rauswerfen">×</button>` : ''}</span>`; }).join('');
   return `<div class="roombar">
@@ -10396,12 +10445,12 @@ function ahRulesHTML(open) {
     <li><b>Highscore:</b> Sieger +3, Verlierer +1 im Raum-Highscore.</li></ul></details>`;
 }
 function duoSetupHTML(kind) {
-  const L = lobby(), hostP = L && L.host && playerById(L.host.pid), mem = roomMembers(L), nm = kind === 'ah' ? '🏒 Air-Hockey' : '🏓 Tischtennis';
-  const rules = kind === 'ah' ? ahRulesHTML : ttRulesHTML;
+  const L = lobby(), hostP = L && L.host && playerById(L.host.pid), mem = roomMembers(L), nm = kind === 'ah' ? '🏒 Air-Hockey' : kind === 'ch' ? '♟️ Schach' : '🏓 Tischtennis';
+  const rules = kind === 'ah' ? ahRulesHTML : kind === 'ch' ? chRulesHTML : ttRulesHTML;
   if (!ctl()) return `<section class="section tsec"><div class="card waiting">${COIN(56, 'spin')}<span class="eyebrow">${esc(L ? L.name : '')} · ${nm}</span><h2>Gleich geht's los</h2>
     <p class="muted">${hostP ? `<b>${esc(hostP.name)}</b> ist Host und startet das Match.` : 'Gerade ist niemand Host.'}</p>
     ${hostStale(L) && L.members[myPid()] ? `<button class="btn btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}</div>${rules(false)}</section>`;
-  const opts = kind === 'ah' ? AH_TO : TT_TO, cur = kind === 'ah' ? ([5, 7, 10].includes(D.ahTo) ? D.ahTo : 7) : ([5, 11, 21].includes(D.ttTo) ? D.ttTo : 11);
+  const opts = kind === 'ah' ? AH_TO : kind === 'ch' ? CH_TC : TT_TO, cur = kind === 'ah' ? ([5, 7, 10].includes(D.ahTo) ? D.ahTo : 7) : kind === 'ch' ? ([0, 3, 5, 10, 15].includes(D.chTc) ? D.chTc : 10) : ([5, 11, 21].includes(D.ttTo) ? D.ttTo : 11);
   const pickMode = mem.length > 2;
   if (pickMode && (!D.duoSel || D.duoSel.some(id => !mem.includes(id)) || D.duoSel.length > 2)) D.duoSel = mem.slice(0, 2);
   const duo = pickMode ? D.duoSel : mem;
@@ -10413,8 +10462,8 @@ function duoSetupHTML(kind) {
     ${pickMode ? `<span class="lbl">Wer spielt jetzt gegeneinander? (2 auswählen, die anderen schauen zu)</span>
       <div class="chips">${mem.map(id => `<button class="chip pchip" type="button" data-act="duo-sel" data-pid="${esc(id)}" aria-pressed="${duo.includes(id)}">${avatar(ghost(id), 26)}${esc(ghost(id).name)}</button>`).join('')}</div>` : ''}
     <div class="duo">${slot(duo[0])}<span class="duo-vs">VS</span>${slot(duo[1])}</div>
-    <span class="lbl">Gespielt wird</span><div class="chips">${opts.map(([v, l]) => `<button class="chip" type="button" data-act="${kind}-to" data-v="${v}" aria-pressed="${cur === v}">${l}</button>`).join('')}</div>
-    <button class="btn btn-gold btn-big" type="button" data-act="${kind}-start" ${ok ? '' : 'disabled'}>${ok ? 'Match starten' : duo.length < 2 ? (pickMode ? 'Wähle 2 Spieler aus' : 'Es fehlt noch ein Gegner') : 'Mindestens ein echter Spieler'}</button>
+    <span class="lbl">${kind === 'ch' ? 'Bedenkzeit pro Spieler (Weiß und Schwarz werden ausgelost)' : 'Gespielt wird'}</span><div class="chips">${opts.map(([v, l]) => `<button class="chip" type="button" data-act="${kind}-to" data-v="${v}" aria-pressed="${cur === v}">${l}</button>`).join('')}</div>
+    <button class="btn btn-gold btn-big" type="button" data-act="${kind}-start" ${ok ? '' : 'disabled'}>${ok ? (kind === 'ch' ? 'Partie starten' : 'Match starten') : duo.length < 2 ? (pickMode ? 'Wähle 2 Spieler aus' : 'Es fehlt noch ein Gegner') : 'Mindestens ein echter Spieler'}</button>
   </div>${rules(true)}</section>`;
 }
 function ahPlayHTML(M) {
@@ -10447,6 +10496,413 @@ function ahMount() {
   if (!al.raf) al.raf = requestAnimationFrame(ahLoop);
   if (M && S.tab === 'ah') ahDraw(M);
 }
+
+/* ---------- Schach: 1 gegen 1 im Raum (auch gegen einen Bot) ----------
+   Gespeichert im Raum-Feld uno (mit g:'ch'): {g, id, status, p:[Weiß, Schwarz], b (64 Zeichen, a8 … h1, '.' = leer),
+   t ('w'/'b' am Zug), c (Rochaderechte 'KQkq'), ep (En-passant-Feld oder -1), hm (Züge ohne Schlag/Bauernzug), h (Züge als „e2e4“),
+   tc (Bedenkzeit in Minuten, 0 = ohne), tl [Restzeit Weiß, Schwarz in ms, Stand bei at], at (Beginn des aktuellen Zugs),
+   d (wer Remis anbietet: 0/1, sonst -1), win (0 Weiß, 1 Schwarz, 2 Remis, -1 läuft), why, transferred}.
+   Es zieht nur, wer dran ist (Bots zieht der Host). Alle Regeln: Rochade, en passant, Umwandlung, Schach, Matt, Patt,
+   50 Züge, dreifache Wiederholung, zu wenig Material, Aufgeben, Remis, Zeit. */
+const CH_START = 'rnbqkbnrpppppppp' + '.'.repeat(32) + 'PPPPPPPPRNBQKBNR';
+const CH_TC = [[0, 'Ohne Uhr'], [3, '3 Min'], [5, '5 Min'], [10, '10 Min'], [15, '15 Min']];
+const CH_GLYPH = {k:'♚', q:'♛', r:'♜', b:'♝', n:'♞', p:'♟'};
+const CH_NAME = {k:'König', q:'Dame', r:'Turm', b:'Läufer', n:'Springer', p:'Bauer'};
+const CH_VAL = {p:100, n:320, b:330, r:500, q:900, k:0};
+const chl = {gid:'', botKey:'', botAt:0, lastSeq:-1, endSnd:'', timeKey:''};
+const chSq = i => 'abcdefgh'[i % 8] + (8 - Math.floor(i / 8));
+const chIdx = s => 'abcdefgh'.indexOf(s[0]) + (8 - Number(s[1])) * 8;
+const chWhite = c => c >= 'A' && c <= 'Z';
+const chSide = c => c === '.' ? '' : chWhite(c) ? 'w' : 'b';
+
+function chNorm(x) {
+  if (!x || typeof x !== 'object' || x.g !== 'ch' || !['running', 'finished'].includes(x.status)) return null;
+  const p = Array.isArray(x.p) ? x.p.filter(id => typeof id === 'string').slice(0, 2) : [];
+  if (p.length !== 2) return null;
+  const b = typeof x.b === 'string' && /^[.PNBRQKpnbrqk]{64}$/.test(x.b) ? x.b : CH_START;
+  const tl = Array.isArray(x.tl) ? x.tl.slice(0, 2).map(v => Math.max(0, Number(v) || 0)) : [0, 0];
+  return {g:'ch', id:str(x.id, 40), status:x.status, p, b, t:x.t === 'b' ? 'b' : 'w', c:typeof x.c === 'string' ? x.c.replace(/[^KQkq]/g, '') : '',
+    ep:Number.isInteger(x.ep) && x.ep >= 0 && x.ep < 64 ? x.ep : -1, hm:Math.max(0, +x.hm || 0),
+    h:Array.isArray(x.h) ? x.h.filter(m => typeof m === 'string' && /^[a-h][1-8][a-h][1-8][qrbn]?$/.test(m)).slice(0, 1200) : [],
+    tc:[0, 3, 5, 10, 15].includes(+x.tc) ? +x.tc : 0, tl:tl.length === 2 ? tl : [0, 0], at:Number(x.at) || 0,
+    d:x.d === 0 || x.d === 1 ? x.d : -1, win:[0, 1, 2].includes(x.win) ? x.win : -1, why:str(x.why || '', 12),
+    transferred:x.transferred === true, pz:x.pz && x.pz.at ? x.pz : null};
+}
+function chMeIdx(M) { const me = myPid(), L = lobby(); return M && me && !S.spectate && L && L.members[me] ? M.p.indexOf(me) : -1; }
+const chPos = M => ({b:M.b.split(''), t:M.t, c:M.c, ep:M.ep, hm:M.hm});
+
+/* ----- Regeln ----- */
+const CH_N = [-17, -15, -10, -6, 6, 10, 15, 17], CH_KD = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+function chAttacked(b, sq, by) {
+  const r = Math.floor(sq / 8), f = sq % 8, own = c => c !== '.' && chSide(c) === by, is = (c, t) => own(c) && c.toLowerCase() === t;
+  // Bauern
+  const pr = by === 'w' ? r + 1 : r - 1;
+  if (pr >= 0 && pr < 8) for (const df of [-1, 1]) { const ff = f + df; if (ff >= 0 && ff < 8 && is(b[pr * 8 + ff], 'p')) return true; }
+  // Springer
+  for (const [dr, df] of [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]]) { const rr = r + dr, ff = f + df; if (rr >= 0 && rr < 8 && ff >= 0 && ff < 8 && is(b[rr * 8 + ff], 'n')) return true; }
+  // König
+  for (const [dr, df] of CH_KD) { const rr = r + dr, ff = f + df; if (rr >= 0 && rr < 8 && ff >= 0 && ff < 8 && is(b[rr * 8 + ff], 'k')) return true; }
+  // Linien
+  for (const [dr, df] of CH_KD) {
+    let rr = r + dr, ff = f + df;
+    while (rr >= 0 && rr < 8 && ff >= 0 && ff < 8) {
+      const c = b[rr * 8 + ff];
+      if (c !== '.') { if (own(c)) { const t = c.toLowerCase(); if (t === 'q' || (t === 'r' && (dr === 0 || df === 0)) || (t === 'b' && dr !== 0 && df !== 0)) return true; } break; }
+      rr += dr; ff += df;
+    }
+  }
+  return false;
+}
+const chKing = (b, s) => b.indexOf(s === 'w' ? 'K' : 'k');
+const chInCheck = (pos, s = pos.t) => chAttacked(pos.b, chKing(pos.b, s), s === 'w' ? 'b' : 'w');
+function chPseudo(pos) {
+  const b = pos.b, s = pos.t, out = [], opp = s === 'w' ? 'b' : 'w';
+  for (let i = 0; i < 64; i++) {
+    const c = b[i]; if (c === '.' || chSide(c) !== s) continue;
+    const t = c.toLowerCase(), r = Math.floor(i / 8), f = i % 8;
+    const add = (to, extra) => out.push({f:i, to, ...extra});
+    if (t === 'p') {
+      const dir = s === 'w' ? -1 : 1, r1 = r + dir, start = s === 'w' ? 6 : 1, last = s === 'w' ? 0 : 7;
+      const push = (to, extra = {}) => { if (Math.floor(to / 8) === last) for (const pr of 'qrbn') add(to, {...extra, pr}); else add(to, extra); };
+      if (r1 >= 0 && r1 < 8 && b[r1 * 8 + f] === '.') {
+        push(r1 * 8 + f);
+        if (r === start && b[(r + 2 * dir) * 8 + f] === '.') add((r + 2 * dir) * 8 + f, {dbl:true});
+      }
+      for (const df of [-1, 1]) {
+        const ff = f + df; if (ff < 0 || ff > 7 || r1 < 0 || r1 > 7) continue;
+        const to = r1 * 8 + ff;
+        if (b[to] !== '.' && chSide(b[to]) === opp) push(to);
+        else if (to === pos.ep) add(to, {epc:true});
+      }
+    } else if (t === 'n') {
+      for (const [dr, df] of [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]]) {
+        const rr = r + dr, ff = f + df; if (rr < 0 || rr > 7 || ff < 0 || ff > 7) continue;
+        const to = rr * 8 + ff; if (b[to] === '.' || chSide(b[to]) === opp) add(to);
+      }
+    } else if (t === 'k') {
+      for (const [dr, df] of CH_KD) {
+        const rr = r + dr, ff = f + df; if (rr < 0 || rr > 7 || ff < 0 || ff > 7) continue;
+        const to = rr * 8 + ff; if (b[to] === '.' || chSide(b[to]) === opp) add(to);
+      }
+      // Rochade
+      const home = s === 'w' ? 60 : 4, K = s === 'w' ? 'K' : 'k', Q = s === 'w' ? 'Q' : 'q';
+      if (i === home && !chAttacked(b, home, opp)) {
+        if (pos.c.includes(K) && b[home + 1] === '.' && b[home + 2] === '.' && b[home + 3] === (s === 'w' ? 'R' : 'r') && !chAttacked(b, home + 1, opp) && !chAttacked(b, home + 2, opp)) add(home + 2, {cs:'k'});
+        if (pos.c.includes(Q) && b[home - 1] === '.' && b[home - 2] === '.' && b[home - 3] === '.' && b[home - 4] === (s === 'w' ? 'R' : 'r') && !chAttacked(b, home - 1, opp) && !chAttacked(b, home - 2, opp)) add(home - 2, {cs:'q'});
+      }
+    } else {
+      const dirs = t === 'r' ? CH_KD.filter(([a, c]) => a === 0 || c === 0) : t === 'b' ? CH_KD.filter(([a, c]) => a !== 0 && c !== 0) : CH_KD;
+      for (const [dr, df] of dirs) {
+        let rr = r + dr, ff = f + df;
+        while (rr >= 0 && rr < 8 && ff >= 0 && ff < 8) {
+          const to = rr * 8 + ff;
+          if (b[to] === '.') add(to); else { if (chSide(b[to]) === opp) add(to); break; }
+          rr += dr; ff += df;
+        }
+      }
+    }
+  }
+  return out;
+}
+function chApply(pos, m) {
+  const b = pos.b.slice(), c = b[m.f], s = pos.t, cap = b[m.to] !== '.' || m.epc;
+  b[m.to] = m.pr ? (s === 'w' ? m.pr.toUpperCase() : m.pr) : c; b[m.f] = '.';
+  if (m.epc) b[m.to + (s === 'w' ? 8 : -8)] = '.';
+  if (m.cs === 'k') { b[m.to - 1] = b[m.to + 1]; b[m.to + 1] = '.'; }
+  if (m.cs === 'q') { b[m.to + 1] = b[m.to - 2]; b[m.to - 2] = '.'; }
+  let cr = pos.c;
+  const drop = ch => { cr = cr.replace(ch, ''); };
+  if (c === 'K') { drop('K'); drop('Q'); } if (c === 'k') { drop('k'); drop('q'); }
+  for (const [sq, ch] of [[63, 'K'], [56, 'Q'], [7, 'k'], [0, 'q']]) if (m.f === sq || m.to === sq) drop(ch);
+  return {b, t:s === 'w' ? 'b' : 'w', c:cr, ep:m.dbl ? (m.f + m.to) / 2 : -1, hm:(c.toLowerCase() === 'p' || cap) ? 0 : pos.hm + 1, cap};
+}
+function chLegal(pos) { return chPseudo(pos).filter(m => { const n = chApply(pos, m); return !chAttacked(n.b, chKing(n.b, pos.t), n.t); }); }
+const chUci = m => chSq(m.f) + chSq(m.to) + (m.pr || '');
+const chKey = pos => pos.b.join('') + pos.t + pos.c + pos.ep;
+function chFromUci(pos, u) { return chLegal(pos).find(m => chUci(m) === u) || null; }
+/* Ganze Partie nachspielen (für Wiederholungen und die Zugliste) */
+function chReplay(h) {
+  let pos = {b:CH_START.split(''), t:'w', c:'KQkq', ep:-1, hm:0};
+  const keys = [chKey(pos)], san = [];
+  for (const u of h) { const m = chFromUci(pos, u); if (!m) break; san.push(chSan(pos, m)); pos = chApply(pos, m); keys.push(chKey(pos)); }
+  return {pos, keys, san};
+}
+function chSan(pos, m) {
+  const c = pos.b[m.f], t = c.toLowerCase(), cap = pos.b[m.to] !== '.' || m.epc;
+  if (m.cs) return m.cs === 'k' ? 'O-O' : 'O-O-O';
+  let s = '';
+  if (t === 'p') s = (cap ? chSq(m.f)[0] + 'x' : '') + chSq(m.to) + (m.pr ? '=' + {q:'D', r:'T', b:'L', n:'S'}[m.pr] : '');
+  else {
+    const others = chLegal(pos).filter(o => o.to === m.to && o.f !== m.f && pos.b[o.f] === c);
+    let dis = '';
+    if (others.length) dis = others.some(o => o.f % 8 === m.f % 8) ? (others.some(o => Math.floor(o.f / 8) === Math.floor(m.f / 8)) ? chSq(m.f) : chSq(m.f)[1]) : chSq(m.f)[0];
+    s = {k:'K', q:'D', r:'T', b:'L', n:'S'}[t] + dis + (cap ? 'x' : '') + chSq(m.to);
+  }
+  const n = chApply(pos, m);
+  if (chInCheck(n)) s += chLegal(n).length ? '+' : '#';
+  return s;
+}
+function chLowMaterial(b) {
+  const pcs = b.filter(c => c !== '.' && c.toLowerCase() !== 'k');
+  if (!pcs.length) return true;
+  if (pcs.length === 1 && 'nNbB'.includes(pcs[0])) return true;
+  if (pcs.every(c => 'bB'.includes(c))) { const col = b.map((c, i) => 'bB'.includes(c) ? (Math.floor(i / 8) + i % 8) % 2 : -1).filter(v => v >= 0); return col.every(v => v === col[0]); }
+  return false;
+}
+/* Ergebnis nach einem Zug: null = weiter */
+function chResult(pos, keys) {
+  const legal = chLegal(pos);
+  if (!legal.length) return chInCheck(pos) ? {win:pos.t === 'w' ? 1 : 0, why:'mate'} : {win:2, why:'stalemate'};
+  if (pos.hm >= 100) return {win:2, why:'fifty'};
+  if (chLowMaterial(pos.b)) return {win:2, why:'material'};
+  const k = keys[keys.length - 1]; if (keys.filter(x => x === k).length >= 3) return {win:2, why:'rep'};
+  return null;
+}
+
+/* ----- Bot: Alpha-Beta mit Figurenwerten und Feldtabellen ----- */
+const CH_PST = {
+  p:[0, 0, 0, 0, 0, 0, 0, 0, 50, 50, 50, 50, 50, 50, 50, 50, 10, 10, 20, 30, 30, 20, 10, 10, 5, 5, 10, 25, 25, 10, 5, 5, 0, 0, 0, 20, 20, 0, 0, 0, 5, -5, -10, 0, 0, -10, -5, 5, 5, 10, 10, -20, -20, 10, 10, 5, 0, 0, 0, 0, 0, 0, 0, 0],
+  n:[-50, -40, -30, -30, -30, -30, -40, -50, -40, -20, 0, 0, 0, 0, -20, -40, -30, 0, 10, 15, 15, 10, 0, -30, -30, 5, 15, 20, 20, 15, 5, -30, -30, 0, 15, 20, 20, 15, 0, -30, -30, 5, 10, 15, 15, 10, 5, -30, -40, -20, 0, 5, 5, 0, -20, -40, -50, -40, -30, -30, -30, -30, -40, -50],
+  b:[-20, -10, -10, -10, -10, -10, -10, -20, -10, 0, 0, 0, 0, 0, 0, -10, -10, 0, 5, 10, 10, 5, 0, -10, -10, 5, 5, 10, 10, 5, 5, -10, -10, 0, 10, 10, 10, 10, 0, -10, -10, 10, 10, 10, 10, 10, 10, -10, -10, 5, 0, 0, 0, 0, 5, -10, -20, -10, -10, -10, -10, -10, -10, -20],
+  r:[0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 10, 10, 10, 10, 10, 5, -5, 0, 0, 0, 0, 0, 0, -5, -5, 0, 0, 0, 0, 0, 0, -5, -5, 0, 0, 0, 0, 0, 0, -5, -5, 0, 0, 0, 0, 0, 0, -5, -5, 0, 0, 0, 0, 0, 0, -5, 0, 0, 0, 5, 5, 0, 0, 0],
+  q:[-20, -10, -10, -5, -5, -10, -10, -20, -10, 0, 0, 0, 0, 0, 0, -10, -10, 0, 5, 5, 5, 5, 0, -10, -5, 0, 5, 5, 5, 5, 0, -5, 0, 0, 5, 5, 5, 5, 0, -5, -10, 5, 5, 5, 5, 5, 0, -10, -10, 0, 5, 0, 0, 0, 0, -10, -20, -10, -10, -5, -5, -10, -10, -20],
+  k:[-30, -40, -40, -50, -50, -40, -40, -30, -30, -40, -40, -50, -50, -40, -40, -30, -30, -40, -40, -50, -50, -40, -40, -30, -30, -40, -40, -50, -50, -40, -40, -30, -20, -30, -30, -40, -40, -30, -30, -20, -10, -20, -20, -20, -20, -20, -20, -10, 20, 20, 0, 0, 0, 0, 20, 20, 20, 30, 10, 0, 0, 10, 30, 20]
+};
+function chEval(b) {
+  let s = 0;
+  for (let i = 0; i < 64; i++) {
+    const c = b[i]; if (c === '.') continue;
+    const t = c.toLowerCase(), w = chWhite(c), v = CH_VAL[t] + CH_PST[t][w ? i : (7 - Math.floor(i / 8)) * 8 + i % 8];
+    s += w ? v : -v;
+  }
+  return s;
+}
+function chOrder(pos, ms) { return ms.map(m => ({m, k:(pos.b[m.to] !== '.' ? 10 * CH_VAL[pos.b[m.to].toLowerCase()] - CH_VAL[pos.b[m.f].toLowerCase()] / 10 : 0) + (m.pr === 'q' ? 800 : 0)})).sort((a, b) => b.k - a.k).map(x => x.m); }
+/* Schlagabtausch zu Ende rechnen (nur Schläge, ohne Legalitätsprüfung, höchstens 4 Halbzüge) */
+function chQuiet(pos, a, b, n, q = 0) {
+  const sign = pos.t === 'w' ? 1 : -1, stand = sign * chEval(pos.b);
+  if (stand >= b || q >= 4 || chOut(n)) return stand;
+  if (stand > a) a = stand;
+  for (const m of chOrder(pos, chPseudo(pos).filter(m => pos.b[m.to] !== '.' || m.pr === 'q'))) {
+    if (pos.b[m.to].toLowerCase() === 'k') return 50000;
+    const v = -chQuiet(chApply(pos, m), -b, -a, n, q + 1);
+    if (v >= b) return v; if (v > a) a = v;
+  }
+  return a;
+}
+const chOut = n => (++n.c & 255) === 0 && performance.now() > n.end ? (n.stop = true) : n.stop;
+function chSearch(pos, d, a, b, n) {
+  const ms = chLegal(pos);
+  if (!ms.length) return chInCheck(pos) ? -100000 + (10 - d) : 0;
+  if (d <= 0) return chQuiet(pos, a, b, n);
+  for (const m of chOrder(pos, ms)) {
+    const v = -chSearch(chApply(pos, m), d - 1, -b, -a, n);
+    if (n.stop) return a;
+    if (v >= b) return v; if (v > a) a = v;
+  }
+  return a;
+}
+/* Bot-Zug: Tiefe nach Stufe, schrittweise vertieft und nach höchstens 0,8 s abgebrochen (bester Zug der letzten fertigen Tiefe) */
+function chBotMove(M, lvl) {
+  const pos = chPos(M), ms = chOrder(pos, chLegal(pos)); if (!ms.length) return null;
+  const maxD = {e:1, m:2, h:3}[lvl] || 2, noise = {e:160, m:40, h:8}[lvl] || 40;
+  const n = {c:0, stop:false, end:performance.now() + ({e:250, m:500, h:800}[lvl] || 500)};
+  let best = ms[0];
+  for (let d = 1; d <= maxD; d++) {
+    let bm = null, bv = -Infinity;
+    for (const m of ms) {
+      const v = -chSearch(chApply(pos, m), d - 1, -Infinity, Infinity, n) + (Math.random() - .5) * noise;
+      if (n.stop) break;
+      if (v > bv) { bv = v; bm = m; }
+    }
+    if (n.stop && d > 1) break;
+    if (bm) best = bm;
+    if (n.stop) break;
+  }
+  return best;
+}
+
+/* ----- Züge schreiben ----- */
+function chClock(M, i, now = Date.now()) {
+  if (!M.tc) return Infinity;
+  const pz = M.pz && M.pz.at ? M.pz.at : 0, end = pz || now;
+  return M.t === (i ? 'b' : 'w') && M.status === 'running' ? Math.max(0, M.tl[i] - Math.max(0, end - M.at)) : M.tl[i];
+}
+function chDoMove(M, m) {
+  const pos = chPos(M), side = M.t === 'w' ? 0 : 1, now = Date.now();
+  const n = chApply(pos, m), h = [...M.h, chUci(m)], rep = chReplay(h), res = chResult(n, rep.keys);
+  const tl = M.tl.slice(); if (M.tc) tl[side] = Math.max(0, tl[side] - Math.max(0, now - M.at)) + 0;
+  const nx = {...M, b:n.b.join(''), t:n.t, c:n.c, ep:n.ep, hm:n.hm, h, tl, at:now, d:-1};
+  if (res) Object.assign(nx, {status:'finished', win:res.win, why:res.why});
+  delete nx.pz;
+  S.lobbies[S.room] = {...lobby(), uno:nx}; S.ch = chNorm(nx);
+  roomWrite({uno:nx});
+  D.chSel = -1; D.chPro = null;
+  if (S.tab === 'ch') kSnd(n.cap ? 'flip' : 'land');
+  render();
+}
+function chFinish(win, why) {
+  const M = S.ch; if (!M || M.status !== 'running') return;
+  const nx = {...M, status:'finished', win, why, d:-1}; delete nx.pz;
+  if (M.tc) { const i = M.t === 'w' ? 0 : 1; nx.tl = M.tl.slice(); nx.tl[i] = chClock(M, i); }
+  S.lobbies[S.room] = {...lobby(), uno:nx}; S.ch = chNorm(nx); roomWrite({uno:nx}); render();
+}
+
+/* ----- Host ----- */
+function chStart(pl) {
+  if (!ctl()) return;
+  if (S.ch && S.ch.status === 'finished' && !S.ch.transferred) chTransfer();
+  const L = lobby(), mem0 = roomMembers(L), mem = mem0.length > 2 ? (D.duoSel || []).filter(id => mem0.includes(id)) : mem0;
+  if (mem.length !== 2) { toast(mem0.length > 2 ? 'Wähle 2 Spieler aus.' : 'Schach geht nur zu zweit. Hol dir einen Bot dazu!'); return; }
+  let p = (pl || []).filter(id => mem.includes(id)).slice(0, 2);
+  if (p.length < 2) p = Math.random() < .5 ? mem.slice() : mem.slice().reverse();
+  if (p.every(isBot)) { toast('Mindestens einer muss ein echter Spieler sein.'); return; }
+  const tc = [0, 3, 5, 10, 15].includes(D.chTc) ? D.chTc : 10;
+  const M = {g:'ch', id:uid(), status:'running', p, b:CH_START, t:'w', c:'KQkq', ep:-1, hm:0, h:[], tc, tl:[tc * 60000, tc * 60000], at:Date.now(), d:-1, win:-1, why:'', transferred:false};
+  S.lobbies[S.room] = {...L, uno:M}; S.ch = chNorm(M); D.chSel = -1; D.chPro = null;
+  roomWrite({uno:M}); render();
+}
+function chTransfer() {
+  const M = S.ch; if (!ctl() || !M || M.status !== 'finished' || M.transferred || M.win < 0) return;
+  const e = M.win === 2 ? M.p.map(id => ({playerId:id, delta:2})) : [{playerId:M.p[M.win], delta:3}, {playerId:M.p[1 - M.win], delta:1}];
+  lobbyAward({'uno.transferred':true}, e);
+}
+/* Läuft im Takt: Bot-Züge (Host) und abgelaufene Uhr */
+function chLogic() {
+  const M = S.ch; if (!M || M.status !== 'running' || roomPaused()) return;
+  const host = ctl(), side = M.t === 'w' ? 0 : 1, pid = M.p[side], me = chMeIdx(M);
+  if (M.tc && chClock(M, side) <= 0 && (host || me >= 0) && chl.timeKey !== M.id + ':' + M.h.length) {
+    chl.timeKey = M.id + ':' + M.h.length;
+    const other = 1 - side, b = M.b.split('').filter(c => c !== '.' && chSide(c) === (other ? 'b' : 'w'));
+    chFinish(b.every(c => c.toLowerCase() === 'k') ? 2 : other, 'time'); return;
+  }
+  if (host && isBot(pid)) {
+    const key = M.id + ':' + M.h.length;
+    if (chl.botKey !== key) { chl.botKey = key; chl.botAt = Date.now() + botR(700, 1500); return; }
+    if (Date.now() >= chl.botAt) { chl.botAt = Infinity; const m = chBotMove(M, botLvl(pid)); if (m) chDoMove(M, m); }
+  }
+  // Bot nimmt angebotenes Remis an, wenn er klar schlechter steht
+  if (host && M.d >= 0 && isBot(M.p[1 - M.d])) { const v = chEval(M.b.split('')) * (M.d === 0 ? -1 : 1); if (v < -150) chFinish(2, 'agree'); else { const nx = {...M, d:-1}; S.lobbies[S.room] = {...lobby(), uno:nx}; S.ch = chNorm(nx); roomWrite({'uno.d':-1}); } }
+}
+
+/* ----- Aktionen ----- */
+const chActions = {
+  'ch-to': b => { D.chTc = Number(b.dataset.v); render(); },
+  'ch-start': () => chStart(),
+  'ch-again': () => { const M = S.ch; chStart(M ? [M.p[1], M.p[0]] : null); },
+  'ch-setup': () => { if (!ctl()) return; if (S.ch && S.ch.status === 'finished' && !S.ch.transferred) chTransfer(); S.ch = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); },
+  'ch-end': () => confirmBox('Schach beenden?', 'Die Partie wird abgebrochen. Es gibt keine Punkte für den Raum-Highscore.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => { if (!ctl()) return; S.ch = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); }}]),
+  'ch-sq': b => {
+    const M = S.ch, me = chMeIdx(M); if (!M || M.status !== 'running' || me < 0 || roomPaused()) return;
+    const i = Number(b.dataset.i), pos = chPos(M), mine = M.t === (me ? 'b' : 'w');
+    if (!mine) { D.chSel = -1; render(); return; }
+    const c = pos.b[i];
+    if (D.chSel >= 0 && D.chSel !== i) {
+      const ms = chLegal(pos).filter(m => m.f === D.chSel && m.to === i);
+      if (ms.length) { if (ms.length > 1) { D.chPro = {f:D.chSel, to:i}; render(); return; } chDoMove(M, ms[0]); return; }
+    }
+    D.chSel = c !== '.' && chSide(c) === M.t && D.chSel !== i ? i : -1; D.chPro = null; render();
+  },
+  'ch-pro': b => { const M = S.ch, pr = D.chPro; if (!M || !pr) return; const m = chLegal(chPos(M)).find(x => x.f === pr.f && x.to === pr.to && x.pr === b.dataset.v); if (m) chDoMove(M, m); },
+  'ch-pro-x': () => { D.chPro = null; render(); },
+  'ch-flip': () => { D.chFlip = !D.chFlip; render(); },
+  'ch-resign': () => { const M = S.ch, me = chMeIdx(M); if (!M || me < 0) return; confirmBox('Aufgeben?', 'Dein Gegner gewinnt die Partie.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Aufgeben', cls:'btn-gold', fn:() => chFinish(1 - me, 'resign')}]); },
+  'ch-draw': () => { const M = S.ch, me = chMeIdx(M); if (!M || me < 0 || M.status !== 'running') return; if (M.d === 1 - me) { chFinish(2, 'agree'); return; } const nx = {...M, d:me}; S.lobbies[S.room] = {...lobby(), uno:nx}; S.ch = chNorm(nx); roomWrite({'uno.d':me}); toast('Remis angeboten.'); render(); },
+  'ch-draw-no': () => { const M = S.ch, me = chMeIdx(M); if (!M || me < 0 || M.d !== 1 - me) return; const nx = {...M, d:-1}; S.lobbies[S.room] = {...lobby(), uno:nx}; S.ch = chNorm(nx); roomWrite({'uno.d':-1}); render(); }
+};
+
+/* ----- Ansichten ----- */
+function chRulesHTML(open) {
+  return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird gespielt</summary><ul>
+    <li><b>Ziehen:</b> Tipp auf eine deiner Figuren, die möglichen Felder leuchten. Dann tippst du auf das Zielfeld.</li>
+    <li><b>Alle Regeln:</b> Rochade, en passant, Umwandlung (du wählst die Figur), Schach und Matt.</li>
+    <li><b>Remis:</b> Patt, dreimal dieselbe Stellung, 50 Züge ohne Schlag oder Bauernzug, zu wenig Material oder wenn beide zustimmen.</li>
+    <li><b>Uhr:</b> Mit Bedenkzeit verliert, wessen Zeit zuerst abläuft.</li>
+    <li><b>Highscore:</b> Sieg +3, Niederlage +1, Remis je +2 im Raum-Highscore.</li></ul></details>`;
+}
+const chFmt = ms => { if (!isFinite(ms)) return ''; const s = Math.ceil(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+function chPlayerBar(M, i) {
+  const p = ghost(M.p[i]), on = M.status === 'running' && M.t === (i ? 'b' : 'w'), ms = chClock(M, i);
+  const capd = (() => { const want = {p:8, n:2, b:2, r:2, q:1}, have = {}; for (const c of M.b) if (c !== '.' && chSide(c) !== (i ? 'b' : 'w')) { const t = c.toLowerCase(); have[t] = (have[t] || 0) + 1; }
+    return Object.entries(want).map(([t, n]) => (CH_GLYPH[t] + '︎').repeat(Math.max(0, n - (have[t] || 0)))).join(''); })();
+  return `<div class="ch-pl ${on ? 'on' : ''}">${avatar(p, 34)}<b>${esc(p.name)}</b><span class="ch-col">${i ? '⚫' : '⚪'}</span>${isBot(p.id) ? `<small>${botLvlName(botLvl(p.id))}</small>` : ''}<span class="ch-capd ${i ? 'w' : 'b'}">${capd}</span>${M.tc ? `<span class="ch-clock ${on ? 'run' : ''} ${ms < 30000 ? 'low' : ''}" data-ch-clock="${i}">${chFmt(ms)}</span>` : ''}</div>`;
+}
+function chBoardHTML(M) {
+  const me = chMeIdx(M), flip = me === 1 ? !D.chFlip : !!D.chFlip, pos = chPos(M);
+  const sel = M.status === 'running' && me >= 0 && M.t === (me ? 'b' : 'w') ? D.chSel : -1;
+  const tg = sel >= 0 ? new Set(chLegal(pos).filter(m => m.f === sel).map(m => m.to)) : new Set();
+  const last = M.h.length ? M.h[M.h.length - 1] : '', lf = last ? chIdx(last.slice(0, 2)) : -1, lt = last ? chIdx(last.slice(2, 4)) : -1;
+  const chk = M.status !== 'finished' || M.why === 'mate' ? (chInCheck(pos) ? chKing(pos.b, pos.t) : -1) : -1;
+  let h = '';
+  for (let k = 0; k < 64; k++) {
+    const i = flip ? 63 - k : k, c = pos.b[i], r = Math.floor(i / 8), f = i % 8, dark = (r + f) % 2 === 1;
+    const cls = ['ch-sq', dark ? 'd' : 'l', i === sel ? 'sel' : '', tg.has(i) ? (c !== '.' ? 'tgc' : 'tg') : '', i === lf || i === lt ? 'last' : '', i === chk ? 'chk' : ''].filter(Boolean).join(' ');
+    const lblF = (flip ? r === 0 : r === 7) ? `<i class="ch-lf">${'abcdefgh'[f]}</i>` : '', lblR = (flip ? f === 7 : f === 0) ? `<i class="ch-lr">${8 - r}</i>` : '';
+    h += `<button class="${cls}" type="button" data-act="ch-sq" data-i="${i}" aria-label="${chSq(i)}${c !== '.' ? ' ' + (chWhite(c) ? 'weißer' : 'schwarzer') + ' ' + CH_NAME[c.toLowerCase()] : ''}">${c !== '.' ? `<span class="ch-pc ${chWhite(c) ? 'w' : 'b'}">${CH_GLYPH[c.toLowerCase()]}︎</span>` : ''}${lblF}${lblR}</button>`;
+  }
+  const pro = D.chPro && me >= 0 ? `<div class="ch-pro"><span>Umwandeln in:</span>${['q', 'r', 'b', 'n'].map(t => `<button class="ch-pro-b" type="button" data-act="ch-pro" data-v="${t}" aria-label="${CH_NAME[t]}"><span class="ch-pc ${me ? 'b' : 'w'}">${CH_GLYPH[t]}︎</span></button>`).join('')}<button class="btn btn-sm btn-ghost" type="button" data-act="ch-pro-x">✕</button></div>` : '';
+  return `<div class="ch-board ${flip ? 'flip' : ''}">${h}${pro}</div>`;
+}
+function chMovesHTML(M) {
+  const san = chReplay(M.h).san; if (!san.length) return '<p class="muted ch-mv0">Noch keine Züge.</p>';
+  let out = '';
+  for (let i = 0; i < san.length; i += 2) out += `<li><span class="ch-mvn">${i / 2 + 1}.</span><span>${esc(san[i])}</span><span>${esc(san[i + 1] || '')}</span></li>`;
+  return `<ol class="ch-mvs">${out}</ol>`;
+}
+const CH_WHY = {mate:'Schachmatt', stalemate:'Patt', fifty:'50 Züge ohne Schlag oder Bauernzug', material:'Zu wenig Material', rep:'Dreimal dieselbe Stellung', resign:'Aufgegeben', time:'Zeit abgelaufen', agree:'Remis vereinbart'};
+function chStatusHTML(M) {
+  const me = chMeIdx(M), pos = chPos(M), side = M.t === 'w' ? 0 : 1, who = ghost(M.p[side]);
+  if (roomPaused()) return '<p class="ch-st">⏸ Pausiert</p>';
+  const chk = chInCheck(pos) ? ' <b class="ch-chk">Schach!</b>' : '';
+  if (me === side) return `<p class="ch-st mine">Du bist dran${chk}</p>`;
+  return `<p class="ch-st">${esc(who.name)} ist dran${chk}${isBot(who.id) ? ' <small>(denkt …)</small>' : ''}</p>`;
+}
+function chPlayHTML(M) {
+  const me = chMeIdx(M), host = ctl(), flip = me === 1 ? !D.chFlip : !!D.chFlip, top = flip ? 0 : 1;
+  const offer = M.d >= 0 && me === 1 - M.d ? `<div class="ch-offer">🤝 ${esc(ghost(M.p[M.d]).name)} bietet Remis an. <button class="btn btn-sm btn-gold" type="button" data-act="ch-draw">Annehmen</button><button class="btn btn-sm" type="button" data-act="ch-draw-no">Ablehnen</button></div>` : '';
+  return `<section class="section tsec chplay">
+    <div class="k-top">
+      <button class="gmenu" type="button" data-act="gmenu" aria-label="Menü anzeigen" title="Menü">☰</button>
+      <div class="k-head"><b>♟️ Schach</b><small>${esc((lobby() || {}).name || '')} · ${M.tc ? M.tc + ' Min pro Spieler' : 'ohne Uhr'}</small></div>
+      ${host ? `<button class="btn btn-sm btn-ghost k-endbtn" type="button" data-act="ch-end">Beenden</button>` : ''}
+    </div>
+    <div class="ch-wrap">
+      <div class="ch-main">
+        ${chPlayerBar(M, top)}
+        ${chBoardHTML(M)}
+        ${chPlayerBar(M, 1 - top)}
+      </div>
+      <aside class="ch-side">
+        ${chStatusHTML(M)}${offer}
+        ${me >= 0 ? `<div class="chips">${M.d === me ? '<span class="muted">Remis angeboten …</span>' : `<button class="btn btn-sm" type="button" data-act="ch-draw">🤝 Remis anbieten</button>`}<button class="btn btn-sm btn-ghost" type="button" data-act="ch-resign">🏳️ Aufgeben</button></div>` : `<p class="muted">👀 Du schaust zu.</p>`}
+        <button class="btn btn-sm btn-ghost" type="button" data-act="ch-flip">🔄 Brett drehen</button>
+        <div class="ch-mvbox"><span class="lbl">Züge</span>${chMovesHTML(M)}</div>
+      </aside>
+    </div>
+  </section>`;
+}
+function chEndHTML(M) {
+  const host = ctl(), draw = M.win === 2, w = draw ? null : ghost(M.p[M.win]), l = draw ? null : ghost(M.p[1 - M.win]);
+  return `<section class="section tsec"><div class="card k-end">
+    <span class="eyebrow">♟️ Schach · ${esc(CH_WHY[M.why] || '')}</span>
+    ${draw ? `<div class="k-winner"><div class="ch-drawav">${avatar(ghost(M.p[0]), 64)}${avatar(ghost(M.p[1]), 64)}</div><h2>Remis!</h2></div>` : `<div class="k-winner">${avatar(w, 72)}<h2>${esc(w.name)} gewinnt!</h2></div><p class="muted">gegen ${esc(l.name)} · ${M.h.length ? Math.ceil(M.h.length / 2) + ' Züge' : ''}</p>`}
+    <div class="ch-endboard">${chBoardHTML(M)}</div>
+    ${M.transferred ? `<p class="okline">✓ Steht im Highscore von ${esc((lobby() || {}).name || 'diesem Raum')}: ${draw ? 'beide +2' : `${esc(w.name)} +3, ${esc(l.name)} +1`}.</p>` : ''}
+    ${host ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="ch-again">Revanche (Farben getauscht)</button><button class="btn" type="button" data-act="ch-setup">Andere Spieler</button></div>` : '<p class="muted">Der Host kann eine neue Partie starten.</p>'}
+  </div>${lobbyHsHTML()}</section>`;
+}
+function viewCh() { const M = S.ch; if (!M) return duoSetupHTML('ch'); return M.status === 'finished' ? chEndHTML(M) : chPlayHTML(M); }
+function chMount() {
+  const M = S.ch;
+  if (M && M.status === 'finished' && chl.endSnd !== M.id && S.tab === 'ch') { chl.endSnd = M.id; const me = chMeIdx(M); kSnd(me < 0 || M.win === me || M.win === 2 ? 'win' : 'lose', .3); }
+  if (M && M.id !== chl.gid) { chl.gid = M.id; chl.lastSeq = M.h.length; D.chSel = -1; D.chPro = null; }
+  if (M && M.h.length !== chl.lastSeq) { if (M.h.length > chl.lastSeq && S.tab === 'ch' && chMeIdx(M) !== (M.t === 'w' ? 1 : 0)) kSnd('land'); chl.lastSeq = M.h.length; }
+}
+/* Uhr jede Zehntelsekunde nachführen, ohne neu zu zeichnen */
+setInterval(() => {
+  const M = S.ch; if (!M || S.tab !== 'ch' || !M.tc) return;
+  document.querySelectorAll('[data-ch-clock]').forEach(el => { const i = Number(el.dataset.chClock), ms = chClock(M, i); el.textContent = chFmt(ms); el.classList.toggle('low', ms < 30000); });
+}, 200);
 
 /* ---------- Bowling: reihum werfen, 3, 5 oder 10 Frames (auch mit Bots) ----------
    Gespeichert im Raum-Feld uno (mit g:'bw'): {g, id, status, cfg:{fr}, players, s, transferred}.
@@ -11864,7 +12320,7 @@ async function vgmLinkSubmit() {
 /* ---------- Spieler-Profile im Steam-Stil ----------
    Der Tab „Spieler“ zeigt alle Spieler. Ein Tipp auf einen Spieler öffnet sein Profil: Kopfbereich mit Level und Status,
    Lieblingsspiel, Screenshots, kürzliche Aktivität, Spielebibliothek; daneben Abzeichen, Zahlen und die anderen Spieler. */
-const GAME_KIND_NAME = {quiz:'Quiz', malen:'Malen', golf:'Minigolf', karten:'Kartenwahn', mad:'Uncle Grandpa ärgere dich', bj:'Blackjack', dt:'Dicktris', tt:'Tischtennis', ah:'Air-Hockey', bw:'Bowling'};
+const GAME_KIND_NAME = {quiz:'Quiz', malen:'Malen', golf:'Minigolf', karten:'Kartenwahn', mad:'Uncle Grandpa ärgere dich', bj:'Blackjack', dt:'Dicktris', tt:'Tischtennis', ah:'Air-Hockey', bw:'Bowling', ch:'Schach'};
 /* Status wie bei Steam: im Spiel (in einem Raum mit laufendem Spiel), online oder offline */
 function spStatus(pid) {
   const now = Date.now();
@@ -12157,7 +12613,7 @@ const TK_TYPES = [
 ];
 const TK_AREAS = [
   ['menu', 'Main-Menü', '🏠'], ['turnier', 'Turnier', '🏆'], ['raeume', 'Spiele-Räume', '🚪'], ['quiz', 'Quiz', '❔'], ['malen', 'Malen', '🎨'],
-  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['mad', 'Uncle Grandpa ärgere dich', '🎲'], ['bj', 'Blackjack', '🂡'], ['dt', 'Dicktris', '🧱'], ['tt', 'Tischtennis', '🏓'], ['ah', 'Air-Hockey', '🏒'], ['bw', 'Bowling', '🎳'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
+  ['golf', 'Minigolf', '⛳'], ['karten', 'Kartenwahn', '🃏'], ['mad', 'Uncle Grandpa ärgere dich', '🎲'], ['bj', 'Blackjack', '🂡'], ['dt', 'Dicktris', '🧱'], ['tt', 'Tischtennis', '🏓'], ['ah', 'Air-Hockey', '🏒'], ['bw', 'Bowling', '🎳'], ['ch', 'Schach', '♟️'], ['bots', 'Bots', '🤖'], ['profile', 'Spieler und Profile', '👤'], ['games', 'Videogames im Profil', '🎮'],
   ['support', 'Support', '🛟'], ['musik', 'Musik und Sound', '🎵'], ['optionen', 'Optionen', '⚙️'], ['login', 'Login und Einladungen', '🔑'], ['handy', 'Handy-Ansicht', '📱'], ['other', 'Sonstiges', '🧩']
 ];
 const TK_SUB = {
@@ -12230,7 +12686,7 @@ function tkContext() {
   const t = S.tab, L = typeof lobby === 'function' ? lobby() : null, me = myPid();
   const map = {start:'menu', turnier:'turnier', rangliste:'turnier', rad:'turnier', liste:'turnier', spiele:'raeume', raum:'raeume', spieler:'profile', einstellungen:'optionen'};
   let area = map[t] || '', hole = 0, sub = '';
-  if (['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw'].includes(t)) area = t;
+  if (['quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch'].includes(t)) area = t;
   if (t === 'spieler' && D.vgP) area = 'games';
   if (area === 'golf' && S.golf && S.golf.status === 'running') { const p = S.golf.pos && S.golf.pos[me]; hole = (Array.isArray(p) ? p[3] : S.golf.hi) + 1 || 0; }
   if (area === 'turnier') sub = {rangliste:'Rangliste', rad:'Glücksrad', liste:'Spieleliste'}[t] || '';
@@ -13804,6 +14260,7 @@ function tick() {
     try { ttLogic(); } catch (e) {}
     try { ahLogic(); } catch (e) {}
     try { bwLogic(); } catch (e) {}
+    try { chLogic(); } catch (e) {}
     botTick();
   }
   lobbyAutoAward();
@@ -14388,7 +14845,7 @@ const actions = {
   'quiz-again': () => { const base = clone(S.quiz); withPending(() => quizStart(base)); },
   'quiz-new': () => withPending(() => quizDiscard())
 };
-Object.assign(actions, uidActions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions, dtActions, ttActions, ahActions, bwActions);
+Object.assign(actions, chActions, uidActions, gamesActions, drawActions, roomActions, golfActions, kActions, botActions, vgActions, vgmActions, spActions, tkActions, ntActions, madActions, bjActions, dtActions, ttActions, ahActions, bwActions);
 document.addEventListener('click', e => {
   if (bgm.open && !(e.target.closest && e.target.closest('#bgm-root'))) { bgm.open = false; renderBgm(); }
   if (e.target.classList && e.target.classList.contains('scrim')) { if (!(S.modal && S.modal.type === 'bday-ask')) closeModal(); return; }
@@ -15915,7 +16372,7 @@ function boot() {
   if (!S.deco) S.deco = normDeco(null);
   renderBgm();
   const h = (location.hash || '').slice(1);
-  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw'].includes(h) ? 'spiele-pick' : viewFor(h);
+  if (h) S.tab = ['spiele', 'raum', 'quiz', 'malen', 'golf', 'karten', 'mad', 'bj', 'dt', 'tt', 'ah', 'bw', 'ch'].includes(h) ? 'spiele-pick' : viewFor(h);
   const fc = CFG && CFG.firebase;
   if (!fc || !fc.apiKey || /HIER_EINTRAGEN/.test(fc.apiKey) || /DEIN-PROJEKT/.test(fc.projectId || '') || !window.firebase) {
     S.mode = 'setup'; S.loaded = true;
