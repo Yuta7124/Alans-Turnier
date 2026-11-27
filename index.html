@@ -1651,8 +1651,8 @@ button.bcell[disabled]{cursor:default}
 .tv-bug{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:16px;color:var(--ink);opacity:.9}
 .tv-bug b{font-family:var(--pixel);font-size:12px;font-weight:400;color:var(--coin);margin-left:4px}
 .ti-auto{width:100%;max-width:420px;align-self:center;height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:18px}
-.ti-auto i{display:block;height:100%;width:100%;background:var(--coin);transform-origin:left;animation:tiAuto 15s linear forwards}
-@keyframes tiAuto{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.ti-auto i{display:block;height:100%;width:100%;background:var(--coin);transform-origin:left}
+
 .wm-go{display:block;margin-top:8px;font-weight:800;color:var(--coin)}
 .ah-lockhint{display:none;position:absolute;left:50%;top:10px;transform:translateX(-50%);background:rgba(0,0,0,.65);color:#fff;font-size:.85rem;padding:6px 12px;border-radius:999px;pointer-events:none;white-space:nowrap;z-index:2}
 @media (pointer:fine){.ah-lockhint{display:block}}
@@ -1882,11 +1882,11 @@ body.ah-locked .ah-lockhint{display:none}
 .slf-score li span{margin-left:auto;font-weight:900;color:#ffcf3f}
 .slf-score li.me{background:rgba(255,207,63,.12)}
 @media (max-width:560px){.slf-row{grid-template-columns:1fr;gap:4px}.slf-letter{width:86px;height:86px;font-size:56px}}
-.tour-intro{position:relative;text-align:center;padding:28px 24px;margin-bottom:18px;border:2px solid #ffcf3f;background:radial-gradient(80% 120% at 50% 0%,rgba(255,207,63,.22),rgba(13,22,64,.9) 70%);box-shadow:0 0 30px rgba(255,207,63,.25)}
-.tour-intro-ic{display:block;font-size:54px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 0 14px rgba(255,207,63,.6))}
-.tour-intro h2{margin:6px 0 12px;font-size:clamp(22px,3vw,34px)}
-.tour-intro-rule{margin:0 auto 10px;max-width:760px;font-size:clamp(18px,2.1vw,24px);font-weight:800;line-height:1.35;color:#ffe9a8}
-.tour-intro-rule .tour-rule-list{text-align:left;display:inline-flex}
+.tour-rulecard{position:relative;text-align:center;padding:28px 24px;margin-bottom:18px;border:2px solid #ffcf3f;background:radial-gradient(80% 120% at 50% 0%,rgba(255,207,63,.22),rgba(13,22,64,.9) 70%);box-shadow:0 0 30px rgba(255,207,63,.25)}
+.tour-rulecard-ic{display:block;font-size:54px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 0 14px rgba(255,207,63,.6))}
+.tour-rulecard h2{margin:6px 0 12px;font-size:clamp(22px,3vw,34px)}
+.tour-rulecard-rule{margin:0 auto 10px;max-width:760px;font-size:clamp(18px,2.1vw,24px);font-weight:800;line-height:1.35;color:#ffe9a8}
+.tour-rulecard-rule .tour-rule-list{text-align:left;display:inline-flex}
 .tour-rule-list{list-style:none;margin:8px 0;padding:0;flex-direction:column;gap:8px;display:flex}
 .tour-rule-list li{position:relative;padding-left:26px}
 .tour-rule-list li::before{content:'👉';position:absolute;left:0}
@@ -5406,7 +5406,7 @@ function tourIntroHTML() {
       ${total > 0 ? `${st.pshow !== 'places' ? `<div class="ti-pot"><small>Preisgeld insgesamt</small><b>${moneyHTML(total)}</b></div>` : ''}
         ${st.pshow === 'total' ? '' : `<div class="ti-places">${am.map((a, i) => a > 0 ? `<div class="ti-pl" style="--d:${300 + i * 90}ms"><span>${medal[i] || (i + 1) + '.'}</span><b>${moneyHTML(a)}</b><small>Platz ${i + 1}</small></div>` : '').join('')}</div>`}`
         : '<p class="muted">Heute wird ohne Preisgeld gespielt, nur um die Ehre!</p>'}
-      <div class="ti-auto" aria-hidden="true"><i style="animation-delay:-${Math.min(15000, Date.now() - (D.introAt || Date.now()))}ms"></i></div>
+      <div class="ti-auto" aria-hidden="true"><i id="ti-bar" style="transform:scaleX(${Math.max(0, 1 - (Date.now() - (D.introAt || Date.now())) / 15000)})"></i></div>
     </div></section>`;
 }
 function tsDraft() {
@@ -7446,9 +7446,9 @@ function tourRuleHTML() {
   const L = lobby(); if (!L || !L.tour || !L.kind || L.kind !== S.tab || !TOUR_RULES[L.kind]) return '';
   const G = tourGame(L.kind); if (G && ['running', 'finished'].includes(G.status)) return '';
   const when = L.kind === 'quiz' ? 'Die Punkte bekommst du sofort.' : L.kind === 'ap' ? 'Wie weit die anderen sind, siehst du erst am Ende.' : 'Die Punkte bekommst du am Ende vom Spiel.';
-  return `<div class="card tour-intro"><span class="tour-intro-ic" aria-hidden="true">🏆</span><span class="eyebrow">Turnier-Regel</span>
+  return `<div class="card tour-rulecard"><span class="tour-rulecard-ic" aria-hidden="true">🏆</span><span class="eyebrow">Turnier-Regel</span>
     <h2>${SRV_ICON[L.kind] || ''} ${esc(GAME_KIND_NAME[L.kind] || 'Spiel')}: So bekommst du Punkte</h2>
-    <div class="tour-intro-rule">${tourRuleList(L.kind)}</div><p class="muted">${when}</p></div>`;
+    <div class="tour-rulecard-rule">${tourRuleList(L.kind)}</div><p class="muted">${when}</p></div>`;
 }
 function tourCardHTML(L) {
   if (!L || !L.tour || !TOUR_RULES[L.kind]) return '';
@@ -15488,6 +15488,8 @@ function tick() {
   bgmSync();
   try { tourLobbyTick(); } catch (e) {}
   if (D.introAt && Date.now() - D.introAt > 15000 && document.querySelector('.tour-intro')) actions['tour-intro-ok']();
+  // Ablauf-Balken der Turnier-Begrüßung per Skript (CSS-Animationen sind bei „Bewegung reduzieren“ auf dem Handy aus)
+  { const tb = D.introAt && document.getElementById('ti-bar'); if (tb) tb.style.transform = `scaleX(${Math.max(0, 1 - (Date.now() - D.introAt) / 15000)})`; }
   if (!roomPaused()) drawTick();
   if (eventSync()) render();
   if (S.tab === 'start') { updateCountdowns(); const tk = tourState().k; if (tk !== lastTourK) { lastTourK = tk; render(); } }
