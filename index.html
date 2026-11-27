@@ -1934,6 +1934,12 @@ body.is-nye header{box-shadow:inset 0 -3px 0 #ffcf3f}
 .sv-switch{display:flex;gap:6px}
 .sv-main .sv-grid{max-width:min(820px,calc(100vh - 320px));min-width:min(100%,300px)}
 .sv-pw-row{justify-content:center;width:100%;margin:2px 0 0;padding:8px;border-radius:14px;background:rgba(255,255,255,.04)}
+.sv-colb{background:linear-gradient(180deg,color-mix(in srgb,var(--bc) 85%,#fff),color-mix(in srgb,var(--bc) 80%,#000))!important}.sv-colb>i{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.sv-ship.wreck svg{filter:grayscale(1) brightness(.42) sepia(.3)}
+.sv-side .svs-dot{width:10px;height:10px;border-radius:50%;flex:none;box-shadow:0 0 0 2px rgba(255,255,255,.25)}
+.sv-cnt{font-size:13px;color:var(--muted);font-weight:700}
+.sv-top.under{box-shadow:0 0 0 2px #ff5a1f;background:rgba(255,90,31,.12)}
+.svx-tick{left:0!important;right:0;margin:0 auto;width:max-content!important;max-width:92vw;height:auto!important;text-align:center;padding:8px 16px;border-radius:99px;background:rgba(10,14,30,.9);box-shadow:0 0 0 2px #ffb52e,0 6px 20px rgba(0,0,0,.5);color:#fff;font-weight:700;font-size:15px;z-index:9999}
 .sv-own{background:linear-gradient(180deg,#45a565,#2f7f4a)!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3),0 4px 14px rgba(0,0,0,.35)!important}.sv-own>i{color:#effff3!important}
 .sv-b h3{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0 0 8px;font-size:17px}.sv-b h3 small{color:var(--muted);font-weight:700}
 .sv-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.sv-tabs small{opacity:.8}
@@ -3468,7 +3474,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=122"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=123"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -7755,7 +7761,7 @@ function pzSet(on, auto = false) {
   else if (L.kind === 'bw') sh('s.turnAt', g.s && g.s.turnAt);
   else if (L.kind === 'ch') sh('at', g.at);
   else if (L.kind === 'slf' && g.ph === 'write') sh('at', g.at);
-  else if (L.kind === 'sv') { sh('at', g.at); sh('placeAt', g.placeAt); }
+  else if (L.kind === 'sv') { sh('at', g.at); sh('placeAt', g.placeAt); sh('ph.at', g.ph && g.ph.at); }
   else if (L.kind === 'ap' && g.pr) for (const [pid, r] of Object.entries(g.pr)) if (r && r.st === 'play') sh('pr.' + pid + '.at', r.at);
   else if (L.kind === 'dt' || L.kind === 'tt' || L.kind === 'ah') sh('startAt', g.startAt);
   else if (L.kind === 'golf') sh('holeAt', g.holeAt);
@@ -12162,7 +12168,7 @@ function svShape(i, cells) {
 const SV_PLACE_T = 90000, SV_TURN_T = 30000, SV_COLS = 'ABCDEFGHIJKL';
 /* Power-ups: Punkte gibt es für jeden normalen Schuss ins Wasser */
 const SV_PW = {radar:{n:'Radar', e:'📡', cost:10, d:'Zeigt dir in einem 3 × 3 Bereich, wo ein Schiff liegt. Danach darfst du noch schießen.'}, bomb:{n:'Bombe', e:'💣', cost:16, d:'Sprengt ein ganzes 3 × 3 Feld auf einmal.'}, air:{n:'Flugschiff', e:'✈️', cost:20, d:'Fliegt eine ganze Spalte oder Reihe ab und trifft alles auf dem Weg.'}};
-const svl = {lastKey:'', turnKey:'', endSnd:'', botAt:0, seenKey:'', anim:null, pend:null, st:'', ptSeen:-1};
+const svl = {lastKey:'', turnKey:'', endSnd:'', botAt:0, seen:new Set(), q:[], ann:[], pend:null, hold:null, st:'', ptSeen:-1, koLen:null, phSeen:''};
 const svLbl = c => SV_COLS[c % SV_N] + (Math.floor(c / SV_N) + 1);
 function svNb(c, diag) {
   const r = Math.floor(c / SV_N), k = c % SV_N, out = [];
@@ -12222,7 +12228,14 @@ function svNorm(x) {
   }
   const L0 = x.last, last = L0 && typeof L0 === 'object' && players.includes(L0.by) ? {by:L0.by, to:str(L0.to, 60), c:+L0.c || 0, r:str(L0.r, 2), ko:L0.ko === true,
     k:['shot', 'radar', 'bomb', 'air'].includes(L0.k) ? L0.k : 'shot', n:+L0.n || 0, sn:+L0.sn || 0, cs:Array.isArray(L0.cs) ? L0.cs.map(Number).filter(n => n >= 0 && n < SV_N * SV_N) : [], pp:+L0.pp || 0} : null;
-  return {g:'sv', id:str(x.id, 40), status:x.status, mode:x.mode === 'multi' ? 'multi' : 'duel', players, fl, rd, sh, sk, last, pt, rad,
+  const ph = x.ph && typeof x.ph === 'object' && players.includes(x.ph.tgt) ? {n:Math.max(1, Math.round(+x.ph.n || 1)), tgt:x.ph.tgt, at:+x.ph.at || 0} : {n:0, tgt:'', at:0};
+  const done = {}, ev = {};
+  for (const id of players) {
+    if (x.done && +x.done[id] > 0) done[id] = Math.round(+x.done[id]);
+    const a = x.ev && x.ev[id]; if (Array.isArray(a)) ev[id] = a.filter(e => e && typeof e === 'object' && players.includes(e.to)).slice(-4).map(e => ({by:id, to:e.to, c:+e.c || 0, r:str(e.r, 2), ko:false,
+      k:['shot', 'radar', 'bomb', 'air'].includes(e.k) ? e.k : 'shot', n:+e.n || 0, sn:+e.sn || 0, cs:Array.isArray(e.cs) ? e.cs.map(Number).filter(n => n >= 0 && n < SV_N * SV_N) : [], pp:+e.pp || 0, ph:+e.ph || 0, at:+e.at || 0}));
+  }
+  return {g:'sv', id:str(x.id, 40), status:x.status, mode:x.mode === 'multi' ? 'multi' : 'duel', players, fl, rd, sh, sk, last, pt, rad, ph, done, ev,
     placeAt:+x.placeAt || 0, turn:players.includes(x.turn) ? x.turn : players[0], at:+x.at || 0,
     ko:Array.isArray(x.ko) ? x.ko.filter(p => players.includes(p)) : [], win:players.includes(x.win) ? x.win : '',
     tour:x.tour === true, transferred:x.transferred === true, pz:x.pz && x.pz.at ? x.pz : null};
@@ -12243,8 +12256,130 @@ function svPut(nx, patch) { S.lobbies[S.room] = {...lobby(), uno:nx}; S.sv = svN
 const svBox = c => { const r = Math.floor(c / SV_N), k = c % SV_N, out = []; for (let a = r - 1; a <= r + 1; a++) for (let b = k - 1; b <= k + 1; b++) if (a >= 0 && b >= 0 && a < SV_N && b < SV_N) out.push(a * SV_N + b); return out; };
 const svLineOf = (c, dir) => Array.from({length:SV_N}, (_, n) => dir === 'row' ? Math.floor(c / SV_N) * SV_N + n : n * SV_N + c % SV_N);
 function svCanAct(M, by, to) { return !!M && M.status === 'running' && M.turn === by && by !== to && !M.ko.includes(to) && M.players.includes(to) && !roomPaused(); }
-/* Schießen: kind 'shot' (1 Feld), 'bomb' (3 × 3), 'air' (ganze Spalte/Reihe). Treffer = nochmal. Normaler Schuss ins Wasser = 1 Punkt. */
+/* ---------- Schiffe versenken Krieg: Runden mit einem Ziel ----------
+   Pro Runde wird ein Spieler beschossen (ph.tgt). Alle anderen schießen gleichzeitig je einmal auf ihn (Radar geht zusätzlich).
+   Keiner sieht die Schüsse der anderen; versenkte Schiffe sieht jeder. Power-ups werden angesagt, ohne Ergebnis.
+   uno.ph {n, tgt, at}, uno.done {pid: Rundennummer}, uno.ev {pid: [Aktionen dieser Runde]} */
+const SV_COL = ['#e0464f', '#3f7fe0', '#e8892b', '#8a5cd6', '#e0559a', '#d9b22b', '#2fb5d6'];
+const svWar = M => !!M && M.mode === 'multi';
+const svCol = (M, p) => SV_COL[Math.max(0, M.players.indexOf(p)) % SV_COL.length];
+const svPhEv = (M, p) => (M.ev[p] || []).filter(e => e.ph === M.ph.n);
+const svDone = (M, p) => M.done[p] === M.ph.n;
+const svShooters = M => M.players.filter(p => p !== M.ph.tgt && !M.ko.includes(p));
+const svTk = M => svWar(M) ? `${M.id}:ph${M.ph.n}:${M.status}` : `${M.id}:${M.turn}:${M.status}`;
+function svBotDelay(p, n) { let h = 7; for (const ch of p + ':' + n) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return 1500 + h % 5000; }
+function svWarAct(M, by, to) { return !!M && M.status === 'running' && !roomPaused() && to === M.ph.tgt && by !== to && M.players.includes(by) && !M.ko.includes(by) && !svDone(M, by); }
+function svFireWar(M, by, to, cells, kind, center) {
+  if (!svWarAct(M, by, to)) return false;
+  const cost = kind === 'shot' ? 0 : SV_PW[kind].cost; if ((M.pt[by] || 0) < cost) return false;
+  const mine = svMy(M, by, to), mset = new Set(mine), fresh = [...new Set(cells)].filter(c => c >= 0 && c < SV_N * SV_N && !mset.has(c));
+  if (!fresh.length) return false;
+  const before = svIncoming(M, to), after = new Set(before); fresh.forEach(c => after.add(c));
+  const sb = svSunk(M, to, before), sa = svSunk(M, to, after), hits = fresh.filter(c => svShipOf(M, to, c) >= 0);
+  const newly = sa.map((x, i) => x && !sb[i] ? i : -1).filter(i => i >= 0);
+  const pp = kind === 'shot' && !hits.length ? 1 : 0, pt = (M.pt[by] || 0) - cost + pp;
+  let r = !hits.length ? 'm' : newly.length ? 's' : 'h';
+  if (kind === 'shot' && hits.length && !newly.length && sb[svShipOf(M, to, fresh[0])]) r = 'a';
+  const now = Date.now(), ent = {by, to, c:center, r, ko:false, k:kind, n:hits.length, sn:newly.length, cs:kind === 'shot' ? [] : fresh, pp, ph:M.ph.n, at:now};
+  const list = [...svPhEv(M, by), ent].slice(-4), base = lobby().uno, arr = [...mine, ...fresh];
+  const nx = {...base, sh:{...(base.sh || {}), [by]:{...((base.sh || {})[by] || {}), [to]:arr}}, pt:{...(base.pt || {}), [by]:pt}, done:{...(base.done || {}), [by]:M.ph.n}, ev:{...(base.ev || {}), [by]:list}};
+  const patch = {[`uno.sh.${by}.${to}`]:arr, ['uno.pt.' + by]:pt, ['uno.done.' + by]:M.ph.n, ['uno.ev.' + by]:list};
+  if (newly.length) { nx.sk = {...(base.sk || {})}; newly.forEach(si => { const k = `${to}_${si}`; nx.sk[k] = by; patch['uno.sk.' + k] = by; }); }
+  svPut(nx, patch); return true;
+}
+function svRadarWar(M, by, to, c) {
+  if (!svWarAct(M, by, to) || (M.pt[by] || 0) < SV_PW.radar.cost) return false;
+  const box = svBox(c), base = lobby().uno, old = ((base.rad || {})[by] || {})[to] || [], arr = [...new Set([...old, ...box])], pt = (M.pt[by] || 0) - SV_PW.radar.cost, now = Date.now();
+  const ent = {by, to, c, r:'r', ko:false, k:'radar', n:box.filter(x => svShipOf(M, to, x) >= 0).length, sn:0, cs:box, pp:0, ph:M.ph.n, at:now};
+  const list = [...svPhEv(M, by), ent].slice(-4);
+  svPut({...base, rad:{...(base.rad || {}), [by]:{...((base.rad || {})[by] || {}), [to]:arr}}, pt:{...(base.pt || {}), [by]:pt}, ev:{...(base.ev || {}), [by]:list}},
+    {[`uno.rad.${by}.${to}`]:arr, ['uno.pt.' + by]:pt, ['uno.ev.' + by]:list});
+  return true;
+}
+/* Host: Bots schießen, wer zu lange braucht, bekommt einen Zufallsschuss; sind alle durch, kommt das nächste Ziel */
+function svWarLogic(M, now, L) {
+  const ph = M.ph; if (!ph.tgt) return;
+  const sh = svShooters(M);
+  if (!sh.every(p => svDone(M, p))) {
+    if (now < svl.botAt) return;
+    for (const p of sh) {
+      if (svDone(M, p)) continue;
+      const gone = !isBot(p) && !(L && L.members[p]);
+      if (!(isBot(p) ? now > ph.at + svBotDelay(p, ph.n) : gone ? now > ph.at + 2500 : now > ph.at + SV_TURN_T)) continue;
+      svl.botAt = now + 450;
+      if (isBot(p)) {
+        const pl = svBotPlan(M, p, ph.tgt); if (!pl) continue;
+        if (pl.k === 'radar' && svRadarWar(M, p, pl.t, pl.c)) { svl.botAt = now + 1800; return; }
+        if (pl.k === 'bomb' && svFireWar(M, p, pl.t, svBox(pl.c), 'bomb', pl.c)) return;
+        if (pl.k === 'air' && svFireWar(M, p, pl.t, svLineOf(pl.c, pl.dir), 'air', pl.c)) return;
+        if (svFireWar(M, p, pl.t, [pl.c], 'shot', pl.c)) return;
+      }
+      const mv = svBotMove(M, p, ph.tgt); if (mv && svFireWar(M, p, ph.tgt, [mv.c], 'shot', mv.c)) return;
+    }
+    return;
+  }
+  const lastAt = Math.max(ph.at, ...sh.map(p => (svPhEv(M, p).slice(-1)[0] || {}).at || 0));
+  if (now < lastAt + 2800) return; // Animationen ausspielen lassen
+  const out = svAlive(M, ph.tgt) ? M.ko : [...M.ko, ph.tgt], alive = M.players.filter(p => !out.includes(p)), base = lobby().uno;
+  if (alive.length <= 1) { const win = alive[0] || sh[0] || ''; svPut({...base, ko:out, status:'finished', win}, {'uno.ko':out, 'uno.status':'finished', 'uno.win':win}); return; }
+  const nph = {n:ph.n + 1, tgt:svNext(M, ph.tgt, out), at:now};
+  svPut({...base, ko:out, ph:nph}, {'uno.ko':out, 'uno.ph':nph});
+}
+/* Neue Ereignisse seit dem letzten Zeichnen einsammeln: eigene Schüsse und Schüsse auf mich werden animiert, der Rest wird nur angesagt */
+function svCollect(M, me, tgt, known) {
+  const evs = [];
+  if (svWar(M)) { for (const p of M.players) for (const e of (M.ev[p] || [])) evs.push({key:`${M.id}:${p}:${e.at}:${e.k}:${e.c}`, e}); }
+  else if (M.last) evs.push({key:svEvKey(M), e:M.last});
+  for (const {key, e} of evs) {
+    if (svl.seen.has(key)) continue; svl.seen.add(key);
+    if (!known) continue;
+    const sel = e.by === me && tgt === e.to ? 'tgt' : e.to === me ? 'own' : '';
+    if (sel) {
+      const d = svl.q.filter(x => !x.started).length * 550, now = Date.now();
+      const cells = e.k === 'shot' ? [e.c] : e.cs, dur = {shot:1300, bomb:1900, air:2400, radar:1700}[e.k] + 900 + d;
+      if (!svl.pend || svl.pend.sel !== sel || now > svl.pend.until) svl.pend = {sel, cells:new Set(), until:0};
+      cells.forEach(c => svl.pend.cells.add(c)); svl.pend.until = Math.max(svl.pend.until, now + 4000 + d);
+      svl.q.push({key, sel, last:e, started:false, delay:d});
+      if (!svl.hold || svl.hold.id !== M.id || svl.hold.until < now + dur) svl.hold = {id:M.id, sel, until:now + dur};
+      setTimeout(() => { if (S.tab === 'sv') render(); }, dur + 40);
+    } else if (svWar(M) && e.by !== me) {
+      const nm = esc(ghost(e.to).name);
+      if (e.k !== 'shot') svl.ann.push(`${SV_PW[e.k].e} ${e.k === 'radar' ? 'Ein Radar sucht' : e.k === 'bomb' ? 'Eine Bombe fällt' : 'Ein Flugschiff fliegt'} bei <b>${nm}</b>!`);
+      if (e.sn) svl.ann.push(`💥 Ein Schiff von <b>${nm}</b> ist versenkt!`);
+    }
+  }
+}
+function svTicker(html, d = 0) {
+  setTimeout(() => {
+    const n = document.querySelectorAll('.svx-tick').length, e = document.createElement('div'); e.className = 'svx svx-tick'; e.style.top = (78 + n * 46) + 'px'; e.innerHTML = H(html); document.body.appendChild(e);
+    svA(e, [{transform:'translateY(-30px) scale(.8)', opacity:0}, {transform:'translateY(0) scale(1.05)', opacity:1, offset:.12}, {transform:'scale(1)', opacity:1, offset:.85}, {transform:'translateY(-10px)', opacity:0}], {duration:3200});
+  }, d);
+}
+function svWarTopHTML(M, me, myTurn) {
+  const fin = M.status === 'finished'; if (fin) return '';
+  const sh = svShooters(M), nd = sh.filter(p => svDone(M, p)).length, isT = M.ph.tgt === me, out = M.ko.includes(me);
+  const txt = isT ? '🛡️ Alle schießen auf dich!' : myTurn ? `🎯 Feuer frei auf ${avatar(ghost(M.ph.tgt), 24)} <b>${esc(ghost(M.ph.tgt).name)}</b>!`
+    : out ? `👀 Ziel: <b>${esc(ghost(M.ph.tgt).name)}</b>` : svDone(M, me) ? `✓ Geschossen · warte auf die anderen` : `🎯 Ziel: <b>${esc(ghost(M.ph.tgt).name)}</b>`;
+  return `<div class="sv-top ${myTurn ? 'mine' : ''} ${isT ? 'under' : ''}"><span class="sv-turn">${txt}</span><span class="sv-cnt">💣 ${nd} von ${sh.length} haben geschossen</span>${svTimeHTML(M)}
+    ${ctl() ? `<button class="btn btn-sm btn-ghost" type="button" data-act="sv-end">Beenden</button>` : ''}</div>`;
+}
+function svWarInfoHTML(M, me) {
+  const lines = [], fin = M.status === 'finished', isT = M.ph.tgt === me;
+  const myL = svPhEv(M, me).slice(-1)[0];
+  if (myL) { const t = svLastHTML({last:myL}, me); if (t) lines.push(t); }
+  const all = M.players.flatMap(p => p === me ? [] : svPhEv(M, p));
+  if (isT && all.length) {
+    const hits = all.reduce((a, e) => a + (e.k === 'radar' ? 0 : e.n), 0), shots = all.filter(e => e.k !== 'radar').length, pw = all.filter(e => e.k !== 'shot').map(e => SV_PW[e.k].e).join(' ');
+    lines.push(`<p class="sv-last me ${hits ? 'h' : 'm'}">🛡️ Auf dich: ${shots} Angriff${shots === 1 ? '' : 'e'}, <b>${hits}</b> Treffer${pw ? ` · ${pw}` : ''}${all.some(e => e.sn) ? ' · 💥 Schiff versenkt!' : ''}</p>`);
+  } else if (!fin) {
+    const pw = all.filter(e => e.k !== 'shot'), sunk = all.filter(e => e.sn).length;
+    if (pw.length || sunk) lines.push(`<p class="sv-last r">${pw.map(e => `${SV_PW[e.k].e} ${SV_PW[e.k].n}`).join(' · ')}${pw.length && sunk ? ' · ' : ''}${sunk ? `💥 ${sunk === 1 ? 'Ein Schiff' : sunk + ' Schiffe'} von <b>${esc(ghost(M.ph.tgt).name)}</b> versenkt` : ''}</p>`);
+  }
+  return lines.join('');
+}
+/* Schießen (1 gegen 1): kind 'shot' (1 Feld), 'bomb' (3 × 3), 'air' (ganze Spalte/Reihe). Treffer = nochmal. Normaler Schuss ins Wasser = 1 Punkt. */
 function svFire(M, by, to, cells, kind = 'shot', center = cells[0]) {
+  if (svWar(M)) return svFireWar(M, by, to, cells, kind, center);
   if (!svCanAct(M, by, to)) return false;
   const cost = kind === 'shot' ? 0 : SV_PW[kind].cost; if ((M.pt[by] || 0) < cost) return false;
   const mine = svMy(M, by, to), mset = new Set(mine), fresh = [...new Set(cells)].filter(c => c >= 0 && c < SV_N * SV_N && !mset.has(c));
@@ -12269,6 +12404,7 @@ function svFire(M, by, to, cells, kind = 'shot', center = cells[0]) {
 function svShoot(M, by, to, c) { return svFire(M, by, to, [c], 'shot', c); }
 /* Radar: 3 × 3 absuchen (nur der Spieler selbst sieht das Ergebnis). Kein Schuss, du bist danach weiter dran. */
 function svRadar(M, by, to, c) {
+  if (svWar(M)) return svRadarWar(M, by, to, c);
   if (!svCanAct(M, by, to) || (M.pt[by] || 0) < SV_PW.radar.cost) return false;
   const box = svBox(c), base = lobby().uno, old = ((base.rad || {})[by] || {})[to] || [], arr = [...new Set([...old, ...box])], pt = (M.pt[by] || 0) - SV_PW.radar.cost, now = Date.now();
   const found = box.filter(x => svShipOf(M, to, x) >= 0).length;
@@ -12278,11 +12414,11 @@ function svRadar(M, by, to, c) {
   return true;
 }
 /* Bot (und Zeit abgelaufen): sucht um eigene Treffer herum weiter, sonst im Schachbrett-Muster */
-function svBotMove(M, by) {
-  const opp = M.players.filter(p => p !== by && !M.ko.includes(p) && M.fl[p]); if (!opp.length) return null;
+function svBotMove(M, by, only) {
+  const opp = only ? [only] : M.players.filter(p => p !== by && !M.ko.includes(p) && M.fl[p]); if (!opp.length) return null;
   const plan = t => {
     const mine = new Set(svMy(M, by, t)), all = svIncoming(M, t), sunk = svSunk(M, t, all), ban = new Set(mine);
-    (M.fl[t] || []).forEach((s, i) => { if (sunk[i] && s.some(c => mine.has(c))) s.forEach(c => svNb(c, true).forEach(n => ban.add(n))); });
+    (M.fl[t] || []).forEach((s, i) => { if (sunk[i] && (svWar(M) || s.some(c => mine.has(c)))) s.forEach(c => { ban.add(c); svNb(c, true).forEach(n => ban.add(n)); }); });
     const rad = ((M.rad[by] || {})[t] || []).filter(c => !mine.has(c)), radY = rad.filter(c => svShipOf(M, t, c) >= 0);
     rad.forEach(c => { if (svShipOf(M, t, c) < 0) ban.add(c); });
     if (radY.length) return {t, c:radY[Math.floor(Math.random() * radY.length)], p:3};
@@ -12304,8 +12440,8 @@ function svBotMove(M, by) {
   const pool = plans.filter(x => x.p === top); return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
 }
 /* Bots entscheiden selbst, ob sie ein Power-up nehmen: Radar zum Suchen, Bombe auf eine Spur, Flugschiff über eine volle Linie */
-function svBotPlan(M, by) {
-  const mv = svBotMove(M, by); if (!mv) return null;
+function svBotPlan(M, by, only) {
+  const mv = svBotMove(M, by, only); if (!mv) return null;
   const pt = M.pt[by] || 0, t = mv.t, mine = new Set(svMy(M, by, t)), rad = new Set((M.rad[by] || {})[t] || []), known = mv.p >= 2;
   const fresh = cells => cells.filter(c => !mine.has(c)).length;
   if (pt >= SV_PW.air.cost && Math.random() < (known ? .6 : .4)) {
@@ -12327,10 +12463,12 @@ function svLogic() {
   if (M.status === 'place') {
     if (M.players.every(p => M.rd[p] || isBot(p)) || now > M.placeAt + SV_PLACE_T) {
       const turn = M.players[Math.floor(Math.random() * M.players.length)];
+      if (svWar(M)) { const ph = {n:1, tgt:turn, at:now}; svPut({...lobby().uno, status:'running', ph, done:{}, ev:{}}, {'uno.status':'running', 'uno.ph':ph, 'uno.done':{}, 'uno.ev':{}}); return; }
       svPut({...lobby().uno, status:'running', turn, at:now}, {'uno.status':'running', 'uno.turn':turn, 'uno.at':now});
     }
     return;
   }
+  if (svWar(M)) { svWarLogic(M, now, L); return; }
   if (now < svl.botAt) return;
   const p = M.turn, gone = !isBot(p) && !(L && L.members[p]);
   if (isBot(p) || gone || now > M.at + SV_TURN_T) {
@@ -12536,8 +12674,8 @@ const svActions = {
     sfx('chosen'); svPut({...base, fl:{...base.fl, [me]:enc}, rd:{...(base.rd || {}), [me]:true}}, {['uno.fl.' + me]:enc, ['uno.rd.' + me]:true});
   },
   'sv-unready': () => { const M = S.sv, me = myPid(); if (!M || M.status !== 'place') return; const base = lobby().uno; svPut({...base, rd:{...(base.rd || {}), [me]:false}}, {['uno.rd.' + me]:false}); },
-  'sv-tgt': b => { const M = S.sv; D.svTgt = b.dataset.pid; if (M) D.svVo = {k:M.id + ':' + M.turn + ':' + M.status, v:'tgt'}; render(); },
-  'sv-view': b => { const M = S.sv; if (!M) return; svl.hold = null; D.svVo = {k:M.id + ':' + M.turn + ':' + M.status, v:b.dataset.v === 'own' ? 'own' : 'tgt'}; render(); },
+  'sv-tgt': b => { const M = S.sv; if (!M) return; svl.hold = null; D.svTgt = b.dataset.pid; D.svVo = {k:svTk(M), v:'tgt', p:b.dataset.pid}; render(); },
+  'sv-view': b => { const M = S.sv; if (!M) return; svl.hold = null; D.svVo = {k:svTk(M), v:b.dataset.v === 'own' ? 'own' : 'tgt'}; render(); },
   'sv-shot': b => {
     const M = S.sv; if (!M) return; const c = +b.dataset.i;
     if (D.svPw) { D.svAim = c; render(); return; }
@@ -12562,11 +12700,11 @@ const svActions = {
 function svRulesHTML(open) {
   return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird Schiffe versenken gespielt</summary><ul>
     <li><b>Flotte aufstellen:</b> Jeder hat 6 Schiffe: Kreuzer (4 Felder), T-Schiff (4, wie ein T), Blitz (4, im Zickzack), 2 Zerstörer (3) und ein U-Boot (2). Du ziehst sie selbst aufs 12 × 12 Feld. Schiffe dürfen sich nicht berühren, auch nicht schräg.</li>
-    <li><b>Schießen:</b> Wer dran ist, tippt ein Feld beim Gegner an. Wasser = der Nächste ist dran. <b>Treffer = du darfst nochmal.</b></li>
+    <li><b>Schießen (1 gegen 1):</b> Wer dran ist, tippt ein Feld beim Gegner an. Wasser = der Nächste ist dran. <b>Treffer = du darfst nochmal.</b></li>
     <li><b>Power-ups:</b> Für jeden normalen Schuss ins Wasser bekommst du 1 ⭐. Für 10 ⭐ gibt es das 📡 <b>Radar</b> (zeigt dir in 3 × 3 Feldern, wo ein Schiff liegt, danach darfst du noch schießen), für 16 ⭐ die 💣 <b>Bombe</b> (sprengt 3 × 3 Felder) und für 20 ⭐ das ✈️ <b>Flugschiff</b> (fliegt eine ganze Spalte oder Reihe ab). Die Punkte werden abgezogen, der Rest bleibt.</li>
     <li><b>Versenkt:</b> Ein Schiff ist versenkt, wenn alle seine Felder getroffen sind. Wer keine Schiffe mehr hat, ist raus.</li>
     <li><b>1 gegen 1:</b> ganz normal, zwei Spieler. Bots können mitspielen.</li>
-    <li><b>Schiffe versenken Krieg (jeder gegen jeden, 3 bis 7):</b> Du suchst dir aus, auf wen du schießt. <b>Du siehst nur deine eigenen Schüsse</b>, nicht wohin die anderen auf deinen Gegner geschossen haben. Auf deinem eigenen Feld siehst du alle Treffer.</li>
+    <li><b>Schiffe versenken Krieg (3 bis 7):</b> Es wird ausgelost, wer zuerst beschossen wird. Dann schießen <b>alle anderen gleichzeitig je einmal</b> auf ihn, danach ist der Nächste das Ziel. <b>Du siehst nur deine eigenen Schüsse</b>, nicht die der anderen. Versenkte Schiffe sieht jeder, und wenn jemand Radar, Bombe oder Flugschiff einsetzt, wird das angesagt, aber ohne Ergebnis. Jeder Spieler hat eine eigene Farbe, dein eigenes Feld ist grün. Pro Runde hast du ${SV_TURN_T / 1000} Sekunden.</li>
     <li><b>Gewonnen</b> hat, wer als Letzter noch Schiffe hat. Pro Zug hast du ${SV_TURN_T / 1000} Sekunden, sonst schießt der Computer für dich.</li></ul></details>`;
 }
 function svSetupHTML() {
@@ -12587,16 +12725,16 @@ function svSetupHTML() {
     <button class="btn btn-gold btn-big" type="button" data-act="sv-start" ${ok ? '' : 'disabled'}>Spiel starten</button>
   </div>${svRulesHTML(false)}</section>`;
 }
-function svGridHTML(cls, cell, over = '') {
+function svGridHTML(cls, cell, over = '', style = '') {
   over = '<div class="sv-wave" aria-hidden="true"></div>' + over;
-  let h = `<div class="sv-grid ${cls}"><i style="grid-area:1/1"></i>${[...SV_COLS].map((c, k) => `<i style="grid-area:1/${k + 2}">${c}</i>`).join('')}`;
+  let h = `<div class="sv-grid ${cls}" ${style ? `style="${style}"` : ''}><i style="grid-area:1/1"></i>${[...SV_COLS].map((c, k) => `<i style="grid-area:1/${k + 2}">${c}</i>`).join('')}`;
   for (let r = 0; r < SV_N; r++) { h += `<i style="grid-area:${r + 2}/1">${r + 1}</i>`; for (let k = 0; k < SV_N; k++) h += cell(r * SV_N + k).replace('class="sv-c', `style="${svArea(r * SV_N + k)}" class="sv-c`); }
   return h + over + '</div>';
 }
 function svTimeHTML(M) { return `<div class="sv-timer"><span id="sv-time">${Math.ceil(svTimeLeft(M) / 1000)} s</span><div class="sv-bar"><i id="sv-bar" style="width:${svTimeLeft(M) / (M.status === 'place' ? SV_PLACE_T : SV_TURN_T) * 100}%"></i></div></div>`; }
 function svTimeLeft(M) {
   const pz = roomPaused(), now = pz ? pz.at : Date.now();
-  return M.status === 'place' ? Math.max(0, M.placeAt + SV_PLACE_T - now) : M.status === 'running' ? Math.max(0, M.at + SV_TURN_T - now) : 0;
+  return M.status === 'place' ? Math.max(0, M.placeAt + SV_PLACE_T - now) : M.status === 'running' ? Math.max(0, (svWar(M) ? M.ph.at : M.at) + SV_TURN_T - now) : 0;
 }
 function svPlaceHTML(M) {
   const me = myPid(), mine = M.players.includes(me), ready = !!M.rd[me];
@@ -12641,63 +12779,70 @@ function svPowerHTML(M, me, myTurn) {
   return h;
 }
 function svSideHTML(M, me, tgt, view) {
-  const fin = M.status === 'finished', mine = M.players.includes(me), pick = mine && M.mode === 'multi';
+  const fin = M.status === 'finished', mine = M.players.includes(me), war = svWar(M), pick = mine && (war || fin);
   return `<aside class="card sv-side"><h3>⚓ Spieler</h3><ul>${M.players.map(p => {
-    const ko = M.ko.includes(p), turn = !fin && M.turn === p, sel = view === 'tgt' && p === tgt && p !== me, can = (pick || (mine && fin)) && p !== me;
-    const inner = `${avatar(ghost(p), 28)}<span class="sv-sn"><b>${esc(ghost(p).name)}</b>${p === me ? ' <small>(du)</small>' : ''}${turn ? '<em>🎯 ist dran</em>' : ''}</span><span class="sv-sl">${ko ? '☠️' : `🚢 ${svLeft(M, p)}`}</span>`;
-    return `<li class="${ko ? 'svs-ko' : ''} ${turn ? 'svs-turn' : ''} ${sel ? 'svs-sel' : ''} ${p === me ? 'svs-me' : ''}">${can ? `<div class="sv-pick" role="button" tabindex="0" data-act="sv-tgt" data-pid="${esc(p)}" title="${esc(ghost(p).name)} als Ziel">${inner}</div>` : `<div>${inner}</div>`}</li>`;
-  }).join('')}</ul>${pick && !fin ? '<p class="muted sv-note">Tippe einen Gegner an, um auf ihn zu zielen.</p>' : ''}</aside>`;
+    const ko = M.ko.includes(p), turn = !fin && (war ? M.ph.tgt === p : M.turn === p), sel = view === 'tgt' && p === tgt && p !== me, can = pick && p !== me;
+    const tag = turn ? (war ? '<em>🎯 wird beschossen</em>' : '<em>🎯 ist dran</em>') : '';
+    const dot = war ? `<i class="svs-dot" style="background:${p === me ? '#3fae63' : svCol(M, p)}"></i>` : '';
+    const inner = `${dot}${avatar(ghost(p), 28)}<span class="sv-sn"><b>${esc(ghost(p).name)}</b>${p === me ? ' <small>(du)</small>' : ''}${tag}</span><span class="sv-sl">${ko ? '☠️' : `🚢 ${svLeft(M, p)}`}</span>`;
+    return `<li class="${ko ? 'svs-ko' : ''} ${turn ? 'svs-turn' : ''} ${sel ? 'svs-sel' : ''} ${p === me ? 'svs-me' : ''}">${can ? `<div class="sv-pick" role="button" tabindex="0" data-act="sv-tgt" data-pid="${esc(p)}" title="Feld von ${esc(ghost(p).name)} ansehen">${inner}</div>` : `<div>${inner}</div>`}</li>`;
+  }).join('')}</ul>${war && mine && !fin ? '<p class="muted sv-note">Tippe einen Spieler an, um sein Feld mit deinen Schüssen anzusehen.</p>' : ''}</aside>`;
 }
 function svPlayHTML(M) {
-  const me = myPid(), mine = M.players.includes(me), fin = M.status === 'finished', paused = roomPaused();
-  const opp = M.players.filter(p => p !== me);
-  if (!opp.includes(D.svTgt) || (!fin && M.ko.includes(D.svTgt) && opp.some(p => !M.ko.includes(p)))) D.svTgt = opp.find(p => !M.ko.includes(p)) || opp[0];
-  const tgt = D.svTgt, myTurn = !fin && M.turn === me && !paused && !M.ko.includes(me);
-  const known = svl.seenGame === M.id; svl.seenGame = M.id;
-  if (M.last) { // neues Ereignis: Felder bis zum Einschlag verdecken und die Ansicht so lange auf diesem Feld halten
-    const k = svEvKey(M);
-    if (k !== svl.seenKey) {
-      const first = !known, L = M.last; svl.seenKey = k;
-      const sel = L.by === me && tgt === L.to ? 'tgt' : L.to === me ? 'own' : '';
-      if (!first && sel) {
-        const cells = L.k === 'shot' ? [L.c] : L.cs, dur = {shot:1300, bomb:1900, air:2400, radar:1700}[L.k] + 900;
-        svl.pend = {sel, cells:new Set(cells), until:Date.now() + 4000}; svl.anim = {key:k, sel, last:L, started:false};
-        svl.hold = {id:M.id, sel, until:Date.now() + dur}; setTimeout(() => { if (S.tab === 'sv') render(); }, dur + 40);
-      }
-    }
+  const me = myPid(), mine = M.players.includes(me), fin = M.status === 'finished', paused = roomPaused(), war = svWar(M);
+  const opp = M.players.filter(p => p !== me), tk = svTk(M);
+  if (D.svVo && D.svVo.k !== tk) D.svVo = null;
+  let tgt, myTurn;
+  if (war) {
+    tgt = D.svVo && D.svVo.p && opp.includes(D.svVo.p) ? D.svVo.p : M.ph.tgt && M.ph.tgt !== me ? M.ph.tgt : opp.includes(D.svTgt) ? D.svTgt : opp.find(p => !M.ko.includes(p)) || opp[0];
+    myTurn = !fin && mine && !paused && !M.ko.includes(me) && M.ph.tgt !== me && !svDone(M, me);
+  } else {
+    if (!opp.includes(D.svTgt) || (!fin && M.ko.includes(D.svTgt) && opp.some(p => !M.ko.includes(p)))) D.svTgt = opp.find(p => !M.ko.includes(p)) || opp[0];
+    tgt = D.svTgt; myTurn = !fin && M.turn === me && !paused && !M.ko.includes(me);
   }
-  // Ansicht: wer dran ist, sieht das Feld des Gegners; sonst die eigene Flotte. Kurz halten, solange eine Animation läuft. Umschalten per Hand bis zum nächsten Zugwechsel.
-  const tk = M.id + ':' + M.turn + ':' + M.status; if (D.svVo && D.svVo.k !== tk) D.svVo = null;
+  D.svTgt = tgt;
+  const known = svl.seenGame === M.id;
+  if (!known) { svl.seenGame = M.id; svl.seen = new Set(); svl.q = []; svl.ann = []; svl.hold = null; svl.pend = null; }
+  svCollect(M, me, tgt, known);
+  // Ansicht: wer schießen darf, sieht das Ziel; wer beschossen wird (oder nicht dran ist), die eigene Flotte. Läuft eine Animation, bleibt die Ansicht so lange stehen.
   const hold = svl.hold && svl.hold.id === M.id && Date.now() < svl.hold.until ? svl.hold.sel : '';
-  const view = !mine ? '' : hold || (D.svVo ? D.svVo.v : fin || myTurn ? 'tgt' : 'own');
-  if (view !== 'tgt' || !myTurn || !SV_PW[D.svPw]) { D.svPw = ''; D.svAim = -1; }
+  const auto = fin ? 'tgt' : war ? (M.ph.tgt === me ? 'own' : 'tgt') : myTurn ? 'tgt' : 'own';
+  const view = !mine ? '' : hold || (D.svVo ? D.svVo.v : auto);
+  const can = myTurn && view === 'tgt' && (!war || tgt === M.ph.tgt);
+  if (!can || !SV_PW[D.svPw]) { D.svPw = ''; D.svAim = -1; }
   const aim = D.svPw && D.svAim >= 0 ? new Set(D.svPw === 'air' ? svLineOf(D.svAim, D.svDir) : svBox(D.svAim)) : null;
-  const top = fin ? '' : `<div class="sv-top ${myTurn ? 'mine' : ''}"><span class="sv-turn">${M.turn === me ? '🎯 Du bist dran!' : `${avatar(ghost(M.turn), 24)} <b>${esc(ghost(M.turn).name)}</b> ist dran`}</span>${svTimeHTML(M)}
+  const top = war ? svWarTopHTML(M, me, myTurn) : fin ? '' : `<div class="sv-top ${myTurn ? 'mine' : ''}"><span class="sv-turn">${M.turn === me ? '🎯 Du bist dran!' : `${avatar(ghost(M.turn), 24)} <b>${esc(ghost(M.turn).name)}</b> ist dran`}</span>${svTimeHTML(M)}
     ${ctl() ? `<button class="btn btn-sm btn-ghost" type="button" data-act="sv-end">Beenden</button>` : ''}</div>`;
   let main;
   if (mine) {
     let board, title;
     if (view === 'tgt') {
-      const shots = new Set(svMy(M, me, tgt)), all = svIncoming(M, tgt), sunk = svSunk(M, tgt, all), can = myTurn && !M.ko.includes(tgt), rad = new Set((M.rad[me] || {})[tgt] || []);
-      const lastMine = M.last && M.last.by === me && M.last.to === tgt ? M.last : null, zone = new Set(lastMine && lastMine.cs.length ? lastMine.cs : []);
-      board = svGridHTML(`sv-tgt ${can ? 'can' : ''} ${D.svPw ? 'aiming' : ''}`, c => {
-        const si = svShipOf(M, tgt, c), shot = shots.has(c), cls = (shot ? (si >= 0 ? (sunk[si] ? 'hit sunk' : 'hit') : 'miss') : rad.has(c) ? (si >= 0 ? 'rad-y' : 'rad-n') : '') + svPend('tgt', c);
-        const last = (lastMine && !lastMine.cs.length && lastMine.c === c) || zone.has(c) ? ' last' : '';
-        return `<button class="sv-c ${cls}${last}${aim && aim.has(c) ? ' aim' : ''}" type="button" data-act="sv-shot" data-t="${esc(tgt)}" data-i="${c}" ${can && (!shot || D.svPw) ? '' : 'disabled'} aria-label="${svLbl(c)}"></button>`;
-      }, fin ? svShipsHTML(M.fl[tgt] || [], 'rv') + svFxHTML([...shots].filter(c => svShipOf(M, tgt, c) >= 0), null, -1) : '');
-      title = `🎯 ${myTurn ? 'Du schießt auf' : 'Feld von'} <b>${esc(ghost(tgt).name)}</b> <small>${M.ko.includes(tgt) ? '☠️ raus' : `🚢 ${svLeft(M, tgt)} übrig`}</small>`;
-      if (M.mode === 'multi' && !fin) board += '<p class="muted sv-note">Hier siehst du nur deine eigenen Schüsse.</p>';
+      const shots = new Set(svMy(M, me, tgt)), all = svIncoming(M, tgt), sunk = svSunk(M, tgt, all), rad = new Set((M.rad[me] || {})[tgt] || []);
+      const wreck = new Set(war ? (M.fl[tgt] || []).filter((s, i) => sunk[i]).flat() : []);
+      const lastMine = !war && M.last && M.last.by === me && M.last.to === tgt ? M.last : war ? svPhEv(M, me).filter(e => e.to === tgt).slice(-1)[0] || null : null;
+      const zone = new Set(lastMine && lastMine.cs.length ? lastMine.cs : []);
+      board = svGridHTML(`sv-tgt ${can ? 'can' : ''} ${D.svPw ? 'aiming' : ''} ${war ? 'sv-colb' : ''}`, c => {
+        const si = svShipOf(M, tgt, c), shot = shots.has(c), cls = (shot ? (si >= 0 ? (sunk[si] ? 'hit sunk' : 'hit') : 'miss') : rad.has(c) && !wreck.has(c) ? (si >= 0 ? 'rad-y' : 'rad-n') : '') + svPend('tgt', c);
+        const last = lastMine && ((!lastMine.cs.length && lastMine.c === c) || zone.has(c)) ? ' last' : '';
+        return `<button class="sv-c ${cls}${last}${aim && aim.has(c) ? ' aim' : ''}" type="button" data-act="sv-shot" data-t="${esc(tgt)}" data-i="${c}" ${can && ((!shot && !wreck.has(c)) || D.svPw) ? '' : 'disabled'} aria-label="${svLbl(c)}"></button>`;
+      }, fin ? svShipsHTML(M.fl[tgt] || [], 'rv') + svFxHTML([...shots].filter(c => svShipOf(M, tgt, c) >= 0), null, -1)
+        : war ? svShipsHTML((M.fl[tgt] || []).map((s, i) => sunk[i] ? s : null), 'wreck') + svFxHTML([...shots].filter(c => wreck.has(c)), wreck, -1, 'tgt') : '',
+        war ? `--bc:${svCol(M, tgt)}` : '');
+      const head = war ? (tgt !== M.ph.tgt || fin ? 'Feld von' : can ? 'Feuer frei auf' : svDone(M, me) ? 'Geschossen auf' : 'Ziel:') : myTurn ? 'Du schießt auf' : 'Feld von';
+      title = `🎯 ${head} <b ${war ? `style="color:${svCol(M, tgt)}"` : ''}>${esc(ghost(tgt).name)}</b> <small>${M.ko.includes(tgt) ? '☠️ raus' : `🚢 ${svLeft(M, tgt)} übrig`}</small>`;
+      if (war && !fin) board += '<p class="muted sv-note">Hier siehst du nur deine eigenen Schüsse. Versenkte Schiffe sieht jeder.</p>';
     } else {
-      const inc = svIncoming(M, me), mySunk = svSunk(M, me, inc);
+      const inc = svIncoming(M, me), mySunk = svSunk(M, me, inc), lastIn = war ? M.players.flatMap(p => svPhEv(M, p)).filter(e => e.to === me) : M.last && M.last.to === me ? [M.last] : [];
+      const lastCells = new Set(lastIn.flatMap(e => e.cs.length ? e.cs : [e.c]));
       board = svGridHTML('sv-own sv-mine', c => {
-        const si = svShipOf(M, me, c), shot = inc.has(c), last = M.last && M.last.to === me && (M.last.cs.length ? M.last.cs.includes(c) : M.last.c === c) ? ' last' : '';
-        return `<span class="sv-c ${shot && si < 0 ? 'miss' : ''}${last}${svPend('own', c)}" data-i="${c}"></span>`;
+        const si = svShipOf(M, me, c), shot = inc.has(c);
+        return `<span class="sv-c ${shot && si < 0 ? 'miss' : ''}${lastCells.has(c) ? ' last' : ''}${svPend('own', c)}" data-i="${c}"></span>`;
       }, (M.fl[me] || []).map((x, i) => svShipsHTML((M.fl[me] || []).map((y, j) => j === i ? y : null), mySunk[i] ? 'sunk' : '')).join('')
-        + svFxHTML([...inc].filter(c => svShipOf(M, me, c) >= 0), new Set([...inc].filter(c => { const k = svShipOf(M, me, c); return k >= 0 && mySunk[k]; })), M.last && M.last.to === me ? M.last.c : -1, 'own'));
-      title = `⚓ Deine Flotte <small>${M.ko.includes(me) ? '☠️ versenkt' : `🚢 ${svLeft(M, me)} übrig`}</small>${!fin && M.turn !== me ? ` <span class="sv-watchout">· ${esc(ghost(M.turn).name)} ist dran</span>` : ''}`;
+        + svFxHTML([...inc].filter(c => svShipOf(M, me, c) >= 0), new Set([...inc].filter(c => { const k = svShipOf(M, me, c); return k >= 0 && mySunk[k]; })), -1, 'own'));
+      title = `⚓ Deine Flotte <small>${M.ko.includes(me) ? '☠️ versenkt' : `🚢 ${svLeft(M, me)} übrig`}</small>${!fin && !war && M.turn !== me ? ` <span class="sv-watchout">· ${esc(ghost(M.turn).name)} ist dran</span>` : ''}${!fin && war && M.ph.tgt === me ? ' <span class="sv-watchout hot">· alle schießen auf dich</span>' : ''}`;
     }
-    const sw = `<div class="sv-switch"><button class="chip" type="button" data-act="sv-view" data-v="tgt" aria-pressed="${view === 'tgt'}">🎯 Gegner${M.mode === 'multi' ? ` (${esc(ghost(tgt).name)})` : ''}</button><button class="chip" type="button" data-act="sv-view" data-v="own" aria-pressed="${view === 'own'}">⚓ Meine Flotte</button></div>`;
-    main = `<div class="sv-main"><div class="sv-head"><h3>${title}</h3>${sw}</div>${board}${view === 'tgt' && !fin && !M.ko.includes(me) ? svPowerHTML(M, me, myTurn) : ''}</div>`;
+    const sw = `<div class="sv-switch"><button class="chip" type="button" data-act="sv-view" data-v="tgt" aria-pressed="${view === 'tgt'}">🎯 ${war ? esc(ghost(tgt).name) : 'Gegner'}</button><button class="chip" type="button" data-act="sv-view" data-v="own" aria-pressed="${view === 'own'}">⚓ Meine Flotte</button></div>`;
+    main = `<div class="sv-main"><div class="sv-head"><h3>${title}</h3>${sw}</div>${board}${view === 'tgt' && !fin && !M.ko.includes(me) && (!war || (tgt === M.ph.tgt && M.ph.tgt !== me)) ? svPowerHTML(M, me, can) : ''}</div>`;
   } else {
     main = `<div class="sv-main"><div class="card sv-watch"><h3>👀 Du schaust zu</h3><p class="muted">Wohin geschossen wird, sehen nur die Spieler selbst. Links siehst du, wie viele Schiffe jeder noch hat.</p></div></div>`;
   }
@@ -12705,7 +12850,8 @@ function svPlayHTML(M) {
     <ol class="sv-rank">${svRank(M).map(p => `<li class="${p === me ? 'me' : ''}">${avatar(ghost(p), 24)}<b>${esc(ghost(p).name)}</b><span>💥 ${svSunkBy(M, p)} versenkt</span></li>`).join('')}</ol>
     ${M.transferred ? `<p class="okline">✓ Steht im Highscore von ${esc((lobby() || {}).name || 'diesem Raum')}.</p>` : ''}
     ${ctl() ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="sv-again">Nochmal spielen</button><button class="btn" type="button" data-act="sv-setup">Spieler ändern</button></div>` : '<p class="muted">Der Host kann eine neue Runde starten.</p>'}</div>` : '';
-  return `<section class="section tsec sv-wrap">${top}${win}${svLastHTML(M, me)}<div class="sv-play">${svSideHTML(M, me, tgt, view)}${main}</div>${fin ? lobbyHsHTML() : svRulesHTML(false)}</section>`;
+  const info = war ? svWarInfoHTML(M, me) : svLastHTML(M, me);
+  return `<section class="section tsec sv-wrap">${top}${win}${info}<div class="sv-play">${svSideHTML(M, me, tgt, view)}${main}</div>${fin ? lobbyHsHTML() : svRulesHTML(false)}</section>`;
 }
 function viewSv() { const M = S.sv; return !M ? svSetupHTML() : M.status === 'place' ? svPlaceHTML(M) : svPlayHTML(M); }
 /* ---------- Animationen (per JavaScript, laufen also auch mit „Bewegung reduzieren“) ---------- */
@@ -12761,6 +12907,7 @@ function svConfetti() {
 /* Ein Ereignis abspielen: Granate fällt, Bombe fällt, Flugschiff fliegt, Radar dreht sich */
 function svPlayAnim(A, M) {
   const L = A.last, sel = A.sel, ship = c => svShipOf(M, L.to, c) >= 0, me = myPid();
+  try { kSnd(L.k === 'radar' ? 'call' : L.k !== 'shot' ? 'draw4' : L.r === 'm' ? 'land' : L.r === 's' ? 'wild' : 'draw2'); } catch (e) {}
   const cells = L.k === 'shot' ? [L.c] : L.cs, sunkBig = L.r === 's' || L.sn > 0;
   const impact = (c, d, big) => setTimeout(() => { svUnpend(sel, c); const r = svRect(sel, c); if (!r) return; if (ship(c)) svBoom(r, 0, big); else svSplash(r); }, d);
   const after = d => setTimeout(() => {
@@ -12817,14 +12964,23 @@ function svAmbient(M) {
 }
 function svMount() {
   const M = S.sv; if (!M || S.tab !== 'sv') return;
-  const me = myPid();
+  const me = myPid(), war = svWar(M), was = svl.st;
   try { svAmbient(M); } catch (e) {}
-  if (svl.anim && !svl.anim.started && M.status !== 'place') { svl.anim.started = true; try { svPlayAnim(svl.anim, M); } catch (e) { svl.pend = null; } }
-  if (svl.st !== M.id + M.status) { const was = svl.st; svl.st = M.id + M.status; if (was === M.id + 'place' && M.status === 'running') svBanner('⚔️ Los geht\'s!', 'go'); }
-  if (M.last && M.last.ko && svl.koSeen !== svEvKey(M) && svl.lastKey) { svl.koSeen = svEvKey(M); setTimeout(() => svBanner(M.last.to === me ? '☠️ Deine Flotte ist versenkt!' : `☠️ ${esc(ghost(M.last.to).name)} ist raus!`, 'hot'), 1600); }
-  if (M.last) { const k = M.id + ':' + M.last.by + ':' + M.last.to + ':' + M.last.c + ':' + M.last.k + ':' + M.at; if (k !== svl.lastKey) { const first = !svl.lastKey; svl.lastKey = k; if (!first && (M.last.by === me || M.last.to === me)) kSnd(M.last.k === 'radar' ? 'call' : M.last.k !== 'shot' ? 'draw4' : M.last.r === 'm' ? 'land' : M.last.r === 's' ? 'wild' : 'draw2'); } }
-  if (M.status === 'running') { const k = M.id + ':' + M.turn + ':' + M.at; if (M.turn === me && svl.turnKey !== k && (!M.last || M.last.by !== me)) { kSnd('turn', .5); if (svl.turnKey) setTimeout(() => { if (S.sv && S.sv.turn === me && S.sv.status === 'running') svBanner('🎯 Du bist dran!', 'go'); }, M.last && M.last.k !== 'shot' ? 1700 : 700); } svl.turnKey = k; }
-  if (M.status === 'finished' && svl.endSnd !== M.id) { const fresh = !!svl.lastKey; svl.endSnd = M.id; if (M.players.includes(me)) kSnd(M.win === me ? 'win' : 'lose', .4); if (fresh) setTimeout(() => { svBanner(M.win === me ? '🏆 Du gewinnst!' : `🏆 ${esc(ghost(M.win).name)} gewinnt!`, 'win'); svConfetti(); }, 1500); }
+  for (const a of svl.q) if (!a.started) { a.started = true; setTimeout(() => { try { svPlayAnim(a, S.sv || M); } catch (e) { svl.pend = null; } }, a.delay || 0); }
+  svl.q = svl.q.filter(a => !a.started);
+  svl.ann.splice(0).forEach((t, i) => svTicker(t, i * 700));
+  if (svl.st !== M.id + M.status) { svl.st = M.id + M.status; if (was === M.id + 'place' && M.status === 'running') svBanner('⚔️ Los geht\'s!', 'go'); }
+  if (svl.koLen == null || svl.koId !== M.id) { svl.koLen = M.ko.length; svl.koId = M.id; }
+  if (M.ko.length > svl.koLen) { const nk = M.ko.slice(svl.koLen); svl.koLen = M.ko.length; nk.forEach((p, i) => setTimeout(() => svBanner(p === me ? '☠️ Deine Flotte ist versenkt!' : `☠️ ${esc(ghost(p).name)} ist raus!`, 'hot'), 1600 + i * 1800)); }
+  if (M.last) svl.lastKey = svEvKey(M);
+  if (M.status === 'running' && !war) { const k = M.id + ':' + M.turn + ':' + M.at; if (M.turn === me && svl.turnKey !== k && (!M.last || M.last.by !== me)) { kSnd('turn', .5); if (svl.turnKey) setTimeout(() => { if (S.sv && S.sv.turn === me && S.sv.status === 'running') svBanner('🎯 Du bist dran!', 'go'); }, M.last && M.last.k !== 'shot' ? 1700 : 700); } svl.turnKey = k; }
+  if (M.status === 'running' && war && M.ph.n) {
+    const k = M.id + ':' + M.ph.n;
+    if (svl.phSeen !== k) { const first = !svl.phSeen || svl.phSeen.split(':')[0] !== M.id; svl.phSeen = k;
+      const delay = first && was === M.id + 'place' ? 1900 : 300;
+      if (M.players.includes(me) && !M.ko.includes(me)) setTimeout(() => { const N = S.sv; if (!N || N.ph.n !== M.ph.n) return; kSnd('turn', .5); svBanner(N.ph.tgt === me ? '🛡️ Alle schießen auf dich!' : `🎯 Feuer frei auf ${esc(ghost(N.ph.tgt).name)}!`, N.ph.tgt === me ? 'hot' : 'go'); }, delay); }
+  }
+  if (M.status === 'finished' && svl.endSnd !== M.id) { const fresh = was === M.id + 'running'; svl.endSnd = M.id; if (M.players.includes(me) && fresh) kSnd(M.win === me ? 'win' : 'lose', .4); if (fresh) setTimeout(() => { svBanner(M.win === me ? '🏆 Du gewinnst!' : `🏆 ${esc(ghost(M.win).name)} gewinnt!`, 'win'); svConfetti(); }, 1500); }
 }
 setInterval(() => {
   const M = S.sv; if (!M || M.status === 'finished') return;
