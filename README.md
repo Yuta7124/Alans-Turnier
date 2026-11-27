@@ -255,7 +255,7 @@ In der Turnier-Lobby (`lobby().tour`) zählen Punkte direkt aufs Turnier-Konto (
 
 ## Codenames
 
-- Team gegen Team ab 4 Spielern: Rot und Blau, je ein Spion 🕵️, alle anderen im Team raten. Jedes Team braucht mindestens 2 Leute, bis 8 pro Team. Bots raten nur, wenn im Team kein Mensch rät.
+- Team gegen Team ab 4 Spielern: Rot und Blau, je mindestens ein Spion 🕵️ (der Host kann auch mehrere Spione pro Team einstellen, z. B. bei 8 Leuten 2 Spione und 2 Rater pro Team; jeder Spion darf den Hinweis geben), alle anderen im Team raten. Gespeichert als s0/s1. Jedes Team braucht mindestens 2 Leute, bis 8 pro Team. Bots raten nur, wenn im Team kein Mensch rät.
 
 ## Stadt, Land, Fluss
 
