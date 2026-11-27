@@ -3480,7 +3480,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=124"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=125"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -12173,7 +12173,7 @@ function svShape(i, cells) {
 }
 const SV_PLACE_T = 90000, SV_TURN_T = 30000, SV_COLS = 'ABCDEFGHIJKL';
 /* Power-ups: Punkte gibt es für jeden normalen Schuss ins Wasser */
-const SV_PW = {radar:{n:'Radar', e:'📡', cost:10, d:'Zeigt dir in einem 3 × 3 Bereich, wo ein Schiff liegt. Danach darfst du noch schießen.'}, bomb:{n:'Bombe', e:'💣', cost:16, d:'Sprengt ein ganzes 3 × 3 Feld auf einmal.'}, air:{n:'Flugschiff', e:'✈️', cost:20, d:'Fliegt eine ganze Spalte oder Reihe ab und trifft alles auf dem Weg.'}};
+const SV_PW = {radar:{n:'Radar', e:'📡', cost:10, d:'Zeigt dir in einem 3 × 3 Bereich, wo ein Schiff liegt. Das ist dein Zug für diese Runde.'}, bomb:{n:'Bombe', e:'💣', cost:16, d:'Sprengt ein ganzes 3 × 3 Feld auf einmal.'}, air:{n:'Flugschiff', e:'✈️', cost:20, d:'Fliegt eine ganze Spalte oder Reihe ab und trifft alles auf dem Weg.'}};
 const svl = {lastKey:'', turnKey:'', endSnd:'', botAt:0, seen:new Set(), q:[], ann:[], pend:null, hold:null, st:'', ptSeen:-1, koLen:null, phSeen:''};
 const svLbl = c => SV_COLS[c % SV_N] + (Math.floor(c / SV_N) + 1);
 function svNb(c, diag) {
@@ -12263,7 +12263,7 @@ const svBox = c => { const r = Math.floor(c / SV_N), k = c % SV_N, out = []; for
 const svLineOf = (c, dir) => Array.from({length:SV_N}, (_, n) => dir === 'row' ? Math.floor(c / SV_N) * SV_N + n : n * SV_N + c % SV_N);
 function svCanAct(M, by, to) { return !!M && M.status === 'running' && M.turn === by && by !== to && !M.ko.includes(to) && M.players.includes(to) && !roomPaused(); }
 /* ---------- Schiffe versenken Krieg: Runden mit einem Ziel ----------
-   Pro Runde wird ein Spieler beschossen (ph.tgt). Alle anderen schießen gleichzeitig je einmal auf ihn (Radar geht zusätzlich).
+   Pro Runde wird ein Spieler beschossen (ph.tgt). Alle anderen schießen gleichzeitig je einmal auf ihn (Radar zählt auch als Zug).
    Keiner sieht die Schüsse der anderen; versenkte Schiffe sieht jeder. Power-ups werden angesagt, ohne Ergebnis.
    uno.ph {n, tgt, at}, uno.done {pid: Rundennummer}, uno.ev {pid: [Aktionen dieser Runde]} */
 const SV_COL = ['#e0464f', '#3f7fe0', '#e8892b', '#8a5cd6', '#e0559a', '#d9b22b', '#2fb5d6'];
@@ -12298,8 +12298,8 @@ function svRadarWar(M, by, to, c) {
   const box = svBox(c), base = lobby().uno, old = ((base.rad || {})[by] || {})[to] || [], arr = [...new Set([...old, ...box])], pt = (M.pt[by] || 0) - SV_PW.radar.cost, now = Date.now();
   const ent = {by, to, c, r:'r', ko:false, k:'radar', n:box.filter(x => svShipOf(M, to, x) >= 0).length, sn:0, cs:box, pp:0, ph:M.ph.n, at:now};
   const list = [...svPhEv(M, by), ent].slice(-4);
-  svPut({...base, rad:{...(base.rad || {}), [by]:{...((base.rad || {})[by] || {}), [to]:arr}}, pt:{...(base.pt || {}), [by]:pt}, ev:{...(base.ev || {}), [by]:list}},
-    {[`uno.rad.${by}.${to}`]:arr, ['uno.pt.' + by]:pt, ['uno.ev.' + by]:list});
+  svPut({...base, rad:{...(base.rad || {}), [by]:{...((base.rad || {})[by] || {}), [to]:arr}}, pt:{...(base.pt || {}), [by]:pt}, done:{...(base.done || {}), [by]:M.ph.n}, ev:{...(base.ev || {}), [by]:list}},
+    {[`uno.rad.${by}.${to}`]:arr, ['uno.pt.' + by]:pt, ['uno.done.' + by]:M.ph.n, ['uno.ev.' + by]:list});
   return true;
 }
 /* Host: Bots schießen, wer zu lange braucht, bekommt einen Zufallsschuss; sind alle durch, kommt das nächste Ziel */
@@ -12315,7 +12315,7 @@ function svWarLogic(M, now, L) {
       svl.botAt = now + 450;
       if (isBot(p)) {
         const pl = svBotPlan(M, p, ph.tgt); if (!pl) continue;
-        if (pl.k === 'radar' && svRadarWar(M, p, pl.t, pl.c)) { svl.botAt = now + 1800; return; }
+        if (pl.k === 'radar' && svRadarWar(M, p, pl.t, pl.c)) return;
         if (pl.k === 'bomb' && svFireWar(M, p, pl.t, svBox(pl.c), 'bomb', pl.c)) return;
         if (pl.k === 'air' && svFireWar(M, p, pl.t, svLineOf(pl.c, pl.dir), 'air', pl.c)) return;
         if (svFireWar(M, p, pl.t, [pl.c], 'shot', pl.c)) return;
@@ -12415,9 +12415,9 @@ function svRadar(M, by, to, c) {
   if (!svCanAct(M, by, to) || (M.pt[by] || 0) < SV_PW.radar.cost) return false;
   const box = svBox(c), base = lobby().uno, old = ((base.rad || {})[by] || {})[to] || [], arr = [...new Set([...old, ...box])], pt = (M.pt[by] || 0) - SV_PW.radar.cost, now = Date.now();
   const found = box.filter(x => svShipOf(M, to, x) >= 0).length;
-  const last = {by, to, c, r:'r', ko:false, k:'radar', n:found, sn:0, cs:box, pp:0};
-  svPut({...base, rad:{...(base.rad || {}), [by]:{...((base.rad || {})[by] || {}), [to]:arr}}, pt:{...(base.pt || {}), [by]:pt}, last, at:now},
-    {[`uno.rad.${by}.${to}`]:arr, ['uno.pt.' + by]:pt, 'uno.last':last, 'uno.at':now});
+  const last = {by, to, c, r:'r', ko:false, k:'radar', n:found, sn:0, cs:box, pp:0}, turn = svNext(M, by); // Radar ist der ganze Zug
+  svPut({...base, rad:{...(base.rad || {}), [by]:{...((base.rad || {})[by] || {}), [to]:arr}}, pt:{...(base.pt || {}), [by]:pt}, last, at:now, turn},
+    {[`uno.rad.${by}.${to}`]:arr, ['uno.pt.' + by]:pt, 'uno.last':last, 'uno.at':now, 'uno.turn':turn});
   return true;
 }
 /* Bot (und Zeit abgelaufen): sucht um eigene Treffer herum weiter, sonst im Schachbrett-Muster */
@@ -12708,10 +12708,10 @@ function svRulesHTML(open) {
   return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird Schiffe versenken gespielt</summary><ul>
     <li><b>Flotte aufstellen:</b> Jeder hat 6 Schiffe: Kreuzer (4 Felder), T-Schiff (4, wie ein T), Blitz (4, im Zickzack), 2 Zerstörer (3) und ein U-Boot (2). Du ziehst sie selbst aufs 12 × 12 Feld. Schiffe dürfen sich nicht berühren, auch nicht schräg.</li>
     <li><b>Schießen (1 gegen 1):</b> Wer dran ist, tippt ein Feld beim Gegner an. Danach ist <b>immer der andere dran</b>, egal ob Wasser oder Treffer.</li>
-    <li><b>Power-ups:</b> Für jeden normalen Schuss ins Wasser bekommst du 1 ⭐. Für 10 ⭐ gibt es das 📡 <b>Radar</b> (zeigt dir in 3 × 3 Feldern, wo ein Schiff liegt, danach darfst du noch schießen), für 16 ⭐ die 💣 <b>Bombe</b> (sprengt 3 × 3 Felder) und für 20 ⭐ das ✈️ <b>Flugschiff</b> (fliegt eine ganze Spalte oder Reihe ab). Die Punkte werden abgezogen, der Rest bleibt.</li>
+    <li><b>Power-ups:</b> Für jeden normalen Schuss ins Wasser bekommst du 1 ⭐. Für 10 ⭐ gibt es das 📡 <b>Radar</b> (zeigt dir in 3 × 3 Feldern, wo ein Schiff liegt; das ist dein ganzer Zug), für 16 ⭐ die 💣 <b>Bombe</b> (sprengt 3 × 3 Felder) und für 20 ⭐ das ✈️ <b>Flugschiff</b> (fliegt eine ganze Spalte oder Reihe ab). Die Punkte werden abgezogen, der Rest bleibt.</li>
     <li><b>Versenkt:</b> Ein Schiff ist versenkt, wenn alle seine Felder getroffen sind. Wer keine Schiffe mehr hat, ist raus.</li>
     <li><b>1 gegen 1:</b> ganz normal, zwei Spieler. Bots können mitspielen.</li>
-    <li><b>Schiffe versenken Krieg (3 bis 7):</b> Es wird ausgelost, wer zuerst beschossen wird. Dann schießen <b>alle anderen gleichzeitig je einmal</b> auf ihn, danach ist der Nächste das Ziel. <b>Du siehst nur deine eigenen Schüsse</b>, nicht die der anderen. Versenkte Schiffe sieht jeder, und wenn jemand Radar, Bombe oder Flugschiff einsetzt, wird das angesagt, aber ohne Ergebnis. Jeder Spieler hat eine eigene Farbe, dein eigenes Feld ist grün. Pro Runde hast du ${SV_TURN_T / 1000} Sekunden.</li>
+    <li><b>Schiffe versenken Krieg (3 bis 7):</b> Es wird ausgelost, wer zuerst beschossen wird. Dann schießen <b>alle anderen gleichzeitig je einmal</b> auf ihn (ein Radar zählt auch als dieser eine Zug), danach ist der Nächste das Ziel. <b>Du siehst nur deine eigenen Schüsse</b>, nicht die der anderen. Versenkte Schiffe sieht jeder, und wenn jemand Radar, Bombe oder Flugschiff einsetzt, wird das angesagt, aber ohne Ergebnis. Jeder Spieler hat eine eigene Farbe, dein eigenes Feld ist grün. Pro Runde hast du ${SV_TURN_T / 1000} Sekunden.</li>
     <li><b>Gewonnen</b> hat, wer als Letzter noch Schiffe hat. Pro Zug hast du ${SV_TURN_T / 1000} Sekunden, sonst schießt der Computer für dich.</li></ul></details>`;
 }
 function svSetupHTML() {
@@ -12764,7 +12764,7 @@ function svLastHTML(M, me) {
   const L = M.last; if (!L) return '';
   const ko = L.ko ? ` ☠️ ${L.to === me ? 'Du bist' : `<b>${esc(ghost(L.to).name)}</b> ist`} raus.` : '', tn = `<b>${esc(ghost(L.to).name)}</b>`, bn = `<b>${esc(ghost(L.by).name)}</b>`;
   if (L.k === 'radar') {
-    if (L.by === me) return `<p class="sv-last r">📡 Radar bei ${tn} (um ${svLbl(L.c)}): ${L.n ? `<b>${L.n}</b> Feld${L.n === 1 ? '' : 'er'} mit Schiff gefunden (grün markiert).` : 'nichts gefunden.'} Du darfst jetzt noch schießen.</p>`;
+    if (L.by === me) return `<p class="sv-last r">📡 Radar bei ${tn} (um ${svLbl(L.c)}): ${L.n ? `<b>${L.n}</b> Feld${L.n === 1 ? '' : 'er'} mit Schiff gefunden (grün markiert).` : 'nichts gefunden.'}</p>`;
     if (L.to === me) return `<p class="sv-last r me">📡 ${bn} hat dein Feld um ${svLbl(L.c)} mit dem Radar abgesucht.</p>`;
     return `<p class="sv-last r">📡 ${bn} hat das Radar bei ${tn} benutzt.</p>`;
   }
