@@ -1883,24 +1883,26 @@ body.ah-locked .ah-lockhint{display:none}
 .slf-score li.me{background:rgba(255,207,63,.12)}
 @media (max-width:560px){.slf-row{grid-template-columns:1fr;gap:4px}.slf-letter{width:86px;height:86px;font-size:56px}}
 /* Weihnachten und Silvester */
-#ssn-layer{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
-.ssn-snow{position:absolute;top:-30px;left:var(--x);color:#fff;font-style:normal;font-size:calc(18px * var(--s));opacity:.85;text-shadow:0 0 6px rgba(255,255,255,.6);animation:ssnFall var(--t) linear var(--d) infinite}
+html:has(body.is-xmas),html:has(body.is-nye){background:var(--bg)}
+body.is-xmas,body.is-nye{background:transparent!important}
+#ssn-layer{position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden}
+#ssn-layer[data-k=xmas]{background:radial-gradient(60% 40% at 0% 0%,rgba(214,40,57,.2),transparent 70%),radial-gradient(60% 40% at 100% 0%,rgba(46,160,90,.2),transparent 70%)}
+#ssn-layer[data-k=nye]{background:radial-gradient(70% 45% at 50% 0%,rgba(255,207,63,.14),transparent 70%),radial-gradient(50% 40% at 100% 100%,rgba(196,147,255,.14),transparent 70%)}
+.ssn-snow{position:absolute;top:-30px;left:var(--x);color:#fff;font-style:normal;font-size:calc(18px * var(--s));opacity:.45;text-shadow:0 0 6px rgba(255,255,255,.6);animation:ssnFall var(--t) linear var(--d) infinite}
 @keyframes ssnFall{from{transform:translate(0,-5vh) rotate(0)}to{transform:translate(var(--w),105vh) rotate(360deg)}}
 #ssn-banner.ssn-xmas{margin-top:18px}
 #ssn-banner.ssn-xmas::before{content:'';position:absolute;left:10px;right:10px;top:-13px;height:22px;pointer-events:none;background:radial-gradient(circle at 12px 12px,#ff3b4e 0 5px,transparent 6px) 0 0/96px 22px,radial-gradient(circle at 36px 14px,#4ff08f 0 5px,transparent 6px) 0 0/96px 22px,radial-gradient(circle at 60px 12px,#ffcf3f 0 5px,transparent 6px) 0 0/96px 22px,radial-gradient(circle at 84px 14px,#39d6f2 0 5px,transparent 6px) 0 0/96px 22px;filter:drop-shadow(0 0 6px rgba(255,220,120,.7));animation:ssnTwinkle 1.4s steps(2) infinite}
 @keyframes ssnTwinkle{50%{filter:drop-shadow(0 0 2px rgba(255,220,120,.3)) brightness(.7)}}
-body.is-xmas{background-image:radial-gradient(60% 40% at 0% 0%,rgba(214,40,57,.22),transparent 70%),radial-gradient(60% 40% at 100% 0%,rgba(46,160,90,.22),transparent 70%)}
 body.is-xmas header{box-shadow:inset 0 -3px 0 #d62839,0 3px 0 #2ea05a}
 .ssn-fw{position:absolute;left:var(--x);top:var(--y);width:180px;height:180px;margin:-90px;border-radius:50%;background:radial-gradient(circle,var(--c) 0 3px,transparent 4px) 50% 0/14px 14px no-repeat,repeating-conic-gradient(from 0deg,var(--c) 0 3deg,transparent 3deg 22.5deg);-webkit-mask:radial-gradient(circle,transparent 30%,#000 32%,#000 48%,transparent 50%);mask:radial-gradient(circle,transparent 30%,#000 32%,#000 48%,transparent 50%);opacity:0;animation:ssnBurst var(--t) ease-out var(--d) infinite}
-@keyframes ssnBurst{0%{transform:scale(.1);opacity:0}8%{opacity:1}55%{transform:scale(1.1);opacity:.9}75%,100%{transform:scale(1.25);opacity:0}}
+@keyframes ssnBurst{0%{transform:scale(.1);opacity:0}8%{opacity:.55}55%{transform:scale(1.1);opacity:.45}75%,100%{transform:scale(1.25);opacity:0}}
 .ssn-spark{position:absolute;bottom:-10px;left:var(--x);width:4px;height:4px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);animation:ssnRise var(--t) linear var(--d) infinite}
-@keyframes ssnRise{from{transform:translateY(0);opacity:1}to{transform:translateY(-105vh);opacity:0}}
-body.is-nye{background-image:radial-gradient(70% 45% at 50% 0%,rgba(255,207,63,.16),transparent 70%),radial-gradient(50% 40% at 100% 100%,rgba(196,147,255,.16),transparent 70%)}
+@keyframes ssnRise{from{transform:translateY(0);opacity:.6}to{transform:translateY(-105vh);opacity:0}}
 body.is-nye header{box-shadow:inset 0 -3px 0 #ffcf3f}
 #ssn-banner{position:relative;z-index:5;margin:10px auto 0;width:min(1180px,calc(100% - 24px));padding:10px 16px;border-radius:14px;text-align:center;font-size:15px;color:#fff}
 #ssn-banner.ssn-xmas{background:linear-gradient(90deg,#9e1b2b,#1f6e43);box-shadow:0 0 0 2px rgba(255,255,255,.25),0 0 22px rgba(214,40,57,.35)}
 #ssn-banner.ssn-nye{background:linear-gradient(90deg,#1a1450,#3b2a7a);box-shadow:0 0 0 2px #ffcf3f,0 0 24px rgba(255,207,63,.35)}
-@media (prefers-reduced-motion:reduce){.ssn-snow{top:var(--y)}#ssn-banner.ssn-xmas::before{animation:none}.ssn-fw{opacity:var(--o)}.ssn-spark{bottom:var(--y);opacity:.7}}
+@media (prefers-reduced-motion:reduce){.ssn-snow{top:var(--y)}#ssn-banner.ssn-xmas::before{animation:none}.ssn-fw{opacity:var(--o)}.ssn-spark{bottom:var(--y);opacity:.4}}
 .ssn-cd{font-family:var(--display);font-weight:900;color:#ffcf3f;letter-spacing:.04em}
 .tour-rulecard{position:relative;text-align:center;padding:28px 24px;margin-bottom:18px;border:2px solid #ffcf3f;background:radial-gradient(80% 120% at 50% 0%,rgba(255,207,63,.22),rgba(13,22,64,.9) 70%);box-shadow:0 0 30px rgba(255,207,63,.25)}
 .tour-rulecard-ic{display:block;font-size:54px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 0 14px rgba(255,207,63,.6))}
@@ -4530,7 +4532,7 @@ function seasonSync() {
     const R = (a, b) => (a + Math.random() * (b - a)).toFixed(1);
     lay.innerHTML = k === 'xmas'
       ? Array.from({length:46}, (_, i) => `<i class="ssn-snow" style="--x:${R(0, 100)}%;--y:${R(2, 96)}vh;--s:${R(.5, 1.4)};--t:${R(9, 20)}s;--d:${R(-20, 0)}s;--w:${R(-40, 40)}px">${i % 3 ? '•' : '❄'}</i>`).join('')
-      : Array.from({length:7}, (_, i) => `<i class="ssn-fw" style="--x:${R(8, 92)}%;--y:${R(8, 55)}%;--o:${R(.25, .6)};--c:${['#ffcf3f', '#ff4f9a', '#39d6f2', '#4ff08f', '#ffffff', '#c493ff', '#ff9f5a'][i]};--t:${R(2.6, 4.2)}s;--d:${R(-4, 0)}s"></i>`).join('')
+      : Array.from({length:7}, (_, i) => `<i class="ssn-fw" style="--x:${R(8, 92)}%;--y:${R(8, 55)}%;--o:${R(.15, .35)};--c:${['#ffcf3f', '#ff4f9a', '#39d6f2', '#4ff08f', '#ffffff', '#c493ff', '#ff9f5a'][i]};--t:${R(2.6, 4.2)}s;--d:${R(-4, 0)}s"></i>`).join('')
         + Array.from({length:36}, () => `<b class="ssn-spark" style="--x:${R(0, 100)}%;--y:${R(2, 96)}vh;--t:${R(6, 13)}s;--d:${R(-13, 0)}s;--c:${Math.random() < .6 ? '#ffcf3f' : '#ffffff'}"></b>`).join('');
     document.body.appendChild(lay);
   }
