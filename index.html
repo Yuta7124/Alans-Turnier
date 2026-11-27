@@ -12384,7 +12384,7 @@ function svWarInfoHTML(M, me) {
   }
   return lines.join('');
 }
-/* Schießen (1 gegen 1): kind 'shot' (1 Feld), 'bomb' (3 × 3), 'air' (ganze Spalte/Reihe). Treffer = nochmal. Normaler Schuss ins Wasser = 1 Punkt. */
+/* Schießen (1 gegen 1): kind 'shot' (1 Feld), 'bomb' (3 × 3), 'air' (ganze Spalte/Reihe). Danach ist immer der andere dran. Normaler Schuss ins Wasser = 1 Punkt. */
 function svFire(M, by, to, cells, kind = 'shot', center = cells[0]) {
   if (svWar(M)) return svFireWar(M, by, to, cells, kind, center);
   if (!svCanAct(M, by, to)) return false;
@@ -12405,7 +12405,7 @@ function svFire(M, by, to, cells, kind = 'shot', center = cells[0]) {
   if (newly.length) { nx.sk = {...(base.sk || {})}; newly.forEach(si => { const k = `${to}_${si}`; nx.sk[k] = by; patch['uno.sk.' + k] = by; }); }
   if (out) { nx.ko = ko; patch['uno.ko'] = ko; }
   if (alive.length <= 1) { nx.status = 'finished'; nx.win = alive[0] || by; patch['uno.status'] = 'finished'; patch['uno.win'] = nx.win; }
-  else { nx.turn = hits.length ? by : svNext(M, by, ko); patch['uno.turn'] = nx.turn; }
+  else { nx.turn = svNext(M, by, ko); patch['uno.turn'] = nx.turn; } // immer abwechselnd, auch nach einem Treffer
   svPut(nx, patch); return true;
 }
 function svShoot(M, by, to, c) { return svFire(M, by, to, [c], 'shot', c); }
@@ -12707,7 +12707,7 @@ const svActions = {
 function svRulesHTML(open) {
   return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird Schiffe versenken gespielt</summary><ul>
     <li><b>Flotte aufstellen:</b> Jeder hat 6 Schiffe: Kreuzer (4 Felder), T-Schiff (4, wie ein T), Blitz (4, im Zickzack), 2 Zerstörer (3) und ein U-Boot (2). Du ziehst sie selbst aufs 12 × 12 Feld. Schiffe dürfen sich nicht berühren, auch nicht schräg.</li>
-    <li><b>Schießen (1 gegen 1):</b> Wer dran ist, tippt ein Feld beim Gegner an. Wasser = der Nächste ist dran. <b>Treffer = du darfst nochmal.</b></li>
+    <li><b>Schießen (1 gegen 1):</b> Wer dran ist, tippt ein Feld beim Gegner an. Danach ist <b>immer der andere dran</b>, egal ob Wasser oder Treffer.</li>
     <li><b>Power-ups:</b> Für jeden normalen Schuss ins Wasser bekommst du 1 ⭐. Für 10 ⭐ gibt es das 📡 <b>Radar</b> (zeigt dir in 3 × 3 Feldern, wo ein Schiff liegt, danach darfst du noch schießen), für 16 ⭐ die 💣 <b>Bombe</b> (sprengt 3 × 3 Felder) und für 20 ⭐ das ✈️ <b>Flugschiff</b> (fliegt eine ganze Spalte oder Reihe ab). Die Punkte werden abgezogen, der Rest bleibt.</li>
     <li><b>Versenkt:</b> Ein Schiff ist versenkt, wenn alle seine Felder getroffen sind. Wer keine Schiffe mehr hat, ist raus.</li>
     <li><b>1 gegen 1:</b> ganz normal, zwei Spieler. Bots können mitspielen.</li>
