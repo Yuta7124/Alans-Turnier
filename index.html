@@ -1927,9 +1927,27 @@ body.is-nye header{box-shadow:inset 0 -3px 0 #ffcf3f}
 .sv-c{position:relative;aspect-ratio:1;border:0;padding:0;border-radius:4px;background:rgba(90,150,230,.22);font:inherit;color:inherit}
 button.sv-c:not(:disabled){cursor:pointer}
 .sv-tgt.can button.sv-c:not(:disabled):hover{background:rgba(255,207,63,.55);box-shadow:0 0 0 2px #ffcf3f}
-.sv-c.ship{background:#8fa3bd;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
-.sv-c.ship.rv{background:rgba(143,163,189,.45)}
-.sv-c.sel{background:#ffcf3f;box-shadow:0 0 0 2px #fff}
+.sv-ship{position:relative;pointer-events:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.55));z-index:1}
+.sv-ship{min-width:0;min-height:0}
+.sv-ship svg{position:absolute;inset:0;display:block;width:100%;height:100%}
+#sv-ghost svg{position:absolute;inset:0}
+.sv-fx{min-width:0;min-height:0}
+.sv-ship.rv{opacity:.6}
+.sv-ship.sunk svg{filter:grayscale(1) brightness(.55)}
+.sv-edit .sv-ship{pointer-events:auto;cursor:grab;touch-action:none}
+.sv-ship.sel,.sv-dock-ship.sel{filter:drop-shadow(0 0 6px #ffcf3f) drop-shadow(0 0 2px #ffcf3f)}
+.sv-ship.dragging,.sv-dock-ship.dragging{opacity:.3}
+#sv-ghost{position:fixed;z-index:9999;pointer-events:none;opacity:.9;filter:drop-shadow(0 8px 8px rgba(0,0,0,.6))}
+.sv-c.pv-ok{background:rgba(79,240,143,.6)}.sv-c.pv-bad{background:rgba(255,77,94,.6)}
+.sv-fx{position:relative;z-index:2;pointer-events:none;border-radius:50%;background:radial-gradient(circle,#fff2a8 0 14%,#ffb52e 30%,#ff5a1f 52%,rgba(255,60,20,0) 72%)}
+.sv-fx::after{content:'✕';position:absolute;inset:0;display:grid;place-items:center;font-weight:900;color:#fff;font-size:clamp(9px,2.2vw,16px);text-shadow:0 0 3px #000}
+.sv-fx.sunk{background:radial-gradient(circle,#ff5a1f 0 18%,#7a1020 45%,rgba(20,10,10,.0) 72%)}
+.sv-fx.last{outline:3px solid #ffcf3f;border-radius:4px}
+.sv-dock{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:10px;width:min(480px,100%);padding:10px;border-radius:14px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.sv-dock .lbl{width:100%;text-align:left;margin:0}
+.sv-dock-ship{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 8px;border-radius:10px;background:rgba(63,140,255,.15);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.sv-dock-ship svg{width:calc(var(--len) * 30px);height:30px;display:block;pointer-events:none}
+.sv-dock-ship small{font-size:11px;color:var(--muted);pointer-events:none}
 .sv-c.miss::after{content:'';position:absolute;inset:38%;border-radius:50%;background:rgba(220,235,255,.75)}
 .sv-c.hit{background:#ff6a2b}.sv-c.hit::after{content:'✕';position:absolute;inset:0;display:grid;place-items:center;font-weight:900;color:#fff;font-size:clamp(10px,2.4vw,18px)}
 .sv-c.hit.sunk{background:#7a1020}
@@ -3402,7 +3420,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=115"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=116"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -12069,7 +12087,7 @@ const svHor = s => s.length < 2 || s[1] - s[0] === 1;
 /* Schiffe dürfen sich nicht überlappen und nicht berühren (auch nicht schräg) */
 function svFits(ships, si, cells) {
   const busy = new Set();
-  ships.forEach((s, j) => { if (j !== si) s.forEach(c => { busy.add(c); svNb(c, true).forEach(n => busy.add(n)); }); });
+  ships.forEach((s, j) => { if (j !== si && s) s.forEach(c => { busy.add(c); svNb(c, true).forEach(n => busy.add(n)); }); });
   return cells.every(c => !busy.has(c));
 }
 function svValid(ships) {
@@ -12221,16 +12239,125 @@ function svTransfer() {
   lobbyAward({'uno.transferred':true}, M.players.map(id => ({playerId:id, delta:id === M.win ? 3 : 1})));
 }
 /* Aufstellen: Entwurf D.svPl {id, ships, sel} */
+/* Aufstellen: Entwurf D.svPl {id, ships:[Felder|null ×5], sel}. Am Anfang liegen alle Schiffe im Hafen und werden aufs Feld gezogen. */
 function svPl(M) {
-  const me = myPid();
-  if (!D.svPl || D.svPl.id !== M.id) D.svPl = {id:M.id, ships:(M.fl[me] || svRandom()).map(s => s.slice()), sel:-1};
+  if (!D.svPl || D.svPl.id !== M.id) D.svPl = {id:M.id, ships:SV_FLEET.map(() => null), sel:-1};
   return D.svPl;
 }
-function svMove(P, si, start, hor) {
-  const c = svCells(start, P.ships[si].length, hor);
-  if (!c || !svFits(P.ships, si, c)) return false;
-  P.ships[si] = c; return true;
+/* Fehlende Schiffe zufällig dazulegen (wenn die Zeit um ist) */
+function svFill(ships) {
+  const out = ships.map(x => x && x.slice());
+  for (let i = 0; i < SV_FLEET.length; i++) {
+    if (out[i]) continue;
+    let ok = false;
+    for (let k = 0; k < 400 && !ok; k++) { const c = svCells(Math.floor(Math.random() * SV_N * SV_N), SV_FLEET[i], Math.random() < .5); if (c && svFits(out, i, c)) { out[i] = c; ok = true; } }
+    if (!ok) return svRandom();
+  }
+  return out;
 }
+/* Schiff so legen, dass das gegriffene Teil (g) auf Feld c liegt */
+function svPlaceAt(P, i, c, g, hor) {
+  const len = SV_FLEET[i], st = hor ? 1 : SV_N, start = c - g * st;
+  if (start < 0 || (hor && Math.floor(start / SV_N) !== Math.floor(c / SV_N))) return null;
+  const cells = svCells(start, len, hor);
+  return cells && cells.includes(c) && svFits(P.ships, i, cells) ? cells : null;
+}
+/* Drehen um das angetippte Teil; passt es so nicht, wird es entlang verschoben */
+function svRotate(P, i, g) {
+  const s = P.ships[i]; if (!s) return false;
+  const nh = !svHor(s), piv = s[g] ?? s[0], len = s.length;
+  for (const o of [g, ...Array.from({length:len}, (_, k) => k).filter(k => k !== g)]) { const c = svPlaceAt(P, i, piv, o, nh); if (c) { P.ships[i] = c; return true; } }
+  return false;
+}
+/* Schiff von oben als Bild (liegt waagerecht, Bug rechts; senkrecht = gedreht, Bug unten) */
+function svShipSVG(len, hor) {
+  const W = len * 100, T = (x, rot) => `<g transform="translate(${x} 50)${rot ? ' rotate(180)' : ''}"><rect x="0" y="-4" width="34" height="8" rx="3" fill="#3c4654"/><circle r="15" fill="#6c7a8c" stroke="#2c3440" stroke-width="3"/><circle r="5" fill="#2c3440"/></g>`;
+  let body;
+  if (len === 2) body = `<path d="M8 50C8 30 40 25 70 25H${W - 70}C${W - 20} 25 ${W - 5} 40 ${W - 5} 50C${W - 5} 60 ${W - 20} 75 ${W - 70} 75H70C40 75 8 70 8 50Z" fill="#3b4656" stroke="#1d242e" stroke-width="4"/>
+      <path d="M30 50H${W - 30}" stroke="#56647a" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 14"/><rect x="${W / 2 - 26}" y="38" width="52" height="24" rx="12" fill="#56647a" stroke="#1d242e" stroke-width="3"/><circle cx="${W / 2}" cy="50" r="5" fill="#9fb3c8"/>`;
+  else {
+    const br = len === 5 ? W * .5 : len === 4 ? W * .52 : W * .46;
+    const tur = len === 5 ? [[W * .18, 1], [W * .7, 0], [W * .84, 0]] : len === 4 ? [[W * .2, 1], [W * .78, 0]] : [[W * .78, 0]];
+    body = `<path d="M10 50C10 26 20 17 42 17H${W - 95}C${W - 40} 17 ${W - 12} 33 ${W - 3} 50C${W - 12} 67 ${W - 40} 83 ${W - 95} 83H42C20 83 10 74 10 50Z" fill="#8392a5" stroke="#2c3440" stroke-width="4"/>
+      <path d="M24 50C24 33 31 27 46 27H${W - 98}C${W - 50} 27 ${W - 27} 38 ${W - 19} 50C${W - 27} 62 ${W - 50} 73 ${W - 98} 73H46C31 73 24 67 24 50Z" fill="#a7b4c4"/>
+      ${tur.map(([x, f]) => T(x, f)).join('')}
+      <rect x="${br - 34}" y="32" width="68" height="36" rx="7" fill="#d4dce6" stroke="#2c3440" stroke-width="3"/><rect x="${br + 6}" y="38" width="20" height="24" rx="4" fill="#3c4654"/>
+      ${len >= 4 ? `<circle cx="${br - 52}" cy="50" r="9" fill="#2c3440"/>` : `<circle cx="${br - 50}" cy="50" r="8" fill="#2c3440"/>`}`;
+  }
+  return hor ? `<svg viewBox="0 0 ${W} 100" preserveAspectRatio="none" aria-hidden="true">${body}</svg>`
+    : `<svg viewBox="0 0 100 ${W}" preserveAspectRatio="none" aria-hidden="true"><g transform="translate(100 0) rotate(90)">${body}</g></svg>`;
+}
+const svArea = (c, len = 1, hor = true) => `grid-area:${Math.floor(c / SV_N) + 2}/${c % SV_N + 2}/span ${hor ? 1 : len}/span ${hor ? len : 1}`;
+function svShipsHTML(ships, cls = '', drag = false, sel = -1) {
+  return ships.map((s, i) => s ? `<div class="sv-ship ${cls} ${i === sel ? 'sel' : ''}" style="${svArea(s[0], s.length, svHor(s))}" ${drag ? `data-svdrag="${i}" title="Ziehen zum Verschieben, antippen zum Drehen"` : ''}>${svShipSVG(s.length, svHor(s))}</div>` : '').join('');
+}
+const svFxHTML = (cells, sunkSet, lastC) => [...cells].map(c => `<span class="sv-fx ${sunkSet && sunkSet.has(c) ? 'sunk' : ''} ${c === lastC ? 'last' : ''}" style="${svArea(c)}"></span>`).join('');
+/* Ziehen und Ablegen (Maus und Finger) */
+const svDrag = {on:false};
+function svGridGeo() {
+  const g = document.querySelector('.sv-edit'); if (!g) return null;
+  const a = g.querySelector('[data-i="0"]'), b = g.querySelector('[data-i="1"]'), z = g.querySelector('[data-i="99"]'); if (!a || !b || !z) return null;
+  const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect(), rz = z.getBoundingClientRect();
+  return {x0:ra.left, y0:ra.top, x1:rz.right, y1:rz.bottom, cs:ra.width, gap:rb.left - ra.right};
+}
+function svCellAt(x, y) {
+  const G = svGridGeo(); if (!G) return -1;
+  const k = Math.floor((x - G.x0) / (G.x1 - G.x0) * SV_N), r = Math.floor((y - G.y0) / (G.y1 - G.y0) * SV_N);
+  return k < 0 || r < 0 || k >= SV_N || r >= SV_N ? -1 : r * SV_N + k;
+}
+function svPreview(cells, ok) {
+  document.querySelectorAll('.sv-edit .pv-ok, .sv-edit .pv-bad').forEach(e => e.classList.remove('pv-ok', 'pv-bad'));
+  (cells || []).forEach(c => { const e = document.querySelector(`.sv-edit [data-i="${c}"]`); if (e) e.classList.add(ok ? 'pv-ok' : 'pv-bad'); });
+}
+document.addEventListener('pointerdown', e => {
+  const el = e.target && e.target.closest && e.target.closest('[data-svdrag]'); if (!el || e.button > 0) return;
+  const M = S.sv; if (!M || M.status !== 'place' || M.rd[myPid()]) return;
+  const P = svPl(M), i = +el.dataset.svdrag, s = P.ships[i], len = SV_FLEET[i], hor = s ? svHor(s) : true, r = el.querySelector('svg').getBoundingClientRect();
+  const g = Math.max(0, Math.min(len - 1, Math.floor(hor ? (e.clientX - r.left) / r.width * len : (e.clientY - r.top) / r.height * len)));
+  e.preventDefault();
+  Object.assign(svDrag, {on:true, id:e.pointerId, i, g, hor, len, x0:e.clientX, y0:e.clientY, moved:false, ghost:null, from:s ? 'board' : 'dock', cells:null});
+});
+window.addEventListener('pointermove', e => {
+  if (!svDrag.on || e.pointerId !== svDrag.id) return;
+  if (!svDrag.moved && Math.hypot(e.clientX - svDrag.x0, e.clientY - svDrag.y0) < 7) return;
+  e.preventDefault();
+  const G = svGridGeo(); if (!G) return;
+  const step = G.cs + G.gap, L = svDrag.len * G.cs + (svDrag.len - 1) * G.gap;
+  if (!svDrag.moved) {
+    svDrag.moved = true;
+    const gh = document.createElement('div'); gh.id = 'sv-ghost'; gh.className = 'sv-ship';
+    gh.style.width = (svDrag.hor ? L : G.cs) + 'px'; gh.style.height = (svDrag.hor ? G.cs : L) + 'px';
+    gh.innerHTML = svShipSVG(svDrag.len, svDrag.hor); document.body.appendChild(gh); svDrag.ghost = gh;
+    const src = document.querySelector(`[data-svdrag="${svDrag.i}"]`); if (src) src.classList.add('dragging');
+  }
+  const off = svDrag.g * step + G.cs / 2;
+  svDrag.ghost.style.left = (svDrag.hor ? e.clientX - off : e.clientX - G.cs / 2) + 'px';
+  svDrag.ghost.style.top = (svDrag.hor ? e.clientY - G.cs / 2 : e.clientY - off) + 'px';
+  const M = S.sv, c = svCellAt(e.clientX, e.clientY);
+  if (!M || c < 0) { svDrag.cells = null; svPreview(null); return; }
+  const P = svPl(M), ok = svPlaceAt(P, svDrag.i, c, svDrag.g, svDrag.hor);
+  const st = svDrag.hor ? 1 : SV_N, raw = Array.from({length:svDrag.len}, (_, k) => c + (k - svDrag.g) * st).filter(x => x >= 0 && x < SV_N * SV_N && (!svDrag.hor || Math.floor(x / SV_N) === Math.floor(c / SV_N)));
+  svDrag.cells = ok; svPreview(ok || raw, !!ok);
+}, {passive:false});
+function svDragEnd(e, cancel) {
+  if (!svDrag.on || e.pointerId !== svDrag.id) return;
+  svDrag.on = false; if (svDrag.ghost) svDrag.ghost.remove(); svPreview(null);
+  const M = S.sv; if (!M || M.status !== 'place' || M.rd[myPid()]) return;
+  const P = svPl(M), i = svDrag.i;
+  if (!svDrag.moved) {
+    if (cancel) return;
+    if (svDrag.from === 'board') { if (svRotate(P, i, svDrag.g)) kSnd('flip'); else toast('Gedreht passt das Schiff hier nicht hin. Schieb es erst woanders hin.'); P.sel = -1; }
+    else P.sel = P.sel === i ? -1 : i;
+    setTimeout(render, 0); return;
+  }
+  const c = cancel ? -1 : svCellAt(e.clientX, e.clientY);
+  if (c < 0) { if (svDrag.from === 'board' && !cancel) { P.ships[i] = null; kSnd('swishSoft'); } }
+  else if (svDrag.cells) { P.ships[i] = svDrag.cells; kSnd('land'); }
+  else toast('Da passt es nicht hin. Schiffe dürfen sich nicht berühren, auch nicht schräg.');
+  P.sel = -1; setTimeout(render, 0);
+}
+window.addEventListener('pointerup', e => svDragEnd(e, false));
+window.addEventListener('pointercancel', e => svDragEnd(e, true));
 const svActions = {
   'sv-who': b => { if (!ctl()) return; const id = b.dataset.pid; D.svOut = {...(D.svOut || {})}; if (D.svOut[id]) delete D.svOut[id]; else D.svOut[id] = 1; render(); },
   'sv-start': () => svStart(false),
@@ -12238,28 +12365,19 @@ const svActions = {
   'sv-setup': () => { if (!ctl()) return; if (S.sv && S.sv.status === 'finished' && !S.sv.transferred) svTransfer(); svBack(S.sv ? S.sv.mode : svModeOf()); },
   'sv-end': () => confirmBox('Schiffe versenken beenden?', 'Die Runde wird abgebrochen. Es gibt keine Punkte.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => { if (!ctl()) return; svBack(S.sv ? S.sv.mode : svModeOf()); }}]),
   'sv-rand': () => { const M = S.sv; if (!M || M.status !== 'place') return; const P = svPl(M); P.ships = svRandom(); P.sel = -1; kSnd('shuffle'); render(); },
-  'sv-sel': b => { const M = S.sv; if (!M || M.status !== 'place') return; const P = svPl(M), i = +b.dataset.i; P.sel = P.sel === i ? -1 : i; render(); },
-  'sv-rot': () => {
-    const M = S.sv; if (!M || M.status !== 'place') return; const P = svPl(M);
-    if (P.sel < 0) { toast('Tippe zuerst ein Schiff an.'); return; }
-    const s = P.ships[P.sel];
-    if (!svMove(P, P.sel, s[0], !svHor(s))) toast('Gedreht passt das Schiff hier nicht hin. Schieb es erst woanders hin.'); else kSnd('flip'); render();
-  },
+  'sv-clear': () => { const M = S.sv; if (!M || M.status !== 'place') return; const P = svPl(M); P.ships = SV_FLEET.map(() => null); P.sel = -1; kSnd('swishSoft'); render(); },
   'sv-pc': b => {
     const M = S.sv; if (!M || M.status !== 'place' || M.rd[myPid()]) return;
-    const P = svPl(M), i = +b.dataset.i, at = P.ships.findIndex(s => s.includes(i));
-    if (P.sel >= 0 && at === P.sel) { const s = P.ships[at]; if (!svMove(P, at, s[0], !svHor(s))) toast('Gedreht passt das Schiff hier nicht hin.'); else kSnd('flip'); render(); return; }
-    if (P.sel >= 0) {
-      const s = P.ships[P.sel];
-      if (svMove(P, P.sel, i, svHor(s)) || svMove(P, P.sel, i, !svHor(s))) { P.sel = -1; kSnd('land'); render(); return; }
-      if (at >= 0) { P.sel = at; render(); return; }
-      toast('Da passt es nicht hin. Schiffe dürfen sich nicht berühren, auch nicht schräg.'); return;
-    }
-    if (at >= 0) { P.sel = at; render(); }
+    const P = svPl(M), c = +b.dataset.i; if (P.sel < 0) { if (P.ships.some(x => !x)) toast('Zieh ein Schiff aus dem Hafen aufs Feld (oder tippe es an und dann das Feld).'); return; }
+    const cells = svPlaceAt(P, P.sel, c, 0, true) || svPlaceAt(P, P.sel, c, 0, false);
+    if (!cells) { toast('Da passt es nicht hin. Schiffe dürfen sich nicht berühren, auch nicht schräg.'); return; }
+    P.ships[P.sel] = cells; P.sel = -1; kSnd('land'); render();
   },
   'sv-ready': () => {
     const M = S.sv, me = myPid(); if (!M || M.status !== 'place' || !M.players.includes(me)) return;
-    const P = svPl(M); if (!svValid(P.ships)) { toast('So geht die Aufstellung nicht. Tippe auf 🔀 Zufällig.'); return; }
+    const P = svPl(M), auto = svl.autoRd === M.id;
+    if (P.ships.some(x => !x)) { if (!auto) { toast('Stell erst alle 5 Schiffe aufs Feld.'); return; } P.ships = svFill(P.ships); }
+    if (!svValid(P.ships)) { if (!auto) { toast('So geht die Aufstellung nicht. Tippe auf 🔀 Zufällig.'); return; } P.ships = svRandom(); }
     const enc = svEnc(P.ships), base = lobby().uno; P.sel = -1;
     sfx('chosen'); svPut({...base, fl:{...base.fl, [me]:enc}, rd:{...(base.rd || {}), [me]:true}}, {['uno.fl.' + me]:enc, ['uno.rd.' + me]:true});
   },
@@ -12294,10 +12412,10 @@ function svSetupHTML() {
     <button class="btn btn-gold btn-big" type="button" data-act="sv-start" ${ok ? '' : 'disabled'}>Spiel starten</button>
   </div>${svRulesHTML(false)}</section>`;
 }
-function svGridHTML(cls, cell) {
-  let h = `<div class="sv-grid ${cls}"><i></i>${[...SV_COLS].map(c => `<i>${c}</i>`).join('')}`;
-  for (let r = 0; r < SV_N; r++) { h += `<i>${r + 1}</i>`; for (let k = 0; k < SV_N; k++) h += cell(r * SV_N + k); }
-  return h + '</div>';
+function svGridHTML(cls, cell, over = '') {
+  let h = `<div class="sv-grid ${cls}"><i style="grid-area:1/1"></i>${[...SV_COLS].map((c, k) => `<i style="grid-area:1/${k + 2}">${c}</i>`).join('')}`;
+  for (let r = 0; r < SV_N; r++) { h += `<i style="grid-area:${r + 2}/1">${r + 1}</i>`; for (let k = 0; k < SV_N; k++) h += cell(r * SV_N + k).replace('class="sv-c', `style="${svArea(r * SV_N + k)}" class="sv-c`); }
+  return h + over + '</div>';
 }
 function svTimeHTML(M) { return `<div class="sv-timer"><span id="sv-time">${Math.ceil(svTimeLeft(M) / 1000)} s</span><div class="sv-bar"><i id="sv-bar" style="width:${svTimeLeft(M) / (M.status === 'place' ? SV_PLACE_T : SV_TURN_T) * 100}%"></i></div></div>`; }
 function svTimeLeft(M) {
@@ -12309,16 +12427,16 @@ function svPlaceHTML(M) {
   const status = `<ul class="sv-ready">${M.players.map(id => `<li class="${M.rd[id] || isBot(id) ? 'ok' : ''}">${avatar(ghost(id), 22)}<b>${esc(ghost(id).name)}</b><span>${M.rd[id] || isBot(id) ? '✓ bereit' : '… stellt auf'}</span></li>`).join('')}</ul>`;
   if (!mine || ready) return `<section class="section tsec sv-wrap"><div class="card sv-place"><h2>⚓ Die Flotten werden aufgestellt</h2>${svTimeHTML(M)}
     ${mine ? `<p class="muted">Du bist bereit. Gleich geht's los, sobald alle fertig sind.</p>
-      ${svGridHTML('sv-own', c => { const s = (M.fl[me] || []).some(x => x.includes(c)); return `<span class="sv-c ${s ? 'ship' : ''}"></span>`; })}
+      ${svGridHTML('sv-own', () => '<span class="sv-c"></span>', svShipsHTML(M.fl[me] || []))}
       <button class="btn btn-sm btn-ghost" type="button" data-act="sv-unready">Doch nochmal ändern</button>` : '<p class="muted">Du schaust zu.</p>'}
     ${status}${ctl() ? `<button class="btn btn-sm btn-ghost" type="button" data-act="sv-end">Beenden</button>` : ''}</div>${svRulesHTML(false)}</section>`;
   const P = svPl(M);
   return `<section class="section tsec sv-wrap"><div class="card sv-place"><h2>⚓ Stell deine Flotte auf</h2>${svTimeHTML(M)}
-    <p class="muted">Tippe ein Schiff an und dann das Feld, wo es hin soll. Tippst du das ausgewählte Schiff nochmal an, dreht es sich. Wenn die Zeit um ist, bleibt es so, wie es gerade steht.</p>
-    <div class="chips sv-ships">${P.ships.map((s, i) => `<button class="chip" type="button" data-act="sv-sel" data-i="${i}" aria-pressed="${P.sel === i}">${'■'.repeat(s.length)} ${SV_SHIP[i] || 'Schiff'}</button>`).join('')}</div>
-    ${svGridHTML('sv-own sv-edit', c => { const i = P.ships.findIndex(s => s.includes(c)); return `<button class="sv-c ${i >= 0 ? 'ship' : ''} ${i >= 0 && i === P.sel ? 'sel' : ''}" type="button" data-act="sv-pc" data-i="${c}" aria-label="${svLbl(c)}${i >= 0 ? ' ' + SV_SHIP[i] : ''}"></button>`; })}
-    <div class="chips"><button class="btn btn-sm" type="button" data-act="sv-rand">🔀 Zufällig</button><button class="btn btn-sm" type="button" data-act="sv-rot" ${P.sel < 0 ? 'disabled' : ''}>↻ Drehen</button>
-      <button class="btn btn-gold" type="button" data-act="sv-ready">✅ Fertig</button></div>
+    <p class="muted">Zieh deine Schiffe aus dem Hafen aufs Feld, genau dahin, wo du sie haben willst. Schiffe auf dem Feld kannst du verschieben, <b>antippen dreht sie</b>. Ziehst du eins vom Feld runter, kommt es zurück in den Hafen.</p>
+    ${svGridHTML('sv-own sv-edit', c => `<button class="sv-c" type="button" data-act="sv-pc" data-i="${c}" aria-label="${svLbl(c)}"></button>`, svShipsHTML(P.ships, '', true, P.sel))}
+    <div class="sv-dock"><span class="lbl">⚓ Hafen</span>${P.ships.some(x => !x) ? P.ships.map((x, i) => x ? '' : `<div class="sv-dock-ship ${P.sel === i ? 'sel' : ''}" data-svdrag="${i}" style="--len:${SV_FLEET[i]}" title="Aufs Feld ziehen">${svShipSVG(SV_FLEET[i], true)}<small>${SV_SHIP[i]} · ${SV_FLEET[i]}</small></div>`).join('') : '<p class="muted">Alle Schiffe stehen auf dem Feld. 👍</p>'}</div>
+    <div class="chips"><button class="btn btn-sm" type="button" data-act="sv-rand">🔀 Zufällig</button>${P.ships.some(Boolean) ? '<button class="btn btn-sm btn-ghost" type="button" data-act="sv-clear">↩ Alle zurück in den Hafen</button>' : ''}
+      <button class="btn btn-gold" type="button" data-act="sv-ready" ${P.ships.some(x => !x) ? 'disabled' : ''}>✅ Fertig</button></div>
     ${status}${ctl() ? `<button class="btn btn-sm btn-ghost" type="button" data-act="sv-end">Beenden</button>` : ''}</div>${svRulesHTML(false)}</section>`;
 }
 function svLastHTML(M, me) {
@@ -12340,15 +12458,16 @@ function svPlayHTML(M) {
   if (mine) {
     const shots = new Set(svMy(M, me, tgt)), all = svIncoming(M, tgt), sunk = svSunk(M, tgt, all), can = myTurn && !M.ko.includes(tgt);
     const target = svGridHTML(`sv-tgt ${can ? 'can' : ''}`, c => {
-      const si = svShipOf(M, tgt, c), shot = shots.has(c), cls = shot ? (si >= 0 ? (sunk[si] ? 'hit sunk' : 'hit') : 'miss') : fin && si >= 0 ? 'ship rv' : '';
+      const si = svShipOf(M, tgt, c), shot = shots.has(c), cls = shot ? (si >= 0 ? (sunk[si] ? 'hit sunk' : 'hit') : 'miss') : '';
       const last = M.last && M.last.by === me && M.last.to === tgt && M.last.c === c ? ' last' : '';
       return `<button class="sv-c ${cls}${last}" type="button" data-act="sv-shot" data-t="${esc(tgt)}" data-i="${c}" ${can && !shot ? '' : 'disabled'} aria-label="${svLbl(c)}"></button>`;
-    });
+    }, fin ? svShipsHTML(M.fl[tgt] || [], 'rv') + svFxHTML([...shots].filter(c => svShipOf(M, tgt, c) >= 0), null, -1) : '');
     const inc = svIncoming(M, me), mySunk = svSunk(M, me, inc);
     const own = svGridHTML('sv-own sv-mine', c => {
       const si = svShipOf(M, me, c), shot = inc.has(c), last = M.last && M.last.to === me && M.last.c === c ? ' last' : '';
-      return `<span class="sv-c ${si >= 0 ? 'ship' : ''} ${shot ? (si >= 0 ? (mySunk[si] ? 'hit sunk' : 'hit') : 'miss') : ''}${last}"></span>`;
-    });
+      return `<span class="sv-c ${shot && si < 0 ? 'miss' : ''}${last}"></span>`;
+    }, (M.fl[me] || []).map((x, i) => svShipsHTML((M.fl[me] || []).map((y, j) => j === i ? y : null), mySunk[i] ? 'sunk' : '')).join('')
+      + svFxHTML([...inc].filter(c => svShipOf(M, me, c) >= 0), new Set([...inc].filter(c => { const k = svShipOf(M, me, c); return k >= 0 && mySunk[k]; })), M.last && M.last.to === me ? M.last.c : -1));
     boards = `<div class="sv-boards"><div class="sv-b sv-b-tgt"><h3>🎯 ${M.mode === 'multi' ? 'Ziel' : 'Gegner'}: ${esc(ghost(tgt).name)} <small>${M.ko.includes(tgt) ? '☠️ raus' : `🚢 ${svLeft(M, tgt)} übrig`}</small></h3>${tabs}${target}
         ${M.mode === 'multi' && !fin ? '<p class="muted sv-note">Hier siehst du nur deine eigenen Schüsse.</p>' : ''}</div>
       <div class="sv-b sv-b-own"><h3>⚓ Deine Flotte <small>${M.ko.includes(me) ? '☠️ versenkt' : `🚢 ${svLeft(M, me)} übrig`}</small></h3>${own}</div></div>`;
@@ -12373,7 +12492,7 @@ function svMount() {
 setInterval(() => {
   const M = S.sv; if (!M || M.status === 'finished') return;
   // Zeit fürs Aufstellen fast um: die eigene Aufstellung so abschicken, wie sie gerade steht
-  if (M.status === 'place' && M.players.includes(myPid()) && !M.rd[myPid()] && D.svPl && D.svPl.id === M.id && svl.autoRd !== M.id && svTimeLeft(M) < 1500 && !roomPaused()) { svl.autoRd = M.id; svActions['sv-ready'](); }
+  if (M.status === 'place' && M.players.includes(myPid()) && !M.rd[myPid()] && svl.autoRd !== M.id && svTimeLeft(M) < 1500 && !roomPaused()) { svl.autoRd = M.id; svPl(M); svActions['sv-ready'](); }
   if (S.tab !== 'sv') return;
   const t = document.getElementById('sv-time'), bar = document.getElementById('sv-bar'); if (!t) return;
   const left = svTimeLeft(M), tot = M.status === 'place' ? SV_PLACE_T : SV_TURN_T;
