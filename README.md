@@ -271,8 +271,9 @@ Raumspiel `slf` (Feld `uno`, `g:'slf'`): Kategorien `cats` (3 bis 8 aus `SLF_CAT
 ## Schiffe versenken
 
 - Steht zweimal in der Spielauswahl: bei „Nur zu zweit · 1 gegen 1“ (genau 2 Spieler) und bei „Für mehrere Spieler“ als **Jeder gegen jeden** (3 bis 7). In der Turnier-Lobby gibt es nur den Mehrspieler-Modus. Bots spielen mit.
-- Jeder zieht seine 6 Schiffe (Kreuzer 4, T-Schiff 4 in T-Form, Blitz 4 im Zickzack, 2 Zerstörer 3, U-Boot 2; von oben gezeichnet) aus dem Hafen selbst aufs 10 × 10 Feld: verschieben per Ziehen, drehen per Antippen, vom Feld ziehen = zurück in den Hafen. 🔀 Zufällig gibt es als Hilfe. Schiffe dürfen sich nicht berühren. 90 Sekunden Zeit, danach werden fehlende Schiffe zufällig dazugelegt.
-- Spielbrett in hellem Grau.
+- Jeder zieht seine 6 Schiffe (Kreuzer 4, T-Schiff 4 in T-Form, Blitz 4 im Zickzack, 2 Zerstörer 3, U-Boot 2; von oben gezeichnet) aus dem Hafen selbst aufs 12 × 12 Feld: verschieben per Ziehen, drehen per Antippen, vom Feld ziehen = zurück in den Hafen. 🔀 Zufällig gibt es als Hilfe. Schiffe dürfen sich nicht berühren. 90 Sekunden Zeit, danach werden fehlende Schiffe zufällig dazugelegt.
+- Spielbrett in hellem Grau, 12 × 12 Felder (A–L, 1–12).
+- Power-ups: jeder normale Schuss ins Wasser = 1 ⭐. 📡 Radar (10 ⭐, 3 × 3 absuchen, danach noch schießen), 💣 Bombe (16 ⭐, 3 × 3 sprengen), ✈️ Flugschiff (20 ⭐, ganze Spalte oder Reihe). Kosten werden abgezogen, der Rest bleibt. Bots werfen manchmal Bomben.
 - Reihum schießen, Treffer = nochmal. 30 Sekunden pro Schuss, sonst schießt der Computer.
 - Im Mehrspieler-Modus wählt man selbst, auf wen man schießt. Auf fremden Feldern sieht jeder nur seine eigenen Schüsse, auf dem eigenen Feld alle Treffer.
 - Turnier: jedes versenkte Schiff 2 Punkte, der Sieger 5 extra. Modul-Kopie: build/sv/sv.js.

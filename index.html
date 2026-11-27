@@ -1922,7 +1922,7 @@ body.is-nye header{box-shadow:inset 0 -3px 0 #ffcf3f}
 .sv-b h3{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0 0 8px;font-size:17px}.sv-b h3 small{color:var(--muted);font-weight:700}
 .sv-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.sv-tabs small{opacity:.8}
 .sv-note{font-size:13px;margin:6px 0 0}
-.sv-grid{display:grid;grid-template-columns:18px repeat(10,1fr);gap:3px;width:100%;max-width:480px;margin:0 auto;padding:8px;border-radius:14px;background:linear-gradient(180deg,#9aa2ab,#878f99);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),0 4px 14px rgba(0,0,0,.35)}
+.sv-grid{display:grid;grid-template-columns:18px repeat(12,1fr);gap:3px;width:100%;max-width:540px;margin:0 auto;padding:8px;border-radius:14px;background:linear-gradient(180deg,#9aa2ab,#878f99);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),0 4px 14px rgba(0,0,0,.35)}
 .sv-grid>i{display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800;color:#20262d}
 .sv-c{position:relative;aspect-ratio:1;border:0;padding:0;border-radius:4px;background:#c3c9d0;box-shadow:inset 0 -2px 0 rgba(0,0,0,.08);font:inherit;color:inherit}
 button.sv-c:not(:disabled){cursor:pointer}
@@ -1952,6 +1952,16 @@ button.sv-c:not(:disabled){cursor:pointer}
 .sv-c.hit{background:#ff6a2b}.sv-c.hit::after{content:'✕';position:absolute;inset:0;display:grid;place-items:center;font-weight:900;color:#fff;font-size:clamp(10px,2.4vw,18px)}
 .sv-c.hit.sunk{background:#7a1020}
 .sv-c.last{outline:3px solid #ffcf3f;outline-offset:-1px;z-index:1}
+.sv-c.aim{background:#ffb52e!important;box-shadow:0 0 0 2px #fff inset}
+.sv-c.rad-y{background:#7fe0a0;box-shadow:inset 0 0 0 3px #1f9a55}.sv-c.rad-y::after{content:'';position:absolute;inset:30%;border-radius:50%;background:#1f9a55}
+.sv-c.rad-n{background:#a9b0b8}.sv-c.rad-n::after{content:'';position:absolute;left:35%;right:35%;top:47%;height:6%;background:#6b737c;border-radius:2px}
+.sv-pw{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 8px}
+.sv-pts{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:99px;background:rgba(255,207,63,.15);font-size:14px}.sv-pts b{color:#ffcf3f;font-size:16px}
+.sv-pwb small{opacity:.75;font-size:11px}.sv-pwb.on{box-shadow:0 0 0 2px #ffcf3f;background:rgba(255,207,63,.2)}
+.sv-aim{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 8px;padding:8px 10px;border-radius:12px;background:rgba(255,181,46,.12);box-shadow:inset 0 0 0 1px rgba(255,181,46,.45);font-size:14px}
+.sv-tgt.aiming button.sv-c{cursor:crosshair}
+.sv-plus{color:#ffcf3f;font-weight:900}
+.sv-last.r{background:rgba(79,240,143,.14)}
 .sv-own .sv-c{cursor:default}
 .sv-mine{max-width:360px}
 .sv-edit{max-width:440px}.sv-edit .sv-c{cursor:pointer}
@@ -1967,7 +1977,7 @@ button.sv-c:not(:disabled){cursor:pointer}
 .sv-rank li::before{content:counter(r) '.';font-weight:900;width:22px}.sv-rank li:first-child{background:rgba(255,207,63,.18)}.sv-rank li.me b{color:#ffcf3f}
 .sv-rank li span{margin-left:auto;font-size:13px;color:var(--muted)}
 @media (max-width:820px){.sv-boards{grid-template-columns:1fr}.sv-mine{max-width:300px}}
-@media (max-width:520px){.sv-grid{gap:2px;padding:6px;grid-template-columns:14px repeat(10,1fr)}.sv-grid>i{font-size:9px}}
+@media (max-width:520px){.sv-grid{gap:2px;padding:6px;grid-template-columns:14px repeat(12,1fr)}.sv-grid>i{font-size:9px}}
 .tour-rulecard{position:relative;text-align:center;padding:28px 24px;margin-bottom:18px;border:2px solid #ffcf3f;background:radial-gradient(80% 120% at 50% 0%,rgba(255,207,63,.22),rgba(13,22,64,.9) 70%);box-shadow:0 0 30px rgba(255,207,63,.25)}
 .tour-rulecard-ic{display:block;font-size:54px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 0 14px rgba(255,207,63,.6))}
 .tour-rulecard h2{margin:6px 0 12px;font-size:clamp(22px,3vw,34px)}
@@ -3420,7 +3430,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=117"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=118"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -12066,7 +12076,7 @@ function cnMount() {
    fl:{pid:['3,4,5', …]} (Schiffe als Feld-Listen), rd:{pid:true}, placeAt, sh:{Schütze:{Ziel:[Feld…]}}, turn, at, last:{by, to, c, r},
    sk:{'Ziel_Schiff':Schütze}, ko:[pid…] (ausgeschieden, in Reihenfolge), win, tour, transferred}
    Jeder sieht auf fremden Feldern nur seine eigenen Schüsse. Auf dem eigenen Feld sieht man alle Schüsse, die einen getroffen haben. */
-const SV_N = 10;
+const SV_N = 12;
 /* Die Flotte. Formen als [Zeile, Spalte] in der Grundlage; line = gerades Schiff (Bug zeigt nach rechts) */
 const SV_DEF = [
   {n:'Kreuzer', t:'line', s:[[0, 0], [0, 1], [0, 2], [0, 3]]},
@@ -12094,7 +12104,9 @@ function svShape(i, cells) {
   const k = SV_ROTS[i].findIndex(o => svKey(o) === key);
   return k < 0 ? null : {k, r0, c0};
 }
-const SV_PLACE_T = 90000, SV_TURN_T = 30000, SV_COLS = 'ABCDEFGHIJ';
+const SV_PLACE_T = 90000, SV_TURN_T = 30000, SV_COLS = 'ABCDEFGHIJKL';
+/* Power-ups: Punkte gibt es für jeden normalen Schuss ins Wasser */
+const SV_PW = {radar:{n:'Radar', e:'📡', cost:10, d:'Zeigt dir in einem 3 × 3 Bereich, wo ein Schiff liegt. Danach darfst du noch schießen.'}, bomb:{n:'Bombe', e:'💣', cost:16, d:'Sprengt ein ganzes 3 × 3 Feld auf einmal.'}, air:{n:'Flugschiff', e:'✈️', cost:20, d:'Fliegt eine ganze Spalte oder Reihe ab und trifft alles auf dem Weg.'}};
 const svl = {lastKey:'', turnKey:'', endSnd:'', botAt:0};
 const svLbl = c => SV_COLS[c % SV_N] + (Math.floor(c / SV_N) + 1);
 function svNb(c, diag) {
@@ -12129,7 +12141,9 @@ function svRandom() {
     for (let i = 0; i < SV_DEF.length && ok; i++) { ships[i] = svRandOne(ships, i); ok = !!ships[i]; }
     if (ok) return ships;
   }
-  return [[0, 1, 2, 3], [20, 21, 22, 31], [50, 51, 61, 62], [6, 7, 8], [26, 27, 28], [80, 81]];
+  const ships = SV_DEF.map(() => null); // Notlösung: der Reihe nach hinlegen
+  SV_DEF.forEach((d, i) => { for (let c = 0; c < SV_N * SV_N && !ships[i]; c++) { const x = svCellsK(i, 0, Math.floor(c / SV_N), c % SV_N); if (x && svFits(ships, i, x)) ships[i] = x; } });
+  return ships;
 }
 const svEnc = ships => ships.map(s => s.join(','));
 const svDec = a => Array.isArray(a) ? a.map(x => String(x).split(',').map(Number).filter(n => n >= 0 && n < SV_N * SV_N)) : null;
@@ -12146,8 +12160,14 @@ function svNorm(x) {
     if (m && typeof m === 'object') for (const t of players) if (t !== id && Array.isArray(m[t])) sh[id][t] = [...new Set(m[t].map(Number).filter(n => n >= 0 && n < SV_N * SV_N))];
   }
   const sk = {}; if (x.sk && typeof x.sk === 'object') for (const [k, v] of Object.entries(x.sk)) if (typeof v === 'string') sk[k] = v;
-  const last = x.last && typeof x.last === 'object' && players.includes(x.last.by) ? {by:x.last.by, to:str(x.last.to, 60), c:+x.last.c || 0, r:str(x.last.r, 2), ko:x.last.ko === true} : null;
-  return {g:'sv', id:str(x.id, 40), status:x.status, mode:x.mode === 'multi' ? 'multi' : 'duel', players, fl, rd, sh, sk, last,
+  const pt = {}, rad = {};
+  for (const id of players) {
+    pt[id] = Math.max(0, Math.round(+(x.pt && x.pt[id]) || 0)); rad[id] = {};
+    const m = x.rad && x.rad[id]; if (m && typeof m === 'object') for (const t of players) if (Array.isArray(m[t])) rad[id][t] = m[t].map(Number).filter(n => n >= 0 && n < SV_N * SV_N);
+  }
+  const L0 = x.last, last = L0 && typeof L0 === 'object' && players.includes(L0.by) ? {by:L0.by, to:str(L0.to, 60), c:+L0.c || 0, r:str(L0.r, 2), ko:L0.ko === true,
+    k:['shot', 'radar', 'bomb', 'air'].includes(L0.k) ? L0.k : 'shot', n:+L0.n || 0, sn:+L0.sn || 0, cs:Array.isArray(L0.cs) ? L0.cs.map(Number).filter(n => n >= 0 && n < SV_N * SV_N) : [], pp:+L0.pp || 0} : null;
+  return {g:'sv', id:str(x.id, 40), status:x.status, mode:x.mode === 'multi' ? 'multi' : 'duel', players, fl, rd, sh, sk, last, pt, rad,
     placeAt:+x.placeAt || 0, turn:players.includes(x.turn) ? x.turn : players[0], at:+x.at || 0,
     ko:Array.isArray(x.ko) ? x.ko.filter(p => players.includes(p)) : [], win:players.includes(x.win) ? x.win : '',
     tour:x.tour === true, transferred:x.transferred === true, pz:x.pz && x.pz.at ? x.pz : null};
@@ -12165,24 +12185,42 @@ function svNext(M, from, out = M.ko) {
 }
 const svMy = (M, me, t) => (M.sh[me] && M.sh[me][t]) || [];
 function svPut(nx, patch) { S.lobbies[S.room] = {...lobby(), uno:nx}; S.sv = svNorm(nx); roomWrite(patch); render(); }
-function svShoot(M, by, to, c) {
-  if (!M || M.status !== 'running' || M.turn !== by || by === to || M.ko.includes(to) || !M.players.includes(to) || roomPaused()) return;
-  const mine = svMy(M, by, to); if (mine.includes(c) || !(c >= 0 && c < SV_N * SV_N)) return;
-  const before = svIncoming(M, to), si = svShipOf(M, to, c), hit = si >= 0;
-  const wasSunk = hit && M.fl[to][si].every(x => before.has(x));
-  const after = new Set(before); after.add(c);
-  const sunkNow = hit && !wasSunk && M.fl[to][si].every(x => after.has(x));
-  const out = svSunk(M, to, after).every(Boolean), ko = out ? [...M.ko, to] : M.ko;
-  const alive = M.players.filter(p => !ko.includes(p));
-  const last = {by, to, c, r:!hit ? 'm' : sunkNow ? 's' : wasSunk ? 'a' : 'h', ko:out};
-  const base = lobby().uno, arr = [...mine, c], now = Date.now();
-  const nx = {...base, sh:{...(base.sh || {}), [by]:{...((base.sh || {})[by] || {}), [to]:arr}}, last, at:now};
-  const patch = {[`uno.sh.${by}.${to}`]:arr, 'uno.last':last, 'uno.at':now};
-  if (sunkNow) { const k = `${to}_${si}`; nx.sk = {...(base.sk || {}), [k]:by}; patch['uno.sk.' + k] = by; }
+const svBox = c => { const r = Math.floor(c / SV_N), k = c % SV_N, out = []; for (let a = r - 1; a <= r + 1; a++) for (let b = k - 1; b <= k + 1; b++) if (a >= 0 && b >= 0 && a < SV_N && b < SV_N) out.push(a * SV_N + b); return out; };
+const svLineOf = (c, dir) => Array.from({length:SV_N}, (_, n) => dir === 'row' ? Math.floor(c / SV_N) * SV_N + n : n * SV_N + c % SV_N);
+function svCanAct(M, by, to) { return !!M && M.status === 'running' && M.turn === by && by !== to && !M.ko.includes(to) && M.players.includes(to) && !roomPaused(); }
+/* Schießen: kind 'shot' (1 Feld), 'bomb' (3 × 3), 'air' (ganze Spalte/Reihe). Treffer = nochmal. Normaler Schuss ins Wasser = 1 Punkt. */
+function svFire(M, by, to, cells, kind = 'shot', center = cells[0]) {
+  if (!svCanAct(M, by, to)) return false;
+  const cost = kind === 'shot' ? 0 : SV_PW[kind].cost; if ((M.pt[by] || 0) < cost) return false;
+  const mine = svMy(M, by, to), mset = new Set(mine), fresh = [...new Set(cells)].filter(c => c >= 0 && c < SV_N * SV_N && !mset.has(c));
+  if (!fresh.length) return false;
+  const before = svIncoming(M, to), after = new Set(before); fresh.forEach(c => after.add(c));
+  const sb = svSunk(M, to, before), sa = svSunk(M, to, after), hits = fresh.filter(c => svShipOf(M, to, c) >= 0);
+  const newly = sa.map((x, i) => x && !sb[i] ? i : -1).filter(i => i >= 0);
+  const out = sa.every(Boolean), ko = out ? [...M.ko, to] : M.ko, alive = M.players.filter(p => !ko.includes(p));
+  const pp = kind === 'shot' && !hits.length ? 1 : 0, pt = (M.pt[by] || 0) - cost + pp;
+  let r = !hits.length ? 'm' : newly.length ? 's' : 'h';
+  if (kind === 'shot' && hits.length && !newly.length && sb[svShipOf(M, to, fresh[0])]) r = 'a';
+  const last = {by, to, c:center, r, ko:out, k:kind, n:hits.length, sn:newly.length, cs:kind === 'shot' ? [] : fresh, pp};
+  const base = lobby().uno, arr = [...mine, ...fresh], now = Date.now();
+  const nx = {...base, sh:{...(base.sh || {}), [by]:{...((base.sh || {})[by] || {}), [to]:arr}}, pt:{...(base.pt || {}), [by]:pt}, last, at:now};
+  const patch = {[`uno.sh.${by}.${to}`]:arr, ['uno.pt.' + by]:pt, 'uno.last':last, 'uno.at':now};
+  if (newly.length) { nx.sk = {...(base.sk || {})}; newly.forEach(si => { const k = `${to}_${si}`; nx.sk[k] = by; patch['uno.sk.' + k] = by; }); }
   if (out) { nx.ko = ko; patch['uno.ko'] = ko; }
   if (alive.length <= 1) { nx.status = 'finished'; nx.win = alive[0] || by; patch['uno.status'] = 'finished'; patch['uno.win'] = nx.win; }
-  else { nx.turn = hit ? by : svNext(M, by, ko); patch['uno.turn'] = nx.turn; }
-  svPut(nx, patch);
+  else { nx.turn = hits.length ? by : svNext(M, by, ko); patch['uno.turn'] = nx.turn; }
+  svPut(nx, patch); return true;
+}
+function svShoot(M, by, to, c) { return svFire(M, by, to, [c], 'shot', c); }
+/* Radar: 3 × 3 absuchen (nur der Spieler selbst sieht das Ergebnis). Kein Schuss, du bist danach weiter dran. */
+function svRadar(M, by, to, c) {
+  if (!svCanAct(M, by, to) || (M.pt[by] || 0) < SV_PW.radar.cost) return false;
+  const box = svBox(c), base = lobby().uno, old = ((base.rad || {})[by] || {})[to] || [], arr = [...new Set([...old, ...box])], pt = (M.pt[by] || 0) - SV_PW.radar.cost, now = Date.now();
+  const found = box.filter(x => svShipOf(M, to, x) >= 0).length;
+  const last = {by, to, c, r:'r', ko:false, k:'radar', n:found, sn:0, cs:box, pp:0};
+  svPut({...base, rad:{...(base.rad || {}), [by]:{...((base.rad || {})[by] || {}), [to]:arr}}, pt:{...(base.pt || {}), [by]:pt}, last, at:now},
+    {[`uno.rad.${by}.${to}`]:arr, ['uno.pt.' + by]:pt, 'uno.last':last, 'uno.at':now});
+  return true;
 }
 /* Bot (und Zeit abgelaufen): sucht um eigene Treffer herum weiter, sonst im Schachbrett-Muster */
 function svBotMove(M, by) {
@@ -12223,7 +12261,9 @@ function svLogic() {
     if (isBot(p) && now < M.at + 1300) return;
     if (gone && now < M.at + 2500) return;
     svl.botAt = now + 700;
-    const mv = svBotMove(M, p); if (mv) svShoot(M, p, mv.t, mv.c);
+    const mv = svBotMove(M, p); if (!mv) return;
+    if (isBot(p) && (M.pt[p] || 0) >= SV_PW.bomb.cost && Math.random() < .5 && svFire(M, p, mv.t, svBox(mv.c), 'bomb', mv.c)) return;
+    svShoot(M, p, mv.t, mv.c);
   }
 }
 /* Der Modus kommt aus der Spielauswahl (1 gegen 1 oder Mehrspieler) und steht im Raum als uno {g:'sv', status:'setup', mode}. Im Turnier nur Mehrspieler. */
@@ -12304,9 +12344,8 @@ function svPolyBody(d) {
   const hull = layer(8, '#1b2028', 24) + layer(12, '#4a5768', 20) + layer(26, '#647487', 12);
   if (d.t === 'T') return hull + tur(50, 50, 180) + tur(250, 50, 0) + tur(150, 150, 90)
     + `<rect x="116" y="30" width="68" height="40" rx="7" fill="#e3e9f0" stroke="#1b2028" stroke-width="3"/><rect x="140" y="38" width="20" height="24" rx="4" fill="#232a33"/>`;
-  return hull + `<path d="M34 50H150V150H266" fill="none" stroke="#ffcf3f" stroke-width="12" stroke-linejoin="miter" opacity=".85"/>
-      <path d="M168 58L124 110H150L134 146L182 90H156Z" fill="#ffcf3f" stroke="#1b2028" stroke-width="4" stroke-linejoin="round"/>
-      <circle cx="60" cy="50" r="10" fill="#1b2028"/><circle cx="240" cy="150" r="10" fill="#1b2028"/>`;
+  return hull + tur(50, 50, 180) + tur(250, 150, 0)
+    + `<rect x="128" y="62" width="44" height="76" rx="7" fill="#e3e9f0" stroke="#1b2028" stroke-width="3"/><rect x="138" y="88" width="24" height="24" rx="4" fill="#232a33"/>`;
 }
 function svShipSVG(i, k = 0) {
   const d = SV_DEF[i], [h0, w0] = svDims(d.s), W = w0 * 100, H = h0 * 100;
@@ -12325,7 +12364,7 @@ const svFxHTML = (cells, sunkSet, lastC) => [...cells].map(c => `<span class="sv
 const svDrag = {on:false};
 function svGridGeo() {
   const g = document.querySelector('.sv-edit'); if (!g) return null;
-  const a = g.querySelector('[data-i="0"]'), b = g.querySelector('[data-i="1"]'), z = g.querySelector('[data-i="99"]'); if (!a || !b || !z) return null;
+  const a = g.querySelector('[data-i="0"]'), b = g.querySelector('[data-i="1"]'), z = g.querySelector(`[data-i="${SV_N * SV_N - 1}"]`); if (!a || !b || !z) return null;
   const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect(), rz = z.getBoundingClientRect();
   return {x0:ra.left, y0:ra.top, x1:rz.right, y1:rz.bottom, cs:ra.width, gap:rb.left - ra.right};
 }
@@ -12414,12 +12453,32 @@ const svActions = {
   },
   'sv-unready': () => { const M = S.sv, me = myPid(); if (!M || M.status !== 'place') return; const base = lobby().uno; svPut({...base, rd:{...(base.rd || {}), [me]:false}}, {['uno.rd.' + me]:false}); },
   'sv-tgt': b => { D.svTgt = b.dataset.pid; render(); },
-  'sv-shot': b => { const M = S.sv; if (!M) return; svShoot(M, myPid(), b.dataset.t, +b.dataset.i); }
+  'sv-shot': b => {
+    const M = S.sv; if (!M) return; const c = +b.dataset.i;
+    if (D.svPw) { D.svAim = c; render(); return; }
+    svShoot(M, myPid(), b.dataset.t, c);
+  },
+  'sv-pw': b => { const M = S.sv, me = myPid(), k = b.dataset.v; if (!M || !SV_PW[k]) return;
+    if (D.svPw === k) { D.svPw = ''; D.svAim = -1; render(); return; }
+    if ((M.pt[me] || 0) < SV_PW[k].cost) { toast(`Dafür brauchst du ${SV_PW[k].cost} ⭐.`); return; }
+    D.svPw = k; D.svAim = -1; if (k === 'air' && !D.svDir) D.svDir = 'col'; render(); },
+  'sv-dir': b => { D.svDir = b.dataset.v === 'row' ? 'row' : 'col'; render(); },
+  'sv-pwx': () => { D.svPw = ''; D.svAim = -1; render(); },
+  'sv-fire': () => {
+    const M = S.sv, me = myPid(), k = D.svPw, c = D.svAim, t = D.svTgt; if (!M || !SV_PW[k] || !(c >= 0)) return;
+    let ok;
+    if (k === 'radar') ok = svRadar(M, me, t, c);
+    else if (k === 'bomb') ok = svFire(M, me, t, svBox(c), 'bomb', c);
+    else ok = svFire(M, me, t, svLineOf(c, D.svDir), 'air', c);
+    if (!ok) { toast(k === 'radar' ? 'Das Radar geht gerade nicht.' : 'Da hast du schon alles beschossen. Such dir eine andere Stelle aus.'); return; }
+    sfx('chosen'); D.svPw = ''; D.svAim = -1;
+  }
 };
 function svRulesHTML(open) {
   return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird Schiffe versenken gespielt</summary><ul>
-    <li><b>Flotte aufstellen:</b> Jeder hat 6 Schiffe: Kreuzer (4 Felder), T-Schiff (4, wie ein T), Blitz (4, im Zickzack), 2 Zerstörer (3) und ein U-Boot (2). Du ziehst sie selbst aufs 10 × 10 Feld. Schiffe dürfen sich nicht berühren, auch nicht schräg.</li>
+    <li><b>Flotte aufstellen:</b> Jeder hat 6 Schiffe: Kreuzer (4 Felder), T-Schiff (4, wie ein T), Blitz (4, im Zickzack), 2 Zerstörer (3) und ein U-Boot (2). Du ziehst sie selbst aufs 12 × 12 Feld. Schiffe dürfen sich nicht berühren, auch nicht schräg.</li>
     <li><b>Schießen:</b> Wer dran ist, tippt ein Feld beim Gegner an. Wasser = der Nächste ist dran. <b>Treffer = du darfst nochmal.</b></li>
+    <li><b>Power-ups:</b> Für jeden normalen Schuss ins Wasser bekommst du 1 ⭐. Für 10 ⭐ gibt es das 📡 <b>Radar</b> (zeigt dir in 3 × 3 Feldern, wo ein Schiff liegt, danach darfst du noch schießen), für 16 ⭐ die 💣 <b>Bombe</b> (sprengt 3 × 3 Felder) und für 20 ⭐ das ✈️ <b>Flugschiff</b> (fliegt eine ganze Spalte oder Reihe ab). Die Punkte werden abgezogen, der Rest bleibt.</li>
     <li><b>Versenkt:</b> Ein Schiff ist versenkt, wenn alle seine Felder getroffen sind. Wer keine Schiffe mehr hat, ist raus.</li>
     <li><b>1 gegen 1:</b> ganz normal, zwei Spieler. Bots können mitspielen.</li>
     <li><b>Jeder gegen jeden (3 bis 7):</b> Du suchst dir aus, auf wen du schießt. <b>Du siehst nur deine eigenen Schüsse</b>, nicht wohin die anderen auf deinen Gegner geschossen haben. Auf deinem eigenen Feld siehst du alle Treffer.</li>
@@ -12472,34 +12531,55 @@ function svPlaceHTML(M) {
 }
 function svLastHTML(M, me) {
   const L = M.last; if (!L) return '';
-  const res = {m:'🌊 Wasser', h:'🔥 Treffer!', s:'💥 Treffer, versenkt!', a:'🔥 Treffer! (Das Schiff war schon versenkt.)'}[L.r] || '', ko = L.ko ? ` ☠️ ${L.to === me ? 'Du bist' : `<b>${esc(ghost(L.to).name)}</b> ist`} raus.` : '';
-  if (L.by === me) return `<p class="sv-last ${L.r}">Dein Schuss auf <b>${esc(ghost(L.to).name)}</b> (${svLbl(L.c)}): ${res}${ko}</p>`;
-  if (L.to === me) return `<p class="sv-last ${L.r} me">🎯 <b>${esc(ghost(L.by).name)}</b> hat auf dich geschossen (${svLbl(L.c)}): ${res}${ko}</p>`;
-  return `<p class="sv-last ${L.r}"><b>${esc(ghost(L.by).name)}</b> hat auf <b>${esc(ghost(L.to).name)}</b> geschossen: ${res}${ko}</p>`;
+  const ko = L.ko ? ` ☠️ ${L.to === me ? 'Du bist' : `<b>${esc(ghost(L.to).name)}</b> ist`} raus.` : '', tn = `<b>${esc(ghost(L.to).name)}</b>`, bn = `<b>${esc(ghost(L.by).name)}</b>`;
+  if (L.k === 'radar') {
+    if (L.by === me) return `<p class="sv-last r">📡 Radar bei ${tn} (um ${svLbl(L.c)}): ${L.n ? `<b>${L.n}</b> Feld${L.n === 1 ? '' : 'er'} mit Schiff gefunden (grün markiert).` : 'nichts gefunden.'} Du darfst jetzt noch schießen.</p>`;
+    if (L.to === me) return `<p class="sv-last r me">📡 ${bn} hat dein Feld um ${svLbl(L.c)} mit dem Radar abgesucht.</p>`;
+    return `<p class="sv-last r">📡 ${bn} hat das Radar bei ${tn} benutzt.</p>`;
+  }
+  const many = L.k !== 'shot', what = L.k === 'bomb' ? '💣 Bombe' : '✈️ Flugschiff';
+  const res = many ? (L.n ? `🔥 ${L.n} Treffer${L.sn ? `, 💥 ${L.sn} versenkt` : ''}!` : '🌊 alles Wasser')
+    : ({m:'🌊 Wasser', h:'🔥 Treffer!', s:'💥 Treffer, versenkt!', a:'🔥 Treffer! (Das Schiff war schon versenkt.)'}[L.r] || '');
+  const plus = L.pp && L.by === me ? ` <span class="sv-plus">+${L.pp} ⭐</span>` : '';
+  if (L.by === me) return `<p class="sv-last ${L.r}">${many ? `Dein${L.k === 'bomb' ? 'e' : ''} ${what} auf ${tn}` : `Dein Schuss auf ${tn}`} (${svLbl(L.c)}): ${res}${plus}${ko}</p>`;
+  if (L.to === me) return `<p class="sv-last ${L.r} me">🎯 ${bn} hat ${many ? `ein${L.k === 'bomb' ? 'e' : ''} ${what} auf dich losgeschickt` : 'auf dich geschossen'} (${svLbl(L.c)}): ${res}${ko}</p>`;
+  return `<p class="sv-last ${L.r}">${bn} hat ${many ? `ein${L.k === 'bomb' ? 'e' : ''} ${what} auf ${tn} losgeschickt` : `auf ${tn} geschossen`}: ${res}${ko}</p>`;
+}
+function svPowerHTML(M, me, myTurn) {
+  const pt = M.pt[me] || 0, P = SV_PW[D.svPw];
+  let h = `<div class="sv-pw"><span class="sv-pts" title="Für jeden normalen Schuss ins Wasser gibt es 1 Punkt">⭐ <b>${pt}</b> Punkte</span>
+    ${Object.entries(SV_PW).map(([k, p]) => `<button class="btn btn-sm sv-pwb ${D.svPw === k ? 'on' : ''}" type="button" data-act="sv-pw" data-v="${k}" aria-pressed="${D.svPw === k}" ${myTurn && pt >= p.cost ? '' : 'disabled'} title="${esc(p.d)}">${p.e} ${p.n} <small>${p.cost} ⭐</small></button>`).join('')}</div>`;
+  if (P) h += `<div class="sv-aim"><b>${P.e} ${P.n}:</b> ${P.d} ${D.svAim >= 0 ? `Ziel: <b>${svLbl(D.svAim)}</b>.` : 'Tippe aufs Feld, wo es hin soll.'}
+    ${D.svPw === 'air' ? `<span class="chips"><button class="chip" type="button" data-act="sv-dir" data-v="col" aria-pressed="${D.svDir !== 'row'}">↕ Spalte runter</button><button class="chip" type="button" data-act="sv-dir" data-v="row" aria-pressed="${D.svDir === 'row'}">↔ Reihe quer</button></span>` : ''}
+    <span class="chips"><button class="btn btn-gold btn-sm" type="button" data-act="sv-fire" ${D.svAim >= 0 ? '' : 'disabled'}>${D.svPw === 'radar' ? '📡 Absuchen' : '🔥 Los!'}</button><button class="btn btn-sm btn-ghost" type="button" data-act="sv-pwx">Abbrechen</button></span></div>`;
+  return h;
 }
 function svPlayHTML(M) {
   const me = myPid(), mine = M.players.includes(me), fin = M.status === 'finished', paused = roomPaused();
   const opp = M.players.filter(p => p !== me);
   if (!opp.includes(D.svTgt) || (!fin && M.ko.includes(D.svTgt) && opp.some(p => !M.ko.includes(p)))) D.svTgt = opp.find(p => !M.ko.includes(p)) || opp[0];
   const tgt = D.svTgt, myTurn = !fin && M.turn === me && !paused && !M.ko.includes(me);
+  if (!myTurn || !SV_PW[D.svPw]) { D.svPw = ''; D.svAim = -1; }
+  const aim = D.svPw && D.svAim >= 0 ? new Set(D.svPw === 'air' ? svLineOf(D.svAim, D.svDir) : svBox(D.svAim)) : null;
   const top = fin ? '' : `<div class="sv-top ${myTurn ? 'mine' : ''}"><span class="sv-turn">${M.turn === me ? '🎯 Du bist dran!' : `${avatar(ghost(M.turn), 24)} <b>${esc(ghost(M.turn).name)}</b> ist dran`}</span>${svTimeHTML(M)}
     ${ctl() ? `<button class="btn btn-sm btn-ghost" type="button" data-act="sv-end">Beenden</button>` : ''}</div>`;
   const tabs = M.mode === 'multi' ? `<div class="sv-tabs">${opp.map(p => `<button class="chip ${M.ko.includes(p) ? 'off' : ''}" type="button" data-act="sv-tgt" data-pid="${esc(p)}" aria-pressed="${p === tgt}">${avatar(ghost(p), 22)}${esc(ghost(p).name)} <small>${M.ko.includes(p) ? '☠️' : `🚢 ${svLeft(M, p)}`}</small></button>`).join('')}</div>` : '';
   let boards;
   if (mine) {
-    const shots = new Set(svMy(M, me, tgt)), all = svIncoming(M, tgt), sunk = svSunk(M, tgt, all), can = myTurn && !M.ko.includes(tgt);
-    const target = svGridHTML(`sv-tgt ${can ? 'can' : ''}`, c => {
-      const si = svShipOf(M, tgt, c), shot = shots.has(c), cls = shot ? (si >= 0 ? (sunk[si] ? 'hit sunk' : 'hit') : 'miss') : '';
-      const last = M.last && M.last.by === me && M.last.to === tgt && M.last.c === c ? ' last' : '';
-      return `<button class="sv-c ${cls}${last}" type="button" data-act="sv-shot" data-t="${esc(tgt)}" data-i="${c}" ${can && !shot ? '' : 'disabled'} aria-label="${svLbl(c)}"></button>`;
+    const shots = new Set(svMy(M, me, tgt)), all = svIncoming(M, tgt), sunk = svSunk(M, tgt, all), can = myTurn && !M.ko.includes(tgt), rad = new Set((M.rad[me] || {})[tgt] || []);
+    const lastMine = M.last && M.last.by === me && M.last.to === tgt ? M.last : null, zone = new Set(lastMine && lastMine.cs.length ? lastMine.cs : []);
+    const target = svGridHTML(`sv-tgt ${can ? 'can' : ''} ${D.svPw ? 'aiming' : ''}`, c => {
+      const si = svShipOf(M, tgt, c), shot = shots.has(c), cls = shot ? (si >= 0 ? (sunk[si] ? 'hit sunk' : 'hit') : 'miss') : rad.has(c) ? (si >= 0 ? 'rad-y' : 'rad-n') : '';
+      const last = (lastMine && !lastMine.cs.length && lastMine.c === c) || zone.has(c) ? ' last' : '';
+      return `<button class="sv-c ${cls}${last}${aim && aim.has(c) ? ' aim' : ''}" type="button" data-act="sv-shot" data-t="${esc(tgt)}" data-i="${c}" ${can && (!shot || D.svPw) ? '' : 'disabled'} aria-label="${svLbl(c)}"></button>`;
     }, fin ? svShipsHTML(M.fl[tgt] || [], 'rv') + svFxHTML([...shots].filter(c => svShipOf(M, tgt, c) >= 0), null, -1) : '');
     const inc = svIncoming(M, me), mySunk = svSunk(M, me, inc);
     const own = svGridHTML('sv-own sv-mine', c => {
-      const si = svShipOf(M, me, c), shot = inc.has(c), last = M.last && M.last.to === me && M.last.c === c ? ' last' : '';
+      const si = svShipOf(M, me, c), shot = inc.has(c), last = M.last && M.last.to === me && (M.last.cs.length ? M.last.cs.includes(c) : M.last.c === c) ? ' last' : '';
       return `<span class="sv-c ${shot && si < 0 ? 'miss' : ''}${last}"></span>`;
     }, (M.fl[me] || []).map((x, i) => svShipsHTML((M.fl[me] || []).map((y, j) => j === i ? y : null), mySunk[i] ? 'sunk' : '')).join('')
       + svFxHTML([...inc].filter(c => svShipOf(M, me, c) >= 0), new Set([...inc].filter(c => { const k = svShipOf(M, me, c); return k >= 0 && mySunk[k]; })), M.last && M.last.to === me ? M.last.c : -1));
-    boards = `<div class="sv-boards"><div class="sv-b sv-b-tgt"><h3>🎯 ${M.mode === 'multi' ? 'Ziel' : 'Gegner'}: ${esc(ghost(tgt).name)} <small>${M.ko.includes(tgt) ? '☠️ raus' : `🚢 ${svLeft(M, tgt)} übrig`}</small></h3>${tabs}${target}
+    boards = `<div class="sv-boards"><div class="sv-b sv-b-tgt"><h3>🎯 ${M.mode === 'multi' ? 'Ziel' : 'Gegner'}: ${esc(ghost(tgt).name)} <small>${M.ko.includes(tgt) ? '☠️ raus' : `🚢 ${svLeft(M, tgt)} übrig`}</small></h3>${tabs}${fin || M.ko.includes(me) ? '' : svPowerHTML(M, me, myTurn)}${target}
         ${M.mode === 'multi' && !fin ? '<p class="muted sv-note">Hier siehst du nur deine eigenen Schüsse.</p>' : ''}</div>
       <div class="sv-b sv-b-own"><h3>⚓ Deine Flotte <small>${M.ko.includes(me) ? '☠️ versenkt' : `🚢 ${svLeft(M, me)} übrig`}</small></h3>${own}</div></div>`;
   } else {
@@ -12516,7 +12596,7 @@ function viewSv() { const M = S.sv; return !M ? svSetupHTML() : M.status === 'pl
 function svMount() {
   const M = S.sv; if (!M || S.tab !== 'sv') return;
   const me = myPid();
-  if (M.last) { const k = M.id + ':' + M.last.by + ':' + M.last.to + ':' + M.last.c; if (k !== svl.lastKey) { const first = !svl.lastKey; svl.lastKey = k; if (!first && (M.last.by === me || M.last.to === me)) kSnd(M.last.r === 'm' ? 'land' : M.last.r === 's' ? 'wild' : 'draw2'); } }
+  if (M.last) { const k = M.id + ':' + M.last.by + ':' + M.last.to + ':' + M.last.c + ':' + M.last.k + ':' + M.at; if (k !== svl.lastKey) { const first = !svl.lastKey; svl.lastKey = k; if (!first && (M.last.by === me || M.last.to === me)) kSnd(M.last.k === 'radar' ? 'call' : M.last.k !== 'shot' ? 'draw4' : M.last.r === 'm' ? 'land' : M.last.r === 's' ? 'wild' : 'draw2'); } }
   if (M.status === 'running') { const k = M.id + ':' + M.turn + ':' + M.at; if (M.turn === me && svl.turnKey !== k && (!M.last || M.last.by !== me)) kSnd('turn', .5); svl.turnKey = k; }
   if (M.status === 'finished' && svl.endSnd !== M.id) { svl.endSnd = M.id; if (M.players.includes(me)) kSnd(M.win === me ? 'win' : 'lose', .4); }
 }
