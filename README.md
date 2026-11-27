@@ -259,4 +259,4 @@ Raumspiel `cn` (Feld `uno`, `g:'cn'`): 2 Teams in `t0`/`t1` (Firestore erlaubt k
 
 ## Stadt, Land, Fluss
 
-Raumspiel `slf` (Feld `uno`, `g:'slf'`): Kategorien `cats` (3 bis 8 aus `SLF_CATS`), Runden 3/5/8, Zeit 60–180 s oder ohne. Phasen `write` → `stop` (jemand drückt STOPP oder Zeit vorbei, 3 s zum Einsammeln) → `check` (Antworten prüfen, ✗-Stimmen in `x`, Mehrheit der anderen lehnt ab). Antworten pro Spieler in `pr.<pid>.r<Runde>`. Punkte (`slfCell`): als Einziger 20, eigenes Wort 10, doppelt 5. Turnier: Punkte ÷ 10.
+Raumspiel `slf` (Feld `uno`, `g:'slf'`): Kategorien `cats` (3 bis 8 aus `SLF_CATS`), Runden 3/5/8, Zeit 60–180 s oder ohne. Am Rundenanfang wird der Buchstabe 3 s lang ausgewürfelt (`SLF_ROLL`, `at` liegt dafür in der Zukunft), dann Phasen `write` → `stop` (jemand drückt STOPP oder Zeit vorbei, 3 s zum Einsammeln) → `check` (Antworten prüfen, ✗-Stimmen in `x`, Mehrheit der anderen lehnt ab). Antworten pro Spieler in `pr.<pid>.r<Runde>`. Punkte (`slfCell`): als Einziger 20, eigenes Wort 10, doppelt 5. Turnier: Punkte ÷ 10.

@@ -1847,6 +1847,13 @@ body.ah-locked .ah-lockhint{display:none}
 /* Stadt, Land, Fluss */
 .slf-top{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:12px}
 .slf-letter{display:grid;place-items:center;width:110px;height:110px;border-radius:24px;font-family:var(--display);font-size:72px;font-weight:900;color:#1a1208;background:linear-gradient(180deg,#ffe27a,#ffb52e);box-shadow:0 6px 0 #b9761a,0 0 30px rgba(255,181,46,.45)}
+.slf-letter.rolling{animation:slfShake .18s ease-in-out infinite alternate;background:linear-gradient(180deg,#fff,#cfd6ff);color:#1a2870;box-shadow:0 6px 0 #6d82ff,0 0 34px rgba(109,130,255,.6)}
+@keyframes slfShake{from{transform:rotate(-6deg) scale(.96)}to{transform:rotate(6deg) scale(1.04)}}
+.slf-letter.pop{animation:slfPop .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes slfPop{from{transform:scale(.4) rotate(-20deg)}to{transform:none}}
+.slf-rolltxt{margin:4px 0 0;font-weight:800;font-size:18px}
+.slf-preview{text-align:center;opacity:.8}
+@media (prefers-reduced-motion:reduce){.slf-letter.rolling,.slf-letter.pop{animation:none}}
 .slf-time{font-family:var(--display);font-size:22px;font-weight:900}
 .slf-bar{width:min(420px,90%);height:8px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
 .slf-bar i{display:block;height:100%;background:linear-gradient(90deg,#4ff08f,#ffcf3f);transition:width .25s linear}
@@ -3327,7 +3334,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=110"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=111"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -11846,7 +11853,9 @@ const SLF_CATS = ['Stadt', 'Land', 'Fluss', 'Name', 'Tier', 'Beruf', 'Pflanze', 
 const SLF_DEF = ['Stadt', 'Land', 'Fluss', 'Name', 'Tier', 'Beruf'];
 const SLF_LETTERS = 'ABDEFGHIKLMNOPRSTUVWZ';
 const SLF_TL = [[60, '1 Min.'], [90, '1,5 Min.'], [120, '2 Min.'], [180, '3 Min.'], [0, 'Ohne Zeit']];
-const slfl = {draft:null, flush:0, flushed:'', endSnd:'', timer:0, letterKey:''};
+const SLF_ROLL = 3000; // so lange wird der Buchstabe am Rundenanfang ausgewürfelt (ms)
+const slfl = {draft:null, flush:0, flushed:'', endSnd:'', timer:0, letterKey:'', rollShown:''};
+const slfRolling = M => M.status === 'running' && M.ph === 'write' && Date.now() < M.at;
 function slfNorm(x) {
   if (!x || typeof x !== 'object' || x.g !== 'slf' || !['running', 'finished'].includes(x.status)) return null;
   const players = Array.isArray(x.players) ? x.players.filter(p => typeof p === 'string' && p).slice(0, 8) : [];
@@ -11891,7 +11900,7 @@ function slfStart() {
   if (!players.length) return;
   const cats = (D.slfCats && D.slfCats.length >= 3 ? D.slfCats : SLF_DEF).slice(0, 8), rounds = [3, 5, 8].includes(D.slfRd) ? D.slfRd : 5, tl = [0, 60, 90, 120, 180].includes(D.slfTl) ? D.slfTl : 90;
   const letter = slfPick([]);
-  const M = {g:'slf', id:uid(), status:'running', players, cats, rounds, tl, rd:0, ph:'write', letter, letters:[letter], at:Date.now(), stopAt:0, stopBy:'', pr:{}, x:{}, tour:!!(L && L.tour), transferred:false};
+  const M = {g:'slf', id:uid(), status:'running', players, cats, rounds, tl, rd:0, ph:'write', letter, letters:[letter], at:Date.now() + SLF_ROLL, stopAt:0, stopBy:'', pr:{}, x:{}, tour:!!(L && L.tour), transferred:false};
   slfl.draft = null; S.lobbies[S.room] = {...L, uno:M}; S.slf = slfNorm(M); roomWrite({uno:M}); render();
 }
 /* Eigene Antworten: Entwurf auf dem Gerät, gespeichert wird kurz nach dem Tippen und sofort beim Stopp */
@@ -11934,7 +11943,7 @@ const slfActions = {
   'slf-setup': () => { if (!ctl()) return; if (S.slf && S.slf.status === 'finished' && !S.slf.transferred) slfTransfer(); S.slf = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); },
   'slf-end': () => confirmBox('Stadt, Land, Fluss beenden?', 'Das Spiel wird abgebrochen. Es gibt keine Punkte.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => { if (!ctl()) return; S.slf = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); }}]),
   'slf-stop': () => {
-    const M = S.slf, me = myPid(); if (!M || M.status !== 'running' || M.ph !== 'write' || !M.players.includes(me) || roomPaused()) return;
+    const M = S.slf, me = myPid(); if (!M || M.status !== 'running' || M.ph !== 'write' || slfRolling(M) || !M.players.includes(me) || roomPaused()) return;
     const d = slfDraft(M); if (d.a.some(v => !v.trim())) { toast('Erst alle Felder ausfüllen, dann Stopp.'); return; }
     d.dirty = true; slfFlush(); const now = Date.now(); kSnd('win', .2);
     slfPut({...lobby().uno, ph:'stop', stopAt:now, stopBy:me}, {'uno.ph':'stop', 'uno.stopAt':now, 'uno.stopBy':me});
@@ -11948,7 +11957,7 @@ const slfActions = {
   'slf-next': () => {
     const M = S.slf; if (!ctl() || !M || M.ph !== 'check') return;
     if (M.rd + 1 >= M.rounds) { slfPut({...lobby().uno, status:'finished'}, {'uno.status':'finished'}); return; }
-    const letter = slfPick(M.letters), now = Date.now(), letters = [...M.letters, letter];
+    const letter = slfPick(M.letters), now = Date.now() + SLF_ROLL, letters = [...M.letters, letter];
     slfPut({...lobby().uno, rd:M.rd + 1, ph:'write', letter, letters, at:now, stopAt:0, stopBy:''}, {'uno.rd':M.rd + 1, 'uno.ph':'write', 'uno.letter':letter, 'uno.letters':letters, 'uno.at':now, 'uno.stopAt':0, 'uno.stopBy':''});
   }
 };
@@ -11974,12 +11983,16 @@ function slfSetupHTML() {
     <button class="btn btn-gold btn-big" type="button" data-act="slf-start" ${mem.length ? '' : 'disabled'}>Spiel starten</button>
   </div>${slfRulesHTML(false)}</section>`;
 }
-function slfLeft(M) { return M.tl ? Math.max(0, M.tl * 1000 - (Date.now() - M.at)) : 0; }
+function slfLeft(M) { return M.tl ? Math.max(0, Math.min(M.tl * 1000, M.tl * 1000 - (Date.now() - M.at))) : 0; }
 function slfPlayHTML(M) {
   const me = myPid(), inGame = M.players.includes(me), host = ctl();
-  const head = `<div class="slf-top"><span class="eyebrow">Runde ${M.rd + 1} von ${M.rounds}</span><div class="slf-letter" aria-label="Buchstabe ${M.letter}">${M.letter}</div>
+  const head = `<div class="slf-top"><span class="eyebrow">Runde ${M.rd + 1} von ${M.rounds}</span><div class="slf-letter ${M.ph === 'write' && Date.now() - M.at < 1200 ? 'pop' : ''}" aria-label="Buchstabe ${M.letter}">${M.letter}</div>
     ${M.ph === 'write' && M.tl ? `<div class="slf-time"><span id="slf-tsec">${Math.ceil(slfLeft(M) / 1000)}</span> s</div><div class="slf-bar"><i id="slf-tbar" style="width:${slfLeft(M) / (M.tl * 10)}%"></i></div>` : ''}
     ${host ? `<button class="btn btn-sm btn-ghost slf-endbtn" type="button" data-act="slf-end">Beenden</button>` : ''}</div>`;
+  if (slfRolling(M)) return `<section class="section tsec slf-wrap"><div class="slf-top"><span class="eyebrow">Runde ${M.rd + 1} von ${M.rounds}</span>
+      <div class="slf-letter rolling" id="slf-roll" aria-live="polite">${SLF_LETTERS[Math.floor(Math.random() * SLF_LETTERS.length)]}</div>
+      <p class="slf-rolltxt">🎲 Der Buchstabe wird ausgewürfelt …</p>${host ? `<button class="btn btn-sm btn-ghost slf-endbtn" type="button" data-act="slf-end">Beenden</button>` : ''}</div>
+      <div class="card slf-form slf-preview"><span class="lbl">Gleich gesucht</span><div class="chips">${M.cats.map(c => `<span class="chip">${esc(c)}</span>`).join('')}</div></div></section>`;
   if (M.ph === 'write' || M.ph === 'stop') {
     const d = inGame ? slfDraft(M) : null, stop = M.ph === 'stop';
     return `<section class="section tsec slf-wrap">${head}
@@ -12014,7 +12027,6 @@ function viewSlf() { const M = S.slf; if (!M) return slfSetupHTML(); return M.st
 function slfMount() {
   const M = S.slf; if (!M) return;
   if (M.status === 'finished' && slfl.endSnd !== M.id && S.tab === 'slf') { slfl.endSnd = M.id; kSnd('win', .3); }
-  const lk = M.id + ':' + M.rd; if (M.status === 'running' && M.ph === 'write' && slfl.letterKey !== lk && S.tab === 'slf') { slfl.letterKey = lk; kSnd('flip', .3); }
 }
 document.addEventListener('keydown', e => {
   const t = e.target; if (e.key !== 'Enter' || !t || !t.id) return;
@@ -12023,7 +12035,15 @@ document.addEventListener('keydown', e => {
 });
 /* Zeitanzeige ohne Neuzeichnen */
 setInterval(() => {
-  const M = S.slf; if (!M || S.tab !== 'slf' || M.ph !== 'write' || !M.tl) return;
+  const M = S.slf; if (!M || S.tab !== 'slf') return;
+  const roll = document.getElementById('slf-roll');
+  if (roll) {
+    if (slfRolling(M)) { let l; do l = SLF_LETTERS[Math.floor(Math.random() * SLF_LETTERS.length)]; while (l === roll.textContent); roll.textContent = l; if (++slfl.timer % 3 === 0) sfx('pick'); }
+    else { const k = M.id + ':' + M.rd; if (slfl.rollShown !== k) { slfl.rollShown = k; kSnd('win', .25); } render(); setTimeout(() => { const i = document.getElementById('slf-a-0'); if (i && !i.disabled) i.focus(); }, 60); }
+  }
+}, 90);
+setInterval(() => {
+  const M = S.slf; if (!M || S.tab !== 'slf' || M.ph !== 'write' || !M.tl || slfRolling(M)) return;
   const left = slfLeft(M), a = document.getElementById('slf-tsec'), b = document.getElementById('slf-tbar');
   if (a) a.textContent = Math.ceil(left / 1000); if (b) b.style.width = (left / (M.tl * 10)) + '%';
 }, 250);
