@@ -267,3 +267,11 @@ Raumspiel `slf` (Feld `uno`, `g:'slf'`): Kategorien `cats` (3 bis 8 aus `SLF_CAT
 - Am 31. Dezember und 1. Januar kommt der Silvester-Look: Feuerwerk, goldene Funken und ein Countdown bis Mitternacht, danach „Frohes neues Jahr“.
 - Optionen → Aussehen → „Weihnachten und Silvester“: Vorschau-Knöpfe (nur für dich sichtbar) und für den Spielleiter ein Schalter, um es für alle abzuschalten (`meta/settings.season`).
 - Mit „Bewegung reduzieren“ bleibt die Deko stehen statt zu fallen.
+
+## Schiffe versenken
+
+- Raumspiel mit zwei Modi: **1 gegen 1** (genau 2 Spieler, wie man es kennt) und **Jeder gegen jeden** (3 bis 7 Spieler). Bots spielen mit.
+- Jeder stellt 5 Schiffe (5, 4, 3, 3, 2 Felder) auf ein 10 × 10 Feld, per Tippen oder 🔀 Zufällig. Schiffe dürfen sich nicht berühren. 90 Sekunden Zeit.
+- Reihum schießen, Treffer = nochmal. 30 Sekunden pro Schuss, sonst schießt der Computer.
+- Im Mehrspieler-Modus wählt man selbst, auf wen man schießt. Auf fremden Feldern sieht jeder nur seine eigenen Schüsse, auf dem eigenen Feld alle Treffer.
+- Turnier: jedes versenkte Schiff 2 Punkte, der Sieger 5 extra. Modul-Kopie: build/sv/sv.js.
