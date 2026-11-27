@@ -1922,9 +1922,9 @@ body.is-nye header{box-shadow:inset 0 -3px 0 #ffcf3f}
 .sv-b h3{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0 0 8px;font-size:17px}.sv-b h3 small{color:var(--muted);font-weight:700}
 .sv-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.sv-tabs small{opacity:.8}
 .sv-note{font-size:13px;margin:6px 0 0}
-.sv-grid{display:grid;grid-template-columns:18px repeat(10,1fr);gap:3px;width:100%;max-width:480px;margin:0 auto;padding:8px;border-radius:14px;background:linear-gradient(180deg,#0b2a55,#071a38);box-shadow:inset 0 0 0 1px rgba(120,180,255,.25)}
-.sv-grid>i{display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800;color:rgba(180,210,255,.7)}
-.sv-c{position:relative;aspect-ratio:1;border:0;padding:0;border-radius:4px;background:rgba(90,150,230,.22);font:inherit;color:inherit}
+.sv-grid{display:grid;grid-template-columns:18px repeat(10,1fr);gap:3px;width:100%;max-width:480px;margin:0 auto;padding:8px;border-radius:14px;background:linear-gradient(180deg,#9aa2ab,#878f99);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),0 4px 14px rgba(0,0,0,.35)}
+.sv-grid>i{display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800;color:#20262d}
+.sv-c{position:relative;aspect-ratio:1;border:0;padding:0;border-radius:4px;background:#c3c9d0;box-shadow:inset 0 -2px 0 rgba(0,0,0,.08);font:inherit;color:inherit}
 button.sv-c:not(:disabled){cursor:pointer}
 .sv-tgt.can button.sv-c:not(:disabled):hover{background:rgba(255,207,63,.55);box-shadow:0 0 0 2px #ffcf3f}
 .sv-ship{position:relative;pointer-events:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.55));z-index:1}
@@ -1946,9 +1946,9 @@ button.sv-c:not(:disabled){cursor:pointer}
 .sv-dock{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:10px;width:min(480px,100%);padding:10px;border-radius:14px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
 .sv-dock .lbl{width:100%;text-align:left;margin:0}
 .sv-dock-ship{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 8px;border-radius:10px;background:rgba(63,140,255,.15);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
-.sv-dock-ship svg{width:calc(var(--len) * 30px);height:30px;display:block;pointer-events:none}
+.sv-dock-ship svg{width:calc(var(--w) * 30px);height:calc(var(--h) * 30px);display:block;pointer-events:none}
 .sv-dock-ship small{font-size:11px;color:var(--muted);pointer-events:none}
-.sv-c.miss::after{content:'';position:absolute;inset:38%;border-radius:50%;background:rgba(220,235,255,.75)}
+.sv-c.miss::after{content:'';position:absolute;inset:36%;border-radius:50%;background:#2f5d9e;box-shadow:0 0 0 2px rgba(255,255,255,.6)}
 .sv-c.hit{background:#ff6a2b}.sv-c.hit::after{content:'✕';position:absolute;inset:0;display:grid;place-items:center;font-weight:900;color:#fff;font-size:clamp(10px,2.4vw,18px)}
 .sv-c.hit.sunk{background:#7a1020}
 .sv-c.last{outline:3px solid #ffcf3f;outline-offset:-1px;z-index:1}
@@ -3420,7 +3420,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=116"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=117"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -12066,7 +12066,34 @@ function cnMount() {
    fl:{pid:['3,4,5', …]} (Schiffe als Feld-Listen), rd:{pid:true}, placeAt, sh:{Schütze:{Ziel:[Feld…]}}, turn, at, last:{by, to, c, r},
    sk:{'Ziel_Schiff':Schütze}, ko:[pid…] (ausgeschieden, in Reihenfolge), win, tour, transferred}
    Jeder sieht auf fremden Feldern nur seine eigenen Schüsse. Auf dem eigenen Feld sieht man alle Schüsse, die einen getroffen haben. */
-const SV_N = 10, SV_FLEET = [5, 4, 3, 3, 2], SV_SHIP = ['Schlachtschiff', 'Kreuzer', 'Zerstörer', 'Zerstörer', 'U-Boot'];
+const SV_N = 10;
+/* Die Flotte. Formen als [Zeile, Spalte] in der Grundlage; line = gerades Schiff (Bug zeigt nach rechts) */
+const SV_DEF = [
+  {n:'Kreuzer', t:'line', s:[[0, 0], [0, 1], [0, 2], [0, 3]]},
+  {n:'T-Schiff', t:'T', s:[[0, 0], [0, 1], [0, 2], [1, 1]]},
+  {n:'Blitz', t:'Z', s:[[0, 0], [0, 1], [1, 1], [1, 2]]},
+  {n:'Zerstörer', t:'line', s:[[0, 0], [0, 1], [0, 2]]},
+  {n:'Zerstörer', t:'line', s:[[0, 0], [0, 1], [0, 2]]},
+  {n:'U-Boot', t:'line', s:[[0, 0], [0, 1]]}
+];
+const svNormOff = o => { const r0 = Math.min(...o.map(x => x[0])), c0 = Math.min(...o.map(x => x[1])); return o.map(([r, c]) => [r - r0, c - c0]); };
+const svKey = o => o.map(x => x.join(':')).sort().join('|');
+const svDims = o => [Math.max(...o.map(x => x[0])) + 1, Math.max(...o.map(x => x[1])) + 1];
+/* Drehung im Uhrzeigersinn: (Zeile, Spalte) -> (Spalte, Höhe - 1 - Zeile). Index = Anzahl Vierteldrehungen, doppelte Lagen fallen weg. */
+const svRotOff = o => { const h = svDims(o)[0]; return svNormOff(o.map(([r, c]) => [c, h - 1 - r])); };
+const SV_ROTS = SV_DEF.map(d => { const out = [d.s]; for (let k = 1; k < 4; k++) { const n = svRotOff(out[out.length - 1]); if (out.some(x => svKey(x) === svKey(n))) break; out.push(n); } return out; });
+function svCellsK(i, k, r0, c0) {
+  const out = [];
+  for (const [r, c] of SV_ROTS[i][k]) { const rr = r0 + r, cc = c0 + c; if (rr < 0 || cc < 0 || rr >= SV_N || cc >= SV_N) return null; out.push(rr * SV_N + cc); }
+  return out;
+}
+/* Welche Drehung und wo: {k, r0, c0} oder null */
+function svShape(i, cells) {
+  if (!Array.isArray(cells) || !SV_DEF[i] || cells.length !== SV_DEF[i].s.length) return null;
+  const rc = cells.map(c => [Math.floor(c / SV_N), c % SV_N]), r0 = Math.min(...rc.map(x => x[0])), c0 = Math.min(...rc.map(x => x[1])), key = svKey(rc.map(([r, c]) => [r - r0, c - c0]));
+  const k = SV_ROTS[i].findIndex(o => svKey(o) === key);
+  return k < 0 ? null : {k, r0, c0};
+}
 const SV_PLACE_T = 90000, SV_TURN_T = 30000, SV_COLS = 'ABCDEFGHIJ';
 const svl = {lastKey:'', turnKey:'', endSnd:'', botAt:0};
 const svLbl = c => SV_COLS[c % SV_N] + (Math.floor(c / SV_N) + 1);
@@ -12078,12 +12105,6 @@ function svNb(c, diag) {
   }
   return out;
 }
-function svCells(start, len, hor) {
-  const r = Math.floor(start / SV_N), k = start % SV_N;
-  if (hor ? k + len > SV_N : r + len > SV_N) return null;
-  return Array.from({length:len}, (_, i) => hor ? start + i : start + i * SV_N);
-}
-const svHor = s => s.length < 2 || s[1] - s[0] === 1;
 /* Schiffe dürfen sich nicht überlappen und nicht berühren (auch nicht schräg) */
 function svFits(ships, si, cells) {
   const busy = new Set();
@@ -12091,28 +12112,24 @@ function svFits(ships, si, cells) {
   return cells.every(c => !busy.has(c));
 }
 function svValid(ships) {
-  if (!Array.isArray(ships) || ships.length !== SV_FLEET.length) return false;
-  if (ships.map(s => s.length).sort((a, b) => b - a).join() !== SV_FLEET.join()) return false;
-  for (let i = 0; i < ships.length; i++) {
-    const s = ships[i], c = svCells(s[0], s.length, svHor(s));
-    if (!c || c.join() !== s.join() || !svFits(ships, i, s)) return false;
-  }
+  if (!Array.isArray(ships) || ships.length !== SV_DEF.length) return false;
+  for (let i = 0; i < ships.length; i++) if (!svShape(i, ships[i]) || !svFits(ships, i, ships[i])) return false;
   return true;
+}
+function svRandOne(ships, i) {
+  for (let t = 0; t < 400; t++) {
+    const k = Math.floor(Math.random() * SV_ROTS[i].length), c = svCellsK(i, k, Math.floor(Math.random() * SV_N), Math.floor(Math.random() * SV_N));
+    if (c && svFits(ships, i, c)) return c;
+  }
+  return null;
 }
 function svRandom() {
   for (let t = 0; t < 200; t++) {
-    const ships = []; let ok = true;
-    for (const len of SV_FLEET) {
-      let placed = false;
-      for (let k = 0; k < 300 && !placed; k++) {
-        const hor = Math.random() < .5, c = svCells(Math.floor(Math.random() * SV_N * SV_N), len, hor);
-        if (c && svFits(ships, -1, c)) { ships.push(c); placed = true; }
-      }
-      if (!placed) { ok = false; break; }
-    }
+    const ships = SV_DEF.map(() => null); let ok = true;
+    for (let i = 0; i < SV_DEF.length && ok; i++) { ships[i] = svRandOne(ships, i); ok = !!ships[i]; }
     if (ok) return ships;
   }
-  return [[0, 1, 2, 3, 4], [20, 21, 22, 23], [40, 41, 42], [60, 61, 62], [80, 81]];
+  return [[0, 1, 2, 3], [20, 21, 22, 31], [50, 51, 61, 62], [6, 7, 8], [26, 27, 28], [80, 81]];
 }
 const svEnc = ships => ships.map(s => s.join(','));
 const svDec = a => Array.isArray(a) ? a.map(x => String(x).split(',').map(Number).filter(n => n >= 0 && n < SV_N * SV_N)) : null;
@@ -12241,55 +12258,67 @@ function svTransfer() {
 /* Aufstellen: Entwurf D.svPl {id, ships, sel} */
 /* Aufstellen: Entwurf D.svPl {id, ships:[Felder|null ×5], sel}. Am Anfang liegen alle Schiffe im Hafen und werden aufs Feld gezogen. */
 function svPl(M) {
-  if (!D.svPl || D.svPl.id !== M.id) D.svPl = {id:M.id, ships:SV_FLEET.map(() => null), sel:-1};
+  if (!D.svPl || D.svPl.id !== M.id) D.svPl = {id:M.id, ships:SV_DEF.map(() => null), sel:-1};
   return D.svPl;
 }
 /* Fehlende Schiffe zufällig dazulegen (wenn die Zeit um ist) */
 function svFill(ships) {
-  const out = ships.map(x => x && x.slice());
-  for (let i = 0; i < SV_FLEET.length; i++) {
-    if (out[i]) continue;
-    let ok = false;
-    for (let k = 0; k < 400 && !ok; k++) { const c = svCells(Math.floor(Math.random() * SV_N * SV_N), SV_FLEET[i], Math.random() < .5); if (c && svFits(out, i, c)) { out[i] = c; ok = true; } }
-    if (!ok) return svRandom();
-  }
+  const out = SV_DEF.map((d, i) => ships[i] ? ships[i].slice() : null);
+  for (let i = 0; i < SV_DEF.length; i++) if (!out[i]) { out[i] = svRandOne(out, i); if (!out[i]) return svRandom(); }
   return out;
 }
-/* Schiff so legen, dass das gegriffene Teil (g) auf Feld c liegt */
-function svPlaceAt(P, i, c, g, hor) {
-  const len = SV_FLEET[i], st = hor ? 1 : SV_N, start = c - g * st;
-  if (start < 0 || (hor && Math.floor(start / SV_N) !== Math.floor(c / SV_N))) return null;
-  const cells = svCells(start, len, hor);
-  return cells && cells.includes(c) && svFits(P.ships, i, cells) ? cells : null;
+/* Schiff i in Drehung k so legen, dass sein Teil g auf Feld c liegt */
+function svPlaceAt(P, i, c, g, k) {
+  const o = SV_ROTS[i][k] && SV_ROTS[i][k][g]; if (!o) return null;
+  const cells = svCellsK(i, k, Math.floor(c / SV_N) - o[0], c % SV_N - o[1]);
+  return cells && svFits(P.ships, i, cells) ? cells : null;
 }
-/* Drehen um das angetippte Teil; passt es so nicht, wird es entlang verschoben */
-function svRotate(P, i, g) {
-  const s = P.ships[i]; if (!s) return false;
-  const nh = !svHor(s), piv = s[g] ?? s[0], len = s.length;
-  for (const o of [g, ...Array.from({length:len}, (_, k) => k).filter(k => k !== g)]) { const c = svPlaceAt(P, i, piv, o, nh); if (c) { P.ships[i] = c; return true; } }
+/* Drehen um das angetippte Feld; passt es so nicht, wird es verschoben oder weiter gedreht */
+function svRotate(P, i, piv) {
+  const s = P.ships[i], sh = svShape(i, s); if (!sh) return false;
+  const n = SV_ROTS[i].length; if (n < 2) return false;
+  for (let st = 1; st < n; st++) {
+    const k = (sh.k + st) % n;
+    for (let g = 0; g < SV_ROTS[i][k].length; g++) { const c = svPlaceAt(P, i, piv, g, k); if (c) { P.ships[i] = c; return true; } }
+  }
   return false;
 }
-/* Schiff von oben als Bild (liegt waagerecht, Bug rechts; senkrecht = gedreht, Bug unten) */
-function svShipSVG(len, hor) {
-  const W = len * 100, T = (x, rot) => `<g transform="translate(${x} 50)${rot ? ' rotate(180)' : ''}"><rect x="0" y="-4" width="34" height="8" rx="3" fill="#3c4654"/><circle r="15" fill="#6c7a8c" stroke="#2c3440" stroke-width="3"/><circle r="5" fill="#2c3440"/></g>`;
-  let body;
-  if (len === 2) body = `<path d="M8 50C8 30 40 25 70 25H${W - 70}C${W - 20} 25 ${W - 5} 40 ${W - 5} 50C${W - 5} 60 ${W - 20} 75 ${W - 70} 75H70C40 75 8 70 8 50Z" fill="#3b4656" stroke="#1d242e" stroke-width="4"/>
-      <path d="M30 50H${W - 30}" stroke="#56647a" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 14"/><rect x="${W / 2 - 26}" y="38" width="52" height="24" rx="12" fill="#56647a" stroke="#1d242e" stroke-width="3"/><circle cx="${W / 2}" cy="50" r="5" fill="#9fb3c8"/>`;
-  else {
-    const br = len === 5 ? W * .5 : len === 4 ? W * .52 : W * .46;
-    const tur = len === 5 ? [[W * .18, 1], [W * .7, 0], [W * .84, 0]] : len === 4 ? [[W * .2, 1], [W * .78, 0]] : [[W * .78, 0]];
-    body = `<path d="M10 50C10 26 20 17 42 17H${W - 95}C${W - 40} 17 ${W - 12} 33 ${W - 3} 50C${W - 12} 67 ${W - 40} 83 ${W - 95} 83H42C20 83 10 74 10 50Z" fill="#8392a5" stroke="#2c3440" stroke-width="4"/>
-      <path d="M24 50C24 33 31 27 46 27H${W - 98}C${W - 50} 27 ${W - 27} 38 ${W - 19} 50C${W - 27} 62 ${W - 50} 73 ${W - 98} 73H46C31 73 24 67 24 50Z" fill="#a7b4c4"/>
+/* Schiffe von oben. Gerade Schiffe: Bug rechts. T-Schiff und Blitz aus Feldern zusammengesetzt. */
+function svLineBody(len) {
+  const W = len * 100, T = (x, rot) => `<g transform="translate(${x} 50)${rot ? ' rotate(180)' : ''}"><rect x="0" y="-4" width="34" height="8" rx="3" fill="#232a33"/><circle r="15" fill="#3d4856" stroke="#1b2028" stroke-width="3"/><circle r="5" fill="#1b2028"/></g>`;
+  if (len === 2) return `<path d="M8 50C8 30 40 25 70 25H${W - 70}C${W - 20} 25 ${W - 5} 40 ${W - 5} 50C${W - 5} 60 ${W - 20} 75 ${W - 70} 75H70C40 75 8 70 8 50Z" fill="#26303c" stroke="#11161c" stroke-width="4"/>
+      <path d="M30 50H${W - 30}" stroke="#46546a" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 14"/><rect x="${W / 2 - 26}" y="38" width="52" height="24" rx="12" fill="#46546a" stroke="#11161c" stroke-width="3"/><circle cx="${W / 2}" cy="50" r="5" fill="#9fb3c8"/>`;
+  const br = len === 4 ? W * .52 : W * .46, tur = len === 4 ? [[W * .2, 1], [W * .78, 0]] : [[W * .78, 0]];
+  return `<path d="M10 50C10 26 20 17 42 17H${W - 95}C${W - 40} 17 ${W - 12} 33 ${W - 3} 50C${W - 12} 67 ${W - 40} 83 ${W - 95} 83H42C20 83 10 74 10 50Z" fill="#4a5768" stroke="#1b2028" stroke-width="4"/>
+      <path d="M24 50C24 33 31 27 46 27H${W - 98}C${W - 50} 27 ${W - 27} 38 ${W - 19} 50C${W - 27} 62 ${W - 50} 73 ${W - 98} 73H46C31 73 24 67 24 50Z" fill="#647487"/>
       ${tur.map(([x, f]) => T(x, f)).join('')}
-      <rect x="${br - 34}" y="32" width="68" height="36" rx="7" fill="#d4dce6" stroke="#2c3440" stroke-width="3"/><rect x="${br + 6}" y="38" width="20" height="24" rx="4" fill="#3c4654"/>
-      ${len >= 4 ? `<circle cx="${br - 52}" cy="50" r="9" fill="#2c3440"/>` : `<circle cx="${br - 50}" cy="50" r="8" fill="#2c3440"/>`}`;
-  }
-  return hor ? `<svg viewBox="0 0 ${W} 100" preserveAspectRatio="none" aria-hidden="true">${body}</svg>`
-    : `<svg viewBox="0 0 100 ${W}" preserveAspectRatio="none" aria-hidden="true"><g transform="translate(100 0) rotate(90)">${body}</g></svg>`;
+      <rect x="${br - 34}" y="32" width="68" height="36" rx="7" fill="#e3e9f0" stroke="#1b2028" stroke-width="3"/><rect x="${br + 6}" y="38" width="20" height="24" rx="4" fill="#232a33"/>
+      <circle cx="${br - 52}" cy="50" r="9" fill="#1b2028"/>`;
 }
-const svArea = (c, len = 1, hor = true) => `grid-area:${Math.floor(c / SV_N) + 2}/${c % SV_N + 2}/span ${hor ? 1 : len}/span ${hor ? len : 1}`;
+function svPolyBody(d) {
+  const o = d.s, has = (r, c) => o.some(x => x[0] === r && x[1] === c);
+  const layer = (pad, fill, rx) => o.map(([r, c]) => `<rect x="${c * 100 + pad}" y="${r * 100 + pad}" width="${100 - pad * 2}" height="${100 - pad * 2}" rx="${rx}" fill="${fill}"/>`
+    + (has(r, c + 1) ? `<rect x="${c * 100 + 50}" y="${r * 100 + pad}" width="100" height="${100 - pad * 2}" fill="${fill}"/>` : '')
+    + (has(r + 1, c) ? `<rect x="${c * 100 + pad}" y="${r * 100 + 50}" width="${100 - pad * 2}" height="100" fill="${fill}"/>` : '')).join('');
+  const tur = (x, y, a) => `<g transform="translate(${x} ${y}) rotate(${a})"><rect x="0" y="-4" width="34" height="8" rx="3" fill="#232a33"/><circle r="15" fill="#3d4856" stroke="#1b2028" stroke-width="3"/><circle r="5" fill="#1b2028"/></g>`;
+  const hull = layer(8, '#1b2028', 24) + layer(12, '#4a5768', 20) + layer(26, '#647487', 12);
+  if (d.t === 'T') return hull + tur(50, 50, 180) + tur(250, 50, 0) + tur(150, 150, 90)
+    + `<rect x="116" y="30" width="68" height="40" rx="7" fill="#e3e9f0" stroke="#1b2028" stroke-width="3"/><rect x="140" y="38" width="20" height="24" rx="4" fill="#232a33"/>`;
+  return hull + `<path d="M34 50H150V150H266" fill="none" stroke="#ffcf3f" stroke-width="12" stroke-linejoin="miter" opacity=".85"/>
+      <path d="M168 58L124 110H150L134 146L182 90H156Z" fill="#ffcf3f" stroke="#1b2028" stroke-width="4" stroke-linejoin="round"/>
+      <circle cx="60" cy="50" r="10" fill="#1b2028"/><circle cx="240" cy="150" r="10" fill="#1b2028"/>`;
+}
+function svShipSVG(i, k = 0) {
+  const d = SV_DEF[i], [h0, w0] = svDims(d.s), W = w0 * 100, H = h0 * 100;
+  const body = d.t === 'line' ? svLineBody(d.s.length) : svPolyBody(d);
+  const tr = ['', `translate(${H} 0) rotate(90)`, `translate(${W} ${H}) rotate(180)`, `translate(0 ${W}) rotate(270)`][k];
+  return `<svg viewBox="0 0 ${k % 2 ? H : W} ${k % 2 ? W : H}" preserveAspectRatio="none" aria-hidden="true"><g transform="${tr}">${body}</g></svg>`;
+}
+const svArea = (c, rows = 1, cols = 1) => `grid-area:${Math.floor(c / SV_N) + 2}/${c % SV_N + 2}/span ${rows}/span ${cols}`;
 function svShipsHTML(ships, cls = '', drag = false, sel = -1) {
-  return ships.map((s, i) => s ? `<div class="sv-ship ${cls} ${i === sel ? 'sel' : ''}" style="${svArea(s[0], s.length, svHor(s))}" ${drag ? `data-svdrag="${i}" title="Ziehen zum Verschieben, antippen zum Drehen"` : ''}>${svShipSVG(s.length, svHor(s))}</div>` : '').join('');
+  return ships.map((s, i) => { const sh = s && svShape(i, s); if (!sh) return '';
+    const [rows, cols] = svDims(SV_ROTS[i][sh.k]);
+    return `<div class="sv-ship ${cls} ${i === sel ? 'sel' : ''}" style="${svArea(sh.r0 * SV_N + sh.c0, rows, cols)}" ${drag ? `data-svdrag="${i}" title="Ziehen zum Verschieben, antippen zum Drehen"` : ''}>${svShipSVG(i, sh.k)}</div>`; }).join('');
 }
 const svFxHTML = (cells, sunkSet, lastC) => [...cells].map(c => `<span class="sv-fx ${sunkSet && sunkSet.has(c) ? 'sunk' : ''} ${c === lastC ? 'last' : ''}" style="${svArea(c)}"></span>`).join('');
 /* Ziehen und Ablegen (Maus und Finger) */
@@ -12312,31 +12341,33 @@ function svPreview(cells, ok) {
 document.addEventListener('pointerdown', e => {
   const el = e.target && e.target.closest && e.target.closest('[data-svdrag]'); if (!el || e.button > 0) return;
   const M = S.sv; if (!M || M.status !== 'place' || M.rd[myPid()]) return;
-  const P = svPl(M), i = +el.dataset.svdrag, s = P.ships[i], len = SV_FLEET[i], hor = s ? svHor(s) : true, r = el.querySelector('svg').getBoundingClientRect();
-  const g = Math.max(0, Math.min(len - 1, Math.floor(hor ? (e.clientX - r.left) / r.width * len : (e.clientY - r.top) / r.height * len)));
+  const P = svPl(M), i = +el.dataset.svdrag, s = P.ships[i], sh = s ? svShape(i, s) : null, k = sh ? sh.k : 0, off = SV_ROTS[i][k], [rows, cols] = svDims(off);
+  const r = el.querySelector('svg').getBoundingClientRect();
+  const gr = Math.max(0, Math.min(rows - 1, Math.floor((e.clientY - r.top) / r.height * rows))), gc = Math.max(0, Math.min(cols - 1, Math.floor((e.clientX - r.left) / r.width * cols)));
+  let g = 0, best = 1e9; off.forEach(([a, b], n) => { const dd = (a - gr) ** 2 + (b - gc) ** 2; if (dd < best) { best = dd; g = n; } });
   e.preventDefault();
-  Object.assign(svDrag, {on:true, id:e.pointerId, i, g, hor, len, x0:e.clientX, y0:e.clientY, moved:false, ghost:null, from:s ? 'board' : 'dock', cells:null});
+  Object.assign(svDrag, {on:true, id:e.pointerId, i, g, k, rows, cols, piv:sh ? (sh.r0 + off[g][0]) * SV_N + sh.c0 + off[g][1] : -1, x0:e.clientX, y0:e.clientY, moved:false, ghost:null, from:s ? 'board' : 'dock', cells:null});
 });
 window.addEventListener('pointermove', e => {
   if (!svDrag.on || e.pointerId !== svDrag.id) return;
   if (!svDrag.moved && Math.hypot(e.clientX - svDrag.x0, e.clientY - svDrag.y0) < 7) return;
   e.preventDefault();
   const G = svGridGeo(); if (!G) return;
-  const step = G.cs + G.gap, L = svDrag.len * G.cs + (svDrag.len - 1) * G.gap;
+  const step = G.cs + G.gap, o = SV_ROTS[svDrag.i][svDrag.k][svDrag.g];
   if (!svDrag.moved) {
     svDrag.moved = true;
     const gh = document.createElement('div'); gh.id = 'sv-ghost'; gh.className = 'sv-ship';
-    gh.style.width = (svDrag.hor ? L : G.cs) + 'px'; gh.style.height = (svDrag.hor ? G.cs : L) + 'px';
-    gh.innerHTML = svShipSVG(svDrag.len, svDrag.hor); document.body.appendChild(gh); svDrag.ghost = gh;
+    gh.style.width = (svDrag.cols * step - G.gap) + 'px'; gh.style.height = (svDrag.rows * step - G.gap) + 'px';
+    gh.innerHTML = svShipSVG(svDrag.i, svDrag.k); document.body.appendChild(gh); svDrag.ghost = gh;
     const src = document.querySelector(`[data-svdrag="${svDrag.i}"]`); if (src) src.classList.add('dragging');
   }
-  const off = svDrag.g * step + G.cs / 2;
-  svDrag.ghost.style.left = (svDrag.hor ? e.clientX - off : e.clientX - G.cs / 2) + 'px';
-  svDrag.ghost.style.top = (svDrag.hor ? e.clientY - G.cs / 2 : e.clientY - off) + 'px';
+  svDrag.ghost.style.left = (e.clientX - o[1] * step - G.cs / 2) + 'px';
+  svDrag.ghost.style.top = (e.clientY - o[0] * step - G.cs / 2) + 'px';
   const M = S.sv, c = svCellAt(e.clientX, e.clientY);
   if (!M || c < 0) { svDrag.cells = null; svPreview(null); return; }
-  const P = svPl(M), ok = svPlaceAt(P, svDrag.i, c, svDrag.g, svDrag.hor);
-  const st = svDrag.hor ? 1 : SV_N, raw = Array.from({length:svDrag.len}, (_, k) => c + (k - svDrag.g) * st).filter(x => x >= 0 && x < SV_N * SV_N && (!svDrag.hor || Math.floor(x / SV_N) === Math.floor(c / SV_N)));
+  const P = svPl(M), ok = svPlaceAt(P, svDrag.i, c, svDrag.g, svDrag.k);
+  const r0 = Math.floor(c / SV_N) - o[0], c0 = c % SV_N - o[1];
+  const raw = SV_ROTS[svDrag.i][svDrag.k].map(([a, b]) => [r0 + a, c0 + b]).filter(([a, b]) => a >= 0 && b >= 0 && a < SV_N && b < SV_N).map(([a, b]) => a * SV_N + b);
   svDrag.cells = ok; svPreview(ok || raw, !!ok);
 }, {passive:false});
 function svDragEnd(e, cancel) {
@@ -12346,7 +12377,7 @@ function svDragEnd(e, cancel) {
   const P = svPl(M), i = svDrag.i;
   if (!svDrag.moved) {
     if (cancel) return;
-    if (svDrag.from === 'board') { if (svRotate(P, i, svDrag.g)) kSnd('flip'); else toast('Gedreht passt das Schiff hier nicht hin. Schieb es erst woanders hin.'); P.sel = -1; }
+    if (svDrag.from === 'board') { if (svRotate(P, i, svDrag.piv)) kSnd('flip'); else toast('Gedreht passt das Schiff hier nicht hin. Schieb es erst woanders hin.'); P.sel = -1; }
     else P.sel = P.sel === i ? -1 : i;
     setTimeout(render, 0); return;
   }
@@ -12365,18 +12396,18 @@ const svActions = {
   'sv-setup': () => { if (!ctl()) return; if (S.sv && S.sv.status === 'finished' && !S.sv.transferred) svTransfer(); svBack(S.sv ? S.sv.mode : svModeOf()); },
   'sv-end': () => confirmBox('Schiffe versenken beenden?', 'Die Runde wird abgebrochen. Es gibt keine Punkte.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => { if (!ctl()) return; svBack(S.sv ? S.sv.mode : svModeOf()); }}]),
   'sv-rand': () => { const M = S.sv; if (!M || M.status !== 'place') return; const P = svPl(M); P.ships = svRandom(); P.sel = -1; kSnd('shuffle'); render(); },
-  'sv-clear': () => { const M = S.sv; if (!M || M.status !== 'place') return; const P = svPl(M); P.ships = SV_FLEET.map(() => null); P.sel = -1; kSnd('swishSoft'); render(); },
+  'sv-clear': () => { const M = S.sv; if (!M || M.status !== 'place') return; const P = svPl(M); P.ships = SV_DEF.map(() => null); P.sel = -1; kSnd('swishSoft'); render(); },
   'sv-pc': b => {
     const M = S.sv; if (!M || M.status !== 'place' || M.rd[myPid()]) return;
     const P = svPl(M), c = +b.dataset.i; if (P.sel < 0) { if (P.ships.some(x => !x)) toast('Zieh ein Schiff aus dem Hafen aufs Feld (oder tippe es an und dann das Feld).'); return; }
-    const cells = svPlaceAt(P, P.sel, c, 0, true) || svPlaceAt(P, P.sel, c, 0, false);
+    let cells = null; for (let k = 0; k < SV_ROTS[P.sel].length && !cells; k++) cells = svPlaceAt(P, P.sel, c, 0, k);
     if (!cells) { toast('Da passt es nicht hin. Schiffe dürfen sich nicht berühren, auch nicht schräg.'); return; }
     P.ships[P.sel] = cells; P.sel = -1; kSnd('land'); render();
   },
   'sv-ready': () => {
     const M = S.sv, me = myPid(); if (!M || M.status !== 'place' || !M.players.includes(me)) return;
     const P = svPl(M), auto = svl.autoRd === M.id;
-    if (P.ships.some(x => !x)) { if (!auto) { toast('Stell erst alle 5 Schiffe aufs Feld.'); return; } P.ships = svFill(P.ships); }
+    if (P.ships.some(x => !x)) { if (!auto) { toast(`Stell erst alle ${SV_DEF.length} Schiffe aufs Feld.`); return; } P.ships = svFill(P.ships); }
     if (!svValid(P.ships)) { if (!auto) { toast('So geht die Aufstellung nicht. Tippe auf 🔀 Zufällig.'); return; } P.ships = svRandom(); }
     const enc = svEnc(P.ships), base = lobby().uno; P.sel = -1;
     sfx('chosen'); svPut({...base, fl:{...base.fl, [me]:enc}, rd:{...(base.rd || {}), [me]:true}}, {['uno.fl.' + me]:enc, ['uno.rd.' + me]:true});
@@ -12387,7 +12418,7 @@ const svActions = {
 };
 function svRulesHTML(open) {
   return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird Schiffe versenken gespielt</summary><ul>
-    <li><b>Flotte aufstellen:</b> Jeder hat 5 Schiffe (5, 4, 3, 3 und 2 Felder lang) auf einem 10 × 10 Feld. Schiffe dürfen sich nicht berühren, auch nicht schräg.</li>
+    <li><b>Flotte aufstellen:</b> Jeder hat 6 Schiffe: Kreuzer (4 Felder), T-Schiff (4, wie ein T), Blitz (4, im Zickzack), 2 Zerstörer (3) und ein U-Boot (2). Du ziehst sie selbst aufs 10 × 10 Feld. Schiffe dürfen sich nicht berühren, auch nicht schräg.</li>
     <li><b>Schießen:</b> Wer dran ist, tippt ein Feld beim Gegner an. Wasser = der Nächste ist dran. <b>Treffer = du darfst nochmal.</b></li>
     <li><b>Versenkt:</b> Ein Schiff ist versenkt, wenn alle seine Felder getroffen sind. Wer keine Schiffe mehr hat, ist raus.</li>
     <li><b>1 gegen 1:</b> ganz normal, zwei Spieler. Bots können mitspielen.</li>
@@ -12434,7 +12465,7 @@ function svPlaceHTML(M) {
   return `<section class="section tsec sv-wrap"><div class="card sv-place"><h2>⚓ Stell deine Flotte auf</h2>${svTimeHTML(M)}
     <p class="muted">Zieh deine Schiffe aus dem Hafen aufs Feld, genau dahin, wo du sie haben willst. Schiffe auf dem Feld kannst du verschieben, <b>antippen dreht sie</b>. Ziehst du eins vom Feld runter, kommt es zurück in den Hafen.</p>
     ${svGridHTML('sv-own sv-edit', c => `<button class="sv-c" type="button" data-act="sv-pc" data-i="${c}" aria-label="${svLbl(c)}"></button>`, svShipsHTML(P.ships, '', true, P.sel))}
-    <div class="sv-dock"><span class="lbl">⚓ Hafen</span>${P.ships.some(x => !x) ? P.ships.map((x, i) => x ? '' : `<div class="sv-dock-ship ${P.sel === i ? 'sel' : ''}" data-svdrag="${i}" style="--len:${SV_FLEET[i]}" title="Aufs Feld ziehen">${svShipSVG(SV_FLEET[i], true)}<small>${SV_SHIP[i]} · ${SV_FLEET[i]}</small></div>`).join('') : '<p class="muted">Alle Schiffe stehen auf dem Feld. 👍</p>'}</div>
+    <div class="sv-dock"><span class="lbl">⚓ Hafen</span>${P.ships.some(x => !x) ? P.ships.map((x, i) => x ? '' : `<div class="sv-dock-ship ${P.sel === i ? 'sel' : ''}" data-svdrag="${i}" style="--w:${svDims(SV_DEF[i].s)[1]};--h:${svDims(SV_DEF[i].s)[0]}" title="Aufs Feld ziehen">${svShipSVG(i, 0)}<small>${SV_DEF[i].n} · ${SV_DEF[i].s.length}</small></div>`).join('') : '<p class="muted">Alle Schiffe stehen auf dem Feld. 👍</p>'}</div>
     <div class="chips"><button class="btn btn-sm" type="button" data-act="sv-rand">🔀 Zufällig</button>${P.ships.some(Boolean) ? '<button class="btn btn-sm btn-ghost" type="button" data-act="sv-clear">↩ Alle zurück in den Hafen</button>' : ''}
       <button class="btn btn-gold" type="button" data-act="sv-ready" ${P.ships.some(x => !x) ? 'disabled' : ''}>✅ Fertig</button></div>
     ${status}${ctl() ? `<button class="btn btn-sm btn-ghost" type="button" data-act="sv-end">Beenden</button>` : ''}</div>${svRulesHTML(false)}</section>`;
