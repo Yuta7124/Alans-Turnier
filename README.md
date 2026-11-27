@@ -255,7 +255,7 @@ In der Turnier-Lobby (`lobby().tour`) zählen Punkte direkt aufs Turnier-Konto (
 
 ## Codenames
 
-Raumspiel `cn` (Feld `uno`, `g:'cn'`): 2 Teams in `t0`/`t1` (Firestore erlaubt keine Listen in Listen), Spione in `spy`, 25 Wörter aus `CN_WORDS`, Farben in `key` (0 Rot, 1 Blau, 2 neutral, 3 Attentäter), aufgedeckt in `rv`. Der Spion gibt `hint` (ein Wort + Zahl, 0 = beliebig), das Team rät bis Zahl + 1. Genau 2 gegen 2 (eigene Gruppe „Zu viert“ in der Spielauswahl), weitere Raum-Mitglieder schauen zu. Bots spielen mit: Bot-Spione geben Oberbegriffe aus `CN_TAGS` als Hinweis, Bot-Rater verstehen diese Oberbegriffe und raten sonst mit Gespür (`cnLogic`, Host). Highscore: Siegerteam 3, Verlierer 1. Turnier: gefundene Wörter des Teams + 5 für den Sieg.
+- Team gegen Team ab 4 Spielern: Rot und Blau, je ein Spion 🕵️, alle anderen im Team raten. Jedes Team braucht mindestens 2 Leute, bis 8 pro Team. Bots raten nur, wenn im Team kein Mensch rät.
 
 ## Stadt, Land, Fluss
 
@@ -270,7 +270,7 @@ Raumspiel `slf` (Feld `uno`, `g:'slf'`): Kategorien `cats` (3 bis 8 aus `SLF_CAT
 
 ## Schiffe versenken
 
-- Steht zweimal in der Spielauswahl: bei „Nur zu zweit · 1 gegen 1“ (genau 2 Spieler) und bei „Für mehrere Spieler“ als **Jeder gegen jeden** (3 bis 7). In der Turnier-Lobby gibt es nur den Mehrspieler-Modus. Bots spielen mit.
+- Steht zweimal in der Spielauswahl: bei „Nur zu zweit · 1 gegen 1“ (genau 2 Spieler) und bei „Für mehrere Spieler“ als **Schiffe versenken Krieg** (jeder gegen jeden, 3 bis 7). In der Turnier-Lobby gibt es nur den Mehrspieler-Modus. Bots spielen mit.
 - Jeder zieht seine 6 Schiffe (Kreuzer 4, T-Schiff 4 in T-Form, Blitz 4 im Zickzack, 2 Zerstörer 3, U-Boot 2; von oben gezeichnet) aus dem Hafen selbst aufs 12 × 12 Feld: verschieben per Ziehen, drehen per Antippen, vom Feld ziehen = zurück in den Hafen. 🔀 Zufällig gibt es als Hilfe. Schiffe dürfen sich nicht berühren. 90 Sekunden Zeit, danach werden fehlende Schiffe zufällig dazugelegt.
 - Spielbrett in hellem Grau, 12 × 12 Felder (A–L, 1–12).
 - Power-ups: jeder normale Schuss ins Wasser = 1 ⭐. 📡 Radar (10 ⭐, 3 × 3 absuchen, danach noch schießen), 💣 Bombe (16 ⭐, 3 × 3 sprengen), ✈️ Flugschiff (20 ⭐, ganze Spalte oder Reihe). Kosten werden abgezogen, der Rest bleibt. Bots nutzen alle drei Power-ups selbst (Radar zum Suchen, Bombe auf Spuren, Flugschiff über volle Linien) und schießen danach gezielt auf Radar-Funde.
