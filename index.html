@@ -1952,6 +1952,29 @@ button.sv-c:not(:disabled){cursor:pointer}
 .sv-c.hit{background:#ff6a2b}.sv-c.hit::after{content:'✕';position:absolute;inset:0;display:grid;place-items:center;font-weight:900;color:#fff;font-size:clamp(10px,2.4vw,18px)}
 .sv-c.hit.sunk{background:#7a1020}
 .sv-c.last{outline:3px solid #ffcf3f;outline-offset:-1px;z-index:1}
+.sv-c.pend{background:#c3c9d0!important;outline:0!important}.sv-c.pend::after,.sv-c.pend::before{display:none!important}.sv-fx.pend{visibility:hidden}
+.sv-wave{grid-area:2/2/-1/-1;position:relative;pointer-events:none;border-radius:6px;background:repeating-linear-gradient(120deg,rgba(255,255,255,0) 0 26px,rgba(255,255,255,.16) 26px 30px,rgba(255,255,255,0) 30px 60px);background-size:240px 120px;mix-blend-mode:screen}
+.svx{position:fixed;pointer-events:none;z-index:9998}
+.svx-ring{border-radius:50%;border:3px solid rgba(255,255,255,.95);box-shadow:0 0 10px rgba(80,160,255,.9),inset 0 0 6px rgba(80,160,255,.7)}
+.svx-drop{border-radius:50%;background:#d6eeff;box-shadow:0 0 4px #4aa3ff}
+.svx-core{border-radius:50%;background:radial-gradient(circle,#fff7cf 0 14%,#ffc83d 32%,#ff5a1f 55%,rgba(255,60,20,0) 72%)}
+.svx-flash{border-radius:50%;background:radial-gradient(circle,rgba(255,240,180,.9),rgba(255,120,40,.4) 40%,rgba(255,80,20,0) 70%)}
+.svx-spark{border-radius:2px;background:#ffd04a;box-shadow:0 0 6px #ff8a2b,0 0 2px #fff}
+.svx-smoke{border-radius:50%;background:radial-gradient(circle,rgba(70,70,75,.75),rgba(70,70,75,0) 70%)}
+.svx-shell{border-radius:50%;background:radial-gradient(circle at 35% 35%,#8d97a3,#2a3038 70%);box-shadow:0 4px 6px rgba(0,0,0,.5)}
+.svx-cross{border-radius:50%;border:3px solid #ff4d5e;box-shadow:inset 0 0 0 2px rgba(255,255,255,.6)}
+.svx-cross::before,.svx-cross::after{content:'';position:absolute;background:#ff4d5e;left:50%;top:-10%;width:3px;height:120%;margin-left:-1.5px}.svx-cross::after{transform:rotate(90deg)}
+.svx-emoji{display:grid;place-items:center;font-size:var(--fs,40px);line-height:1;filter:drop-shadow(0 8px 6px rgba(0,0,0,.55))}
+.svx-emoji i{font-style:normal;display:block}
+.svx-radar{border-radius:50%;background:conic-gradient(from 0deg,rgba(79,240,143,0) 0 70%,rgba(79,240,143,.15) 80%,rgba(79,240,143,.85) 99%,rgba(79,240,143,0) 100%);box-shadow:inset 0 0 0 2px rgba(79,240,143,.8),0 0 18px rgba(79,240,143,.5)}
+.svx-ping{border-radius:50%;border:3px solid #2fe07a;box-shadow:0 0 10px #2fe07a}
+.svx-float{display:grid;place-items:center;font-weight:900;color:#ffcf3f;text-shadow:0 2px 4px #000,0 0 8px rgba(0,0,0,.6);font-size:20px;white-space:nowrap}
+.svx-conf{border-radius:2px}
+.svx-banner{left:0;right:0;top:34%;display:flex;justify-content:center;z-index:9999}
+.svx-banner span{display:inline-block;padding:14px 26px;border-radius:18px;font-family:var(--display);font-weight:900;font-size:clamp(24px,6vw,44px);color:#fff;background:rgba(10,14,30,.82);box-shadow:0 0 0 3px #39d6f2,0 10px 40px rgba(0,0,0,.6);text-shadow:0 2px 0 rgba(0,0,0,.4)}
+.svx-banner.hot span{box-shadow:0 0 0 3px #ff5a1f,0 0 40px rgba(255,90,31,.6)}
+.svx-banner.win span{box-shadow:0 0 0 3px #ffcf3f,0 0 50px rgba(255,207,63,.7);color:#ffcf3f}
+
 .sv-c.aim{background:#ffb52e!important;box-shadow:0 0 0 2px #fff inset}
 .sv-c.rad-y{background:#7fe0a0;box-shadow:inset 0 0 0 3px #1f9a55}.sv-c.rad-y::after{content:'';position:absolute;inset:30%;border-radius:50%;background:#1f9a55}
 .sv-c.rad-n{background:#a9b0b8}.sv-c.rad-n::after{content:'';position:absolute;left:35%;right:35%;top:47%;height:6%;background:#6b737c;border-radius:2px}
@@ -3430,7 +3453,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=118"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=119"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -12107,7 +12130,7 @@ function svShape(i, cells) {
 const SV_PLACE_T = 90000, SV_TURN_T = 30000, SV_COLS = 'ABCDEFGHIJKL';
 /* Power-ups: Punkte gibt es für jeden normalen Schuss ins Wasser */
 const SV_PW = {radar:{n:'Radar', e:'📡', cost:10, d:'Zeigt dir in einem 3 × 3 Bereich, wo ein Schiff liegt. Danach darfst du noch schießen.'}, bomb:{n:'Bombe', e:'💣', cost:16, d:'Sprengt ein ganzes 3 × 3 Feld auf einmal.'}, air:{n:'Flugschiff', e:'✈️', cost:20, d:'Fliegt eine ganze Spalte oder Reihe ab und trifft alles auf dem Weg.'}};
-const svl = {lastKey:'', turnKey:'', endSnd:'', botAt:0};
+const svl = {lastKey:'', turnKey:'', endSnd:'', botAt:0, seenKey:'', anim:null, pend:null, st:'', ptSeen:-1};
 const svLbl = c => SV_COLS[c % SV_N] + (Math.floor(c / SV_N) + 1);
 function svNb(c, diag) {
   const r = Math.floor(c / SV_N), k = c % SV_N, out = [];
@@ -12228,6 +12251,9 @@ function svBotMove(M, by) {
   const plan = t => {
     const mine = new Set(svMy(M, by, t)), all = svIncoming(M, t), sunk = svSunk(M, t, all), ban = new Set(mine);
     (M.fl[t] || []).forEach((s, i) => { if (sunk[i] && s.some(c => mine.has(c))) s.forEach(c => svNb(c, true).forEach(n => ban.add(n))); });
+    const rad = ((M.rad[by] || {})[t] || []).filter(c => !mine.has(c)), radY = rad.filter(c => svShipOf(M, t, c) >= 0);
+    rad.forEach(c => { if (svShipOf(M, t, c) < 0) ban.add(c); });
+    if (radY.length) return {t, c:radY[Math.floor(Math.random() * radY.length)], p:3};
     const open = [...mine].filter(c => { const i = svShipOf(M, t, c); return i >= 0 && !sunk[i]; });
     if (open.length) {
       let cand = [];
@@ -12242,8 +12268,26 @@ function svBotMove(M, by) {
     if (!free.length) for (let c = 0; c < SV_N * SV_N; c++) if (!mine.has(c)) free.push(c);
     return free.length ? {t, c:free[Math.floor(Math.random() * free.length)], p:1} : null;
   };
-  const plans = opp.map(plan).filter(Boolean), hot = plans.filter(x => x.p === 2);
-  const pool = hot.length ? hot : plans; return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
+  const plans = opp.map(plan).filter(Boolean), top = Math.max(0, ...plans.map(x => x.p));
+  const pool = plans.filter(x => x.p === top); return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
+}
+/* Bots entscheiden selbst, ob sie ein Power-up nehmen: Radar zum Suchen, Bombe auf eine Spur, Flugschiff über eine volle Linie */
+function svBotPlan(M, by) {
+  const mv = svBotMove(M, by); if (!mv) return null;
+  const pt = M.pt[by] || 0, t = mv.t, mine = new Set(svMy(M, by, t)), rad = new Set((M.rad[by] || {})[t] || []), known = mv.p >= 2;
+  const fresh = cells => cells.filter(c => !mine.has(c)).length;
+  if (pt >= SV_PW.air.cost && Math.random() < (known ? .6 : .4)) {
+    let best = null;
+    for (const dir of ['row', 'col']) { const n = fresh(svLineOf(mv.c, dir)); if (!best || n > best.n) best = {dir, n}; }
+    if (best.n >= 7) return {k:'air', t, c:mv.c, dir:best.dir};
+  }
+  if (pt >= SV_PW.bomb.cost && Math.random() < (known ? .7 : .3) && fresh(svBox(mv.c)) >= 5) return {k:'bomb', t, c:mv.c};
+  if (pt >= SV_PW.radar.cost && !known && Math.random() < .5) {
+    let best = null;
+    for (let n = 0; n < 30; n++) { const c = Math.floor(Math.random() * SV_N * SV_N), v = svBox(c).filter(x => !mine.has(x) && !rad.has(x)).length; if (!best || v > best.v) best = {c, v}; }
+    if (best && best.v >= 6) return {k:'radar', t, c:best.c};
+  }
+  return {k:'shot', t, c:mv.c};
 }
 function svLogic() {
   const M = S.sv; if (!M || M.status === 'finished' || !ctl() || roomPaused()) return;
@@ -12258,12 +12302,17 @@ function svLogic() {
   if (now < svl.botAt) return;
   const p = M.turn, gone = !isBot(p) && !(L && L.members[p]);
   if (isBot(p) || gone || now > M.at + SV_TURN_T) {
-    if (isBot(p) && now < M.at + 1300) return;
+    if (isBot(p) && now < M.at + (M.last && M.last.by === p && M.last.k !== 'shot' ? 2600 : 1500)) return;
     if (gone && now < M.at + 2500) return;
     svl.botAt = now + 700;
-    const mv = svBotMove(M, p); if (!mv) return;
-    if (isBot(p) && (M.pt[p] || 0) >= SV_PW.bomb.cost && Math.random() < .5 && svFire(M, p, mv.t, svBox(mv.c), 'bomb', mv.c)) return;
-    svShoot(M, p, mv.t, mv.c);
+    if (isBot(p)) {
+      const pl = svBotPlan(M, p); if (!pl) return;
+      if (pl.k === 'radar' && svRadar(M, p, pl.t, pl.c)) return;
+      if (pl.k === 'bomb' && svFire(M, p, pl.t, svBox(pl.c), 'bomb', pl.c)) return;
+      if (pl.k === 'air' && svFire(M, p, pl.t, svLineOf(pl.c, pl.dir), 'air', pl.c)) return;
+      svShoot(M, p, pl.t, pl.c); return;
+    }
+    const mv = svBotMove(M, p); if (mv) svShoot(M, p, mv.t, mv.c);
   }
 }
 /* Der Modus kommt aus der Spielauswahl (1 gegen 1 oder Mehrspieler) und steht im Raum als uno {g:'sv', status:'setup', mode}. Im Turnier nur Mehrspieler. */
@@ -12359,7 +12408,8 @@ function svShipsHTML(ships, cls = '', drag = false, sel = -1) {
     const [rows, cols] = svDims(SV_ROTS[i][sh.k]);
     return `<div class="sv-ship ${cls} ${i === sel ? 'sel' : ''}" style="${svArea(sh.r0 * SV_N + sh.c0, rows, cols)}" ${drag ? `data-svdrag="${i}" title="Ziehen zum Verschieben, antippen zum Drehen"` : ''}>${svShipSVG(i, sh.k)}</div>`; }).join('');
 }
-const svFxHTML = (cells, sunkSet, lastC) => [...cells].map(c => `<span class="sv-fx ${sunkSet && sunkSet.has(c) ? 'sunk' : ''} ${c === lastC ? 'last' : ''}" style="${svArea(c)}"></span>`).join('');
+const svPend = (sel, c) => svl.pend && svl.pend.sel === sel && svl.pend.cells.has(c) && Date.now() < svl.pend.until ? ' pend' : '';
+const svFxHTML = (cells, sunkSet, lastC, sel = '') => [...cells].map(c => `<span class="sv-fx ${sunkSet && sunkSet.has(c) ? 'sunk' : ''} ${c === lastC ? 'last' : ''}${svPend(sel, c)}" data-i="${c}" style="${svArea(c)}"></span>`).join('');
 /* Ziehen und Ablegen (Maus und Finger) */
 const svDrag = {on:false};
 function svGridGeo() {
@@ -12409,6 +12459,7 @@ window.addEventListener('pointermove', e => {
   const raw = SV_ROTS[svDrag.i][svDrag.k].map(([a, b]) => [r0 + a, c0 + b]).filter(([a, b]) => a >= 0 && b >= 0 && a < SV_N && b < SV_N).map(([a, b]) => a * SV_N + b);
   svDrag.cells = ok; svPreview(ok || raw, !!ok);
 }, {passive:false});
+function svPop(i) { const e = document.querySelector(`.sv-edit [data-svdrag="${i}"]`); if (e) e.animate([{transform:'scale(1.25)', filter:'brightness(1.4)'}, {transform:'scale(.92)'}, {transform:'scale(1)', filter:'brightness(1)'}], {duration:380, easing:'ease-out'}); }
 function svDragEnd(e, cancel) {
   if (!svDrag.on || e.pointerId !== svDrag.id) return;
   svDrag.on = false; if (svDrag.ghost) svDrag.ghost.remove(); svPreview(null);
@@ -12424,7 +12475,7 @@ function svDragEnd(e, cancel) {
   if (c < 0) { if (svDrag.from === 'board' && !cancel) { P.ships[i] = null; kSnd('swishSoft'); } }
   else if (svDrag.cells) { P.ships[i] = svDrag.cells; kSnd('land'); }
   else toast('Da passt es nicht hin. Schiffe dürfen sich nicht berühren, auch nicht schräg.');
-  P.sel = -1; setTimeout(render, 0);
+  P.sel = -1; setTimeout(render, 0); setTimeout(() => svPop(i), 0);
 }
 window.addEventListener('pointerup', e => svDragEnd(e, false));
 window.addEventListener('pointercancel', e => svDragEnd(e, true));
@@ -12434,7 +12485,8 @@ const svActions = {
   'sv-again': () => svStart(true),
   'sv-setup': () => { if (!ctl()) return; if (S.sv && S.sv.status === 'finished' && !S.sv.transferred) svTransfer(); svBack(S.sv ? S.sv.mode : svModeOf()); },
   'sv-end': () => confirmBox('Schiffe versenken beenden?', 'Die Runde wird abgebrochen. Es gibt keine Punkte.', [{label:'Weiterspielen', cls:'btn-ghost'}, {label:'Beenden', cls:'btn-gold', fn:() => { if (!ctl()) return; svBack(S.sv ? S.sv.mode : svModeOf()); }}]),
-  'sv-rand': () => { const M = S.sv; if (!M || M.status !== 'place') return; const P = svPl(M); P.ships = svRandom(); P.sel = -1; kSnd('shuffle'); render(); },
+  'sv-rand': () => { const M = S.sv; if (!M || M.status !== 'place') return; const P = svPl(M); P.ships = svRandom(); P.sel = -1; kSnd('shuffle'); render();
+    document.querySelectorAll('.sv-edit .sv-ship').forEach((e, n) => e.animate([{transform:'translateY(-120px) scale(1.3)', opacity:0}, {transform:'translateY(6px) scale(1)', opacity:1, offset:.75}, {transform:'translateY(0)'}], {duration:520, delay:n * 70, easing:'ease-out', fill:'backwards'})); },
   'sv-clear': () => { const M = S.sv; if (!M || M.status !== 'place') return; const P = svPl(M); P.ships = SV_DEF.map(() => null); P.sel = -1; kSnd('swishSoft'); render(); },
   'sv-pc': b => {
     const M = S.sv; if (!M || M.status !== 'place' || M.rd[myPid()]) return;
@@ -12503,6 +12555,7 @@ function svSetupHTML() {
   </div>${svRulesHTML(false)}</section>`;
 }
 function svGridHTML(cls, cell, over = '') {
+  over = '<div class="sv-wave" aria-hidden="true"></div>' + over;
   let h = `<div class="sv-grid ${cls}"><i style="grid-area:1/1"></i>${[...SV_COLS].map((c, k) => `<i style="grid-area:1/${k + 2}">${c}</i>`).join('')}`;
   for (let r = 0; r < SV_N; r++) { h += `<i style="grid-area:${r + 2}/1">${r + 1}</i>`; for (let k = 0; k < SV_N; k++) h += cell(r * SV_N + k).replace('class="sv-c', `style="${svArea(r * SV_N + k)}" class="sv-c`); }
   return h + over + '</div>';
@@ -12559,6 +12612,15 @@ function svPlayHTML(M) {
   const opp = M.players.filter(p => p !== me);
   if (!opp.includes(D.svTgt) || (!fin && M.ko.includes(D.svTgt) && opp.some(p => !M.ko.includes(p)))) D.svTgt = opp.find(p => !M.ko.includes(p)) || opp[0];
   const tgt = D.svTgt, myTurn = !fin && M.turn === me && !paused && !M.ko.includes(me);
+  const known = svl.seenGame === M.id; svl.seenGame = M.id;
+  if (M.last) { // neues Ereignis: Felder bis zum Einschlag der Animation verdecken
+    const k = svEvKey(M);
+    if (k !== svl.seenKey) {
+      const first = !known, L = M.last; svl.seenKey = k;
+      const sel = L.by === me && tgt === L.to ? 'tgt' : L.to === me ? 'own' : '';
+      if (!first && sel) { const cells = L.k === 'shot' ? [L.c] : L.cs; svl.pend = {sel, cells:new Set(cells), until:Date.now() + 4000}; svl.anim = {key:k, sel, last:L, started:false}; }
+    }
+  }
   if (!myTurn || !SV_PW[D.svPw]) { D.svPw = ''; D.svAim = -1; }
   const aim = D.svPw && D.svAim >= 0 ? new Set(D.svPw === 'air' ? svLineOf(D.svAim, D.svDir) : svBox(D.svAim)) : null;
   const top = fin ? '' : `<div class="sv-top ${myTurn ? 'mine' : ''}"><span class="sv-turn">${M.turn === me ? '🎯 Du bist dran!' : `${avatar(ghost(M.turn), 24)} <b>${esc(ghost(M.turn).name)}</b> ist dran`}</span>${svTimeHTML(M)}
@@ -12569,16 +12631,16 @@ function svPlayHTML(M) {
     const shots = new Set(svMy(M, me, tgt)), all = svIncoming(M, tgt), sunk = svSunk(M, tgt, all), can = myTurn && !M.ko.includes(tgt), rad = new Set((M.rad[me] || {})[tgt] || []);
     const lastMine = M.last && M.last.by === me && M.last.to === tgt ? M.last : null, zone = new Set(lastMine && lastMine.cs.length ? lastMine.cs : []);
     const target = svGridHTML(`sv-tgt ${can ? 'can' : ''} ${D.svPw ? 'aiming' : ''}`, c => {
-      const si = svShipOf(M, tgt, c), shot = shots.has(c), cls = shot ? (si >= 0 ? (sunk[si] ? 'hit sunk' : 'hit') : 'miss') : rad.has(c) ? (si >= 0 ? 'rad-y' : 'rad-n') : '';
+      const si = svShipOf(M, tgt, c), shot = shots.has(c), cls = (shot ? (si >= 0 ? (sunk[si] ? 'hit sunk' : 'hit') : 'miss') : rad.has(c) ? (si >= 0 ? 'rad-y' : 'rad-n') : '') + svPend('tgt', c);
       const last = (lastMine && !lastMine.cs.length && lastMine.c === c) || zone.has(c) ? ' last' : '';
       return `<button class="sv-c ${cls}${last}${aim && aim.has(c) ? ' aim' : ''}" type="button" data-act="sv-shot" data-t="${esc(tgt)}" data-i="${c}" ${can && (!shot || D.svPw) ? '' : 'disabled'} aria-label="${svLbl(c)}"></button>`;
     }, fin ? svShipsHTML(M.fl[tgt] || [], 'rv') + svFxHTML([...shots].filter(c => svShipOf(M, tgt, c) >= 0), null, -1) : '');
     const inc = svIncoming(M, me), mySunk = svSunk(M, me, inc);
     const own = svGridHTML('sv-own sv-mine', c => {
       const si = svShipOf(M, me, c), shot = inc.has(c), last = M.last && M.last.to === me && (M.last.cs.length ? M.last.cs.includes(c) : M.last.c === c) ? ' last' : '';
-      return `<span class="sv-c ${shot && si < 0 ? 'miss' : ''}${last}"></span>`;
+      return `<span class="sv-c ${shot && si < 0 ? 'miss' : ''}${last}${svPend('own', c)}" data-i="${c}"></span>`;
     }, (M.fl[me] || []).map((x, i) => svShipsHTML((M.fl[me] || []).map((y, j) => j === i ? y : null), mySunk[i] ? 'sunk' : '')).join('')
-      + svFxHTML([...inc].filter(c => svShipOf(M, me, c) >= 0), new Set([...inc].filter(c => { const k = svShipOf(M, me, c); return k >= 0 && mySunk[k]; })), M.last && M.last.to === me ? M.last.c : -1));
+      + svFxHTML([...inc].filter(c => svShipOf(M, me, c) >= 0), new Set([...inc].filter(c => { const k = svShipOf(M, me, c); return k >= 0 && mySunk[k]; })), M.last && M.last.to === me ? M.last.c : -1, 'own'));
     boards = `<div class="sv-boards"><div class="sv-b sv-b-tgt"><h3>🎯 ${M.mode === 'multi' ? 'Ziel' : 'Gegner'}: ${esc(ghost(tgt).name)} <small>${M.ko.includes(tgt) ? '☠️ raus' : `🚢 ${svLeft(M, tgt)} übrig`}</small></h3>${tabs}${fin || M.ko.includes(me) ? '' : svPowerHTML(M, me, myTurn)}${target}
         ${M.mode === 'multi' && !fin ? '<p class="muted sv-note">Hier siehst du nur deine eigenen Schüsse.</p>' : ''}</div>
       <div class="sv-b sv-b-own"><h3>⚓ Deine Flotte <small>${M.ko.includes(me) ? '☠️ versenkt' : `🚢 ${svLeft(M, me)} übrig`}</small></h3>${own}</div></div>`;
@@ -12593,12 +12655,123 @@ function svPlayHTML(M) {
   return `<section class="section tsec sv-wrap">${top}${win}${svLastHTML(M, me)}${boards}${fin ? lobbyHsHTML() : svRulesHTML(false)}</section>`;
 }
 function viewSv() { const M = S.sv; return !M ? svSetupHTML() : M.status === 'place' ? svPlaceHTML(M) : svPlayHTML(M); }
+/* ---------- Animationen (per JavaScript, laufen also auch mit „Bewegung reduzieren“) ---------- */
+const svEvKey = M => M.last ? `${M.id}:${M.last.by}:${M.last.to}:${M.last.c}:${M.last.k}:${M.at}` : '';
+function svX(cls, x, y, w, h, html = '') {
+  const e = document.createElement('div'); e.className = 'svx ' + cls;
+  Object.assign(e.style, {left:(x - w / 2) + 'px', top:(y - h / 2) + 'px', width:w + 'px', height:h + 'px'}); e.innerHTML = html;
+  document.body.appendChild(e); return e;
+}
+function svA(e, kf, o) { const a = e.animate(kf, {fill:'forwards', easing:'ease-out', ...o}); a.onfinish = () => e.remove(); a.oncancel = () => e.remove(); return a; }
+function svRect(sel, c) { const e = document.querySelector(`.sv-${sel === 'tgt' ? 'tgt' : 'mine'} .sv-c[data-i="${c}"]`); if (!e) return null; const r = e.getBoundingClientRect(); return {x:r.left + r.width / 2, y:r.top + r.height / 2, w:r.width}; }
+function svUnpend(sel, c) {
+  if (svl.pend && svl.pend.sel === sel) svl.pend.cells.delete(c);
+  document.querySelectorAll(`.sv-${sel === 'tgt' ? 'tgt' : 'mine'} [data-i="${c}"]`).forEach(e => e.classList.remove('pend'));
+}
+function svSplash(r, d = 0) {
+  for (let i = 0; i < 3; i++) svA(svX('svx-ring', r.x, r.y, r.w, r.w), [{transform:'scale(.2)', opacity:.95}, {transform:'scale(1.9)', opacity:0}], {duration:750, delay:d + i * 130});
+  for (let i = 0; i < 6; i++) {
+    const a = Math.PI * (1 + i / 5), dx = Math.cos(a) * r.w * .9, dy = Math.sin(a) * r.w * 1.2;
+    svA(svX('svx-drop', r.x, r.y, r.w * .16, r.w * .16), [{transform:'translate(0,0)', opacity:1}, {transform:`translate(${dx * .6}px,${dy}px)`, opacity:1, offset:.5}, {transform:`translate(${dx}px,${r.w * .3}px)`, opacity:0}], {duration:650, delay:d, easing:'ease-in-out'});
+  }
+}
+function svBoom(r, d = 0, big = false) {
+  const s = big ? 2.4 : 1.6;
+  svA(svX('svx-core', r.x, r.y, r.w * s, r.w * s), [{transform:'scale(.1)', opacity:1}, {transform:'scale(1)', opacity:1, offset:.35}, {transform:'scale(1.25)', opacity:0}], {duration:big ? 900 : 650, delay:d});
+  svA(svX('svx-smoke', r.x, r.y, r.w * s, r.w * s), [{transform:'scale(.4) translateY(0)', opacity:0}, {transform:'scale(1)', opacity:.75, offset:.3}, {transform:'scale(1.7) translateY(-20%)', opacity:0}], {duration:1300, delay:d + 120});
+  const n = big ? 16 : 9;
+  for (let i = 0; i < n; i++) {
+    const a = i / n * Math.PI * 2 + Math.random() * .4, dist = r.w * (big ? 1.6 + Math.random() * 1.4 : 1 + Math.random() * .9);
+    svA(svX('svx-spark', r.x, r.y, r.w * .13, r.w * .13), [{transform:'translate(0,0) scale(1)', opacity:1}, {transform:`translate(${Math.cos(a) * dist}px,${Math.sin(a) * dist}px) scale(.3)`, opacity:0}], {duration:600 + Math.random() * 300, delay:d, easing:'cubic-bezier(.2,.7,.3,1)'});
+  }
+}
+function svShake(sel, px = 6, d = 0) {
+  const e = document.querySelector(sel === 'tgt' ? '.sv-tgt' : '.sv-mine'); if (!e) return;
+  e.animate([0, 1, -1, .8, -.6, .3, 0].map((v, i) => ({transform:`translate(${v * px}px,${(i % 2 ? -1 : 1) * v * px * .6}px)`})), {duration:450, delay:d});
+}
+function svFloat(r, txt, d = 0) {
+  svA(svX('svx-float', r.x, r.y - r.w * .6, 120, 30, txt), [{transform:'translateY(0) scale(.6)', opacity:0}, {transform:'translateY(-14px) scale(1.15)', opacity:1, offset:.25}, {transform:'translateY(-60px) scale(1)', opacity:0}], {duration:1400, delay:d});
+}
+function svBanner(html, tone = '', d = 0) {
+  document.querySelectorAll('.svx-banner').forEach(e => e.remove());
+  const e = document.createElement('div'); e.className = 'svx svx-banner ' + tone; e.innerHTML = `<span>${H(html)}</span>`; document.body.appendChild(e);
+  svA(e, [{opacity:0}, {opacity:1, offset:.12}, {opacity:1, offset:.8}, {opacity:0}], {duration:1700, delay:d});
+  e.firstChild.animate([{transform:'scale(.3) rotate(-6deg)'}, {transform:'scale(1.12) rotate(2deg)', offset:.18}, {transform:'scale(1)', offset:.3}, {transform:'scale(1)', offset:.8}, {transform:'scale(1.3)'}], {duration:1700, delay:d, fill:'forwards'});
+}
+function svConfetti() {
+  const cols = ['#ffcf3f', '#ff4f9a', '#39d6f2', '#4ff08f', '#c493ff', '#ff9f5a'];
+  for (let i = 0; i < 70; i++) {
+    const x = Math.random() * innerWidth, dx = (Math.random() - .5) * 200, e = svX('svx-conf', x, -20, 9, 14); e.style.background = cols[i % cols.length];
+    svA(e, [{transform:'translate(0,0) rotate(0)'}, {transform:`translate(${dx}px,${innerHeight + 60}px) rotate(${720 * (Math.random() < .5 ? 1 : -1)}deg)`}], {duration:2200 + Math.random() * 1600, delay:Math.random() * 700, easing:'cubic-bezier(.3,.4,.6,1)'});
+  }
+}
+/* Ein Ereignis abspielen: Granate fällt, Bombe fällt, Flugschiff fliegt, Radar dreht sich */
+function svPlayAnim(A, M) {
+  const L = A.last, sel = A.sel, ship = c => svShipOf(M, L.to, c) >= 0, me = myPid();
+  const cells = L.k === 'shot' ? [L.c] : L.cs, sunkBig = L.r === 's' || L.sn > 0;
+  const impact = (c, d, big) => setTimeout(() => { svUnpend(sel, c); const r = svRect(sel, c); if (!r) return; if (ship(c)) svBoom(r, 0, big); else svSplash(r); }, d);
+  const after = d => setTimeout(() => {
+    if (sunkBig) { svShake(sel, 10); svBanner(L.by === me ? '💥 Versenkt!' : '💥 Dein Schiff ist versenkt!', 'hot'); }
+    else if (L.n && L.k !== 'radar') svShake(sel, 5);
+    if (L.pp && L.by === me) { const r = svRect(sel, L.c); if (r) svFloat(r, `+${L.pp} ⭐`); }
+  }, d);
+  const c0 = svRect(sel, L.c);
+  if (!c0) { cells.forEach(c => svUnpend(sel, c)); return; }
+  if (L.k === 'shot') {
+    svA(svX('svx-shell', c0.x, c0.y, c0.w * .5, c0.w * .5), [{transform:`translateY(-${c0.w * 4}px) scale(1.8)`, opacity:0}, {opacity:1, offset:.2}, {transform:'translateY(0) scale(.7)', opacity:1}], {duration:380, easing:'ease-in'});
+    svA(svX('svx-cross', c0.x, c0.y, c0.w * 1.4, c0.w * 1.4), [{transform:'scale(1.6) rotate(-45deg)', opacity:0}, {transform:'scale(1) rotate(0)', opacity:1, offset:.6}, {transform:'scale(.8)', opacity:0}], {duration:420});
+    impact(L.c, 380, sunkBig); after(420);
+  } else if (L.k === 'bomb') {
+    const b = svX('svx-emoji', c0.x, c0.y, c0.w * 1.3, c0.w * 1.3, '💣'); b.style.setProperty('--fs', c0.w * 1.1 + 'px');
+    svA(b, [{transform:`translateY(-${c0.w * 6}px) rotate(-30deg) scale(1.6)`}, {transform:'translateY(0) rotate(20deg) scale(.9)'}], {duration:650, easing:'cubic-bezier(.5,0,1,1)'});
+    setTimeout(() => svA(svX('svx-flash', c0.x, c0.y, c0.w * 4, c0.w * 4), [{transform:'scale(.2)', opacity:.9}, {transform:'scale(1)', opacity:0}], {duration:500}), 650);
+    cells.forEach(c => { const dist = Math.abs(Math.floor(c / SV_N) - Math.floor(L.c / SV_N)) + Math.abs(c % SV_N - L.c % SV_N); impact(c, 650 + dist * 70, sunkBig); });
+    setTimeout(() => svShake(sel, 9), 650); after(900);
+  } else if (L.k === 'air') {
+    const row = cells.every(c => Math.floor(c / SV_N) === Math.floor(L.c / SV_N)), line = svLineOf(L.c, row ? 'row' : 'col');
+    const a = svRect(sel, line[0]), b = svRect(sel, line[line.length - 1]); if (!a || !b) { cells.forEach(c => svUnpend(sel, c)); return; }
+    const T = 1500, ext = a.w * 2, dx = row ? 1 : 0, dy = row ? 0 : 1, sx = a.x - dx * ext, sy = a.y - dy * ext, ex = b.x + dx * ext, ey = b.y + dy * ext;
+    const pl = svX('svx-emoji svx-plane', sx, sy, a.w * 1.8, a.w * 1.8, `<i style="transform:rotate(${row ? 45 : 135}deg)">✈️</i>`); pl.style.setProperty('--fs', a.w * 1.5 + 'px');
+    svA(pl, [{transform:'translate(0,0) scale(.8)'}, {transform:`translate(${(ex - sx) / 2}px,${(ey - sy) / 2}px) scale(1.25)`}, {transform:`translate(${ex - sx}px,${ey - sy}px) scale(.8)`}], {duration:T, easing:'linear'});
+    for (let i = 0; i < 10; i++) { const f = i / 10; setTimeout(() => { const x = sx + (ex - sx) * f, y = sy + (ey - sy) * f; svA(svX('svx-smoke', x, y, a.w, a.w), [{transform:'scale(.3)', opacity:.6}, {transform:'scale(1.4)', opacity:0}], {duration:900}); }, T * f); }
+    const span = (ex - sx) + (ey - sy);
+    cells.forEach(c => { const r = svRect(sel, c); if (!r) return; const f = ((r.x - sx) + (r.y - sy)) / span; impact(c, T * f, sunkBig); });
+    after(T);
+  } else if (L.k === 'radar') {
+    const rs = cells.map(c => svRect(sel, c)).filter(Boolean); if (!rs.length) return;
+    const xs = rs.map(r => r.x), ys = rs.map(r => r.y), w = rs[0].w;
+    const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2, size = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) + w * 1.6;
+    svA(svX('svx-radar', cx, cy, size, size), [{transform:'rotate(0) scale(.6)', opacity:0}, {transform:'rotate(260deg) scale(1)', opacity:1, offset:.2}, {transform:'rotate(900deg) scale(1)', opacity:1, offset:.85}, {transform:'rotate(1080deg) scale(1.1)', opacity:0}], {duration:1500, easing:'linear'});
+    for (let i = 0; i < 3; i++) svA(svX('svx-ping', cx, cy, size, size), [{transform:'scale(.1)', opacity:.9}, {transform:'scale(1)', opacity:0}], {duration:900, delay:i * 400});
+    setTimeout(() => cells.forEach(c => {
+      svUnpend(sel, c);
+      if (ship(c) && L.by === me) { const r = svRect(sel, c); if (r) for (let i = 0; i < 2; i++) svA(svX('svx-ping', r.x, r.y, r.w * 1.6, r.w * 1.6), [{transform:'scale(.2)', opacity:1}, {transform:'scale(1)', opacity:0}], {duration:700, delay:i * 250}); }
+    }), 1300);
+  }
+}
+/* Dauernd: Wasser glitzert, Knöpfe leuchten. Die Phase hängt an der Uhr, damit beim Neuzeichnen nichts springt. */
+function svLoop(e, kf, dur, o = {}) { const a = e.animate(kf, {duration:dur, iterations:Infinity, ...o}); try { a.currentTime = performance.now() % (dur * (o.direction === 'alternate' ? 2 : 1)); } catch (x) {} return a; }
+function svAmbient(M) {
+  document.querySelectorAll('.sv-wave').forEach(e => svLoop(e, [{backgroundPosition:'0px 0px'}, {backgroundPosition:'240px 120px'}], 7000));
+  document.querySelectorAll('.sv-top.mine').forEach(e => svLoop(e, [{boxShadow:'0 0 0 2px #39d6f2, 0 0 8px rgba(57,214,242,.3)'}, {boxShadow:'0 0 0 3px #39d6f2, 0 0 26px rgba(57,214,242,.75)'}], 1100, {direction:'alternate', easing:'ease-in-out'}));
+  document.querySelectorAll('.sv-pwb:not(:disabled):not(.on)').forEach(e => svLoop(e, [{boxShadow:'0 0 0 1px rgba(255,207,63,.4)'}, {boxShadow:'0 0 0 2px #ffcf3f, 0 0 16px rgba(255,207,63,.7)'}], 900, {direction:'alternate', easing:'ease-in-out'}));
+  document.querySelectorAll('.sv-c.aim').forEach(e => svLoop(e, [{filter:'brightness(1)'}, {filter:'brightness(1.35)'}], 500, {direction:'alternate'}));
+  document.querySelectorAll('.sv-c.rad-y').forEach(e => svLoop(e, [{boxShadow:'inset 0 0 0 3px #1f9a55'}, {boxShadow:'inset 0 0 0 3px #1f9a55, 0 0 12px #4ff08f'}], 800, {direction:'alternate'}));
+  document.querySelectorAll('.sv-ship.sunk').forEach(e => svLoop(e, [{transform:'rotate(0deg)'}, {transform:'rotate(1.5deg) translateY(1px)'}], 1800, {direction:'alternate', easing:'ease-in-out'}));
+  const me = myPid(), pt = M.pt ? M.pt[me] || 0 : 0, b = document.querySelector('.sv-pts b');
+  if (b && svl.ptSeen >= 0 && pt !== svl.ptSeen) b.animate([{transform:'scale(1)'}, {transform:'scale(1.8)', color:'#fff'}, {transform:'scale(1)'}], {duration:500});
+  svl.ptSeen = pt;
+}
 function svMount() {
   const M = S.sv; if (!M || S.tab !== 'sv') return;
   const me = myPid();
+  try { svAmbient(M); } catch (e) {}
+  if (svl.anim && !svl.anim.started && M.status !== 'place') { svl.anim.started = true; try { svPlayAnim(svl.anim, M); } catch (e) { svl.pend = null; } }
+  if (svl.st !== M.id + M.status) { const was = svl.st; svl.st = M.id + M.status; if (was === M.id + 'place' && M.status === 'running') svBanner('⚔️ Los geht\'s!', 'go'); }
+  if (M.last && M.last.ko && svl.koSeen !== svEvKey(M) && svl.lastKey) { svl.koSeen = svEvKey(M); setTimeout(() => svBanner(M.last.to === me ? '☠️ Deine Flotte ist versenkt!' : `☠️ ${esc(ghost(M.last.to).name)} ist raus!`, 'hot'), 1600); }
   if (M.last) { const k = M.id + ':' + M.last.by + ':' + M.last.to + ':' + M.last.c + ':' + M.last.k + ':' + M.at; if (k !== svl.lastKey) { const first = !svl.lastKey; svl.lastKey = k; if (!first && (M.last.by === me || M.last.to === me)) kSnd(M.last.k === 'radar' ? 'call' : M.last.k !== 'shot' ? 'draw4' : M.last.r === 'm' ? 'land' : M.last.r === 's' ? 'wild' : 'draw2'); } }
-  if (M.status === 'running') { const k = M.id + ':' + M.turn + ':' + M.at; if (M.turn === me && svl.turnKey !== k && (!M.last || M.last.by !== me)) kSnd('turn', .5); svl.turnKey = k; }
-  if (M.status === 'finished' && svl.endSnd !== M.id) { svl.endSnd = M.id; if (M.players.includes(me)) kSnd(M.win === me ? 'win' : 'lose', .4); }
+  if (M.status === 'running') { const k = M.id + ':' + M.turn + ':' + M.at; if (M.turn === me && svl.turnKey !== k && (!M.last || M.last.by !== me)) { kSnd('turn', .5); if (svl.turnKey) setTimeout(() => { if (S.sv && S.sv.turn === me && S.sv.status === 'running') svBanner('🎯 Du bist dran!', 'go'); }, M.last && M.last.k !== 'shot' ? 1700 : 700); } svl.turnKey = k; }
+  if (M.status === 'finished' && svl.endSnd !== M.id) { const fresh = !!svl.lastKey; svl.endSnd = M.id; if (M.players.includes(me)) kSnd(M.win === me ? 'win' : 'lose', .4); if (fresh) setTimeout(() => { svBanner(M.win === me ? '🏆 Du gewinnst!' : `🏆 ${esc(ghost(M.win).name)} gewinnt!`, 'win'); svConfetti(); }, 1500); }
 }
 setInterval(() => {
   const M = S.sv; if (!M || M.status === 'finished') return;
