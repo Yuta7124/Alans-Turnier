@@ -1829,15 +1829,15 @@ body.ah-locked .ah-lockhint{display:none}
 .cn-card{position:relative;display:grid;place-items:center;min-height:74px;padding:8px 4px;hyphens:auto;-webkit-hyphens:auto;border:0;border-radius:12px;background:#efe4c8;color:#2a2112;font:inherit;font-weight:900;font-size:clamp(11px,1.5vw,17px);text-transform:uppercase;letter-spacing:.02em;cursor:pointer;box-shadow:0 4px 0 #b9a77c;overflow-wrap:anywhere;transition:transform .12s}
 .cn-card:not(:disabled):hover{transform:translateY(-2px)}
 .cn-card:disabled{cursor:default}
-.cn-card.sp.k0{box-shadow:inset 0 0 0 4px #ff4d5e,0 4px 0 #b9a77c}
-.cn-card.sp.k1{box-shadow:inset 0 0 0 4px #3f8cff,0 4px 0 #b9a77c}
-.cn-card.sp.k3{background:#3a3a3a;color:#fff}
-.cn-card.rv{color:#fff;box-shadow:none}
-.cn-card.rv.k0{background:#d9303f}
-.cn-card.rv.k1{background:#2a6fd6}
-.cn-card.rv.k2{background:#8d8164}
-.cn-card.rv.k3{background:#111}
-.cn-card.rv span{opacity:.75}
+.cn-card.sp,.cn-card.rv{text-shadow:0 1px 2px rgba(0,0,0,.45)}
+.cn-card.k0{background:#d9303f;color:#fff;box-shadow:0 4px 0 #8f1c27}
+.cn-card.k1{background:#2a6fd6;color:#fff;box-shadow:0 4px 0 #163f80}
+.cn-card.k3{background:#111;color:#fff;box-shadow:0 4px 0 #000,inset 0 0 0 2px #555}
+.cn-card.sp.k2{text-shadow:none}
+.cn-card.rv.k2{background:#8d8164;color:#fff;box-shadow:0 4px 0 #5c5440}
+.cn-card.rv{box-shadow:none}
+.cn-card.done{opacity:.5}
+.cn-card.done span{text-decoration:line-through}
 .cn-card i{position:absolute;font-style:normal;font-size:28px}
 .cn-card small{position:absolute;bottom:3px;font-size:10px;font-weight:700;text-transform:none;opacity:.9}
 .cn-card.last{outline:3px solid #ffcf3f;outline-offset:2px}
@@ -11891,7 +11891,7 @@ function cnSetupHTML() {
 function cnBoardHTML(M, me) {
   const myT = cnTeamOf(M, me), spyView = M.spy.includes(me) || M.status === 'finished', canPick = M.status === 'running' && !!M.hint && myT === M.turn && M.spy[M.turn] !== me && !roomPaused();
   return `<div class="cn-grid">${M.words.map((w, i) => { const k = M.key[i], r = !!M.rv[i];
-    return `<button lang="de" class="cn-card ${r ? 'rv k' + k : spyView ? 'sp k' + k : ''} ${M.last && M.last.i === i ? 'last' : ''}" type="button" data-act="cn-pick" data-i="${i}" ${canPick && !r ? '' : 'disabled'}>
+    return `<button lang="de" class="cn-card ${r ? 'rv k' + k + (spyView && M.status === 'running' ? ' done' : '') : spyView ? 'sp k' + k : ''} ${M.last && M.last.i === i ? 'last' : ''}" type="button" data-act="cn-pick" data-i="${i}" ${canPick && !r ? '' : 'disabled'}>
       <span>${esc(w)}</span>${r && k === 3 ? '<i aria-hidden="true">💀</i>' : ''}${r && M.last && M.last.i === i ? `<small>${esc(ghost(M.last.by).name)}</small>` : ''}</button>`; }).join('')}</div>`;
 }
 function cnPlayHTML(M) {
