@@ -256,6 +256,7 @@ In der Turnier-Lobby (`lobby().tour`) zählen Punkte direkt aufs Turnier-Konto (
 ## Codenames
 
 - Team gegen Team ab 4 Spielern: Rot und Blau, je mindestens ein Spion 🕵️ (der Host kann auch mehrere Spione pro Team einstellen, z. B. bei 8 Leuten 2 Spione und 2 Rater pro Team; jeder Spion darf den Hinweis geben), alle anderen im Team raten. Gespeichert als s0/s1. Jedes Team braucht mindestens 2 Leute, bis 8 pro Team. Bots raten nur, wenn im Team kein Mensch rät.
+- 286 Wörter in 26 Oberbegriffen (zuletzt 60 neue dazu), damit sich die Runden mehr abwechseln.
 
 ## Stadt, Land, Fluss
 
@@ -272,7 +273,8 @@ Raumspiel `slf` (Feld `uno`, `g:'slf'`): Kategorien `cats` (3 bis 8 aus `SLF_CAT
 
 - Steht zweimal in der Spielauswahl: bei „Nur zu zweit · 1 gegen 1“ (genau 2 Spieler) und bei „Für mehrere Spieler“ als **Schiffe versenken Krieg** (jeder gegen jeden, 3 bis 7). In der Turnier-Lobby gibt es nur den Mehrspieler-Modus. Bots spielen mit.
 - Jeder zieht seine 6 Schiffe (Kreuzer 4, T-Schiff 4 in T-Form, Blitz 4 im Zickzack, 2 Zerstörer 3, U-Boot 2; von oben gezeichnet) aus dem Hafen selbst aufs 12 × 12 Feld: verschieben per Ziehen, drehen per Antippen, vom Feld ziehen = zurück in den Hafen. 🔀 Zufällig gibt es als Hilfe. Schiffe dürfen sich nicht berühren. 90 Sekunden Zeit, danach werden fehlende Schiffe zufällig dazugelegt.
-- Spielbrett in hellem Grau, 12 × 12 Felder (A–L, 1–12).
+- Spielbrett 12 × 12 (A–L, 1–12). Gegner-Feld hellgrau, eigenes Feld mit grünem Rahmen.
+- Ansicht: links die Spielerliste (wer dran ist, Schiffe übrig, im Krieg-Modus Ziel antippen), rechts ein großes Brett. Wer dran ist, sieht das Feld des Gegners; sonst wechselt die Ansicht auf die eigene Flotte (läuft eine Animation, wartet der Wechsel kurz). Per Hand umschaltbar. Punkte und Power-ups stehen in einer Reihe unter dem Brett.
 - Power-ups: jeder normale Schuss ins Wasser = 1 ⭐. 📡 Radar (10 ⭐, 3 × 3 absuchen, danach noch schießen), 💣 Bombe (16 ⭐, 3 × 3 sprengen), ✈️ Flugschiff (20 ⭐, ganze Spalte oder Reihe). Kosten werden abgezogen, der Rest bleibt. Bots nutzen alle drei Power-ups selbst (Radar zum Suchen, Bombe auf Spuren, Flugschiff über volle Linien) und schießen danach gezielt auf Radar-Funde.
 - Animationen (per JavaScript, laufen auch mit „Bewegung reduzieren“): fallende Granate mit Fadenkreuz, Wasserspritzer, Explosionen mit Funken und Rauch, Bombe mit Druckwelle, Flugschiff fliegt über die Linie, Radar-Schwenk, wackelndes Brett, Banner (Los geht's, Du bist dran, Versenkt, Sieger mit Konfetti), +1 ⭐ fliegt hoch, Wasser glitzert, Schiffe springen beim Aufstellen ein.
 - Reihum schießen, Treffer = nochmal. 30 Sekunden pro Schuss, sonst schießt der Computer.

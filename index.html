@@ -1918,7 +1918,23 @@ body.is-nye header{box-shadow:inset 0 -3px 0 #ffcf3f}
 .sv-bar i.low{background:#ff4d5e}
 .sv-last{text-align:center;margin:0 auto 10px;max-width:720px;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.05);font-size:16px}
 .sv-last.h,.sv-last.a{background:rgba(255,120,40,.18)}.sv-last.s{background:rgba(255,60,60,.25);font-weight:700}.sv-last.me{box-shadow:inset 0 0 0 2px #ff4d5e}
-.sv-boards{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:start}
+.sv-play{display:grid;grid-template-columns:240px minmax(0,1fr);gap:16px;align-items:start}
+.sv-side{padding:12px;position:sticky;top:80px}.sv-side h3{margin:0 0 8px;font-size:16px}
+.sv-side ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.sv-side li>div{box-sizing:border-box;display:flex;align-items:center;gap:8px;width:100%;padding:7px 9px;border-radius:12px;background:rgba(255,255,255,.05);cursor:default}
+.sv-side .sv-pick{cursor:pointer}.sv-side .sv-pick:hover{background:rgba(255,255,255,.1)}
+.sv-side li.svs-turn>*{box-shadow:inset 0 0 0 2px #39d6f2;background:rgba(57,214,242,.12)}
+.sv-side li.svs-sel>*{box-shadow:inset 0 0 0 2px #ffcf3f;background:rgba(255,207,63,.14)}
+.sv-side li.svs-ko{opacity:.5}.sv-side li.svs-me b{color:#4ff08f}
+.sv-sn{display:flex;flex-direction:column;min-width:0;line-height:1.2}.sv-sn b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sv-sn small{color:var(--muted)}.sv-sn em{font-style:normal;font-size:12px;color:#39d6f2}
+.sv-sl{margin-left:auto;font-weight:800;white-space:nowrap}
+.sv-main{min-width:0;display:flex;flex-direction:column;align-items:center;gap:10px}
+.sv-head{width:100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}.sv-head h3{margin:0;font-size:18px}.sv-head h3 small{color:var(--muted);font-weight:700}
+.sv-watchout{color:#39d6f2;font-size:14px;font-weight:700}
+.sv-switch{display:flex;gap:6px}
+.sv-main .sv-grid{max-width:min(820px,calc(100vh - 320px));min-width:min(100%,300px)}
+.sv-pw-row{justify-content:center;width:100%;margin:2px 0 0;padding:8px;border-radius:14px;background:rgba(255,255,255,.04)}
+.sv-own{background:linear-gradient(180deg,#45a565,#2f7f4a)!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3),0 4px 14px rgba(0,0,0,.35)!important}.sv-own>i{color:#effff3!important}
 .sv-b h3{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0 0 8px;font-size:17px}.sv-b h3 small{color:var(--muted);font-weight:700}
 .sv-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.sv-tabs small{opacity:.8}
 .sv-note{font-size:13px;margin:6px 0 0}
@@ -1953,7 +1969,7 @@ button.sv-c:not(:disabled){cursor:pointer}
 .sv-c.hit.sunk{background:#7a1020}
 .sv-c.last{outline:3px solid #ffcf3f;outline-offset:-1px;z-index:1}
 .sv-c.pend{background:#c3c9d0!important;outline:0!important}.sv-c.pend::after,.sv-c.pend::before{display:none!important}.sv-fx.pend{visibility:hidden}
-.sv-wave{grid-area:2/2/-1/-1;position:relative;pointer-events:none;border-radius:6px;background:repeating-linear-gradient(120deg,rgba(255,255,255,0) 0 26px,rgba(255,255,255,.16) 26px 30px,rgba(255,255,255,0) 30px 60px);background-size:240px 120px;mix-blend-mode:screen}
+.sv-wave{grid-area:2/2/span 12/span 12;position:relative;pointer-events:none;border-radius:6px;background:repeating-linear-gradient(120deg,rgba(255,255,255,0) 0 26px,rgba(255,255,255,.16) 26px 30px,rgba(255,255,255,0) 30px 60px);background-size:240px 120px;mix-blend-mode:screen}
 .svx{position:fixed;pointer-events:none;z-index:9998}
 .svx-ring{border-radius:50%;border:3px solid rgba(255,255,255,.95);box-shadow:0 0 10px rgba(80,160,255,.9),inset 0 0 6px rgba(80,160,255,.7)}
 .svx-drop{border-radius:50%;background:#d6eeff;box-shadow:0 0 4px #4aa3ff}
@@ -1986,7 +2002,6 @@ button.sv-c:not(:disabled){cursor:pointer}
 .sv-plus{color:#ffcf3f;font-weight:900}
 .sv-last.r{background:rgba(79,240,143,.14)}
 .sv-own .sv-c{cursor:default}
-.sv-mine{max-width:360px}
 .sv-edit{max-width:440px}.sv-edit .sv-c{cursor:pointer}
 .sv-place{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
 .sv-place .sv-timer{width:min(360px,100%)}
@@ -1999,7 +2014,7 @@ button.sv-c:not(:disabled){cursor:pointer}
 .sv-rank li{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.04);counter-increment:r}
 .sv-rank li::before{content:counter(r) '.';font-weight:900;width:22px}.sv-rank li:first-child{background:rgba(255,207,63,.18)}.sv-rank li.me b{color:#ffcf3f}
 .sv-rank li span{margin-left:auto;font-size:13px;color:var(--muted)}
-@media (max-width:820px){.sv-boards{grid-template-columns:1fr}.sv-mine{max-width:300px}}
+@media (max-width:820px){.sv-play{grid-template-columns:1fr}.sv-side{position:static}.sv-side ul{flex-direction:row;flex-wrap:wrap}.sv-side li{flex:1 1 140px}.sv-main .sv-grid{max-width:100%}}
 @media (max-width:520px){.sv-grid{gap:2px;padding:6px;grid-template-columns:14px repeat(12,1fr)}.sv-grid>i{font-size:9px}}
 .tour-rulecard{position:relative;text-align:center;padding:28px 24px;margin-bottom:18px;border:2px solid #ffcf3f;background:radial-gradient(80% 120% at 50% 0%,rgba(255,207,63,.22),rgba(13,22,64,.9) 70%);box-shadow:0 0 30px rgba(255,207,63,.25)}
 .tour-rulecard-ic{display:block;font-size:54px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 0 14px rgba(255,207,63,.6))}
@@ -3453,7 +3468,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=121"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=122"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -11867,32 +11882,32 @@ setInterval(() => {
    gu (Treffer in diesem Zug), last:{i, by}, win (-1/0/1), why ('all'|'killer'), tour, transferred} */
 /* Wörter nach Oberbegriffen: Damit geben Bot-Spione Hinweise (z. B. „TIER 2“) und Bot-Rater verstehen sie. Die Wortliste ist die Summe aller Begriffe. */
 const CN_TAGS = {
-  Tier:'Bär Ente Fisch Fuchs Hahn Hund Katze Löwe Maus Pferd Schlange Spinne Tiger Vogel Wal Wurm Adler Frosch Hai Igel Kuh Rabe Schwan Taube Wolf Zebra Ziege Dino Drache Nest',
-  Essen:'Apfel Kuchen Käse Honig Nuss Orange Pizza Waffel Zucker Salz Birne Kaffee Tee Bier Eis',
-  Natur:'Baum Blatt Berg Wald Gras Sand Strand Insel Meer Welle Vulkan Quelle Feld Tanne Palme Rose Erde Garten Zelt',
-  Wetter:'Blitz Sturm Regen Schnee Wolke Sonne Eis Himmel Luft',
-  nass:'Meer Welle Hafen Boot Schiff Fisch Wal Hai Quelle Kanal Strand Insel Anker Eimer Regen Seife',
-  Weltall:'Mond Stern Planet Rakete Sonne Himmel Erde Laser Nacht',
-  Haus:'Dach Fenster Tisch Stuhl Bett Wand Lampe Spiegel Ofen Kerze Uhr Mauer Leiter Seife Garten',
-  Küche:'Gabel Messer Löffel Teller Topf Pfanne Glas Flasche Ofen Kaffee Tee Dose Eimer',
-  Kleidung:'Hose Jacke Mantel Schuh Hut Socke Gürtel Helm Maske Krone Tasche Schirm Knopf',
-  Werkzeug:'Hammer Säge Nadel Schlüssel Leiter Pinsel Stift Seil Kabel Magnet Kompass Netz Korb Kiste',
-  Kampf:'Schwert Pfeil Bombe Kanone Panzer Schild Gift Messer Laser Stab Ritter Helm',
-  Fahrzeug:'Zug Bus Taxi Rad Boot Schiff Rakete Motor Panzer Pilot',
-  Körper:'Herz Hand Kopf Ohr Zahn Auge Nase Daumen Horn Flügel Feder',
-  Beruf:'Arzt Koch Pilot Jäger Polizei Pirat Spion Ritter Prinz König Post',
-  Märchen:'Drache Geist Hexe Engel Riese Zwerg Vampir Zauber Ritter Prinz König Krone Schloss Burg Schatz',
-  Klang:'Band Gitarre Flöte Glocke Oper Rock Mikrofon Musik Horn Sirene',
-  Technik:'Computer Roboter Kamera Laser Magnet Motor Kabel Strom Mikrofon Rakete Uhr',
+  Tier:'Bär Ente Fisch Fuchs Hahn Hund Katze Löwe Maus Pferd Schlange Spinne Tiger Vogel Wal Wurm Adler Frosch Hai Igel Kuh Rabe Schwan Taube Wolf Zebra Ziege Dino Drache Nest Affe Biene Elefant Eule Hase Krake Pinguin Delfin Kamel Einhorn',
+  Essen:'Apfel Kuchen Käse Honig Nuss Orange Pizza Waffel Zucker Salz Birne Kaffee Tee Bier Eis Brot Ei Nudel Suppe Wurst Schokolade Zitrone Pilz',
+  Natur:'Baum Blatt Berg Wald Gras Sand Strand Insel Meer Welle Vulkan Quelle Feld Tanne Palme Rose Erde Garten Zelt Biene Fluss Höhle Wüste Stein Pilz',
+  Wetter:'Blitz Sturm Regen Schnee Wolke Sonne Eis Himmel Luft Nebel Regenbogen Wind',
+  nass:'Meer Welle Hafen Boot Schiff Fisch Wal Hai Quelle Kanal Strand Insel Anker Eimer Regen Seife Krake Delfin Fluss Leuchtturm Pinguin',
+  Weltall:'Mond Stern Planet Rakete Sonne Himmel Erde Laser Nacht Komet Astronaut Ufo Satellit',
+  Haus:'Dach Fenster Tisch Stuhl Bett Wand Lampe Spiegel Ofen Kerze Uhr Mauer Leiter Seife Garten Tür Sofa Teppich Treppe Klavier',
+  Küche:'Gabel Messer Löffel Teller Topf Pfanne Glas Flasche Ofen Kaffee Tee Dose Eimer Nudel Suppe Ei',
+  Kleidung:'Hose Jacke Mantel Schuh Hut Socke Gürtel Helm Maske Krone Tasche Schirm Knopf Schal Kleid Brille',
+  Werkzeug:'Hammer Säge Nadel Schlüssel Leiter Pinsel Stift Seil Kabel Magnet Kompass Netz Korb Kiste Schraube Axt Lupe',
+  Kampf:'Schwert Pfeil Bombe Kanone Panzer Schild Gift Messer Laser Stab Ritter Helm Axt',
+  Fahrzeug:'Zug Bus Taxi Rad Boot Schiff Rakete Motor Panzer Pilot Flugzeug Auto Hubschrauber Traktor',
+  Körper:'Herz Hand Kopf Ohr Zahn Auge Nase Daumen Horn Flügel Feder Finger',
+  Beruf:'Arzt Koch Pilot Jäger Polizei Pirat Spion Ritter Prinz König Post Lehrer Clown Detektiv Richter Astronaut',
+  Märchen:'Drache Geist Hexe Engel Riese Zwerg Vampir Zauber Ritter Prinz König Krone Schloss Burg Schatz Einhorn Fee Mumie Troll Höhle',
+  Klang:'Band Gitarre Flöte Glocke Oper Rock Mikrofon Musik Horn Sirene Trommel Klavier',
+  Technik:'Computer Roboter Kamera Laser Magnet Motor Kabel Strom Mikrofon Rakete Uhr Handy Batterie Satellit',
   reich:'Bank Gold Münze Geld Schatz Diamant Ring Kette Markt Laden Krone',
-  Gebäude:'Burg Schloss Turm Kirche Schule Kino Bank Mühle Pyramide Tunnel Brücke Laden Mauer Park Hafen Post Stadt',
+  Gebäude:'Burg Schloss Turm Kirche Schule Kino Bank Mühle Pyramide Tunnel Brücke Laden Mauer Park Hafen Post Stadt Museum Leuchtturm Treppe',
   Sport:'Ball Fußball Tor Rad Ring Kurs Pass Helm Würfel',
-  Licht:'Lampe Kerze Sonne Stern Blitz Feuer Laser Mond Schatten',
-  heiß:'Feuer Kerze Ofen Vulkan Drache Sonne Kaffee Tee',
-  Büro:'Papier Brief Karte Paket Post Stift Tinte Pass Kiste',
-  Pflanze:'Baum Blatt Gras Rose Tanne Palme Apfel Birne Orange Nuss',
-  Gefahr:'Gift Bombe Vulkan Schlange Spinne Hai Sturm Blitz Feuer Messer Vampir Kreuz',
-  Spiel:'Würfel Karte Puppe Ball Tor Schatz Kiste Pirat Land'
+  Licht:'Lampe Kerze Sonne Stern Blitz Feuer Laser Mond Schatten Regenbogen Komet Leuchtturm Fackel',
+  heiß:'Feuer Kerze Ofen Vulkan Drache Sonne Kaffee Tee Suppe Wüste Fackel',
+  Büro:'Papier Brief Karte Paket Post Stift Tinte Pass Kiste Lupe',
+  Pflanze:'Baum Blatt Gras Rose Tanne Palme Apfel Birne Orange Nuss Zitrone Pilz',
+  Gefahr:'Gift Bombe Vulkan Schlange Spinne Hai Sturm Blitz Feuer Messer Vampir Kreuz Falle Mumie Axt',
+  Spiel:'Würfel Karte Puppe Ball Tor Schatz Kiste Pirat Land Falle Schach Clown'
 };
 const CN_TAG = Object.fromEntries(Object.entries(CN_TAGS).map(([t, w]) => [t, w.split(' ')]));
 const CN_WORDS = [...new Set(Object.values(CN_TAG).flat())];
@@ -12521,7 +12536,8 @@ const svActions = {
     sfx('chosen'); svPut({...base, fl:{...base.fl, [me]:enc}, rd:{...(base.rd || {}), [me]:true}}, {['uno.fl.' + me]:enc, ['uno.rd.' + me]:true});
   },
   'sv-unready': () => { const M = S.sv, me = myPid(); if (!M || M.status !== 'place') return; const base = lobby().uno; svPut({...base, rd:{...(base.rd || {}), [me]:false}}, {['uno.rd.' + me]:false}); },
-  'sv-tgt': b => { D.svTgt = b.dataset.pid; render(); },
+  'sv-tgt': b => { const M = S.sv; D.svTgt = b.dataset.pid; if (M) D.svVo = {k:M.id + ':' + M.turn + ':' + M.status, v:'tgt'}; render(); },
+  'sv-view': b => { const M = S.sv; if (!M) return; svl.hold = null; D.svVo = {k:M.id + ':' + M.turn + ':' + M.status, v:b.dataset.v === 'own' ? 'own' : 'tgt'}; render(); },
   'sv-shot': b => {
     const M = S.sv; if (!M) return; const c = +b.dataset.i;
     if (D.svPw) { D.svAim = c; render(); return; }
@@ -12617,12 +12633,20 @@ function svLastHTML(M, me) {
 }
 function svPowerHTML(M, me, myTurn) {
   const pt = M.pt[me] || 0, P = SV_PW[D.svPw];
-  let h = `<div class="sv-pw"><span class="sv-pts" title="Für jeden normalen Schuss ins Wasser gibt es 1 Punkt">⭐ <b>${pt}</b> Punkte</span>
+  let h = `<div class="sv-pw sv-pw-row"><span class="sv-pts" title="Für jeden normalen Schuss ins Wasser gibt es 1 Punkt">⭐ <b>${pt}</b> Punkte</span>
     ${Object.entries(SV_PW).map(([k, p]) => `<button class="btn btn-sm sv-pwb ${D.svPw === k ? 'on' : ''}" type="button" data-act="sv-pw" data-v="${k}" aria-pressed="${D.svPw === k}" ${myTurn && pt >= p.cost ? '' : 'disabled'} title="${esc(p.d)}">${p.e} ${p.n} <small>${p.cost} ⭐</small></button>`).join('')}</div>`;
   if (P) h += `<div class="sv-aim"><b>${P.e} ${P.n}:</b> ${P.d} ${D.svAim >= 0 ? `Ziel: <b>${svLbl(D.svAim)}</b>.` : 'Tippe aufs Feld, wo es hin soll.'}
     ${D.svPw === 'air' ? `<span class="chips"><button class="chip" type="button" data-act="sv-dir" data-v="col" aria-pressed="${D.svDir !== 'row'}">↕ Spalte runter</button><button class="chip" type="button" data-act="sv-dir" data-v="row" aria-pressed="${D.svDir === 'row'}">↔ Reihe quer</button></span>` : ''}
     <span class="chips"><button class="btn btn-gold btn-sm" type="button" data-act="sv-fire" ${D.svAim >= 0 ? '' : 'disabled'}>${D.svPw === 'radar' ? '📡 Absuchen' : '🔥 Los!'}</button><button class="btn btn-sm btn-ghost" type="button" data-act="sv-pwx">Abbrechen</button></span></div>`;
   return h;
+}
+function svSideHTML(M, me, tgt, view) {
+  const fin = M.status === 'finished', mine = M.players.includes(me), pick = mine && M.mode === 'multi';
+  return `<aside class="card sv-side"><h3>⚓ Spieler</h3><ul>${M.players.map(p => {
+    const ko = M.ko.includes(p), turn = !fin && M.turn === p, sel = view === 'tgt' && p === tgt && p !== me, can = (pick || (mine && fin)) && p !== me;
+    const inner = `${avatar(ghost(p), 28)}<span class="sv-sn"><b>${esc(ghost(p).name)}</b>${p === me ? ' <small>(du)</small>' : ''}${turn ? '<em>🎯 ist dran</em>' : ''}</span><span class="sv-sl">${ko ? '☠️' : `🚢 ${svLeft(M, p)}`}</span>`;
+    return `<li class="${ko ? 'svs-ko' : ''} ${turn ? 'svs-turn' : ''} ${sel ? 'svs-sel' : ''} ${p === me ? 'svs-me' : ''}">${can ? `<div class="sv-pick" role="button" tabindex="0" data-act="sv-tgt" data-pid="${esc(p)}" title="${esc(ghost(p).name)} als Ziel">${inner}</div>` : `<div>${inner}</div>`}</li>`;
+  }).join('')}</ul>${pick && !fin ? '<p class="muted sv-note">Tippe einen Gegner an, um auf ihn zu zielen.</p>' : ''}</aside>`;
 }
 function svPlayHTML(M) {
   const me = myPid(), mine = M.players.includes(me), fin = M.status === 'finished', paused = roomPaused();
@@ -12630,46 +12654,58 @@ function svPlayHTML(M) {
   if (!opp.includes(D.svTgt) || (!fin && M.ko.includes(D.svTgt) && opp.some(p => !M.ko.includes(p)))) D.svTgt = opp.find(p => !M.ko.includes(p)) || opp[0];
   const tgt = D.svTgt, myTurn = !fin && M.turn === me && !paused && !M.ko.includes(me);
   const known = svl.seenGame === M.id; svl.seenGame = M.id;
-  if (M.last) { // neues Ereignis: Felder bis zum Einschlag der Animation verdecken
+  if (M.last) { // neues Ereignis: Felder bis zum Einschlag verdecken und die Ansicht so lange auf diesem Feld halten
     const k = svEvKey(M);
     if (k !== svl.seenKey) {
       const first = !known, L = M.last; svl.seenKey = k;
       const sel = L.by === me && tgt === L.to ? 'tgt' : L.to === me ? 'own' : '';
-      if (!first && sel) { const cells = L.k === 'shot' ? [L.c] : L.cs; svl.pend = {sel, cells:new Set(cells), until:Date.now() + 4000}; svl.anim = {key:k, sel, last:L, started:false}; }
+      if (!first && sel) {
+        const cells = L.k === 'shot' ? [L.c] : L.cs, dur = {shot:1300, bomb:1900, air:2400, radar:1700}[L.k] + 900;
+        svl.pend = {sel, cells:new Set(cells), until:Date.now() + 4000}; svl.anim = {key:k, sel, last:L, started:false};
+        svl.hold = {id:M.id, sel, until:Date.now() + dur}; setTimeout(() => { if (S.tab === 'sv') render(); }, dur + 40);
+      }
     }
   }
-  if (!myTurn || !SV_PW[D.svPw]) { D.svPw = ''; D.svAim = -1; }
+  // Ansicht: wer dran ist, sieht das Feld des Gegners; sonst die eigene Flotte. Kurz halten, solange eine Animation läuft. Umschalten per Hand bis zum nächsten Zugwechsel.
+  const tk = M.id + ':' + M.turn + ':' + M.status; if (D.svVo && D.svVo.k !== tk) D.svVo = null;
+  const hold = svl.hold && svl.hold.id === M.id && Date.now() < svl.hold.until ? svl.hold.sel : '';
+  const view = !mine ? '' : hold || (D.svVo ? D.svVo.v : fin || myTurn ? 'tgt' : 'own');
+  if (view !== 'tgt' || !myTurn || !SV_PW[D.svPw]) { D.svPw = ''; D.svAim = -1; }
   const aim = D.svPw && D.svAim >= 0 ? new Set(D.svPw === 'air' ? svLineOf(D.svAim, D.svDir) : svBox(D.svAim)) : null;
   const top = fin ? '' : `<div class="sv-top ${myTurn ? 'mine' : ''}"><span class="sv-turn">${M.turn === me ? '🎯 Du bist dran!' : `${avatar(ghost(M.turn), 24)} <b>${esc(ghost(M.turn).name)}</b> ist dran`}</span>${svTimeHTML(M)}
     ${ctl() ? `<button class="btn btn-sm btn-ghost" type="button" data-act="sv-end">Beenden</button>` : ''}</div>`;
-  const tabs = M.mode === 'multi' ? `<div class="sv-tabs">${opp.map(p => `<button class="chip ${M.ko.includes(p) ? 'off' : ''}" type="button" data-act="sv-tgt" data-pid="${esc(p)}" aria-pressed="${p === tgt}">${avatar(ghost(p), 22)}${esc(ghost(p).name)} <small>${M.ko.includes(p) ? '☠️' : `🚢 ${svLeft(M, p)}`}</small></button>`).join('')}</div>` : '';
-  let boards;
+  let main;
   if (mine) {
-    const shots = new Set(svMy(M, me, tgt)), all = svIncoming(M, tgt), sunk = svSunk(M, tgt, all), can = myTurn && !M.ko.includes(tgt), rad = new Set((M.rad[me] || {})[tgt] || []);
-    const lastMine = M.last && M.last.by === me && M.last.to === tgt ? M.last : null, zone = new Set(lastMine && lastMine.cs.length ? lastMine.cs : []);
-    const target = svGridHTML(`sv-tgt ${can ? 'can' : ''} ${D.svPw ? 'aiming' : ''}`, c => {
-      const si = svShipOf(M, tgt, c), shot = shots.has(c), cls = (shot ? (si >= 0 ? (sunk[si] ? 'hit sunk' : 'hit') : 'miss') : rad.has(c) ? (si >= 0 ? 'rad-y' : 'rad-n') : '') + svPend('tgt', c);
-      const last = (lastMine && !lastMine.cs.length && lastMine.c === c) || zone.has(c) ? ' last' : '';
-      return `<button class="sv-c ${cls}${last}${aim && aim.has(c) ? ' aim' : ''}" type="button" data-act="sv-shot" data-t="${esc(tgt)}" data-i="${c}" ${can && (!shot || D.svPw) ? '' : 'disabled'} aria-label="${svLbl(c)}"></button>`;
-    }, fin ? svShipsHTML(M.fl[tgt] || [], 'rv') + svFxHTML([...shots].filter(c => svShipOf(M, tgt, c) >= 0), null, -1) : '');
-    const inc = svIncoming(M, me), mySunk = svSunk(M, me, inc);
-    const own = svGridHTML('sv-own sv-mine', c => {
-      const si = svShipOf(M, me, c), shot = inc.has(c), last = M.last && M.last.to === me && (M.last.cs.length ? M.last.cs.includes(c) : M.last.c === c) ? ' last' : '';
-      return `<span class="sv-c ${shot && si < 0 ? 'miss' : ''}${last}${svPend('own', c)}" data-i="${c}"></span>`;
-    }, (M.fl[me] || []).map((x, i) => svShipsHTML((M.fl[me] || []).map((y, j) => j === i ? y : null), mySunk[i] ? 'sunk' : '')).join('')
-      + svFxHTML([...inc].filter(c => svShipOf(M, me, c) >= 0), new Set([...inc].filter(c => { const k = svShipOf(M, me, c); return k >= 0 && mySunk[k]; })), M.last && M.last.to === me ? M.last.c : -1, 'own'));
-    boards = `<div class="sv-boards"><div class="sv-b sv-b-tgt"><h3>🎯 ${M.mode === 'multi' ? 'Ziel' : 'Gegner'}: ${esc(ghost(tgt).name)} <small>${M.ko.includes(tgt) ? '☠️ raus' : `🚢 ${svLeft(M, tgt)} übrig`}</small></h3>${tabs}${fin || M.ko.includes(me) ? '' : svPowerHTML(M, me, myTurn)}${target}
-        ${M.mode === 'multi' && !fin ? '<p class="muted sv-note">Hier siehst du nur deine eigenen Schüsse.</p>' : ''}</div>
-      <div class="sv-b sv-b-own"><h3>⚓ Deine Flotte <small>${M.ko.includes(me) ? '☠️ versenkt' : `🚢 ${svLeft(M, me)} übrig`}</small></h3>${own}</div></div>`;
+    let board, title;
+    if (view === 'tgt') {
+      const shots = new Set(svMy(M, me, tgt)), all = svIncoming(M, tgt), sunk = svSunk(M, tgt, all), can = myTurn && !M.ko.includes(tgt), rad = new Set((M.rad[me] || {})[tgt] || []);
+      const lastMine = M.last && M.last.by === me && M.last.to === tgt ? M.last : null, zone = new Set(lastMine && lastMine.cs.length ? lastMine.cs : []);
+      board = svGridHTML(`sv-tgt ${can ? 'can' : ''} ${D.svPw ? 'aiming' : ''}`, c => {
+        const si = svShipOf(M, tgt, c), shot = shots.has(c), cls = (shot ? (si >= 0 ? (sunk[si] ? 'hit sunk' : 'hit') : 'miss') : rad.has(c) ? (si >= 0 ? 'rad-y' : 'rad-n') : '') + svPend('tgt', c);
+        const last = (lastMine && !lastMine.cs.length && lastMine.c === c) || zone.has(c) ? ' last' : '';
+        return `<button class="sv-c ${cls}${last}${aim && aim.has(c) ? ' aim' : ''}" type="button" data-act="sv-shot" data-t="${esc(tgt)}" data-i="${c}" ${can && (!shot || D.svPw) ? '' : 'disabled'} aria-label="${svLbl(c)}"></button>`;
+      }, fin ? svShipsHTML(M.fl[tgt] || [], 'rv') + svFxHTML([...shots].filter(c => svShipOf(M, tgt, c) >= 0), null, -1) : '');
+      title = `🎯 ${myTurn ? 'Du schießt auf' : 'Feld von'} <b>${esc(ghost(tgt).name)}</b> <small>${M.ko.includes(tgt) ? '☠️ raus' : `🚢 ${svLeft(M, tgt)} übrig`}</small>`;
+      if (M.mode === 'multi' && !fin) board += '<p class="muted sv-note">Hier siehst du nur deine eigenen Schüsse.</p>';
+    } else {
+      const inc = svIncoming(M, me), mySunk = svSunk(M, me, inc);
+      board = svGridHTML('sv-own sv-mine', c => {
+        const si = svShipOf(M, me, c), shot = inc.has(c), last = M.last && M.last.to === me && (M.last.cs.length ? M.last.cs.includes(c) : M.last.c === c) ? ' last' : '';
+        return `<span class="sv-c ${shot && si < 0 ? 'miss' : ''}${last}${svPend('own', c)}" data-i="${c}"></span>`;
+      }, (M.fl[me] || []).map((x, i) => svShipsHTML((M.fl[me] || []).map((y, j) => j === i ? y : null), mySunk[i] ? 'sunk' : '')).join('')
+        + svFxHTML([...inc].filter(c => svShipOf(M, me, c) >= 0), new Set([...inc].filter(c => { const k = svShipOf(M, me, c); return k >= 0 && mySunk[k]; })), M.last && M.last.to === me ? M.last.c : -1, 'own'));
+      title = `⚓ Deine Flotte <small>${M.ko.includes(me) ? '☠️ versenkt' : `🚢 ${svLeft(M, me)} übrig`}</small>${!fin && M.turn !== me ? ` <span class="sv-watchout">· ${esc(ghost(M.turn).name)} ist dran</span>` : ''}`;
+    }
+    const sw = `<div class="sv-switch"><button class="chip" type="button" data-act="sv-view" data-v="tgt" aria-pressed="${view === 'tgt'}">🎯 Gegner${M.mode === 'multi' ? ` (${esc(ghost(tgt).name)})` : ''}</button><button class="chip" type="button" data-act="sv-view" data-v="own" aria-pressed="${view === 'own'}">⚓ Meine Flotte</button></div>`;
+    main = `<div class="sv-main"><div class="sv-head"><h3>${title}</h3>${sw}</div>${board}${view === 'tgt' && !fin && !M.ko.includes(me) ? svPowerHTML(M, me, myTurn) : ''}</div>`;
   } else {
-    boards = `<div class="card sv-watch"><h3>👀 Du schaust zu</h3><p class="muted">Wohin geschossen wird, sehen nur die Spieler selbst.</p>
-      <ul class="sv-ready">${M.players.map(p => `<li class="${M.ko.includes(p) ? 'ko' : ''}">${avatar(ghost(p), 22)}<b>${esc(ghost(p).name)}</b><span>${M.ko.includes(p) ? '☠️ raus' : `🚢 ${svLeft(M, p)} Schiffe`}</span></li>`).join('')}</ul></div>`;
+    main = `<div class="sv-main"><div class="card sv-watch"><h3>👀 Du schaust zu</h3><p class="muted">Wohin geschossen wird, sehen nur die Spieler selbst. Links siehst du, wie viele Schiffe jeder noch hat.</p></div></div>`;
   }
   const win = fin ? `<div class="card sv-win"><h2>🏆 ${M.win === me ? 'Du gewinnst!' : `${esc(ghost(M.win).name)} gewinnt!`}</h2>
     <ol class="sv-rank">${svRank(M).map(p => `<li class="${p === me ? 'me' : ''}">${avatar(ghost(p), 24)}<b>${esc(ghost(p).name)}</b><span>💥 ${svSunkBy(M, p)} versenkt</span></li>`).join('')}</ol>
     ${M.transferred ? `<p class="okline">✓ Steht im Highscore von ${esc((lobby() || {}).name || 'diesem Raum')}.</p>` : ''}
     ${ctl() ? `<div class="chips"><button class="btn btn-gold" type="button" data-act="sv-again">Nochmal spielen</button><button class="btn" type="button" data-act="sv-setup">Spieler ändern</button></div>` : '<p class="muted">Der Host kann eine neue Runde starten.</p>'}</div>` : '';
-  return `<section class="section tsec sv-wrap">${top}${win}${svLastHTML(M, me)}${boards}${fin ? lobbyHsHTML() : svRulesHTML(false)}</section>`;
+  return `<section class="section tsec sv-wrap">${top}${win}${svLastHTML(M, me)}<div class="sv-play">${svSideHTML(M, me, tgt, view)}${main}</div>${fin ? lobbyHsHTML() : svRulesHTML(false)}</section>`;
 }
 function viewSv() { const M = S.sv; return !M ? svSetupHTML() : M.status === 'place' ? svPlaceHTML(M) : svPlayHTML(M); }
 /* ---------- Animationen (per JavaScript, laufen also auch mit „Bewegung reduzieren“) ---------- */
