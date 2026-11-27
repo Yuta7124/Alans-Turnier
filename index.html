@@ -1882,6 +1882,26 @@ body.ah-locked .ah-lockhint{display:none}
 .slf-score li span{margin-left:auto;font-weight:900;color:#ffcf3f}
 .slf-score li.me{background:rgba(255,207,63,.12)}
 @media (max-width:560px){.slf-row{grid-template-columns:1fr;gap:4px}.slf-letter{width:86px;height:86px;font-size:56px}}
+/* Weihnachten und Silvester */
+#ssn-layer{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.ssn-snow{position:absolute;top:-30px;left:var(--x);color:#fff;font-style:normal;font-size:calc(18px * var(--s));opacity:.85;text-shadow:0 0 6px rgba(255,255,255,.6);animation:ssnFall var(--t) linear var(--d) infinite}
+@keyframes ssnFall{from{transform:translate(0,-5vh) rotate(0)}to{transform:translate(var(--w),105vh) rotate(360deg)}}
+#ssn-banner.ssn-xmas{margin-top:18px}
+#ssn-banner.ssn-xmas::before{content:'';position:absolute;left:10px;right:10px;top:-13px;height:22px;pointer-events:none;background:radial-gradient(circle at 12px 12px,#ff3b4e 0 5px,transparent 6px) 0 0/96px 22px,radial-gradient(circle at 36px 14px,#4ff08f 0 5px,transparent 6px) 0 0/96px 22px,radial-gradient(circle at 60px 12px,#ffcf3f 0 5px,transparent 6px) 0 0/96px 22px,radial-gradient(circle at 84px 14px,#39d6f2 0 5px,transparent 6px) 0 0/96px 22px;filter:drop-shadow(0 0 6px rgba(255,220,120,.7));animation:ssnTwinkle 1.4s steps(2) infinite}
+@keyframes ssnTwinkle{50%{filter:drop-shadow(0 0 2px rgba(255,220,120,.3)) brightness(.7)}}
+body.is-xmas{background-image:radial-gradient(60% 40% at 0% 0%,rgba(214,40,57,.22),transparent 70%),radial-gradient(60% 40% at 100% 0%,rgba(46,160,90,.22),transparent 70%)}
+body.is-xmas header{box-shadow:inset 0 -3px 0 #d62839,0 3px 0 #2ea05a}
+.ssn-fw{position:absolute;left:var(--x);top:var(--y);width:180px;height:180px;margin:-90px;border-radius:50%;background:radial-gradient(circle,var(--c) 0 3px,transparent 4px) 50% 0/14px 14px no-repeat,repeating-conic-gradient(from 0deg,var(--c) 0 3deg,transparent 3deg 22.5deg);-webkit-mask:radial-gradient(circle,transparent 30%,#000 32%,#000 48%,transparent 50%);mask:radial-gradient(circle,transparent 30%,#000 32%,#000 48%,transparent 50%);opacity:0;animation:ssnBurst var(--t) ease-out var(--d) infinite}
+@keyframes ssnBurst{0%{transform:scale(.1);opacity:0}8%{opacity:1}55%{transform:scale(1.1);opacity:.9}75%,100%{transform:scale(1.25);opacity:0}}
+.ssn-spark{position:absolute;bottom:-10px;left:var(--x);width:4px;height:4px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);animation:ssnRise var(--t) linear var(--d) infinite}
+@keyframes ssnRise{from{transform:translateY(0);opacity:1}to{transform:translateY(-105vh);opacity:0}}
+body.is-nye{background-image:radial-gradient(70% 45% at 50% 0%,rgba(255,207,63,.16),transparent 70%),radial-gradient(50% 40% at 100% 100%,rgba(196,147,255,.16),transparent 70%)}
+body.is-nye header{box-shadow:inset 0 -3px 0 #ffcf3f}
+#ssn-banner{position:relative;z-index:5;margin:10px auto 0;width:min(1180px,calc(100% - 24px));padding:10px 16px;border-radius:14px;text-align:center;font-size:15px;color:#fff}
+#ssn-banner.ssn-xmas{background:linear-gradient(90deg,#9e1b2b,#1f6e43);box-shadow:0 0 0 2px rgba(255,255,255,.25),0 0 22px rgba(214,40,57,.35)}
+#ssn-banner.ssn-nye{background:linear-gradient(90deg,#1a1450,#3b2a7a);box-shadow:0 0 0 2px #ffcf3f,0 0 24px rgba(255,207,63,.35)}
+@media (prefers-reduced-motion:reduce){.ssn-snow{top:var(--y)}#ssn-banner.ssn-xmas::before{animation:none}.ssn-fw{opacity:var(--o)}.ssn-spark{bottom:var(--y);opacity:.7}}
+.ssn-cd{font-family:var(--display);font-weight:900;color:#ffcf3f;letter-spacing:.04em}
 .tour-rulecard{position:relative;text-align:center;padding:28px 24px;margin-bottom:18px;border:2px solid #ffcf3f;background:radial-gradient(80% 120% at 50% 0%,rgba(255,207,63,.22),rgba(13,22,64,.9) 70%);box-shadow:0 0 30px rgba(255,207,63,.25)}
 .tour-rulecard-ic{display:block;font-size:54px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 0 14px rgba(255,207,63,.6))}
 .tour-rulecard h2{margin:6px 0 12px;font-size:clamp(22px,3vw,34px)}
@@ -3334,7 +3354,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=112"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=113"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -4482,6 +4502,42 @@ function bdaySync() {
   if (!ban) { ban = document.createElement('div'); ban.id = 'bd-banner'; ban.setAttribute('role', 'status'); const hd = document.querySelector('header'); (hd && hd.parentNode ? hd.parentNode : document.body).insertBefore(ban, hd ? hd.nextSibling : document.body.firstChild); }
   if (ban.dataset.h !== html) { ban.innerHTML = html; ban.dataset.h = html; }
 }
+/* Jahreszeiten-Look: 1. bis 30. Dezember Weihnachten, 31. Dezember und 1. Januar Silvester (deutsche Zeit).
+   Der Spielleiter kann es unter Optionen → Aussehen abschalten und vorher als Vorschau (nur bei sich) ansehen. */
+function seasonNow() {
+  if (D.seasonPreview === 'xmas' || D.seasonPreview === 'nye') return D.seasonPreview;
+  if (S.settings && S.settings.season === 'off') return '';
+  const t = berlinParts(Date.now()), m = +t.month, d = +t.day;
+  return m === 12 && d <= 30 ? 'xmas' : (m === 12 && d === 31) || (m === 1 && d === 1) ? 'nye' : '';
+}
+function seasonBanner(k) {
+  const t = berlinParts(Date.now()), m = +t.month, d = +t.day, y = +t.year;
+  if (k === 'xmas') return m === 12 && d >= 24 && d <= 26 ? '🎄 <b>Frohe Weihnachten!</b> 🎅🎁' : m === 12 && d < 24 ? `🎄 <b>Schöne Adventszeit!</b> Noch ${24 - d} ${24 - d === 1 ? 'Tag' : 'Tage'} bis Heiligabend 🎅` : m === 12 ? '🎄 <b>Schöne Feiertage!</b> ⛄' : '🎄 <b>Weihnachts-Vorschau:</b> So sieht die Seite vom 1. bis 30. Dezember aus 🎅';
+  if (m === 1 && d === 1) return `🎆 <b>Frohes neues Jahr ${y}!</b> 🥂🎉`;
+  const ny = y + 1, left = Math.max(0, berlinToUtc(`${ny}-01-01`, '00:00') - Date.now());
+  if (!left) return `🎆 <b>Frohes neues Jahr ${ny}!</b> 🥂🎉`;
+  const dd = Math.floor(left / 86400000), h = Math.floor(left / 3600000) % 24, mi = Math.floor(left / 60000) % 60, se = Math.floor(left / 1000) % 60;
+  return `🥂 <b>${m === 12 && d === 31 ? 'Silvester!' : 'Silvester-Vorschau:'}</b> Noch <span class="ssn-cd">${dd ? `${dd} ${dd === 1 ? 'Tag' : 'Tage'} ` : ''}${h}:${String(mi).padStart(2, '0')}:${String(se).padStart(2, '0')}</span> bis ${ny} 🎆`;
+}
+function seasonSync() {
+  const k = seasonNow(), b = document.body;
+  b.classList.toggle('is-xmas', k === 'xmas'); b.classList.toggle('is-nye', k === 'nye');
+  let lay = document.getElementById('ssn-layer'), ban = document.getElementById('ssn-banner');
+  if (!k) { if (lay) lay.remove(); if (ban) ban.remove(); return; }
+  if (!lay || lay.dataset.k !== k) {
+    if (lay) lay.remove();
+    lay = document.createElement('div'); lay.id = 'ssn-layer'; lay.dataset.k = k; lay.setAttribute('aria-hidden', 'true');
+    const R = (a, b) => (a + Math.random() * (b - a)).toFixed(1);
+    lay.innerHTML = k === 'xmas'
+      ? Array.from({length:46}, (_, i) => `<i class="ssn-snow" style="--x:${R(0, 100)}%;--y:${R(2, 96)}vh;--s:${R(.5, 1.4)};--t:${R(9, 20)}s;--d:${R(-20, 0)}s;--w:${R(-40, 40)}px">${i % 3 ? '•' : '❄'}</i>`).join('')
+      : Array.from({length:7}, (_, i) => `<i class="ssn-fw" style="--x:${R(8, 92)}%;--y:${R(8, 55)}%;--o:${R(.25, .6)};--c:${['#ffcf3f', '#ff4f9a', '#39d6f2', '#4ff08f', '#ffffff', '#c493ff', '#ff9f5a'][i]};--t:${R(2.6, 4.2)}s;--d:${R(-4, 0)}s"></i>`).join('')
+        + Array.from({length:36}, () => `<b class="ssn-spark" style="--x:${R(0, 100)}%;--y:${R(2, 96)}vh;--t:${R(6, 13)}s;--d:${R(-13, 0)}s;--c:${Math.random() < .6 ? '#ffcf3f' : '#ffffff'}"></b>`).join('');
+    document.body.appendChild(lay);
+  }
+  const html = seasonBanner(k);
+  if (!ban) { ban = document.createElement('div'); ban.id = 'ssn-banner'; ban.setAttribute('role', 'status'); const hd = document.querySelector('header'); (hd && hd.parentNode ? hd.parentNode : document.body).insertBefore(ban, hd ? hd.nextSibling : null); }
+  ban.className = 'ssn-' + k; if (ban.dataset.h !== html) { ban.innerHTML = H(html); ban.dataset.h = html; }
+}
 /* Fehlt beim eigenen Spieler der Geburtstag, fragt die Seite einmal danach (Pflicht). */
 function bdayAsk() {
   if (S.admin || S.modal || D.bdAskOff || S.mode !== 'db' || !S.loaded) return;
@@ -4692,6 +4748,7 @@ function normSettings(x) {
     chk: str(x.chk, 40),
     tview: x.tview === 'rad' ? 'rad' : 'rangliste',
     design: DESIGNS.some(d => d[0] === x.design) ? x.design : 'neon',
+    season: x.season === 'off' ? 'off' : 'auto',
     prize, places, mode: x.mode === 'eur' ? 'eur' : 'pct', split, amounts,
     fmt: [1, 2, 3, 4].includes(Number(x.fmt)) ? Number(x.fmt) : 1, teams: normTeams(x.teams),
     afk: Math.min(30, Math.max(1, Math.round(Number(x.afk)) || 30)),
@@ -5126,6 +5183,7 @@ function render() {
   applyDesign();
   eventSync();
   try { bdaySync(); } catch (e) {}
+  try { seasonSync(); } catch (e) {}
   try { pzSync(); } catch (e) {}
   renderHeader();
   const m = $('#main');
@@ -5741,6 +5799,10 @@ function viewSettings() {
       <div><button class="btn btn-gold" type="submit" id="st-save" ${splitValid() ? '' : 'disabled'}>Speichern</button></div>
     </form>`,
     look: () => `${designCardHTML()}
+    <div class="card share-card"><h3>🎄 Weihnachten und Silvester</h3><p class="m-text">Vom <b>1. bis 30. Dezember</b> ist die ganze Seite im Weihnachts-Look (Schnee, Lichterkette, rot-grün). Am <b>31. Dezember und 1. Januar</b> kommt der Silvester-Look mit Feuerwerk und Countdown bis Mitternacht. Das passiert automatisch.</p>
+      ${S.admin ? `<label class="toggle"><input type="checkbox" id="season-auto" ${S.settings.season !== 'off' ? 'checked' : ''}><span>Automatisch einschalten (für alle)</span></label>` : ''}
+      <div class="chips"><button class="btn btn-sm" type="button" data-act="season-preview" data-v="xmas" aria-pressed="${D.seasonPreview === 'xmas'}">🎄 Weihnachts-Look ansehen</button><button class="btn btn-sm" type="button" data-act="season-preview" data-v="nye" aria-pressed="${D.seasonPreview === 'nye'}">🎆 Silvester-Look ansehen</button>${D.seasonPreview ? '<button class="btn btn-sm btn-ghost" type="button" data-act="season-preview" data-v="">Vorschau beenden</button>' : ''}</div>
+      <small class="muted">Die Vorschau siehst nur du.</small></div>
     <div class="card share-card"><h3>🎂 Geburtstage</h3><p class="m-text">Hat ein Spieler Geburtstag, feiert die ganze Seite: Banner, Ballons, Konfetti und Partyfarben. ${(() => { const k = bdayKids(); return k.length ? `Heute: <b>${k.map(x => esc(x.p.name)).join(', ')}</b> 🎉` : `Eingetragen: ${S.players.filter(p => p.bday).length} von ${S.players.length} Spielern.`; })()}</p>
       <div class="chips"><button class="btn btn-sm" type="button" data-act="bd-preview" aria-pressed="${!!D.bdPreview}">${D.bdPreview ? 'Vorschau beenden' : '👀 Vorschau ansehen'}</button></div></div>
     ${picsCardHTML()}`,
@@ -15492,6 +15554,7 @@ function tick() {
   { const tb = D.introAt && document.getElementById('ti-bar'); if (tb) tb.style.transform = `scaleX(${Math.max(0, 1 - (Date.now() - D.introAt) / 15000)})`; }
   if (!roomPaused()) drawTick();
   if (eventSync()) render();
+  if (document.body.classList.contains('is-nye')) try { seasonSync(); } catch (e) {}
   if (S.tab === 'start') { updateCountdowns(); const tk = tourState().k; if (tk !== lastTourK) { lastTourK = tk; render(); } }
   renderGate();
   renderGatebar();
@@ -15967,6 +16030,7 @@ const actions = {
   'pshow': b => { if (!S.admin) return; ops.saveSettings(normSettings({...S.settings, pshow:b.dataset.v})); toast('Gespeichert'); },
   'opt-sec': b => { D.optSec = b.dataset.s || ''; render(); scrollTo({top:0, behavior:'instant'}); },
   'bday-save': () => { const d = D.ep; if (!d) return; if (!d.bday) { toast(bdayMissingMsg(d)); return; } saveOwnPlayer(d); },
+  'season-preview': b => { const v = b.dataset.v; D.seasonPreview = D.seasonPreview === v ? '' : v; render(); toast(D.seasonPreview === 'xmas' ? '🎄 Weihnachts-Look an (nur bei dir)' : D.seasonPreview === 'nye' ? '🎆 Silvester-Look an (nur bei dir)' : 'Vorschau aus'); },
   'bd-preview': () => { D.bdPreview = !D.bdPreview; render(); toast(D.bdPreview ? '🎂 Geburtstags-Look an (nur bei dir)' : 'Vorschau aus'); },
   'afk-set': b => {
     if (!S.admin) return; const v = Number(b.dataset.v); ops.saveSettings(normSettings({...S.settings, afk:v})); toast(`Rauswurf nach ${v} ${v === 1 ? 'Minute' : 'Minuten'} ohne Aktivität`);
@@ -16180,6 +16244,7 @@ document.addEventListener('change', async e => {
   if (t.id === 'dw-only') { if (t.checked && dOwnAll().length < 3) { t.checked = false; toast('Speicher zuerst mindestens 3 eigene Begriffe.'); return; } ops.saveDwords({...S.dwords, only:t.checked}); return; }
   if (t.id === 'w-remove') { const w = clone(S.wheel); w.removeDrawn = t.checked; ops.saveWheel(w); return; }
   if (t.id === 'pic-file') { const fs2 = t.files ? Array.from(t.files) : []; t.value = ''; if (fs2.length) addPics(fs2); return; }
+  if (t.id === 'season-auto') { if (S.admin) { ops.saveSettings(normSettings({...S.settings, season:t.checked ? 'auto' : 'off'})); toast(t.checked ? 'Weihnachten und Silvester kommen automatisch.' : 'Jahreszeiten-Look ist aus.'); } return; }
   if (t.id === 'deco-bgm' || t.id === 'deco-lobby' || t.id === 'deco-site') { const d = {...(S.deco || DEFAULT_DECO)}; d[{'deco-bgm':'bgm', 'deco-lobby':'flyLobby', 'deco-site':'flySite'}[t.id]] = t.checked; ops.saveDeco(d); return; }
   if (t.matches && t.matches('input[type=file][data-tk-img]')) {
     const f = t.files && t.files[0]; const id = t.dataset.tkImg;

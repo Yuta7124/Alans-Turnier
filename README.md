@@ -260,3 +260,10 @@ Raumspiel `cn` (Feld `uno`, `g:'cn'`): 2 Teams in `t0`/`t1` (Firestore erlaubt k
 ## Stadt, Land, Fluss
 
 Raumspiel `slf` (Feld `uno`, `g:'slf'`): Kategorien `cats` (3 bis 8 aus `SLF_CATS`), Runden 3/5/8, Zeit 60–180 s oder ohne. Am Rundenanfang wird der Buchstabe 3 s lang ausgewürfelt (`SLF_ROLL`, `at` liegt dafür in der Zukunft), dann Phasen `write` → `stop` (jemand drückt STOPP oder Zeit vorbei, 3 s zum Einsammeln) → `check` (Antworten prüfen, ✗-Stimmen in `x`, Mehrheit der anderen lehnt ab). Antworten pro Spieler in `pr.<pid>.r<Runde>`. Punkte (`slfCell`): als Einziger 20, eigenes Wort 10, doppelt 5. Turnier: Punkte ÷ 10.
+
+## Weihnachten und Silvester
+
+- Vom 1. bis 30. Dezember (deutsche Zeit) läuft die ganze Seite im Weihnachts-Look: Schneeflocken, Lichterkette, rot-grüne Akzente und ein Banner mit den Tagen bis Heiligabend.
+- Am 31. Dezember und 1. Januar kommt der Silvester-Look: Feuerwerk, goldene Funken und ein Countdown bis Mitternacht, danach „Frohes neues Jahr“.
+- Optionen → Aussehen → „Weihnachten und Silvester“: Vorschau-Knöpfe (nur für dich sichtbar) und für den Spielleiter ein Schalter, um es für alle abzuschalten (`meta/settings.season`).
+- Mit „Bewegung reduzieren“ bleibt die Deko stehen statt zu fallen.
