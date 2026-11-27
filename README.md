@@ -255,7 +255,7 @@ In der Turnier-Lobby (`lobby().tour`) zählen Punkte direkt aufs Turnier-Konto (
 
 ## Codenames
 
-Raumspiel `cn` (Feld `uno`, `g:'cn'`): 2 Teams in `t0`/`t1` (Firestore erlaubt keine Listen in Listen), Spione in `spy`, 25 Wörter aus `CN_WORDS`, Farben in `key` (0 Rot, 1 Blau, 2 neutral, 3 Attentäter), aufgedeckt in `rv`. Der Spion gibt `hint` (ein Wort + Zahl, 0 = beliebig), das Team rät bis Zahl + 1. Ab 4 Spielern (je Team 2), Bots spielen nicht mit. Highscore: Siegerteam 3, Verlierer 1. Turnier: gefundene Wörter des Teams + 5 für den Sieg.
+Raumspiel `cn` (Feld `uno`, `g:'cn'`): 2 Teams in `t0`/`t1` (Firestore erlaubt keine Listen in Listen), Spione in `spy`, 25 Wörter aus `CN_WORDS`, Farben in `key` (0 Rot, 1 Blau, 2 neutral, 3 Attentäter), aufgedeckt in `rv`. Der Spion gibt `hint` (ein Wort + Zahl, 0 = beliebig), das Team rät bis Zahl + 1. Genau 2 gegen 2 (eigene Gruppe „Zu viert“ in der Spielauswahl), weitere Raum-Mitglieder schauen zu. Bots spielen mit: Bot-Spione geben Oberbegriffe aus `CN_TAGS` als Hinweis, Bot-Rater verstehen diese Oberbegriffe und raten sonst mit Gespür (`cnLogic`, Host). Highscore: Siegerteam 3, Verlierer 1. Turnier: gefundene Wörter des Teams + 5 für den Sieg.
 
 ## Stadt, Land, Fluss
 

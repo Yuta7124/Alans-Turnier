@@ -3334,7 +3334,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=111"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=112"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -7856,7 +7856,6 @@ function viewRoom() {
         <button class="pick-big" type="button" data-act="room-kind" data-v="quiz" style="--tc:#39d6f2"><span aria-hidden="true">🧠</span><b>Quiz</b><small>Spielbrett mit Fragen aus 9 Themen. Wer dran ist, wählt Feld und Antwort.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="ap" style="--tc:#ffb52e"><span aria-hidden="true">💰</span><b>Wer wird der nächste ApoRed?</b><small>30 Fragen bis zur Million, mit Jokern. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="slf" style="--tc:#4ff08f"><span aria-hidden="true">🏙️</span><b>Stadt, Land, Fluss</b><small>Ein Buchstabe, alle schreiben gleichzeitig. Wer fertig ist, ruft STOPP.</small></button>
-        <button class="pick-big" type="button" data-act="room-kind" data-v="cn" style="--tc:#ff4d5e"><span aria-hidden="true">🕵️</span><b>Codenames</b><small>Rot gegen Blau: Der Spion gibt Hinweise, das Team rät die richtigen Wörter. Ab 4 Spielern.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="malen" style="--tc:#ff7fc3"><span aria-hidden="true">🎨</span><b>Malen</b><small>Einer malt, alle anderen raten. Wie skribbl.io.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="golf" style="--tc:#4ff08f"><span aria-hidden="true">⛳</span><b>Golf</b><small>Minigolf in 3D mit 30 Bahnen, von kurz und leicht bis extrem. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="mad" style="--tc:#ff9f5a"><span aria-hidden="true">🎲</span><b>Uncle Grandpa ärgere dich</b><small>Das Brettspiel für 2 bis 4: Würfeln, mit einer 6 rauskommen, Gegner rauswerfen und alle Figuren ins Ziel bringen.</small></button>
@@ -7864,6 +7863,11 @@ function viewRoom() {
         <button class="pick-big" type="button" data-act="room-kind" data-v="bj" style="--tc:#2ecc71"><span aria-hidden="true">🂡</span><b>Blackjack</b><small>Alle gegen die Bank: Komm näher an 21 als die Bank. Mit Chips, Verdoppeln und Teilen. Auch allein spielbar.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="dt" style="--tc:#39d6f2"><span aria-hidden="true">🧱</span><b>Dicktris</b><small>Fallende Blöcke: Reihen voll machen, im Battle-Modus Müllzeilen an die anderen schicken. Alle spielen gleichzeitig.</small></button>
         <button class="pick-big" type="button" data-act="room-kind" data-v="bw" style="--tc:#ff4f9a"><span aria-hidden="true">🎳</span><b>Bowling</b><small>Reihum werfen, mit Strikes, Spares und Effet. Für alle im Raum, auch mit Bots.</small></button>
+      </div>
+      <h3 class="rc-grp">🤝 Zu viert · 2 gegen 2</h3>
+      <p class="muted rc-sub">Genau 4 Spieler. Fehlen welche, springen Bots ein. Sind mehr im Raum, schauen die anderen zu.</p>
+      <div class="rc-pick">
+        <button class="pick-big" type="button" data-act="room-kind" data-v="cn" style="--tc:#ff4d5e"><span aria-hidden="true">🕵️</span><b>Codenames</b><small>Rot gegen Blau: Der Spion gibt ein Hinweis-Wort, sein Partner rät die richtigen Wörter. Auch mit Bots.</small></button>
       </div>
       <h3 class="rc-grp">⚔️ Nur zu zweit · 1 gegen 1</h3>
       <p class="muted rc-sub">Sind mehr im Raum, wählst du aus, wer spielt. Die anderen schauen zu.</p>
@@ -11692,7 +11696,37 @@ setInterval(() => {
    Gespeichert im Raum-Feld uno (g:'cn'): {g, id, status, t0:[pid…] (Rot), t1:[pid…] (Blau), spy:[pid, pid], words[25],
    key[25] (0 = Rot, 1 = Blau, 2 = neutral, 3 = Attentäter), rv:{Index:1}, turn, first, hint:{w, n, by}|null,
    gu (Treffer in diesem Zug), last:{i, by}, win (-1/0/1), why ('all'|'killer'), tour, transferred} */
-const CN_WORDS = ('Apfel Bank Bär Berg Blatt Blitz Boot Brücke Brief Burg Dach Drache Eis Ente Feder Fenster Feuer Fisch Flasche Flügel Fuchs Fußball Gabel Garten Geist Gift Glas Glocke Gold Gras Hafen Hahn Hammer Hand Herz Himmel Hose Hund Insel Jacke Kaffee Kamera Karte Katze Kerze Kette Kino Kirche Kiste Knopf König Kopf Krone Kuchen Lampe Laser Leiter Löwe Luft Magnet Mantel Maske Maus Meer Messer Mond Motor Musik Nadel Nacht Nest Netz Ofen Ohr Paket Palme Papier Pferd Pfeil Pilot Pirat Planet Post Puppe Rakete Rad Ring Ritter Roboter Rose Säge Salz Sand Schiff Schlange Schloss Schlüssel Schnee Schuh Schule Schwert Seife Sonne Spiegel Spinne Stadt Stern Stift Stuhl Sturm Tasche Tee Teller Tiger Tisch Tor Turm Uhr Vogel Wald Wal Wand Wasser Welle Wolke Wurm Zahn Zelt Zug Zwerg Adler Anker Arzt Auge Ball Band Baum Bett Bier Birne Bombe Bus Computer Daumen Diamant Dino Dose Drachen Eimer Engel Erde Feld Film Flöte Frosch Gabe Geld Gitarre Gürtel Hai Helm Hexe Honig Horn Hut Igel Jäger Kabel Kanal Kanone Käse Koch Koffer Kompass Korb Kreuz Kuh Kurs Laden Land Löffel Markt Mauer Mikrofon Mühle Münze Nase Nuss Oper Orange Panzer Park Pass Pfanne Pinsel Pizza Polizei Prinz Pyramide Quelle Rabe Regen Riese Rock Rose Schatz Schatten Schild Schirm Schwan Seil Sirene Socke Spion Stab Strand Strom Tanne Taube Taxi Tinte Topf Tunnel Vampir Vulkan Waffel Wolf Würfel Zauber Zebra Ziege Zucker').split(' ').filter((w, i, a) => a.indexOf(w) === i);
+/* Wörter nach Oberbegriffen: Damit geben Bot-Spione Hinweise (z. B. „TIER 2“) und Bot-Rater verstehen sie. Die Wortliste ist die Summe aller Begriffe. */
+const CN_TAGS = {
+  Tier:'Bär Ente Fisch Fuchs Hahn Hund Katze Löwe Maus Pferd Schlange Spinne Tiger Vogel Wal Wurm Adler Frosch Hai Igel Kuh Rabe Schwan Taube Wolf Zebra Ziege Dino Drache Nest',
+  Essen:'Apfel Kuchen Käse Honig Nuss Orange Pizza Waffel Zucker Salz Birne Kaffee Tee Bier Eis',
+  Natur:'Baum Blatt Berg Wald Gras Sand Strand Insel Meer Welle Vulkan Quelle Feld Tanne Palme Rose Erde Garten Zelt',
+  Wetter:'Blitz Sturm Regen Schnee Wolke Sonne Eis Himmel Luft',
+  nass:'Meer Welle Hafen Boot Schiff Fisch Wal Hai Quelle Kanal Strand Insel Anker Eimer Regen Seife',
+  Weltall:'Mond Stern Planet Rakete Sonne Himmel Erde Laser Nacht',
+  Haus:'Dach Fenster Tisch Stuhl Bett Wand Lampe Spiegel Ofen Kerze Uhr Mauer Leiter Seife Garten',
+  Küche:'Gabel Messer Löffel Teller Topf Pfanne Glas Flasche Ofen Kaffee Tee Dose Eimer',
+  Kleidung:'Hose Jacke Mantel Schuh Hut Socke Gürtel Helm Maske Krone Tasche Schirm Knopf',
+  Werkzeug:'Hammer Säge Nadel Schlüssel Leiter Pinsel Stift Seil Kabel Magnet Kompass Netz Korb Kiste',
+  Kampf:'Schwert Pfeil Bombe Kanone Panzer Schild Gift Messer Laser Stab Ritter Helm',
+  Fahrzeug:'Zug Bus Taxi Rad Boot Schiff Rakete Motor Panzer Pilot',
+  Körper:'Herz Hand Kopf Ohr Zahn Auge Nase Daumen Horn Flügel Feder',
+  Beruf:'Arzt Koch Pilot Jäger Polizei Pirat Spion Ritter Prinz König Post',
+  Märchen:'Drache Geist Hexe Engel Riese Zwerg Vampir Zauber Ritter Prinz König Krone Schloss Burg Schatz',
+  Klang:'Band Gitarre Flöte Glocke Oper Rock Mikrofon Musik Horn Sirene',
+  Technik:'Computer Roboter Kamera Laser Magnet Motor Kabel Strom Mikrofon Rakete Uhr',
+  reich:'Bank Gold Münze Geld Schatz Diamant Ring Kette Markt Laden Krone',
+  Gebäude:'Burg Schloss Turm Kirche Schule Kino Bank Mühle Pyramide Tunnel Brücke Laden Mauer Park Hafen Post Stadt',
+  Sport:'Ball Fußball Tor Rad Ring Kurs Pass Helm Würfel',
+  Licht:'Lampe Kerze Sonne Stern Blitz Feuer Laser Mond Schatten',
+  heiß:'Feuer Kerze Ofen Vulkan Drache Sonne Kaffee Tee',
+  Büro:'Papier Brief Karte Paket Post Stift Tinte Pass Kiste',
+  Pflanze:'Baum Blatt Gras Rose Tanne Palme Apfel Birne Orange Nuss',
+  Gefahr:'Gift Bombe Vulkan Schlange Spinne Hai Sturm Blitz Feuer Messer Vampir Kreuz',
+  Spiel:'Würfel Karte Puppe Ball Tor Schatz Kiste Pirat Land'
+};
+const CN_TAG = Object.fromEntries(Object.entries(CN_TAGS).map(([t, w]) => [t, w.split(' ')]));
+const CN_WORDS = [...new Set(Object.values(CN_TAG).flat())];
 const CN_TEAM = [{n:'Rot', c:'#ff4d5e', e:'🔴'}, {n:'Blau', c:'#3f8cff', e:'🔵'}];
 const cnl = {endSnd:'', lastRv:-1};
 function cnNorm(x) {
@@ -11714,14 +11748,15 @@ const cnFound = (M, t) => M.key.filter((k, i) => k === t && M.rv[i]).length;
 function cnPut(nx, patch) { S.lobbies[S.room] = {...lobby(), uno:nx}; S.cn = cnNorm(nx); roomWrite(patch); render(); }
 /* Teams im Setup: Entwurf D.cnT {pid: 0|1}, Spione D.cnSpy [pid, pid] */
 function cnDraft() {
-  const mem = roomMembers(lobby()).filter(id => !isBot(id));
-  const t = {}; let n = [0, 0];
-  for (const id of mem) { const v = D.cnT && (D.cnT[id] === 0 || D.cnT[id] === 1) ? D.cnT[id] : n[0] <= n[1] ? 0 : 1; t[id] = v; n[v]++; }
+  // Genau 2 gegen 2: je Team ein Spion und ein Rater. Wer übrig ist, schaut zu (2). Bots spielen mit.
+  const mem = roomMembers(lobby());
+  const t = {}, n = [0, 0];
+  for (const id of mem) { let v = D.cnT && [0, 1, 2].includes(D.cnT[id]) ? D.cnT[id] : n[0] <= n[1] ? 0 : 1; if (v < 2 && n[v] >= 2) v = n[1 - v] < 2 ? 1 - v : 2; t[id] = v; if (v < 2) n[v]++; }
   D.cnT = t;
-  const teams = [0, 1].map(v => mem.filter(id => t[id] === v));
-  const spy = [0, 1].map(v => D.cnSpy && teams[v].includes(D.cnSpy[v]) ? D.cnSpy[v] : teams[v][0] || '');
+  const teams = [0, 1].map(v => mem.filter(id => t[id] === v)), watch = mem.filter(id => t[id] === 2);
+  const spy = [0, 1].map(v => D.cnSpy && teams[v].includes(D.cnSpy[v]) ? D.cnSpy[v] : teams[v].find(id => !isBot(id)) || teams[v][0] || '');
   D.cnSpy = spy;
-  return {teams, spy};
+  return {teams, spy, watch};
 }
 function cnStart(again) {
   if (!ctl()) return;
@@ -11732,7 +11767,7 @@ function cnStart(again) {
     teams = M0.teams.map(t => t.filter(id => mem.includes(id)));
     spy = [0, 1].map(v => { const t = teams[v]; if (!t.length) return ''; const i = t.indexOf(M0.spy[v]); return t[(i + 1) % t.length]; });
   } else ({teams, spy} = cnDraft());
-  if (teams[0].length < 2 || teams[1].length < 2) { toast('Jedes Team braucht mindestens 2 Spieler: einen Spion und einen, der rät.'); return; }
+  if (teams[0].length !== 2 || teams[1].length !== 2) { toast('Codenames ist 2 gegen 2: Jedes Team braucht genau 2 Spieler. Fehlen welche, hol dir Bots dazu.'); return; }
   const r = Math.random, pool = CN_WORDS.slice();
   for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
   const first = r() < .5 ? 0 : 1, key = [...Array(first === 0 ? 9 : 8).fill(0), ...Array(first === 1 ? 9 : 8).fill(1), ...Array(7).fill(2), 3];
@@ -11747,10 +11782,61 @@ function cnTransfer() {
   lobbyAward({'uno.transferred':true}, all.map(id => ({playerId:id, delta:cnTeamOf(M, id) === M.win ? 3 : 1})));
 }
 function cnEndTurn(M) { return {turn:1 - M.turn, hint:null, gu:0}; }
+/* Bot-Spion: sucht den Oberbegriff, der die meisten eigenen Wörter trifft und keine gefährlichen */
+function cnBotHint(M) {
+  const t = M.turn, open = i => !M.rv[i], idx = w => M.words.indexOf(w);
+  let best = null;
+  for (const [tag, ws] of Object.entries(CN_TAG)) {
+    const on = ws.map(idx).filter(i => i >= 0 && open(i)), mine = on.filter(i => M.key[i] === t), bad = on.filter(i => M.key[i] === 1 - t), kill = on.some(i => M.key[i] === 3);
+    if (!mine.length || kill || M.words.some((w, i) => open(i) && (w.toLowerCase().includes(tag.toLowerCase()) || tag.toLowerCase().includes(w.toLowerCase())))) continue;
+    const sc = mine.length * 2 - bad.length * 3 - (on.length - mine.length - bad.length);
+    if (!best || sc > best.sc) best = {tag, sc, n:Math.min(3, mine.length)};
+  }
+  if (!best || best.sc <= 0) { const any = Object.entries(CN_TAG).find(([tag, ws]) => ws.some(w => { const i = idx(w); return i >= 0 && open(i) && M.key[i] === t; })); return {w:(best || {tag:any ? any[0] : 'Glück'}).tag.toUpperCase(), n:1}; }
+  return {w:best.tag.toUpperCase(), n:best.n};
+}
+/* Bot-Rater: versteht Oberbegriffe aus CN_TAG; sonst rät er mit Gespür (eher eigene Wörter) */
+function cnBotPick(M) {
+  const open = M.words.map((w, i) => i).filter(i => !M.rv[i]), tag = Object.keys(CN_TAG).find(k => k.toLowerCase() === (M.hint.w || '').toLowerCase());
+  if (tag) { const c = open.filter(i => CN_TAG[tag].includes(M.words[i])); if (c.length) { const good = c.filter(i => M.key[i] === M.turn); return (Math.random() < .8 && good.length ? good : c)[Math.floor(Math.random() * (good.length && Math.random() < .8 ? good.length : c.length)) % (good.length || c.length)]; } }
+  const w = i => M.key[i] === M.turn ? 6 : M.key[i] === 2 ? 2 : M.key[i] === 3 ? .4 : 1.3;
+  let r = Math.random() * open.reduce((a, i) => a + w(i), 0);
+  for (const i of open) { r -= w(i); if (r <= 0) return i; }
+  return open[0];
+}
+function cnLogic() {
+  const M = S.cn; if (!M || M.status !== 'running' || !ctl() || roomPaused()) return;
+  const now = Date.now(); if (now < (cnl.botAt || 0)) return;
+  const spy = M.spy[M.turn], guesser = M.teams[M.turn].find(id => id !== spy);
+  if (!M.hint && isBot(spy)) {
+    cnl.botAt = now + 2500; const h = cnBotHint(M), hint = {w:h.w, n:h.n, by:spy};
+    sfx('chosen'); cnPut({...lobby().uno, hint, gu:0}, {'uno.hint':hint, 'uno.gu':0}); return;
+  }
+  if (M.hint && guesser && isBot(guesser)) {
+    cnl.botAt = now + 2200;
+    if (M.gu >= Math.max(1, M.hint.n || 2)) { const ch = cnEndTurn(M); cnPut({...lobby().uno, ...ch}, {'uno.turn':ch.turn, 'uno.hint':null, 'uno.gu':0}); return; }
+    cnReveal(M, cnBotPick(M), guesser);
+  }
+}
+function cnReveal(M, i, by) {
+  const k = M.key[i], rv = {...M.rv, [i]:1}, ch = {rv, last:{i, by}};
+  if (k === 3) Object.assign(ch, {status:'finished', win:1 - M.turn, why:'killer'});
+  else if (!cnLeft(M, M.turn, rv)) Object.assign(ch, {status:'finished', win:M.turn, why:'all'});
+  else if (!cnLeft(M, 1 - M.turn, rv)) Object.assign(ch, {status:'finished', win:1 - M.turn, why:'all'});
+  else if (k === M.turn) { const gu = M.gu + 1; if (M.hint.n > 0 && gu >= M.hint.n + 1) Object.assign(ch, cnEndTurn(M)); else ch.gu = gu; }
+  else Object.assign(ch, cnEndTurn(M));
+  kSnd(k === M.turn ? 'flip' : k === 3 ? 'lose' : 'land');
+  const patch = {['uno.rv.' + i]:1, 'uno.last':ch.last}; for (const f of ['status', 'win', 'why', 'turn', 'hint', 'gu']) if (f in ch) patch['uno.' + f] = ch[f];
+  const base = lobby().uno; cnPut({...base, ...ch, rv:{...(base.rv || {}), [i]:1}}, patch);
+}
 const cnActions = {
-  'cn-move': b => { if (!ctl()) return; const id = b.dataset.pid; cnDraft(); D.cnT[id] = 1 - D.cnT[id]; render(); },
+  'cn-move': b => { if (!ctl()) return; const id = b.dataset.pid, {teams} = cnDraft(), cur = D.cnT[id];
+    // reihum: Rot -> Blau -> Zuschauer; ist das Ziel-Team voll, tauscht der Erste dort den Platz
+    const to = cur === 2 ? 0 : cur === 0 ? 1 : 2;
+    if (to < 2 && teams[to].length >= 2) { const sw = teams[to].find(x => x !== D.cnSpy[to]) || teams[to][0]; D.cnT[sw] = cur; }
+    D.cnT[id] = to; render(); },
   'cn-spy': b => { if (!ctl()) return; const id = b.dataset.pid; cnDraft(); const t = D.cnT[id]; D.cnSpy[t] = id; render(); },
-  'cn-shuffle': () => { if (!ctl()) return; const mem = roomMembers(lobby()).filter(id => !isBot(id)).sort(() => Math.random() - .5); D.cnT = {}; mem.forEach((id, i) => D.cnT[id] = i % 2); D.cnSpy = null; render(); },
+  'cn-shuffle': () => { if (!ctl()) return; const {teams} = cnDraft(), pl = [...teams[0], ...teams[1]].sort(() => Math.random() - .5); pl.forEach((id, i) => D.cnT[id] = i % 2); D.cnSpy = null; render(); },
   'cn-start': () => cnStart(false),
   'cn-again': () => cnStart(true),
   'cn-setup': () => { if (!ctl()) return; if (S.cn && S.cn.status === 'finished' && !S.cn.transferred) cnTransfer(); S.cn = null; S.lobbies[S.room] = {...lobby(), uno:null}; roomWrite({uno:null}); render(); },
@@ -11768,15 +11854,7 @@ const cnActions = {
   'cn-pick': b => {
     const M = S.cn, me = myPid(), i = +b.dataset.i; if (!M || M.status !== 'running' || !M.hint || roomPaused()) return;
     if (cnTeamOf(M, me) !== M.turn || M.spy[M.turn] === me || M.rv[i] || !(i >= 0 && i < 25)) return;
-    const k = M.key[i], rv = {...M.rv, [i]:1}, ch = {rv, last:{i, by:me}};
-    if (k === 3) Object.assign(ch, {status:'finished', win:1 - M.turn, why:'killer'});
-    else if (!cnLeft(M, M.turn, rv)) Object.assign(ch, {status:'finished', win:M.turn, why:'all'});
-    else if (!cnLeft(M, 1 - M.turn, rv)) Object.assign(ch, {status:'finished', win:1 - M.turn, why:'all'});
-    else if (k === M.turn) { const gu = M.gu + 1; if (M.hint.n > 0 && gu >= M.hint.n + 1) Object.assign(ch, cnEndTurn(M)); else ch.gu = gu; }
-    else Object.assign(ch, cnEndTurn(M));
-    kSnd(k === M.turn ? 'flip' : k === 3 ? 'lose' : 'land');
-    const patch = {['uno.rv.' + i]:1, 'uno.last':ch.last}; for (const f of ['status', 'win', 'why', 'turn', 'hint', 'gu']) if (f in ch) patch['uno.' + f] = ch[f];
-    const base = lobby().uno; cnPut({...base, ...ch, rv:{...(base.rv || {}), [i]:1}}, patch);
+    cnReveal(M, i, me);
   },
   'cn-pass': () => {
     const M = S.cn, me = myPid(); if (!M || M.status !== 'running' || !M.hint || cnTeamOf(M, me) !== M.turn || M.spy[M.turn] === me || !M.gu) return;
@@ -11785,7 +11863,7 @@ const cnActions = {
 };
 function cnRulesHTML(open) {
   return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird Codenames gespielt</summary><ul>
-    <li><b>2 Teams:</b> Rot und Blau. In jedem Team gibt es einen <b>Spion</b> 🕵️, alle anderen raten.</li>
+    <li><b>2 gegen 2:</b> Team Rot und Team Blau. In jedem Team gibt es einen <b>Spion</b> 🕵️ und einen, der rät. Bots können mitspielen.</li>
     <li><b>Das Spielfeld:</b> 25 Wörter. Nur die Spione sehen, welche Wörter zu welchem Team gehören.</li>
     <li><b>Hinweis:</b> Der Spion gibt <b>ein Wort und eine Zahl</b>, z. B. „TIER 2“. Die Zahl sagt, wie viele Wörter dazu passen.</li>
     <li><b>Raten:</b> Das Team tippt Wörter an. Richtig = weiterraten (bis Zahl + 1). Falsch = das andere Team ist dran.</li>
@@ -11797,15 +11875,16 @@ function cnSetupHTML() {
   if (!ctl()) return `<section class="section tsec"><div class="card waiting">${COIN(56, 'spin')}<span class="eyebrow">${esc(L ? L.name : '')} · 🕵️ Codenames</span><h2>Gleich geht's los</h2>
     <p class="muted">${hostP ? `<b>${esc(hostP.name)}</b> ist Host, teilt die Teams ein und startet.` : 'Gerade ist niemand Host.'}</p>
     ${hostStale(L) && L.members[myPid()] ? `<button class="btn btn-gold" type="button" data-act="room-take">Host übernehmen</button>` : ''}</div>${cnRulesHTML(true)}</section>`;
-  const {teams, spy} = cnDraft(), ok = teams[0].length >= 2 && teams[1].length >= 2;
+  const {teams, spy, watch} = cnDraft(), ok = teams[0].length === 2 && teams[1].length === 2, miss = 4 - teams[0].length - teams[1].length;
   return `<section class="section tsec"><div class="card k-setup cn-setup">
     <span class="eyebrow">Du bist Host</span><h2 class="k-title-big">🕵️ Codenames</h2>
-    <p class="muted">Tippe auf einen Spieler, um ihn ins andere Team zu schieben. Mit 🕵️ machst du ihn zum Spion.</p>
+    <p class="muted">2 gegen 2: Jedes Team hat einen Spion 🕵️ und einen Rater. Tippe auf einen Spieler, um ihn ins andere Team (oder zu den Zuschauern) zu schieben. Mit 🕵️ machst du ihn zum Spion. Bots können beides.</p>
     <div class="cn-teams">${[0, 1].map(t => `<div class="cn-tcol" style="--tc:${CN_TEAM[t].c}"><h3>${CN_TEAM[t].e} Team ${CN_TEAM[t].n} (${teams[t].length})</h3>
       ${teams[t].map(id => `<div class="cn-prow"><button class="chip pchip" type="button" data-act="cn-move" data-pid="${esc(id)}" title="Ins andere Team">${avatar(ghost(id), 26)}${esc(ghost(id).name)}</button>
         <button class="btn btn-sm ${spy[t] === id ? 'btn-gold' : 'btn-ghost'}" type="button" data-act="cn-spy" data-pid="${esc(id)}" aria-pressed="${spy[t] === id}" title="Spion">🕵️${spy[t] === id ? ' Spion' : ''}</button></div>`).join('') || '<p class="muted">Noch niemand.</p>'}</div>`).join('')}</div>
-    <div class="chips"><button class="btn btn-sm" type="button" data-act="cn-shuffle">🔀 Teams mischen</button></div>
-    ${ok ? '' : '<p class="muted">Jedes Team braucht mindestens 2 Spieler (einen Spion und einen, der rät). Bots spielen hier nicht mit.</p>'}
+    ${watch.length ? `<span class="lbl">👀 Schauen zu</span><div class="chips">${watch.map(id => `<button class="chip pchip" type="button" data-act="cn-move" data-pid="${esc(id)}" title="Ins Team holen">${avatar(ghost(id), 26)}${esc(ghost(id).name)}</button>`).join('')}</div>` : ''}
+    <div class="chips"><button class="btn btn-sm" type="button" data-act="cn-shuffle">🔀 Teams mischen</button>${miss > 0 ? `<button class="btn btn-sm" type="button" data-act="bot-open">🤖 Bot dazu</button>` : ''}</div>
+    ${ok ? '' : `<p class="muted">Es fehlen noch ${miss} Spieler. Hol dir Bots dazu, die spielen als Spion oder Rater mit.</p>`}
     <button class="btn btn-gold btn-big" type="button" data-act="cn-start" ${ok ? '' : 'disabled'}>Spiel starten</button>
   </div>${cnRulesHTML(false)}</section>`;
 }
@@ -15431,6 +15510,7 @@ function tick() {
     try { chLogic(); } catch (e) {}
     try { apLogic(); } catch (e) {}
     try { slfLogic(); } catch (e) {}
+    try { cnLogic(); } catch (e) {}
     botTick();
   }
   lobbyAutoAward();
