@@ -3480,7 +3480,7 @@ body.icrop-open{overflow:hidden}
   var lang = ''; try { lang = localStorage.getItem('darkime-lang') || ''; } catch (e) {}
   if (lang !== 'de' && lang !== 'en') lang = '';
   window.DARKIME_LANG = lang;
-  if (lang === 'en') document.write('<script src="en.js?v=125"><\/script>');
+  if (lang === 'en') document.write('<script src="en.js?v=126"><\/script>');
 })();
 (function () {
   var el = document.getElementById('intro');
@@ -12184,10 +12184,10 @@ function svNb(c, diag) {
   }
   return out;
 }
-/* Schiffe dürfen sich nicht überlappen und nicht berühren (auch nicht schräg) */
+/* Schiffe dürfen sich nur nicht überlappen; nebeneinander ist erlaubt */
 function svFits(ships, si, cells) {
   const busy = new Set();
-  ships.forEach((s, j) => { if (j !== si && s) s.forEach(c => { busy.add(c); svNb(c, true).forEach(n => busy.add(n)); }); });
+  ships.forEach((s, j) => { if (j !== si && s) s.forEach(c => busy.add(c)); });
   return cells.every(c => !busy.has(c));
 }
 function svValid(ships) {
@@ -12425,7 +12425,7 @@ function svBotMove(M, by, only) {
   const opp = only ? [only] : M.players.filter(p => p !== by && !M.ko.includes(p) && M.fl[p]); if (!opp.length) return null;
   const plan = t => {
     const mine = new Set(svMy(M, by, t)), all = svIncoming(M, t), sunk = svSunk(M, t, all), ban = new Set(mine);
-    (M.fl[t] || []).forEach((s, i) => { if (sunk[i] && (svWar(M) || s.some(c => mine.has(c)))) s.forEach(c => { ban.add(c); svNb(c, true).forEach(n => ban.add(n)); }); });
+    (M.fl[t] || []).forEach((s, i) => { if (sunk[i] && (svWar(M) || s.some(c => mine.has(c)))) s.forEach(c => ban.add(c)); });
     const rad = ((M.rad[by] || {})[t] || []).filter(c => !mine.has(c)), radY = rad.filter(c => svShipOf(M, t, c) >= 0);
     rad.forEach(c => { if (svShipOf(M, t, c) < 0) ban.add(c); });
     if (radY.length) return {t, c:radY[Math.floor(Math.random() * radY.length)], p:3};
@@ -12651,7 +12651,7 @@ function svDragEnd(e, cancel) {
   const c = cancel ? -1 : svCellAt(e.clientX, e.clientY);
   if (c < 0) { if (svDrag.from === 'board' && !cancel) { P.ships[i] = null; kSnd('swishSoft'); } }
   else if (svDrag.cells) { P.ships[i] = svDrag.cells; kSnd('land'); }
-  else toast('Da passt es nicht hin. Schiffe dürfen sich nicht berühren, auch nicht schräg.');
+  else toast('Da passt es nicht hin. Das Schiff ragt übers Feld oder liegt auf einem anderen Schiff.');
   P.sel = -1; setTimeout(render, 0); setTimeout(() => svPop(i), 0);
 }
 window.addEventListener('pointerup', e => svDragEnd(e, false));
@@ -12669,7 +12669,7 @@ const svActions = {
     const M = S.sv; if (!M || M.status !== 'place' || M.rd[myPid()]) return;
     const P = svPl(M), c = +b.dataset.i; if (P.sel < 0) { if (P.ships.some(x => !x)) toast('Zieh ein Schiff aus dem Hafen aufs Feld (oder tippe es an und dann das Feld).'); return; }
     let cells = null; for (let k = 0; k < SV_ROTS[P.sel].length && !cells; k++) cells = svPlaceAt(P, P.sel, c, 0, k);
-    if (!cells) { toast('Da passt es nicht hin. Schiffe dürfen sich nicht berühren, auch nicht schräg.'); return; }
+    if (!cells) { toast('Da passt es nicht hin. Das Schiff ragt übers Feld oder liegt auf einem anderen Schiff.'); return; }
     P.ships[P.sel] = cells; P.sel = -1; kSnd('land'); render();
   },
   'sv-ready': () => {
@@ -12706,7 +12706,7 @@ const svActions = {
 };
 function svRulesHTML(open) {
   return `<details class="card k-rules" ${open ? 'open' : ''}><summary>So wird Schiffe versenken gespielt</summary><ul>
-    <li><b>Flotte aufstellen:</b> Jeder hat 6 Schiffe: Kreuzer (4 Felder), T-Schiff (4, wie ein T), Blitz (4, im Zickzack), 2 Zerstörer (3) und ein U-Boot (2). Du ziehst sie selbst aufs 12 × 12 Feld. Schiffe dürfen sich nicht berühren, auch nicht schräg.</li>
+    <li><b>Flotte aufstellen:</b> Jeder hat 6 Schiffe: Kreuzer (4 Felder), T-Schiff (4, wie ein T), Blitz (4, im Zickzack), 2 Zerstörer (3) und ein U-Boot (2). Du ziehst sie selbst aufs 12 × 12 Feld. Schiffe dürfen direkt nebeneinander liegen, nur nicht übereinander.</li>
     <li><b>Schießen (1 gegen 1):</b> Wer dran ist, tippt ein Feld beim Gegner an. Danach ist <b>immer der andere dran</b>, egal ob Wasser oder Treffer.</li>
     <li><b>Power-ups:</b> Für jeden normalen Schuss ins Wasser bekommst du 1 ⭐. Für 10 ⭐ gibt es das 📡 <b>Radar</b> (zeigt dir in 3 × 3 Feldern, wo ein Schiff liegt; das ist dein ganzer Zug), für 16 ⭐ die 💣 <b>Bombe</b> (sprengt 3 × 3 Felder) und für 20 ⭐ das ✈️ <b>Flugschiff</b> (fliegt eine ganze Spalte oder Reihe ab). Die Punkte werden abgezogen, der Rest bleibt.</li>
     <li><b>Versenkt:</b> Ein Schiff ist versenkt, wenn alle seine Felder getroffen sind. Wer keine Schiffe mehr hat, ist raus.</li>
